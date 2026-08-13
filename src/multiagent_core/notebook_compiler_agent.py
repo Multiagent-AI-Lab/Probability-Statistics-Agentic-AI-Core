@@ -26,6 +26,17 @@ class NotebookCompilerAgent:
         text = text.replace('\\r\\right', '\\right')
         text = text.replace('\\b\\bar', '\\bar')
         text = text.replace('$ar{X}$', '$\\bar{X}$')
+
+        # 'ar{X}' sin 'b' previo -> '\bar{X}' (typo recurrente en lecciones)
+        text = re.sub(r'(?<!b)ar\{([A-Za-z])\}', r'\\bar{\1}', text)
+
+        # '$$\mathbf{...}$$' (bloque display de solo negrita) -> '$\mathbf{...}$' inline
+        text = re.sub(r'\$\$\\mathbf\{([^}]*)\}\$\$', r'$\\mathbf{\1}$', text)
+
+        # Typos tipograficos puntuales confirmados en el diagnostico (p. ej. U7)
+        text = text.replace('\\ilde{', '\\tilde{')
+        text = text.replace('\\lpha', '\\alpha')
+
         return text
 
     def _split_markdown_into_modular_cells(self, md_text: str) -> List[Dict[str, Any]]:
