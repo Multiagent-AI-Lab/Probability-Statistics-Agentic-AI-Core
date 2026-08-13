@@ -1,0 +1,293 @@
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amscd}
+\usepackage{amssymb}
+\usepackage{xcolor}
+\usepackage{listings}
+
+\lstdefinestyle{colored}{
+    backgroundcolor=\color{lightgray}, % color de fondo
+    frame=single,                     % marco simple
+    rulecolor=\color{lime},          % color del marco
+    basicstyle=\ttfamily\small,      % fuente del código
+}
+
+\title{\Huge Modelos para Variables Aleatorias}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section*{\Large Modelos para Variables Aleatorias Discretas}
+
+1. \textbf{\Large{Distribución de Bernoulli}}:
+   \begin{itemize}
+       \item \textbf{Descripción}: Representa un experimento con dos resultados posibles (éxito o fracaso).
+       \item \textbf{Parámetro}: \( p \) (probabilidad de éxito).
+       \item \textbf{Función de Masa de Probabilidad (PMF)}:
+       \[
+       P(X=1) = p, \quad P(X=0) = 1 - p
+       \]
+       \item \textbf{Valor Esperado}:
+       \[
+       E[X] = p
+       \]
+       \item \textbf{Media}:
+       \[
+       \mu_X = p
+       \]
+        \item \textbf{Varianza}:
+       \[
+       \sigma = p(1-p)
+       \]
+       \item \textbf{Desviación Estándar}:
+       \[
+       \sigma = \sqrt{p(1-p)}
+       \]
+       \item \textbf{Función de Distribución Acumulativa (CDF)}:
+       \[
+       F(x) = 
+       \begin{cases} 
+       0 & \text{si } x < 0 \\ 
+       1 - p & \text{si } 0 \leq x < 1 \\ 
+       1 & \text{si } x \geq 1 
+       \end{cases}
+       \]
+       \item \textbf{R Commands}:
+      
+           \begin{lstlisting}[style=colored, language=R]
+           # PMF (funcion de masa de probabilidad)
+           dbinom(x, size=1, prob=p)
+           
+           # CDF (funcion de distribucion acumulada)
+           pbinom(x, size=1, prob=p)
+           
+           # Para generar simulacion
+           rbinom(n, size=1, prob=p)       
+          \end{lstlisting}
+       
+   \end{itemize}
+
+2. \textbf{{\Large Distribución Binomial}}:
+   \begin{itemize}
+       \item \textbf{Descripción}: Modelo de \( n \) ensayos independientes de Bernoulli.
+       \item \textbf{Parámetros}: \( n \) (número de ensayos), \( p \) (probabilidad de éxito).
+       \item \textbf{Función de Masa de Probabilidad (PMF)}:
+       \[
+       P(X=k) = \binom{n}{k} p^k (1-p)^{n-k}, \quad k = 0, 1, \ldots, n
+       \]
+       \item \textbf{Valor Esperado}:
+       \[
+       E[X] = n \cdot p
+       \]
+       \item \textbf{Media}:
+       \[
+       \text{Media} = n \cdot p
+       \]
+       \item \textbf{Desviación Estándar}:
+       \[
+       \sigma = \sqrt{n \cdot p \cdot (1-p)}
+       \]
+       \item \textbf{Función de Distribución Acumulativa (CDF)}:
+       \[
+       F(x) = P(X \leq k) = \sum_{i=0}^{\lfloor x \rfloor} \binom{n}{i} p^i (1-p)^{n-i}
+       \]
+       \item \textbf{R Commands}:
+        \begin{lstlisting}[style=colored, language=R]
+       # PMF
+       dbinom(k, size=n, prob=p)
+       
+       # CDF
+       pbinom(k, size=n, prob=p)
+       
+       # Simulation
+       rbinom(n, size=n, prob=p)
+       \end{lstlisting}
+   \end{itemize}
+
+3. \textbf{{\Large Distribución de Poisson}}:
+   \begin{itemize}
+       \item \textbf{Descripción}: Modelo de eventos que ocurren en un intervalo fijo de tiempo o espacio.
+       \item \textbf{Parámetro}: \( \lambda \) (tasa promedio de ocurrencias).
+       \item \textbf{Función de Masa de Probabilidad (PMF)}:
+       \[
+       P(X=k) = \frac{\lambda^k e^{-\lambda}}{k!}, \quad k = 0, 1, 2, \ldots
+       \]
+       \item \textbf{Valor Esperado}:
+       \[
+       E[X] = \lambda
+       \]
+       \item \textbf{Media}:
+       \[
+       \text{Media} = \lambda
+       \]
+       \item \textbf{Desviación Estándar}:
+       \[
+       \sigma = \sqrt{\lambda}
+       \]
+       \item \textbf{Función de Distribución Acumulativa (CDF)}:
+       \[
+       F(x) = P(X \leq k) = \sum_{i=0}^{\lfloor x \rfloor} \frac{\lambda^i e^{-\lambda}}{i!}
+       \]
+       \item \textbf{R Commands}:
+       \begin{lstlisting}[style=colored, language=R]
+       # PMF
+       dpois(x, lambda)
+       
+       # CDF
+       ppois(x, lambda)
+       
+       # Simulation
+       rpois(n, lambda)
+       \end{lstlisting}
+   \end{itemize}
+
+4. \textbf{{\Large Distribución Geométrica}}:
+   \begin{itemize}
+       \item \textbf{Descripción}: Modelo de la cantidad de ensayos necesarios para obtener el primer éxito.
+       \item \textbf{Parámetro}: \( p \) (probabilidad de éxito en cada ensayo).
+       \item \textbf{Función de Masa de Probabilidad (PMF)}:
+       \[
+       P(X=k) = (1-p)^{k-1} p, \quad k = 1, 2, \ldots
+       \]
+       \item \textbf{Valor Esperado}:
+       \[
+       E[X] = \frac{1}{p}
+       \]
+       \item \textbf{Media}:
+       \[
+       \text{Media} = \frac{1}{p}
+       \]
+       \item \textbf{Desviación Estándar}:
+       \[
+       \sigma = \frac{\sqrt{1-p}}{p}
+       \]
+       \item \textbf{Función de Distribución Acumulativa (CDF)}:
+       \[
+       F(x) = P(X \leq k) = 1 - (1-p)^k, \quad k = 1, 2, \ldots
+       \]
+       \item \textbf{R Commands}:
+       \begin{lstlisting}[style=colored, language=R]
+       # PMF
+       dgeom(k-1, prob=p)
+       
+       # CDF
+       pgeom(k-1, prob=p)
+       
+       # Simulation
+       rgeom(n, prob=p)
+       \end{lstlisting}
+   \end{itemize}
+
+5. \textbf{{ \Large Distribución Hipergeométrica}}:
+   \begin{itemize}
+       \item \textbf{Descripción}: Modelo para muestreo sin reemplazo de una población finita.
+       \item \textbf{Parámetros}: \( N \) (tamaño de la población), \( K \) (número de éxitos en la población), \( n \) (tamaño de la muestra).
+       \item \textbf{Función de Masa de Probabilidad (PMF)}:
+       \[
+       P(X=k) = \frac{\binom{K}{k} \binom{N-K}{n-k}}{\binom{N}{n}}, \quad k = 0, 1, \ldots, \min(K, n)
+       \]
+       \item \textbf{Valor Esperado}:
+       \[
+       E[X] = \frac{nK}{N}
+       \]
+       \item \textbf{Media}:
+       \[
+       \text{Media} = \frac{nK}{N}
+       \]
+       \item \textbf{Desviación Estándar}:
+       \[
+       \sigma = \sqrt{\frac{nK(N-K)(N-n)}{N^2(N-1)}}
+       \]
+       \item \textbf{Función de Distribución Acumulativa (CDF)}:
+       \[
+       F(x) = P(X \leq k) = \sum_{j=0}^{\lfloor x \rfloor} \frac{\binom{K}{j} \binom{N-K}{n-j}}{\binom{N}{n}}
+       \]
+       \item \textbf{R Commands}:
+       \begin{lstlisting}[style=colored, language=R]
+       # PMF
+       dhyper(k, m=K, n=N-K, size=n)
+       
+       # CDF
+       phyper(k, m=K, n=N-K, size=n)
+       
+       # Simulation
+       rhyper(n, m=K, n=N-K, size=n)
+       \end{lstlisting}
+   \end{itemize}
+
+6. \textbf{{ \Large Distribución Negativa Binomial}}:
+   \begin{itemize}
+      
+
+ \item \textbf{Descripción}: Modelo de la cantidad de ensayos necesarios para obtener un número fijo de éxitos (generaliza la distribución geométrica).
+       \item \textbf{Parámetros}: \( r \) (número de éxitos deseados), \( p \) (probabilidad de éxito).
+       \item \textbf{Función de Masa de Probabilidad (PMF)}:
+       \[
+       P(X=k) = \binom{k+r-1}{r-1} p^r (1-p)^k, \quad k = 0, 1, 2, \ldots
+       \]
+       \item \textbf{Valor Esperado}:
+       \[
+       E[X] = \frac{r(1-p)}{p}
+       \]
+       \item \textbf{Media}:
+       \[
+       \text{Media} = \frac{r(1-p)}{p}
+       \]
+       \item \textbf{Desviación Estándar}:
+       \[
+       \sigma = \sqrt{\frac{r(1-p)}{p^2}}
+       \]
+       \item \textbf{Función de Distribución Acumulativa (CDF)}:
+       \[
+       F(x) = P(X \leq k) = \sum_{j=0}^{\lfloor x \rfloor} \binom{j+r-1}{r-1} p^r (1-p)^j
+       \]
+       \item \textbf{R Commands}:
+       \begin{lstlisting}[style=colored, language=R]
+       # PMF
+       dnbinom(k, size=r, prob=p)
+       
+       # CDF
+       pnbinom(k, size=r, prob=p)
+       
+       # Simulacion
+       rnbinom(n, size=r, prob=p)
+       \end{lstlisting}
+   \end{itemize}
+
+7. \textbf{{ \Large Distribución Multinomial}}:
+   \begin{itemize}
+       \item \textbf{Descripción}: Extensión de la distribución binomial a más de dos resultados.
+       \item \textbf{Parámetros}: \( n \) (número de ensayos), \( p_1, p_2, \ldots, p_k \) (probabilidades de cada resultado).
+       \item \textbf{Función de Masa de Probabilidad (PMF)}:
+       \[
+       P(X_1=k_1, X_2=k_2, \ldots, X_k=k_k) = \frac{n!}{k_1! k_2! \ldots k_k!} p_1^{k_1} p_2^{k_2} \ldots p_k^{k_k}
+       \]
+       \item \textbf{Valor Esperado}:
+       \[
+       E[X_i] = n \cdot p_i, \quad i = 1, 2, \ldots, k
+       \]
+       \item \textbf{Media}:
+       \[
+       \text{Media} = n \cdot p_i \text{ para cada } i
+       \]
+       \item \textbf{Desviación Estándar}:
+       \[
+       \sigma_i = \sqrt{n \cdot p_i \cdot (1 - p_i)}, \quad i = 1, 2, \ldots, k
+       \]
+       \item \textbf{Función de Distribución Acumulativa (CDF)}: (No existe una fórmula general simple, se utiliza el enfoque de simulación)
+       \item \textbf{R Commands}:
+       \begin{lstlisting}[style=colored, language=R]
+       # PMF
+       dmultinom(c(k1, k2, ..., kk), size=n, prob=c(p1, p2, ..., pk))
+       
+       # CDF (no hay funcion directa)
+       
+       # Simulacion
+       rmultinom(n, size=n, prob=c(p1, p2, ..., pk))
+       \end{lstlisting}
+   \end{itemize}
+
+\end{document}
