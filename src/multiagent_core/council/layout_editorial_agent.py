@@ -75,3 +75,28 @@ class LayoutEditorialAgent:
         fixed_text = '\n'.join(header_block + cleaned_body)
         fixed_text = re.sub(r'\n{3,}', '\n\n', fixed_text)
         return fixed_text
+
+    def detect_duplicate_blocks(self, lessons: Dict[str, str]) -> List[Dict[str, Any]]:
+        """Detecta bloques de texto (>=40 palabras) repetidos entre unidades o dentro
+        de la misma unidad, via hash normalizado (whitespace colapsado, minusculas)."""
+        import hashlib
+
+        block_locations: Dict[str, List[Any]] = {}
+
+        for unit_name, text in lessons.items():
+            raw_blocks = re.split(r'\n\s*\n', text)
+            for block_index, raw_block in enumerate(raw_blocks):
+                words = raw_block.split()
+                if len(words) < 40:
+                    continue
+                normalized = ' '.join(words).lower()
+                block_hash = hashlib.sha256(normalized.encode('utf-8')).hexdigest()
+                block_locations.setdefault(block_hash, []).append((unit_name, block_index))
+
+        duplicates = [
+            {"hash": block_hash, "locations": locations}
+            for block_hash, locations in block_locations.items()
+            if len(locations) >= 2
+        ]
+        return duplicates
+
