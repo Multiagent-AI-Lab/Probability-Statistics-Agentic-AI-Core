@@ -21,22 +21,39 @@ class ContentAuditorAgent:
             "Interpretación Post-Gráfico & Diccionario de Variables"
         ]
 
+    NANO_TERMS = [
+        "nanopartíc", "nanotub", "potencial zeta", "diámetro",
+        "síntesis", "toxicid", "nanomater",
+    ]
+    NANO_MIN_WORDS = 150
+
+    def _count_nano_context_words(self, markdown_text: str) -> int:
+        """Cuenta las palabras de los parrafos que mencionan terminologia
+        nanotecnologica (no el documento completo)."""
+        paragraphs = markdown_text.split("\n\n")
+        total = 0
+        for paragraph in paragraphs:
+            paragraph_lower = paragraph.lower()
+            if any(term in paragraph_lower for term in self.NANO_TERMS):
+                total += len(paragraph.split())
+        return total
+
     def audit_content(self, markdown_text: str) -> Dict[str, Any]:
         words = len(markdown_text.split())
         latex_boxed = r"\boxed" in markdown_text or r"\boxed{" in markdown_text
         has_sympy = "sympy" in markdown_text.lower()
         has_scipy = "scipy" in markdown_text.lower() or "statsmodels" in markdown_text.lower()
-        has_nano_context = any(term in markdown_text.lower() for term in ["nanopartíc", "nanotub", "potencial zeta", "diámetro", "síntesis", "toxicid", "nanomater"])
-        
+        nano_context_words = self._count_nano_context_words(markdown_text)
+
         # Count matplotlib/seaborn figures or plots
         plot_count = markdown_text.lower().count("plt.") + markdown_text.lower().count("sns.") + markdown_text.lower().count("plotly")
-        
+
         # Check component checks
         component_checks = {
             "Teoría Completa": words >= 800,
             "Ejemplo Analítico": "ejemplo" in markdown_text.lower() or "paso" in markdown_text.lower(),
             "Verificación SymPy": has_sympy,
-            "Contexto Nanotecnológico": has_nano_context,
+            "Contexto Nanotecnológico": nano_context_words >= self.NANO_MIN_WORDS,
             "Solución en \\boxed{}": latex_boxed,
             "Solución Computacional SciPy": has_scipy,
             "Visualización Profesional": plot_count >= 2,
@@ -45,13 +62,14 @@ class ContentAuditorAgent:
 
         passed_components = [name for name, ok in component_checks.items() if ok]
         missing_components = [name for name, ok in component_checks.items() if not ok]
-        
+
         score = (len(passed_components) / len(component_checks)) * 100.0
 
         return {
             "passed": score >= 75.0,
             "score": score,
             "total_words": words,
+            "nano_context_words": nano_context_words,
             "component_checks": component_checks,
             "passed_components": passed_components,
             "missing_components": missing_components
