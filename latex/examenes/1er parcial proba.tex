@@ -1,0 +1,120 @@
+\documentclass[12pt, a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish]{babel}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{geometry}
+%\rfoot{P\'agina \thepage \hspace{1pt} de 2}
+\everymath{\displaystyle}
+
+% Configuración de márgenes para el formato de examen
+\geometry{
+ a4paper,
+ total={170mm,257mm},
+ left=20mm,
+ top=20mm,
+ }
+
+% Título y detalles del examen
+
+
+\title{\textbf{Examen Parcial de Probabilidad}}
+\author{Universidad (Nombre de la Institución) \\ \small Curso: Probabilidad o Probabilidad y Estadística \\ \small Semestre: Tercero}
+%\date{Tiempo Máximo: 110 minutos}
+
+\title{Examen Parcial de Probabilidad y Estad\'istica}
+
+\author{Prof. Mtro. Luis Jos\'{e} Yudico Anaya}
+\date{06-10-2025}
+
+
+\begin{document}
+
+\maketitle
+\thispagestyle{empty} % No número de página en la primera hoja
+
+
+
+\noindent\rule{\linewidth}{0.5pt}
+
+\section*{Instrucciones}
+\begin{enumerate}
+    \item El examen consta de \textbf{5 preguntas} (1 de concepto y 4 problemas). Resuelva cada uno de ellos mostrando \textbf{todo el procedimiento y justificación teórica} a mano.
+    \item La respuesta final para cada inciso debe estar claramente recuadrada.
+\end{enumerate}
+
+\noindent\rule{\linewidth}{0.5pt}
+
+\section*{Pregunta Conceptual}
+\begin{enumerate}
+    \item[\textbf{C-1.}] \textbf{Espacio de Probabilidad}
+    \\
+    \textbf{Defina} formalmente un \textbf{Espacio de Probabilidad}. Mencione y describa brevemente cada uno de sus tres componentes $(\Omega, \mathcal{F}, \mathbb{P})$, prestando especial atención a las propiedades que debe cumplir el $\sigma$-álgebra $\mathcal{F}$.
+\end{enumerate}
+
+\noindent\rule{\linewidth}{0.5pt}
+
+\section*{Problemas}
+
+\begin{enumerate}
+
+    \item[\textbf{1.}] \textbf{Métodos de Conteo en Diseño Experimental de Nanomateriales}
+    \\
+    Un equipo de investigación en nanotecnología debe diseñar un experimento de síntesis de nanocristales. Tienen a su disposición \textbf{8 catalizadores distintos} ($C_1$ a $C_8$) y \textbf{5 tipos de nanopartículas base} ($N_1$ a $N_5$).
+    \\
+    Determine la cantidad de formas distintas en que pueden configurarse las siguientes etapas de diseño:
+    \begin{enumerate}
+        \item[\textbf{i)}] \textbf{Selección de Parámetros de Control (Principio Multiplicativo):} El sistema de control del reactor utiliza un código de 6 dígitos para establecer la temperatura y presión. Si cada dígito puede ser cualquier valor del 1 al 9 y la repetición está permitida, ¿cuántos códigos de control son posibles?
+        \item[\textbf{ii)}] \textbf{Orden de Aplicación de Catalizadores (Permutación sin Repetición):} Si se deben probar 3 catalizadores diferentes de los 8 disponibles, y el orden en que se aplican al reactor es crucial para el resultado, ¿cuántas secuencias de aplicación únicas de 3 catalizadores son posibles?
+        \item[\textbf{iii)}] \textbf{Mezcla de Nanopartículas Base (Combinación con Repetición):} Para un lote de prueba, se necesita seleccionar una muestra de 4 nanopartículas base. El orden de selección no importa, y se pueden seleccionar varias muestras del mismo tipo. ¿Cuántas combinaciones diferentes de las 4 nanopartículas base son posibles a partir de los 5 tipos disponibles?
+    \end{enumerate}
+
+    \vspace{0.8cm}
+
+    \item[\textbf{2.}] \textbf{Axiomas y Corolarios de la Probabilidad}
+    \\
+    Sean $A$ y $B$ dos eventos en un espacio de probabilidad tales que $\mathbb{P}(A) = 0.5$, $\mathbb{P}(B) = 0.4$, y $\mathbb{P}(A \cap B) = 0.2$.
+    \\
+    Calcule las siguientes probabilidades, justificando la fórmula o corolario utilizado en cada paso:
+    \\
+    a) $\mathbb{P}(A \cup B)$
+    \\
+    b) $\mathbb{P}(A^c)$
+    \\
+    c) $\mathbb{P}((A \cup B)^c)$
+    \\
+    d) La probabilidad de que \textbf{solamente} ocurra el evento $B$.
+
+    \vspace{0.8cm}
+
+    \item[\textbf{3.}] \textbf{Probabilidad Condicional e Independencia}
+    \\
+    Se lanza un dado de seis caras (numeradas del 1 al 6). Considere los siguientes eventos:
+    \begin{itemize}
+        \item $A$: Se obtiene un número par.
+        \item $B$: Se obtiene un número mayor que 3.
+        \item $C$: Se obtiene un número primo.
+    \end{itemize}
+    a) Calcule la probabilidad condicional $\mathbb{P}(B \mid A)$.
+    \\
+    b) Calcule la probabilidad condicional $\mathbb{P}(A \mid C)$.
+    \\
+    c) Determine si los eventos $A$ y $B$ son \textbf{independientes}. Justifique su respuesta utilizando la definición formal de independencia.
+    \\
+    d) Determine si los eventos $A$ y $C$ son \textbf{independientes}. Justifique su respuesta utilizando la definición formal de independencia.
+
+    \vspace{0.8cm}
+
+    \item[\textbf{4.}] \textbf{Teorema de Bayes en Detección de Defectos Nanométricos}
+    \\
+    Una línea de producción fabrica chips de memoria basados en nanotubos de carbono, utilizando tres lotes de materia prima: \textbf{Lote A} ($\mathbb{P}(A)=30\%$), \textbf{Lote B} ($\mathbb{P}(B)=45\%$) y \textbf{Lote C} ($\mathbb{P}(C)=25\%$). La probabilidad de que un chip sea defectuoso ($D$) depende del lote: $\mathbb{P}(D \mid A) = 1\%$, $\mathbb{P}(D \mid B) = 2\%$, $\mathbb{P}(D \mid C) = 3\%$.
+    \\
+    \begin{enumerate}
+        \item[\textbf{a)}] \textbf{Ley de Probabilidad Total}: Si se selecciona un chip al azar, ¿cuál es la probabilidad de que sea defectuoso ($D$)?
+        \item[\textbf{b)}] \textbf{Teorema de Bayes}: Si se selecciona un chip y se detecta que es defectuoso ($D$), ¿cuál es la probabilidad de que provenga del Lote C? Es decir, calcule $\mathbb{P}(C \mid D)$.
+        \item[\textbf{c)}] \textbf{Concepto}: ¿Cuál es el término que describe las probabilidades $\mathbb{P}(A)$, $\mathbb{P}(B)$, $\mathbb{P}(C)$ \textbf{antes} de la inspección de defectos? ¿Cuál es el término para $\mathbb{P}(C \mid D)$?
+    \end{enumerate}
+
+\end{enumerate}
+
+\end{document}

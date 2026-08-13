@@ -1,0 +1,40 @@
+# GitIgnore - Probabilidad y Estadística Inferencial Agentic Core
+
+# Archivos de entorno y secretos
+.env
+.env.*
+*.env
+
+# Python & Caches
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Jupyter & Notebooks temporales
+.ipynb_checkpoints/
+*-checkpoint.ipynb
+
+# Material crudo de alumnos (privacidad y tamaño)
+raw_student_notebooks/
+*.zip
+
+# ChromaDB & Memoria local de Agentes
+.chroma/
+.tutor_memory.json
+
+# IDEs & Editores
+.vscode/
+.idea/
+.claude/
+
+# Logs & temporales
+*.log
+tmp/
+tmp_inspect/
+
+# Archivos temporales de Office
+~$*
