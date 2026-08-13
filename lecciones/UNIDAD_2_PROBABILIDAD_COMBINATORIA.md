@@ -1,7 +1,7 @@
 # UNIDAD 2: Probabilidad, Teoría de Conjuntos y Combinatoria
-## Asignatura: Probabilidad y Estadística Inferencial
-### UCEMICH — Ingeniería en IA y Nanotecnología
-### Autor y Profesor: Mtro. Luis José Yudico Anaya
+> **Asignatura: Probabilidad y Estadística Inferencial**
+> **UCEMICH — Ingeniería en IA y Nanotecnología**
+> **Autor y Profesor: Mtro. Luis José Yudico Anaya**
 
 ---
 
@@ -112,7 +112,7 @@ $$\boxed{P(A_j|B) = \frac{P(B|A_j) P(A_j)}{\sum_{i=1}^k P(B|A_i) P(A_i)}}$$
 
 ## 5. Ejemplo Analítico Paso a Paso: Clasificación Nanotecnológica de Nanopartículas
 
-### Contexto Aplicado en Nanotecnología
+### 5.1 Contexto Aplicado en Nanotecnología
 En una línea de síntesis coloidal de nanopartículas de oro (AuNPs) utilizadas para diagnóstico de biomarcadores tumorales, tres reactores químicos ($R_1$, $R_2$, $R_3$) producen el total de la producción diaria de la planta. El reactor $R_1$ sintetiza el $45\%$ de las nanopartículas, el reactor $R_2$ sintetiza el $35\%$ y el reactor $R_3$ produce el $20\%$ restante. 
 
 Debido a ligeras variaciones de temperatura en las camisas de calefacción, el porcentaje de nanopartículas fuera de especificación de tamaño (diámetro fuera del rango óptimo de $15 \pm 2\text{ nm}$, presentando agregación coloidal) varía según el reactor de origen:
@@ -122,7 +122,7 @@ Debido a ligeras variaciones de temperatura en las camisas de calefacción, el p
 
 Si los ingenieros en nanotecnología toman una nanopartícula al azar del lote unificado al final de la jornada y, mediante microscopía electrónica de transmisión (TEM), confirman que la nanopartícula está **defectuosa** ($D$), determine la probabilidad a posteriori de que dicha nanopartícula haya sido sintetizada específicamente por el reactor $R_3$.
 
-### Paso 1: Definición de Eventos y Probabilidades a Priori
+### 5.2 Paso 1: Definición de Eventos y Probabilidades a Priori
 Sea la partición por reactores $R_1, R_2, R_3$:
 $$P(R_1) = 0.45, \quad P(R_2) = 0.35, \quad P(R_3) = 0.20$$
 Nótese que $P(R_1) + P(R_2) + P(R_3) = 0.45 + 0.35 + 0.20 = 1.0$.
@@ -131,13 +131,13 @@ Sea $D$ el evento: "La nanopartícula está defectuosa (fuera de especificación
 Las verosimilitudes condicionales de defecto por reactor son:
 $$P(D|R_1) = 0.04, \quad P(D|R_2) = 0.02, \quad P(D|R_3) = 0.08$$
 
-### Paso 2: Cálculo de la Probabilidad Total de Defecto $P(D)$
+### 5.3 Paso 2: Cálculo de la Probabilidad Total de Defecto $P(D)$
 Aplicando el Teorema de la Probabilidad Total:
 $$P(D) = P(D|R_1)P(R_1) + P(D|R_2)P(R_2) + P(D|R_3)P(R_3)$$
 $$P(D) = (0.04 \times 0.45) + (0.02 \times 0.35) + (0.08 \times 0.20)$$
 $$P(D) = 0.0180 + 0.0070 + 0.0160 = 0.0410 \quad (4.1\%)$$
 
-### Paso 3: Aplicación del Teorema de Bayes para $P(R_3|D)$
+### 5.4 Paso 3: Aplicación del Teorema de Bayes para $P(R_3|D)$
 $$\boxed{P(R_3|D) = \frac{P(D|R_3)P(R_3)}{P(D)} = \frac{0.08 \times 0.20}{0.0410} = \frac{0.0160}{0.0410} = \frac{16}{41} \approx 0.39024}$$
 
 **Interpretación**: Aunque el reactor $R_3$ solo sintetiza el $20\%$ del volumen total de nanopartículas, si descubrimos que una nanopartícula está defectuosa, la probabilidad de que provenga de $R_3$ se duplica casi al $39.02\%$ debido a su mayor tasa individual de defectos ($8\%$).
@@ -150,19 +150,19 @@ $$\boxed{P(R_3|D) = \frac{P(D|R_3)P(R_3)}{P(D)} = \frac{0.08 \times 0.20}{0.0410
 import sympy as sp
 from IPython.display import display, Math
 
-## 1. Definición de variables simbólicas para prioris y verosimilitudes
+# 1. Definición de variables simbólicas para prioris y verosimilitudes
 p_r1, p_r2, p_r3 = sp.symbols('P(R1) P(R2) P(R3)', real=True, positive=True)
 p_d_r1, p_d_r2, p_d_r3 = sp.symbols('P(D|R1) P(D|R2) P(D|R3)', real=True, positive=True)
 
-## 2. Expresión simbólica de la Probabilidad Total P(D)
+# 2. Expresión simbólica de la Probabilidad Total P(D)
 p_d_total = p_d_r1 * p_r1 + p_d_r2 * p_r2 + p_d_r3 * p_r3
 
-## 3. Expresión simbólica del Teorema de Bayes para P(R3|D)
+# 3. Expresión simbólica del Teorema de Bayes para P(R3|D)
 p_r3_d = (p_d_r3 * p_r3) / p_d_total
 
 display(Math(fr"\text{{Teorema de Bayes Simbólico: }} P(R_3|D) = {sp.latex(p_r3_d)}"))
 
-## 4. Sustitución de valores numéricos de la síntesis de nanopartículas
+# 4. Sustitución de valores numéricos de la síntesis de nanopartículas
 valores = {
     p_r1: sp.Rational(45, 100),
     p_r2: sp.Rational(35, 100),
@@ -191,11 +191,11 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-## Configuración visual
+# Configuración visual
 sns.set_theme(style="whitegrid")
 plt.rcParams["figure.figsize"] = (10, 5)
 
-## --- PARTE A: Combinatoria y Probabilidad Clásica ---
+# --- PARTE A: Combinatoria y Probabilidad Clásica ---
 n_lote = 20
 r_muestra = 5
 total_combinaciones = math.comb(n_lote, r_muestra)
@@ -204,19 +204,19 @@ total_permutaciones = math.perm(n_lote, r_muestra)
 print(f"Combinaciones C(20, 5) para seleccionar nanopartículas: {total_combinaciones}")
 print(f"Permutaciones P(20, 5) considerando orden de medición: {total_permutaciones}")
 
-## --- PARTE B: Simulación Monte Carlo del Teorema de Bayes ---
+# --- PARTE B: Simulación Monte Carlo del Teorema de Bayes ---
 N_simulaciones = 1_000_000
 
-## Asignación de reactores según prioris: R1=0, R2=1, R3=2
+# Asignación de reactores según prioris: R1=0, R2=1, R3=2
 reactores = np.random.choice([1, 2, 3], size=N_simulaciones, p=[0.45, 0.35, 0.20])
 
-## Generación de defectos según verosimilitud de cada reactor
+# Generación de defectos según verosimilitud de cada reactor
 prob_defecto_segun_reactor = np.where(reactores == 1, 0.04,
                               np.where(reactores == 2, 0.02, 0.08))
 
 defectuosas = np.random.rand(N_simulaciones) < prob_defecto_segun_reactor
 
-## Filtrado Bayesiano: Condicionar a las nanopartículas que resultaron defectuosas
+# Filtrado Bayesiano: Condicionar a las nanopartículas que resultaron defectuosas
 solo_defectuosas = reactores[defectuosas]
 
 p_r1_d_sim = np.mean(solo_defectuosas == 1)
@@ -228,10 +228,10 @@ print(f"P(R1|D) Simulado: {p_r1_d_sim:.5f} | Teórico: {0.0180/0.0410:.5f}")
 print(f"P(R2|D) Simulado: {p_r2_d_sim:.5f} | Teórico: {0.0070/0.0410:.5f}")
 print(f"P(R3|D) Simulado: {p_r3_d_sim:.5f} | Teórico: {0.0160/0.0410:.5f}")
 
-## --- PARTE C: Visualización Profesional ---
+# --- PARTE C: Visualización Profesional ---
 fig, axes = plt.subplots(1, 2, figsize=(14, 5))
 
-## Gráfico 1: Comparación Prior vs. Posterior
+# Gráfico 1: Comparación Prior vs. Posterior
 df_bayes = pd.DataFrame({
     'Reactor': ['Reactor 1', 'Reactor 2', 'Reactor 3'],
     'Prior P(R_i)': [0.45, 0.35, 0.20],
@@ -243,7 +243,7 @@ sns.barplot(data=df_melted, x='Reactor', y='Probabilidad', hue='Tipo Probabilida
 axes[0].set_title("Actualización de Probabilidades: Prior vs. Posterior (Bayes)", fontsize=12, fontweight='bold')
 axes[0].set_ylabel("Probabilidad")
 
-## Gráfico 2: Simulación de Convergencia Monte Carlo
+# Gráfico 2: Simulación de Convergencia Monte Carlo
 pasos_sim = np.linspace(1000, N_simulaciones, 100, dtype=int)
 convergencia_r3 = [np.mean(solo_defectuosas[:n] == 3) for n in pasos_sim if n <= len(solo_defectuosas)]
 pasos_validos = pasos_sim[:len(convergencia_r3)]
