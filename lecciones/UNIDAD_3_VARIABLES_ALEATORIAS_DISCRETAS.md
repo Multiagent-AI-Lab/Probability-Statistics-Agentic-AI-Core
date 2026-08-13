@@ -5767,12 +5767,12 @@ plot_poisson(lambda_rate=2, max_k_plot=10,
 
 La generación de variables aleatorias discretas a partir de una variable uniforme $U \sim \text{Uniforme}(0, 1)$ se fundamenta en la **Inversión por Suma Acumulada de la PMF**.
 
-### 30.1 Algoritmo General de Inversión Discreta
+### 10.1 Algoritmo General de Inversión Discreta
 Dada una variable discreta $X$ con PMF $P(X = x_k) = p_k$:
 1. Generar $U \sim \text{Uniforme}(0, 1)$.
 2. Retornar el menor valor $x_k$ tal que $\sum_{j=1}^k p_j \ge U$.
 
-### 30.2 Simulación Estocástica de Fallas de Micro-sensores (Poisson)
+### 10.2 Simulación Estocástica de Fallas de Micro-sensores (Poisson)
 ```python
 import numpy as np
 import scipy.stats as stats
@@ -5811,10 +5811,10 @@ from IPython.display import display, Math
 x, lmbda = sp.symbols('x lambda', positive=True)
 k = sp.Symbol('k', integer=True, nonnegative=True)
 
-# Función de Masa de Probabilidad (PMF) de Poisson
+## Función de Masa de Probabilidad (PMF) de Poisson
 pmf_poisson = (lmbda**k * sp.exp(-lmbda)) / sp.factorial(k)
 
-# Esperanza Matemática: Suma k * P(X=k) de k=0 a infinito
+## Esperanza Matemática: Suma k * P(X=k) de k=0 a infinito
 esperanza = sp.summation(k * pmf_poisson, (k, 0, sp.oo))
 
 display(Math(r'\text{PMF Simbólica de Poisson: } ' + sp.latex(pmf_poisson)))
