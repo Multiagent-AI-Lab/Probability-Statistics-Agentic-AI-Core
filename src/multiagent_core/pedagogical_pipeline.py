@@ -104,7 +104,7 @@ class PedagogicalReviewPipeline:
         sci_critique = self.scientist.check_theory(fixed_text)
 
         # 4. Crítica de supuestos y flujo con @Safety_Gate
-        safety_critique = self.safety_gate.validate_assumptions(fixed_text)
+        safety_critique = self.safety_gate.validate_assumptions(fixed_text, unit_name)
 
         # 5. Generación de preguntas de reflexión pedagógica con SocraticDebugger
         socratic_questions = []
@@ -127,5 +127,6 @@ class PedagogicalReviewPipeline:
             "content_audit": content_audit,
             "scientist_critique": sci_critique,
             "safety_gate_critique": safety_critique,
-            "synthesis": synthesis
+            "synthesis": synthesis,
+            "critical_block": safety_critique.get("critical", False),
         }
