@@ -5,46 +5,16 @@
 
 ---
 
-## TEMA: AJUSTE DE DISTRIBUCIONES
+## 1. Fundamentación Teórica y Conceptos Clave
 
-## Estadistica con SciPy: Guia Completa
+La **Estadística Descriptiva** y el **Análisis Exploratorio de Datos (EDA)** constituyen los cimientos fundamentales para caracterizar e interpretar conjuntos de datos experimentales en ciencias e ingeniería, particularmente en el estudio de sistemas nanotecnológicos y modelos de Inteligencia Artificial.
 
-Esta notebook cubre de manera comprehensiva el uso de **SciPy** para analisis estadistico en Python.
+El análisis descriptivo permite resumir la tendencia central, dispersión, simetría y forma de una distribución muestral mediante medidas numéricas y representaciones gráficas cuantitativas.
 
-## Contenido Principal:
-
-### 1. Fundamentos
-- Conceptos basicos de estadistica
-- Numeros aleatorios y generacion de muestras
-- Tipos de distribuciones de probabilidad
-
-### 2. Distribuciones con SciPy
-- Interfaz unificada para distribuciones continuas y discretas
-- Metodos principales: PDF, CDF, PPF, RVS
-
-### 3. Ajuste de Distribuciones (MLE)
-- Estimacion de maxima verosimilitud
-- Validacion mediante Q-Q plots y tests de bondad
-- Comparacion visual entre datos reales y ajustados
-
-### 4. Redes Neuronales Probabilisticas
-- Modelo con TensorFlow Probability
-- Evaluacion completa con metricas MAE, RMSE, R2
-- Division train/test y analisis de sobreajuste
-
-El uso de Python para análisis estadístico ha crecido rápidamente
-en los últimos años, y ahora existe una colección madura de bibliotecas estadísticas para Python. Con estas bibliotecas, Python puede igualar el rendimiento y las características de lenguajes de dominio específico en muchas áreas de la estadística como R, aunque no en todas, al mismo tiempo que proporcionan las ventajas únicas del lenguaje de programación Python y su entorno.
-
-En este capítulo nos centramos en aplicaciones estadísticas fundamentales que utilizan Python y enen particular el módulo de estadísticas en SciPy.
-
-Aquí discutimos:
-* la computación de estadísticas descriptivas,
-* números aleatorios,
-* variables aleatorias,
-* distribuciones y
-
-Algunas funciones estadísticas fundamentales también están disponibles a través de NumPy biblioteca, como sus funciones y métodos para calcular estadísticas descriptivas y sus Módulo para generar números aleatorios. El módulo de estadísticas de SciPy se basa en
-NumPy y, por ejemplo, proporciona generadores de números aleatorios con funciones  distribuciones más especializadas.
+En esta unidad abordamos:
+* Cálculo de estadísticas descriptivas cuantitativas (media, mediana, varianza, desviación estándar, cuantiles).
+* Análisis exploratorio visual mediante diagramas de caja (boxplots), histogramas de frecuencias y estimación de densidad de kernel (KDE).
+* Aplicaciones computacionales en Python utilizando las bibliotecas `scipy.stats`, `numpy`, `pandas`, `matplotlib` y `seaborn`.
 
 ## IMPORTANDO MÓDULOS
 
@@ -1087,7 +1057,7 @@ Podrías usar **Y.rvs()** para generar datos aleatorios que sigan la distribuci�
 
 ## En Resumen
 
-La distribución Chi-cuadrada ajustada Y proporciona una forma de modelar y entender tus datos al ajustarlos a una distribución de probabilidad conocida. Este modelo ajustado se puede usar para diversas tareas estadísticas, como calcular probabilidades, hacer predicciones y probar hipótesis. Es una herramienta fundamental para el análisis estadístico y la ciencia de datos. ¡Espero que esto ayude a clarificar su propósito y cómo puedes usarlo de manera efectiva!
+La distribución Chi-cuadrada ajustada Y proporciona una forma de modelar y entender tus datos al ajustarlos a una distribución de probabilidad conocida. Este modelo ajustado se puede usar para diversas tareas estadísticas, como calcular probabilidades, hacer predicciones y realizar inferencias descriptivas sobre la variabilidad del proceso nanotecnológico. Es una herramienta fundamental para el análisis estadístico y la ciencia de datos. ¡Espero que esto ayude a clarificar su propósito y cómo puedes usarlo de manera efectiva!
 
 ```python
 x=5
@@ -1662,7 +1632,7 @@ std_bg = band_gap_data.std()
 skewness_bg = band_gap_data.skew()
 
 display(Math(fr"\text{{Resumen Estadístico del Band Gap }} (E_g):"))
-display(Math(fr"\text{{Media: }} \bar{{X}} = {media_bg:.3f} \text{{ eV}}, \quad \text{{Mediana: }} \ilde{{X}} = {mediana_bg:.3f} \text{{ eV}}"))
+display(Math(fr"\text{{Media: }} \bar{{X}} = {media_bg:.3f} \text{{ eV}}, \quad \text{{Mediana: }} \tilde{{X}} = {mediana_bg:.3f} \text{{ eV}}"))
 display(Math(fr"\text{{Desviación Estándar: }} s = {std_bg:.3f} \text{{ eV}}, \quad \text{{Asimetría (Skewness): }} {skewness_bg:.3f}"))
 
 ## 3. Visualización Exploratoria Combinada: Histograma KDE + Boxplot
@@ -1697,15 +1667,15 @@ $$\boxed{\bar{X} = \frac{1}{n} \sum_{i=1}^n X_i}$$
 import sympy as sp
 from IPython.display import display, Math
 
-# Definición de variables simbólicas
+## Definición de variables simbólicas
 n = sp.Symbol('n', positive=True, integer=True)
 x = sp.IndexedBase('x')
 i = sp.Symbol('i', integer=True)
 
-# Expresión simbólica de la media muestral
+## Expresión simbólica de la media muestral
 media_simbolica = (1/n) * sp.Sum(x[i], (i, 1, n))
 
-# Expresión simbólica de la varianza muestral sesgada e imparcial (n-1)
+## Expresión simbólica de la varianza muestral sesgada e imparcial (n-1)
 varianza_simbolica = (1/(n - 1)) * sp.Sum((x[i] - media_simbolica)**2, (i, 1, n))
 
 display(Math(fr"\text{{Fórmula Simbólica de la Media Muestral }} \bar{{X}}: {sp.latex(media_simbolica)}"))

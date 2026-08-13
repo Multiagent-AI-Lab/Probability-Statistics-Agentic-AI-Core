@@ -1,51 +1,13 @@
-# UNIDAD 6: Inferencia Estadística, Estimación Puntual e Intervalos de Confianza
+# UNIDAD 7: Inferencia Estadística y Estimación de Parámetros
 ## Asignatura: Probabilidad y Estadística Inferencial
 ### UCEMICH — Ingeniería en IA y Nanotecnología
 ### Autor y Profesor: Mtro. Luis José Yudico Anaya
 
 ---
 
-## TEMA: AJUSTE DE DISTRIBUCIONES
+## 1. Fundamentación Teórica de la Inferencia Estadística
 
-## Estadistica con SciPy: Guia Completa
-
-Esta notebook cubre de manera comprehensiva el uso de **SciPy** para analisis estadistico en Python.
-
-## Contenido Principal:
-
-### 1. Fundamentos
-- Conceptos basicos de estadistica
-- Numeros aleatorios y generacion de muestras
-- Tipos de distribuciones de probabilidad
-
-### 2. Distribuciones con SciPy
-- Interfaz unificada para distribuciones continuas y discretas
-- Metodos principales: PDF, CDF, PPF, RVS
-
-### 3. Ajuste de Distribuciones (MLE)
-- Estimacion de maxima verosimilitud
-- Validacion mediante Q-Q plots y tests de bondad
-- Comparacion visual entre datos reales y ajustados
-
-### 4. Redes Neuronales Probabilisticas
-- Modelo con TensorFlow Probability
-- Evaluacion completa con metricas MAE, RMSE, R2
-- Division train/test y analisis de sobreajuste
-
-El uso de Python para análisis estadístico ha crecido rápidamente
-en los últimos años, y ahora existe una colección madura de bibliotecas estadísticas para Python. Con estas bibliotecas, Python puede igualar el rendimiento y las características de lenguajes de dominio específico en muchas áreas de la estadística como R, aunque no en todas, al mismo tiempo que proporcionan las ventajas únicas del lenguaje de programación Python y su entorno.
-
-En este capítulo nos centramos en aplicaciones estadísticas fundamentales que utilizan Python y enen particular el módulo de estadísticas en SciPy.
-
-Aquí discutimos:
-* la computación de estadísticas descriptivas,
-* números aleatorios,
-* variables aleatorias,
-* distribuciones y
-* pruebas de hipótesis.
-
-Algunas funciones estadísticas fundamentales también están disponibles a través de NumPy biblioteca, como sus funciones y métodos para calcular estadísticas descriptivas y sus Módulo para generar números aleatorios. El módulo de estadísticas de SciPy se basa en
-NumPy y, por ejemplo, proporciona generadores de números aleatorios con funciones  distribuciones más especializadas.
+La **Inferencia Estadística** comprende el conjunto de métodos que permiten deducir las propiedades de una población completa a partir del análisis de una muestra representativa.
 
 ## IMPORTANDO MÓDULOS
 
@@ -3628,13 +3590,13 @@ plt.show()
 
 La inferencia moderna combina la **Estimación por Máxima Verosimilitud (MLE) Computacional** con el **Remuestreo Bootstrap** para obtener intervalos de confianza empíricos sin asunciones de normalidad.
 
-### 60.1 Algoritmo de Bootstrap No Paramétrico
+### 10.1 Algoritmo de Bootstrap No Paramétrico
 Dada una muestra $x_1, \dots, x_n$:
 1. Generar $B$ muestras con reemplazo de tamaño $n$: $x_b^*$.
 2. Calcular el estimador $\hat{\heta}_b^*$ para cada réplica.
-3. Construir el intervalo de confianza del $(1-\lpha)\imes 100\%$ mediante los percentiles $[\lpha/2, 1 - \lpha/2]$.
+3. Construir el intervalo de confianza del $(1-\alpha)\imes 100\%$ mediante los percentiles $[\alpha/2, 1 - \alpha/2]$.
 
-### 60.2 Inferencia Bootstrap en Python
+### 10.2 Inferencia Bootstrap en Python
 ```python
 import numpy as np
 import scipy.stats as stats
@@ -3671,10 +3633,10 @@ from IPython.display import display, Math
 mu, sigma, n = sp.symbols('mu sigma n', positive=True)
 sum_x = sp.Symbol('(\sum X_i)', real=True)
 
-# Log-Verosimilitud de n observaciones normales
+## Log-Verosimilitud de n observaciones normales
 log_L = - (n / 2) * sp.log(2 * sp.pi * sigma**2) - (1 / (2 * sigma**2)) * (sp.Symbol('(\sum X_i^2)') - 2 * mu * sum_x + n * mu**2)
 
-# Derivada respecto a mu
+## Derivada respecto a mu
 d_logL_dmu = sp.diff(log_L, mu)
 mu_mle = sp.solve(d_logL_dmu, mu)[0]
 

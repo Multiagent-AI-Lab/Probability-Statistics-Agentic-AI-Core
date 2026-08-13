@@ -5586,11 +5586,11 @@ En el análisis bivariado de propiedades fisicoquímicas de nanopartículas colo
 
 Para simular vectores aleatorios continuos bivariados $(X, Y)$ con matriz de covarianza especificada $\Sigma$, se utiliza la **Descomposición de Cholesky** $\Sigma = L L^T$.
 
-### 40.1 Algoritmo de Generación Bivariada Correlacionada
+### 10.1 Algoritmo de Generación Bivariada Correlacionada
 Dado $Z = (Z_1, Z_2)^T \sim \mathcal{N}(0, I_2)$ independientes:
 $$X = \mu + L Z \implies X \sim \mathcal{N}(\mu, \Sigma)$$
 
-### 40.2 Simulación en Python de Potencial Zeta y Diámetro Nanométrico
+### 10.2 Simulación en Python de Potencial Zeta y Diámetro Nanométrico
 ```python
 import numpy as np
 import scipy.stats as stats
@@ -5640,10 +5640,10 @@ from IPython.display import display, Math
 x, y = sp.symbols('x y', real=True)
 c = sp.Symbol('c', positive=True)
 
-# Densidad conjunta f(x,y) = c * x * y en [0,1]x[0,1]
+## Densidad conjunta f(x,y) = c * x * y en [0,1]x[0,1]
 f_xy = c * x * y
 
-# Cálculo de la constante de normalización 'c'
+## Cálculo de la constante de normalización 'c'
 integral_doble = sp.integrate(f_xy, (x, 0, 1), (y, 0, 1))
 c_resuelto = sp.solve(integral_doble - 1, c)[0]
 
