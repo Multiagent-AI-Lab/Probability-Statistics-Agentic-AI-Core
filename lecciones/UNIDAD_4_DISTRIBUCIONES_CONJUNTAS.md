@@ -261,10 +261,10 @@ Calcular $P(Y<0.5,|,X=0.5)$:
 
 ```python
 import numpy as np
-# Probabilidades conjuntas P(X,Y)
+## Probabilidades conjuntas P(X,Y)
 joint = {(1,0):3/15, (1,1):6/15}
 PX1 = 9/15
-# PMF condicional de Y|X=1
+## PMF condicional de Y|X=1
 cond = {y: joint[(1,y)]/PX1 for y in [0,1]}
 cond
 ```
@@ -276,10 +276,10 @@ Salida esperada:
 
 ```python
 import numpy as np
-# Probabilidades conjuntas P(X,Y)
+## Probabilidades conjuntas P(X,Y)
 joint = {(1,0):3/15, (1,1):6/15}
 PX1 = 9/15
-# PMF condicional de Y|X=1
+## PMF condicional de Y|X=1
 cond = {y: joint[(1,y)]/PX1 for y in [0,1]}
 cond
 ```
@@ -534,11 +534,11 @@ $$
 
 ```python
 from scipy.signal import convolve
-# Definición de funciones discretizadas
+## Definición de funciones discretizadas
 x = np.linspace(0, 1, 100)
 fX = np.ones_like(x)
 fY = np.ones_like(x)
-# Convolución discreta normalizada
+## Convolución discreta normalizada
 fZ = convolve(fX, fY, mode='full') / len(x)
 plt.plot(np.linspace(0, 2, len(fZ)), fZ)
 plt.title("Convolución de dos Uniformes[0,1]")
@@ -555,11 +555,11 @@ from scipy.signal import convolve
 import numpy as np
 import matplotlib.pyplot as plt
 
-# Definición de funciones discretizadas
+## Definición de funciones discretizadas
 x = np.linspace(0, 1, 100)
 fX = np.ones_like(x)
 fY = np.ones_like(x)
-# Convolución discreta normalizada
+## Convolución discreta normalizada
 fZ = convolve(fX, fY, mode='full') / len(x)
 plt.plot(np.linspace(0, 2, len(fZ)), fZ)
 plt.title("Convolución de dos Uniformes[0,1]")
@@ -721,20 +721,20 @@ $$
 $$
 
 ```python
-# Código Python para PMF Condicional (Ejemplo)
+## Código Python para PMF Condicional (Ejemplo)
 import numpy as np
 from fractions import Fraction
 
-# PMF Conjunta P(x, y)
+## PMF Conjunta P(x, y)
 P_XY = {(0, 0): 0, (0, 1): Fraction(2, 15), (0, 2): Fraction(1, 15),
         (1, 0): Fraction(3, 15), (1, 1): Fraction(6, 15), (1, 2): 0,
         (2, 0): Fraction(3, 15), (2, 1): 0, (2, 2): 0}
 
-# PMF Marginal de X
+## PMF Marginal de X
 P_X_1 = Fraction(9, 15)
 print(f"PMF Marginal P_X(1) = {P_X_1}")
 
-# Calcular PMF Condicional P(Y | X=1)
+## Calcular PMF Condicional P(Y | X=1)
 print("\nPMF Condicional P(Y | X=1):")
 for y in range(3):
     P_Y_cond_X = P_XY[(1, y)] / P_X_1
@@ -1020,29 +1020,29 @@ Cálculos explícitos:
 #### Código Python (comprobación exacta con `fractions` y simulación con `numpy`)
 
 ```python
-# Código de comprobación en Colab
+## Código de comprobación en Colab
 from fractions import Fraction
 import numpy as np
 from collections import Counter
 
-# PMF conjunta (fracciones exactas)
+## PMF conjunta (fracciones exactas)
 P_XY = {
     (0,0): Fraction(0,15), (0,1): Fraction(2,15), (0,2): Fraction(1,15),
     (1,0): Fraction(3,15), (1,1): Fraction(6,15), (1,2): Fraction(0,15),
     (2,0): Fraction(3,15), (2,1): Fraction(0,15), (2,2): Fraction(0,15)
 }
 
-# Marginal P_X(1)
+## Marginal P_X(1)
 P_X_1 = sum(P for (x,y),P in P_XY.items() if x==1)
 print("P_X(1) =", P_X_1)  # Esperado: 9/15
 
-# PMF condicional exacta
+## PMF condicional exacta
 print("P(Y|X=1):")
 for y in [0,1,2]:
     val = P_XY[(1,y)] / P_X_1
     print(f" y={y}: {val} = {float(val):.6f}")
 
-# Simulación para validar (aprox.)
+## Simulación para validar (aprox.)
 urn = [ 'R' ]*3 + [ 'A' ]*2 + [ 'V' ]*1
 N = 200000
 counts = Counter()
@@ -1056,7 +1056,7 @@ print("\nFrecuencias simuladas (normalizadas) para (1,0) y (1,1):")
 print("P_sim(1,0) = ", counts[(1,0)]/N)
 print("P_sim(1,1) = ", counts[(1,1)]/N)
 print("P_sim(Y|X=1) estimada (condicional) =")
-# condicional simulada: P(Y=y | X=1) = P_sim(1,y) / sum_y P_sim(1,y)
+## condicional simulada: P(Y=y | X=1) = P_sim(1,y) / sum_y P_sim(1,y)
 total_X1 = sum(counts[(1,y)] for y in [0,1,2])
 for y in [0,1,2]:
     print(f" y={y}: {counts[(1,y)]/total_X1:.6f}")
@@ -1136,25 +1136,25 @@ $$
 #### Código Python (analítico simbólico con `sympy` y numérico con `scipy`)
 
 ```python
-# Código para Colab: cálculo simbólico y numérico
+## Código para Colab: cálculo simbólico y numérico
 import sympy as sp
 from scipy.integrate import quad
 
-# Símbolos
+## Símbolos
 x, y = sp.symbols('x y')
 
-# Definición simbólica
+## Definición simbólica
 f_xy = x + y  # válido en [0,1]^2
 
-# Marginal f_X(x) simbólico (integral en y de 0 a 1)
+## Marginal f_X(x) simbólico (integral en y de 0 a 1)
 fX_sym = sp.integrate(f_xy, (y, 0, 1))
 sp.simplify(fX_sym)  # resultado: x + 1/2
 
-# PDF condicional simbólica
+## PDF condicional simbólica
 fY_given_X = (f_xy) / fX_sym
 sp.simplify(fY_given_X)  # (x+y)/(x+1/2)
 
-# Evaluar P(Y < 0.5 | X = 0.5) numéricamente
+## Evaluar P(Y < 0.5 | X = 0.5) numéricamente
 f_cond_numeric = lambda Y: 0.5 + Y  # derivado de sustituir x = 0.5
 prob, _ = quad(f_cond_numeric, 0, 0.5)
 print("P(Y < 0.5 | X = 0.5) =", prob)
@@ -1170,20 +1170,20 @@ print("P(Y < 0.5 | X = 0.5) =", prob)
 **5.3.1 PMF Condicional (Conditional PMF)**
 
 ```python
-# Código Python para PMF Condicional (Ejemplo)
+## Código Python para PMF Condicional (Ejemplo)
 import numpy as np
 from fractions import Fraction
 
-# PMF Conjunta P(x, y)
+## PMF Conjunta P(x, y)
 P_XY = {(0, 0): 0, (0, 1): Fraction(2, 15), (0, 2): Fraction(1, 15),
         (1, 0): Fraction(3, 15), (1, 1): Fraction(6, 15), (1, 2): 0,
         (2, 0): Fraction(3, 15), (2, 1): 0, (2, 2): 0}
 
-# PMF Marginal de X
+## PMF Marginal de X
 P_X_1 = Fraction(9, 15)
 print(f"PMF Marginal P_X(1) = {P_X_1}")
 
-# Calcular PMF Condicional P(Y | X=1)
+## Calcular PMF Condicional P(Y | X=1)
 print("\nPMF Condicional P(Y | X=1):")
 for y in range(3):
     P_Y_cond_X = P_XY[(1, y)] / P_X_1
@@ -1195,29 +1195,29 @@ for y in range(3):
 Código Python (comprobación exacta con fractions y simulación con numpy)
 
 ```python
-# Código de comprobación en Colab
+## Código de comprobación en Colab
 from fractions import Fraction
 import numpy as np
 from collections import Counter
 
-# PMF conjunta (fracciones exactas)
+## PMF conjunta (fracciones exactas)
 P_XY = {
     (0,0): Fraction(0,15), (0,1): Fraction(2,15), (0,2): Fraction(1,15),
     (1,0): Fraction(3,15), (1,1): Fraction(6,15), (1,2): Fraction(0,15),
     (2,0): Fraction(3,15), (2,1): Fraction(0,15), (2,2): Fraction(0,15)
 }
 
-# Marginal P_X(1)
+## Marginal P_X(1)
 P_X_1 = sum(P for (x,y),P in P_XY.items() if x==1)
 print("P_X(1) =", P_X_1)  # Esperado: 9/15
 
-# PMF condicional exacta
+## PMF condicional exacta
 print("P(Y|X=1):")
 for y in [0,1,2]:
     val = P_XY[(1,y)] / P_X_1
     print(f" y={y}: {val} = {float(val):.6f}")
 
-# Simulación para validar (aprox.)
+## Simulación para validar (aprox.)
 urn = [ 'R' ]*3 + [ 'A' ]*2 + [ 'V' ]*1
 N = 200000
 counts = Counter()
@@ -1231,7 +1231,7 @@ print("\nFrecuencias simuladas (normalizadas) para (1,0) y (1,1):")
 print("P_sim(1,0) = ", counts[(1,0)]/N)
 print("P_sim(1,1) = ", counts[(1,1)]/N)
 print("P_sim(Y|X=1) estimada (condicional) =")
-# condicional simulada: P(Y=y | X=1) = P_sim(1,y) / sum_y P_sim(1,y)
+## condicional simulada: P(Y=y | X=1) = P_sim(1,y) / sum_y P_sim(1,y)
 total_X1 = sum(counts[(1,y)] for y in [0,1,2])
 for y in [0,1,2]:
     print(f" y={y}: {counts[(1,y)]/total_X1:.6f}")
@@ -1300,24 +1300,24 @@ $$
 #### Código Python: cálculo de $E[Y|X=x]$ y verificación de LET (exacto y por simulación)
 
 ```python
-# Cálculo de E[Y|X=x] exacto usando Fracciones y verificación de LET
+## Cálculo de E[Y|X=x] exacto usando Fracciones y verificación de LET
 from fractions import Fraction
 import numpy as np
 
-# PMF conjunta (fracciones)
+## PMF conjunta (fracciones)
 P_XY = {
     (0,0): Fraction(0,15), (0,1): Fraction(2,15), (0,2): Fraction(1,15),
     (1,0): Fraction(3,15), (1,1): Fraction(6,15), (1,2): Fraction(0,15),
     (2,0): Fraction(3,15), (2,1): Fraction(0,15), (2,2): Fraction(0,15)
 }
 
-# Marginal P_X
+## Marginal P_X
 P_X = {x: sum(P for (xx,yy),P in P_XY.items() if xx==x) for x in [0,1,2]}
 
-# E[Y | X=x] exacto
+## E[Y | X=x] exacto
 E_Y_given_X = {}
 for x in [0,1,2]:
-# sumar y * P_{Y|X}(y|x) = sum_y y * P(x,y) / P_X(x)
+## sumar y * P_{Y|X}(y|x) = sum_y y * P(x,y) / P_X(x)
     if P_X[x] == 0:
         E_Y_given_X[x] = None
     else:
@@ -1326,7 +1326,7 @@ for x in [0,1,2]:
 print("P_X:", P_X)
 print("E[Y | X=x]:", E_Y_given_X)
 
-# Verificación Ley de la Expectativa Total
+## Verificación Ley de la Expectativa Total
 E_Y = sum(E_Y_given_X[x] * P_X[x] for x in [0,1,2])
 print("E[Y] (por LET) =", E_Y, " = ", float(E_Y))
 ```
@@ -1347,24 +1347,24 @@ print("E[Y] (por LET) =", E_Y, " = ", float(E_Y))
 **Código Python: cálculo de  E[Y|X=x]  y verificación de LET (exacto y por simulación)**
 
 ```python
-# Cálculo de E[Y|X=x] exacto usando Fracciones y verificación de LET
+## Cálculo de E[Y|X=x] exacto usando Fracciones y verificación de LET
 from fractions import Fraction
 import numpy as np
 
-# PMF conjunta (fracciones)
+## PMF conjunta (fracciones)
 P_XY = {
     (0,0): Fraction(0,15), (0,1): Fraction(2,15), (0,2): Fraction(1,15),
     (1,0): Fraction(3,15), (1,1): Fraction(6,15), (1,2): Fraction(0,15),
     (2,0): Fraction(3,15), (2,1): Fraction(0,15), (2,2): Fraction(0,15)
 }
 
-# Marginal P_X
+## Marginal P_X
 P_X = {x: sum(P for (xx,yy),P in P_XY.items() if xx==x) for x in [0,1,2]}
 
-# E[Y | X=x] exacto
+## E[Y | X=x] exacto
 E_Y_given_X = {}
 for x in [0,1,2]:
-# sumar y * P_{Y|X}(y|x) = sum_y y * P(x,y) / P_X(x)
+## sumar y * P_{Y|X}(y|x) = sum_y y * P(x,y) / P_X(x)
     if P_X[x] == 0:
         E_Y_given_X[x] = None
     else:
@@ -1373,7 +1373,7 @@ for x in [0,1,2]:
 print("P_X:", P_X)
 print("E[Y | X=x]:", E_Y_given_X)
 
-# Verificación Ley de la Expectativa Total
+## Verificación Ley de la Expectativa Total
 E_Y = sum(E_Y_given_X[x] * P_X[x] for x in [0,1,2])
 print("E[Y] (por LET) =", E_Y, " = ", float(E_Y))
 ```
@@ -1454,7 +1454,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 p = np.ones(6)/6  # pmf de un dado
-# convolución discreta (modo 'full')
+## convolución discreta (modo 'full')
 pz = np.convolve(p, p)
 z_vals = np.arange(2, 13)
 print("P(Z=z) para z=2..12:", np.round(pz, 4))
@@ -1763,11 +1763,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy import integrate
 
-# Verificación de normalización
+## Verificación de normalización
 result, error = integrate.dblquad(lambda y, x: 2, 0, 1, lambda x: 0, lambda x: x)
 print(f"Integral de la PDF: {result}, Error: {error}")
 
-# Visualización
+## Visualización
 x_vals = np.linspace(0, 1, 100)
 y_vals = np.linspace(0, 1, 100)
 X, Y = np.meshgrid(x_vals, y_vals)
@@ -1791,14 +1791,14 @@ $$
 **Ejemplo analítico extendido:** Para la distribución triangular anterior:
 
 ```python
-# Cálculo de esperanzas marginales
+## Cálculo de esperanzas marginales
 E_X = integrate.dblquad(lambda y, x: x * 2, 0, 1, lambda x: 0, lambda x: x)[0]
 E_Y = integrate.dblquad(lambda y, x: y * 2, 0, 1, lambda x: 0, lambda x: x)[0]
 
 print(f"E[X] = {E_X:.3f}")
 print(f"E[Y] = {E_Y:.3f}")
 
-# Cálculo usando sympy para precisión analítica
+## Cálculo usando sympy para precisión analítica
 import sympy as sp
 x, y = sp.symbols('x y', real=True, positive=True)
 f_xy = 2
@@ -1833,18 +1833,18 @@ $$
 ```python
 def calcular_covarianza_analitica():
     """Cálculo analítico completo de la matriz de covarianza"""
-# Para la distribución triangular f(x,y)=2, 0≤y≤x≤1
+## Para la distribución triangular f(x,y)=2, 0≤y≤x≤1
     
-# Esperanzas
+## Esperanzas
     E_X = 2/3
     E_Y = 1/3
     
-# Segundos momentos
+## Segundos momentos
     E_X2 = sp.integrate(x**2 * f_xy, (y, 0, x), (x, 0, 1))
     E_Y2 = sp.integrate(y**2 * f_xy, (y, 0, x), (x, 0, 1))
     E_XY = sp.integrate(x*y * f_xy, (y, 0, x), (x, 0, 1))
     
-# Varianzas y covarianza
+## Varianzas y covarianza
     Var_X = E_X2 - E_X**2
     Var_Y = E_Y2 - E_Y**2
     Cov_XY = E_XY - E_X * E_Y
@@ -1856,7 +1856,7 @@ Sigma_analitica = calcular_covarianza_analitica()
 print("Matriz de covarianza analítica:")
 print(Sigma_analitica)
 
-# Verificación por simulación
+## Verificación por simulación
 def generar_muestra_triangular(n=10000):
     """Genera muestras de la distribución triangular"""
     u1 = np.random.uniform(0, 1, n)
@@ -1888,16 +1888,16 @@ def visualizar_normal_multivariada():
     mu = np.array([0, 0])
     Sigma = np.array([[2, 1], [1, 1]])
     
-# Generar puntos en la elipse de confianza
+## Generar puntos en la elipse de confianza
     theta = np.linspace(0, 2*np.pi, 100)
     circle = np.column_stack([np.cos(theta), np.sin(theta)])
     
-# Descomposición espectral para transformar círculo a elipse
+## Descomposición espectral para transformar círculo a elipse
     eigenvals, eigenvecs = np.linalg.eig(Sigma)
     ellipse = circle @ np.diag(np.sqrt(eigenvals)) @ eigenvecs.T
     ellipse += mu
     
-# Gráfico
+## Gráfico
     plt.figure(figsize=(10, 8))
     plt.plot(ellipse[:, 0], ellipse[:, 1], 'r-', linewidth=2, label='Elipse 1-sigma')
     plt.quiver(mu[0], mu[1], eigenvecs[0,0]*np.sqrt(eigenvals[0]),
@@ -1923,7 +1923,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 p = np.ones(6)/6  # pmf de un dado
-# convolución discreta (modo 'full')
+## convolución discreta (modo 'full')
 pz = np.convolve(p, p)
 z_vals = np.arange(2, 13)
 print("P(Z=z) para z=2..12:", np.round(pz, 4))
@@ -2052,11 +2052,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy import integrate
 
-# Verificación de normalización
+## Verificación de normalización
 result, error = integrate.dblquad(lambda y, x: 2, 0, 1, lambda x: 0, lambda x: x)
 print(f"Integral de la PDF: {result}, Error: {error}")
 
-# Visualización
+## Visualización
 x_vals = np.linspace(0, 1, 100)
 y_vals = np.linspace(0, 1, 100)
 X, Y = np.meshgrid(x_vals, y_vals)
@@ -2076,14 +2076,14 @@ plt.show()
 Ejemplo analítico extendido: Para la distribución triangular anterior:
 
 ```python
-# Cálculo de esperanzas marginales
+## Cálculo de esperanzas marginales
 E_X = integrate.dblquad(lambda y, x: x * 2, 0, 1, lambda x: 0, lambda x: x)[0]
 E_Y = integrate.dblquad(lambda y, x: y * 2, 0, 1, lambda x: 0, lambda x: x)[0]
 
 print(f"E[X] = {E_X:.3f}")
 print(f"E[Y] = {E_Y:.3f}")
 
-# Cálculo usando sympy para precisión analítica
+## Cálculo usando sympy para precisión analítica
 import sympy as sp
 x, y = sp.symbols('x y', real=True, positive=True)
 f_xy = 2
@@ -2105,22 +2105,22 @@ import numpy as np
 
 def calcular_covarianza_analitica():
     """Cálculo analítico completo de la matriz de covarianza"""
-# Para la distribución triangular f(x,y)=2, 0≤y≤x≤1
+## Para la distribución triangular f(x,y)=2, 0≤y≤x≤1
 
-# Esperanzas
+## Esperanzas
     E_X = 2/3
     E_Y = 1/3
 
-# Define symbols and function within the function scope
+## Define symbols and function within the function scope
     x, y = sp.symbols('x y', real=True, positive=True)
     f_xy = 2
 
-# Segundos momentos
+## Segundos momentos
     E_X2 = sp.integrate(x**2 * f_xy, (y, 0, x), (x, 0, 1))
     E_Y2 = sp.integrate(y**2 * f_xy, (y, 0, x), (x, 0, 1))
     E_XY = sp.integrate(x*y * f_xy, (y, 0, x), (x, 0, 1))
 
-# Convert SymPy results to float for numpy array
+## Convert SymPy results to float for numpy array
     Var_X = float(E_X2 - E_X**2)
     Var_Y = float(E_Y2 - E_Y**2)
     Cov_XY = float(E_XY - E_X * E_Y)
@@ -2132,7 +2132,7 @@ Sigma_analitica = calcular_covarianza_analitica()
 print("Matriz de covarianza analítica:")
 print(Sigma_analitica)
 
-# Verificación por simulación
+## Verificación por simulación
 def generar_muestra_triangular(n=10000):
     """Genera muestras de la distribución triangular"""
     u1 = np.random.uniform(0, 1, n)
@@ -2158,16 +2158,16 @@ def visualizar_normal_multivariada():
     mu = np.array([0, 0])
     Sigma = np.array([[2, 1], [1, 1]])
 
-# Generar puntos en la elipse de confianza
+## Generar puntos en la elipse de confianza
     theta = np.linspace(0, 2*np.pi, 100)
     circle = np.column_stack([np.cos(theta), np.sin(theta)])
 
-# Descomposición espectral para transformar círculo a elipse
+## Descomposición espectral para transformar círculo a elipse
     eigenvals, eigenvecs = np.linalg.eig(Sigma)
     ellipse = circle @ np.diag(np.sqrt(eigenvals)) @ eigenvecs.T
     ellipse += mu
 
-# Gráfico
+## Gráfico
     plt.figure(figsize=(10, 8))
     plt.plot(ellipse[:, 0], ellipse[:, 1], 'r-', linewidth=2, label='Elipse 1-sigma')
     plt.quiver(mu[0], mu[1], eigenvecs[0,0]*np.sqrt(eigenvals[0]),
@@ -2201,18 +2201,18 @@ $$
 ```python
 def transformacion_lineal_multivariada():
     """Ejemplo completo de transformación lineal de vector gaussiano"""
-# Distribución original
+## Distribución original
     mu_X = np.array([1, 2, 3])
     Sigma_X = np.array([[4, 1, 0.5],
                        [1, 3, 0.8],
                        [0.5, 0.8, 2]])
     
-# Matriz de transformación (reducción de dimensionalidad)
+## Matriz de transformación (reducción de dimensionalidad)
     A = np.array([[1, 0.5, 0],
                   [0, 1, 1]])
     b = np.array([-1, 2])
     
-# Distribución transformada
+## Distribución transformada
     mu_Y = A @ mu_X + b
     Sigma_Y = A @ Sigma_X @ A.T
     
@@ -2224,7 +2224,7 @@ def transformacion_lineal_multivariada():
     print(f"μ_Y = {mu_Y}")
     print(f"Σ_Y =\n{Sigma_Y}")
     
-# Verificación por simulación
+## Verificación por simulación
     X = np.random.multivariate_normal(mu_X, Sigma_X, 10000)
     Y_sim = (A @ X.T + b.reshape(-1, 1)).T
     
@@ -2253,10 +2253,10 @@ def analisis_espectral_completo(Sigma):
     print(f"Eigenvalores: {eigenvals}")
     print(f"Eigenvectores:\n{eigenvecs}")
     
-# Verificación de ortogonalidad
+## Verificación de ortogonalidad
     print(f"\nOrtogonalidad (V·V^T):\n{eigenvecs @ eigenvecs.T}")
     
-# Proporción de varianza explicada
+## Proporción de varianza explicada
     var_total = np.sum(eigenvals)
     prop_var = eigenvals / var_total
     print(f"\nProporción de varianza explicada: {prop_var}")
@@ -2285,14 +2285,14 @@ class WhiteningTransformer:
         X_centered = X - self.mu
         self.Sigma = np.cov(X_centered, rowvar=False)
         
-# Descomposición espectral
+## Descomposición espectral
         self.eigenvals, self.eigenvecs = np.linalg.eig(self.Sigma)
         
         if self.method == 'pca':
-# Blanqueamiento PCA
+## Blanqueamiento PCA
             self.W = self.eigenvecs @ np.diag(1.0 / np.sqrt(self.eigenvals)) @ self.eigenvecs.T
         elif self.method == 'zca':
-# Blanqueamiento ZCA (Mahalanobis)
+## Blanqueamiento ZCA (Mahalanobis)
             self.W = np.linalg.inv(self.eigenvecs @ np.diag(np.sqrt(self.eigenvals)) @ self.eigenvecs.T)
         else:  # Cholesky
             self.W = np.linalg.cholesky(np.linalg.inv(self.Sigma))
@@ -2306,7 +2306,7 @@ class WhiteningTransformer:
     def inverse_transform(self, Z):
         return Z @ np.linalg.inv(self.W.T) + self.mu
 
-# Ejemplo de uso
+## Ejemplo de uso
 X_data = np.random.multivariate_normal([1, 2], [[4, 2], [2, 3]], 1000)
 whitener = WhiteningTransformer(method='zca').fit(X_data)
 Z_white = whitener.transform(X_data)
@@ -2322,18 +2322,18 @@ Ejemplo multidimensional:
 ```python
 def transformacion_lineal_multivariada():
     """Ejemplo completo de transformación lineal de vector gaussiano"""
-# Distribución original
+## Distribución original
     mu_X = np.array([1, 2, 3])
     Sigma_X = np.array([[4, 1, 0.5],
                        [1, 3, 0.8],
                        [0.5, 0.8, 2]])
 
-# Matriz de transformación (reducción de dimensionalidad)
+## Matriz de transformación (reducción de dimensionalidad)
     A = np.array([[1, 0.5, 0],
                   [0, 1, 1]])
     b = np.array([-1, 2])
 
-# Distribución transformada
+## Distribución transformada
     mu_Y = A @ mu_X + b
     Sigma_Y = A @ Sigma_X @ A.T
 
@@ -2345,7 +2345,7 @@ def transformacion_lineal_multivariada():
     print(f"μ_Y = {mu_Y}")
     print(f"Σ_Y =\n{Sigma_Y}")
 
-# Verificación por simulación
+## Verificación por simulación
     X = np.random.multivariate_normal(mu_X, Sigma_X, 10000)
     Y_sim = (A @ X.T + b.reshape(-1, 1)).T
 
@@ -2369,10 +2369,10 @@ def analisis_espectral_completo(Sigma):
     print(f"Eigenvalores: {eigenvals}")
     print(f"Eigenvectores:\n{eigenvecs}")
 
-# Verificación de ortogonalidad
+## Verificación de ortogonalidad
     print(f"\nOrtogonalidad (V·V^T):\n{eigenvecs @ eigenvecs.T}")
 
-# Proporción de varianza explicada
+## Proporción de varianza explicada
     var_total = np.sum(eigenvals)
     prop_var = eigenvals / var_total
     print(f"\nProporción de varianza explicada: {prop_var}")
@@ -2401,14 +2401,14 @@ class WhiteningTransformer:
         X_centered = X - self.mu
         self.Sigma = np.cov(X_centered, rowvar=False)
 
-# Descomposición espectral
+## Descomposición espectral
         self.eigenvals, self.eigenvecs = np.linalg.eig(self.Sigma)
 
         if self.method == 'pca':
-# Blanqueamiento PCA
+## Blanqueamiento PCA
             self.W = self.eigenvecs @ np.diag(1.0 / np.sqrt(self.eigenvals)) @ self.eigenvecs.T
         elif self.method == 'zca':
-# Blanqueamiento ZCA (Mahalanobis)
+## Blanqueamiento ZCA (Mahalanobis)
             self.W = np.linalg.inv(self.eigenvecs @ np.diag(np.sqrt(self.eigenvals)) @ self.eigenvecs.T)
         else:  # Cholesky
             self.W = np.linalg.cholesky(np.linalg.inv(self.Sigma))
@@ -2422,7 +2422,7 @@ class WhiteningTransformer:
     def inverse_transform(self, Z):
         return Z @ np.linalg.inv(self.W.T) + self.mu
 
-# Ejemplo de uso
+## Ejemplo de uso
 X_data = np.random.multivariate_normal([1, 2], [[4, 2], [2, 3]], 1000)
 whitener = WhiteningTransformer(method='zca').fit(X_data)
 Z_white = whitener.transform(X_data)
@@ -2451,28 +2451,28 @@ class PCAFromScratch:
         self.n_components = n_components
         
     def fit(self, X):
-# Centrado
+## Centrado
         self.mean_ = np.mean(X, axis=0)
         X_centered = X - self.mean_
         
-# Matriz de covarianza
+## Matriz de covarianza
         n_samples = X.shape[0]
         self.cov_matrix_ = (X_centered.T @ X_centered) / (n_samples - 1)
         
-# Descomposición espectral
+## Descomposición espectral
         eigenvals, eigenvecs = np.linalg.eig(self.cov_matrix_)
         
-# Ordenar por eigenvalores descendentes
+## Ordenar por eigenvalores descendentes
         idx = np.argsort(eigenvals)[::-1]
         self.eigenvalues_ = eigenvals[idx]
         self.components_ = eigenvecs[:, idx]
         
-# Seleccionar componentes
+## Seleccionar componentes
         if self.n_components is not None:
             self.components_ = self.components_[:, :self.n_components]
             self.eigenvalues_ = self.eigenvalues_[:self.n_components]
             
-# Varianza explicada
+## Varianza explicada
         self.explained_variance_ratio_ = self.eigenvalues_ / np.sum(self.eigenvalues_)
         
         return self
@@ -2484,19 +2484,19 @@ class PCAFromScratch:
     def inverse_transform(self, Y):
         return Y @ self.components_.T + self.mean_
 
-# Comparación con scikit-learn
+## Comparación con scikit-learn
 from sklearn.decomposition import PCA
 from sklearn.datasets import load_iris
 
-# Datos de ejemplo
+## Datos de ejemplo
 iris = load_iris()
 X = iris.data
 
-# Nuestra implementación
+## Nuestra implementación
 pca_scratch = PCAFromScratch(n_components=2).fit(X)
 X_pca_scratch = pca_scratch.transform(X)
 
-# Scikit-learn
+## Scikit-learn
 pca_sklearn = PCA(n_components=2).fit(X)
 X_pca_sklearn = pca_sklearn.transform(X)
 
@@ -2511,13 +2511,13 @@ print("Varianza explicada (sklearn):", pca_sklearn.explained_variance_ratio_)
 ```python
 def pca_2d_demo():
     """Demo visual de PCA en 2 dimensiones"""
-# Generar datos correlacionados
+## Generar datos correlacionados
     np.random.seed(42)
     n_points = 300
     theta = np.random.uniform(0, 2*np.pi, n_points)
     r = np.random.normal(0, 0.3, n_points)
     
-# Elipse rotada
+## Elipse rotada
     rotation_angle = np.pi/4
     rotation_matrix = np.array([[np.cos(rotation_angle), -np.sin(rotation_angle)],
                               [np.sin(rotation_angle), np.cos(rotation_angle)]])
@@ -2525,14 +2525,14 @@ def pca_2d_demo():
     X_ellipse = np.column_stack([2*np.cos(theta) + r, 0.5*np.sin(theta) + r])
     X = X_ellipse @ rotation_matrix.T + [1, 2]
     
-# Aplicar PCA
+## Aplicar PCA
     pca = PCAFromScratch(n_components=2).fit(X)
     X_pca = pca.transform(X)
     
-# Visualización
+## Visualización
     fig, axes = plt.subplots(1, 3, figsize=(15, 5))
     
-# Datos originales
+## Datos originales
     axes[0].scatter(X[:, 0], X[:, 1], alpha=0.6)
     axes[0].set_title('Datos Originales')
     axes[0].set_xlabel('X1')
@@ -2540,7 +2540,7 @@ def pca_2d_demo():
     axes[0].grid(True, alpha=0.3)
     axes[0].axis('equal')
     
-# Datos + componentes principales
+## Datos + componentes principales
     axes[1].scatter(X[:, 0], X[:, 1], alpha=0.6)
     for length, vector in zip(pca.eigenvalues_, pca.components_.T):
         v = vector * np.sqrt(length) * 3  # Escalar para visualización
@@ -2552,7 +2552,7 @@ def pca_2d_demo():
     axes[1].grid(True, alpha=0.3)
     axes[1].axis('equal')
     
-# Datos transformados
+## Datos transformados
     axes[2].scatter(X_pca[:, 0], X_pca[:, 1], alpha=0.6)
     axes[2].set_title('Espacio PCA (Decorrelacionado)')
     axes[2].set_xlabel('PC1')
@@ -2571,25 +2571,25 @@ pca_2d_demo()
 ```python
 def pca_3d_demo():
     """Demo visual de PCA en 3 dimensiones con reducción a 2D"""
-# Generar datos 3D correlacionados
+## Generar datos 3D correlacionados
     np.random.seed(42)
     n_points = 500
     
-# Tres variables con diferentes correlaciones
+## Tres variables con diferentes correlaciones
     X1 = np.random.normal(0, 2, n_points)
     X2 = 0.7 * X1 + np.random.normal(0, 1, n_points)
     X3 = 0.5 * X1 + 0.3 * X2 + np.random.normal(0, 0.5, n_points)
     
     X_3d = np.column_stack([X1, X2, X3])
     
-# Aplicar PCA
+## Aplicar PCA
     pca_3d = PCAFromScratch(n_components=2).fit(X_3d)
     X_2d = pca_3d.transform(X_3d)
     
-# Visualización 3D
+## Visualización 3D
     fig = plt.figure(figsize=(15, 5))
     
-# Subplot 1: Datos originales 3D
+## Subplot 1: Datos originales 3D
     ax1 = fig.add_subplot(131, projection='3d')
     scatter = ax1.scatter(X_3d[:, 0], X_3d[:, 1], X_3d[:, 2],
                          c=X_3d[:, 0], cmap='viridis', alpha=0.6)
@@ -2598,11 +2598,11 @@ def pca_3d_demo():
     ax1.set_ylabel('X2')
     ax1.set_zlabel('X3')
     
-# Subplot 2: Componentes principales en 3D
+## Subplot 2: Componentes principales en 3D
     ax2 = fig.add_subplot(132, projection='3d')
     ax2.scatter(X_3d[:, 0], X_3d[:, 1], X_3d[:, 2], alpha=0.3)
     
-# Dibujar componentes principales
+## Dibujar componentes principales
     for length, vector in zip(pca_3d.eigenvalues_, pca_3d.components_.T):
         v = vector * np.sqrt(length) * 3
         ax2.quiver(pca_3d.mean_[0], pca_3d.mean_[1], pca_3d.mean_[2],
@@ -2613,7 +2613,7 @@ def pca_3d_demo():
     ax2.set_ylabel('X2')
     ax2.set_zlabel('X3')
     
-# Subplot 3: Proyección 2D
+## Subplot 3: Proyección 2D
     ax3 = fig.add_subplot(133)
     scatter_2d = ax3.scatter(X_2d[:, 0], X_2d[:, 1], c=X_3d[:, 0], cmap='viridis', alpha=0.6)
     ax3.set_title(f'Proyección PCA 2D\n(Varianza explicada: {np.sum(pca_3d.explained_variance_ratio_):.2%})')
@@ -2653,12 +2653,12 @@ def analisis_reconstruccion_pca():
         X_transformed = pca.transform(X_digits)
         X_reconstructed = pca.inverse_transform(X_transformed)
         
-# Error de reconstrucción
+## Error de reconstrucción
         mse = np.mean((X_digits - X_reconstructed) ** 2)
         mse_values.append(mse)
         var_explained.append(np.sum(pca.explained_variance_ratio_))
     
-# Gráfico de trade-off
+## Gráfico de trade-off
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
     
     ax1.plot(n_components_range, mse_values, 'bo-', linewidth=2)
@@ -2701,28 +2701,28 @@ class PCAFromScratch:
         self.n_components = n_components
 
     def fit(self, X):
-# Centrado
+## Centrado
         self.mean_ = np.mean(X, axis=0)
         X_centered = X - self.mean_
 
-# Matriz de covarianza
+## Matriz de covarianza
         n_samples = X.shape[0]
         self.cov_matrix_ = (X_centered.T @ X_centered) / (n_samples - 1)
 
-# Descomposición espectral
+## Descomposición espectral
         eigenvals, eigenvecs = np.linalg.eig(self.cov_matrix_)
 
-# Ordenar por eigenvalores descendentes
+## Ordenar por eigenvalores descendentes
         idx = np.argsort(eigenvals)[::-1]
         self.eigenvalues_ = eigenvals[idx]
         self.components_ = eigenvecs[:, idx]
 
-# Seleccionar componentes
+## Seleccionar componentes
         if self.n_components is not None:
             self.components_ = self.components_[:, :self.n_components]
             self.eigenvalues_ = self.eigenvalues_[:self.n_components]
 
-# Varianza explicada
+## Varianza explicada
         self.explained_variance_ratio_ = self.eigenvalues_ / np.sum(self.eigenvalues_)
 
         return self
@@ -2734,19 +2734,19 @@ class PCAFromScratch:
     def inverse_transform(self, Y):
         return Y @ self.components_.T + self.mean_
 
-# Comparación con scikit-learn
+## Comparación con scikit-learn
 from sklearn.decomposition import PCA
 from sklearn.datasets import load_iris
 
-# Datos de ejemplo
+## Datos de ejemplo
 iris = load_iris()
 X = iris.data
 
-# Nuestra implementación
+## Nuestra implementación
 pca_scratch = PCAFromScratch(n_components=2).fit(X)
 X_pca_scratch = pca_scratch.transform(X)
 
-# Scikit-learn
+## Scikit-learn
 pca_sklearn = PCA(n_components=2).fit(X)
 X_pca_sklearn = pca_sklearn.transform(X)
 
@@ -2761,13 +2761,13 @@ Caso 2D - Rotación de datos correlacionados:
 ```python
 def pca_2d_demo():
     """Demo visual de PCA en 2 dimensiones"""
-# Generar datos correlacionados
+## Generar datos correlacionados
     np.random.seed(42)
     n_points = 300
     theta = np.random.uniform(0, 2*np.pi, n_points)
     r = np.random.normal(0, 0.3, n_points)
 
-# Elipse rotada
+## Elipse rotada
     rotation_angle = np.pi/4
     rotation_matrix = np.array([[np.cos(rotation_angle), -np.sin(rotation_angle)],
                               [np.sin(rotation_angle), np.cos(rotation_angle)]])
@@ -2775,14 +2775,14 @@ def pca_2d_demo():
     X_ellipse = np.column_stack([2*np.cos(theta) + r, 0.5*np.sin(theta) + r])
     X = X_ellipse @ rotation_matrix.T + [1, 2]
 
-# Aplicar PCA
+## Aplicar PCA
     pca = PCAFromScratch(n_components=2).fit(X)
     X_pca = pca.transform(X)
 
-# Visualización
+## Visualización
     fig, axes = plt.subplots(1, 3, figsize=(15, 5))
 
-# Datos originales
+## Datos originales
     axes[0].scatter(X[:, 0], X[:, 1], alpha=0.6)
     axes[0].set_title('Datos Originales')
     axes[0].set_xlabel('X1')
@@ -2790,7 +2790,7 @@ def pca_2d_demo():
     axes[0].grid(True, alpha=0.3)
     axes[0].axis('equal')
 
-# Datos + componentes principales
+## Datos + componentes principales
     axes[1].scatter(X[:, 0], X[:, 1], alpha=0.6)
     for length, vector in zip(pca.eigenvalues_, pca.components_.T):
         v = vector * np.sqrt(length) * 3  # Escalar para visualización
@@ -2802,7 +2802,7 @@ def pca_2d_demo():
     axes[1].grid(True, alpha=0.3)
     axes[1].axis('equal')
 
-# Datos transformados
+## Datos transformados
     axes[2].scatter(X_pca[:, 0], X_pca[:, 1], alpha=0.6)
     axes[2].set_title('Espacio PCA (Decorrelacionado)')
     axes[2].set_xlabel('PC1')
@@ -2821,25 +2821,25 @@ Caso 3D - Reducción a 2D:
 ```python
 def pca_3d_demo():
     """Demo visual de PCA en 3 dimensiones con reducción a 2D"""
-# Generar datos 3D correlacionados
+## Generar datos 3D correlacionados
     np.random.seed(42)
     n_points = 500
 
-# Tres variables con diferentes correlaciones
+## Tres variables con diferentes correlaciones
     X1 = np.random.normal(0, 2, n_points)
     X2 = 0.7 * X1 + np.random.normal(0, 1, n_points)
     X3 = 0.5 * X1 + 0.3 * X2 + np.random.normal(0, 0.5, n_points)
 
     X_3d = np.column_stack([X1, X2, X3])
 
-# Aplicar PCA
+## Aplicar PCA
     pca_3d = PCAFromScratch(n_components=2).fit(X_3d)
     X_2d = pca_3d.transform(X_3d)
 
-# Visualización 3D
+## Visualización 3D
     fig = plt.figure(figsize=(15, 5))
 
-# Subplot 1: Datos originales 3D
+## Subplot 1: Datos originales 3D
     ax1 = fig.add_subplot(131, projection='3d')
     scatter = ax1.scatter(X_3d[:, 0], X_3d[:, 1], X_3d[:, 2],
                          c=X_3d[:, 0], cmap='viridis', alpha=0.6)
@@ -2848,11 +2848,11 @@ def pca_3d_demo():
     ax1.set_ylabel('X2')
     ax1.set_zlabel('X3')
 
-# Subplot 2: Componentes principales en 3D
+## Subplot 2: Componentes principales en 3D
     ax2 = fig.add_subplot(132, projection='3d')
     ax2.scatter(X_3d[:, 0], X_3d[:, 1], X_3d[:, 2], alpha=0.3)
 
-# Dibujar componentes principales
+## Dibujar componentes principales
     for length, vector in zip(pca_3d.eigenvalues_, pca_3d.components_.T):
         v = vector * np.sqrt(length) * 3
         ax2.quiver(pca_3d.mean_[0], pca_3d.mean_[1], pca_3d.mean_[2],
@@ -2863,7 +2863,7 @@ def pca_3d_demo():
     ax2.set_ylabel('X2')
     ax2.set_zlabel('X3')
 
-# Subplot 3: Proyección 2D
+## Subplot 3: Proyección 2D
     ax3 = fig.add_subplot(133)
     scatter_2d = ax3.scatter(X_2d[:, 0], X_2d[:, 1], c=X_3d[:, 0], cmap='viridis', alpha=0.6)
     ax3.set_title(f'Proyección PCA 2D\n(Varianza explicada: {np.sum(pca_3d.explained_variance_ratio_):.2%})')
@@ -2903,12 +2903,12 @@ def analisis_reconstruccion_pca():
         X_transformed = pca.transform(X_digits)
         X_reconstructed = pca.inverse_transform(X_transformed)
 
-# Error de reconstrucción
+## Error de reconstrucción
         mse = np.mean((X_digits - X_reconstructed) ** 2)
         mse_values.append(mse)
         var_explained.append(np.sum(pca.explained_variance_ratio_))
 
-# Gráfico de trade-off
+## Gráfico de trade-off
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
 
     ax1.plot(n_components_range, mse_values, 'bo-', linewidth=2)
@@ -3021,20 +3021,20 @@ $$
 $$
 
 ```python
-# Código Python para PMF Condicional (Ejemplo)
+## Código Python para PMF Condicional (Ejemplo)
 import numpy as np
 from fractions import Fraction
 
-# PMF Conjunta P(x, y)
+## PMF Conjunta P(x, y)
 P_XY = {(0, 0): 0, (0, 1): Fraction(2, 15), (0, 2): Fraction(1, 15),
         (1, 0): Fraction(3, 15), (1, 1): Fraction(6, 15), (1, 2): 0,
         (2, 0): Fraction(3, 15), (2, 1): 0, (2, 2): 0}
 
-# PMF Marginal de X
+## PMF Marginal de X
 P_X_1 = Fraction(9, 15)
 print(f"PMF Marginal P_X(1) = {P_X_1}")
 
-# Calcular PMF Condicional P(Y | X=1)
+## Calcular PMF Condicional P(Y | X=1)
 print("\nPMF Condicional P(Y | X=1):")
 for y in range(3):
     P_Y_cond_X = P_XY[(1, y)] / P_X_1
@@ -3244,20 +3244,20 @@ $$
 ---
 
 ```python
-# Código Python para PMF Condicional (Ejemplo)
+## Código Python para PMF Condicional (Ejemplo)
 import numpy as np
 from fractions import Fraction
 
-# PMF Conjunta P(x, y)
+## PMF Conjunta P(x, y)
 P_XY = {(0, 0): 0, (0, 1): Fraction(2, 15), (0, 2): Fraction(1, 15),
         (1, 0): Fraction(3, 15), (1, 1): Fraction(6, 15), (1, 2): 0,
         (2, 0): Fraction(3, 15), (2, 1): 0, (2, 2): 0}
 
-# PMF Marginal de X
+## PMF Marginal de X
 P_X_1 = Fraction(9, 15)
 print(f"PMF Marginal P_X(1) = {P_X_1}")
 
-# Calcular PMF Condicional P(Y | X=1)
+## Calcular PMF Condicional P(Y | X=1)
 print("\nPMF Condicional P(Y | X=1):")
 for y in range(3):
     P_Y_cond_X = P_XY[(1, y)] / P_X_1
@@ -3341,29 +3341,29 @@ Cálculos explícitos:
 #### Código Python (comprobación exacta con `fractions` y simulación con `numpy`)
 
 ```python
-# Código de comprobación en Colab
+## Código de comprobación en Colab
 from fractions import Fraction
 import numpy as np
 from collections import Counter
 
-# PMF conjunta (fracciones exactas)
+## PMF conjunta (fracciones exactas)
 P_XY = {
     (0,0): Fraction(0,15), (0,1): Fraction(2,15), (0,2): Fraction(1,15),
     (1,0): Fraction(3,15), (1,1): Fraction(6,15), (1,2): Fraction(0,15),
     (2,0): Fraction(3,15), (2,1): Fraction(0,15), (2,2): Fraction(0,15)
 }
 
-# Marginal P_X(1)
+## Marginal P_X(1)
 P_X_1 = sum(P for (x,y),P in P_XY.items() if x==1)
 print("P_X(1) =", P_X_1)  # Esperado: 9/15
 
-# PMF condicional exacta
+## PMF condicional exacta
 print("P(Y|X=1):")
 for y in [0,1,2]:
     val = P_XY[(1,y)] / P_X_1
     print(f" y={y}: {val} = {float(val):.6f}")
 
-# Simulación para validar (aprox.)
+## Simulación para validar (aprox.)
 urn = [ 'R' ]*3 + [ 'A' ]*2 + [ 'V' ]*1
 N = 200000
 counts = Counter()
@@ -3377,7 +3377,7 @@ print("\nFrecuencias simuladas (normalizadas) para (1,0) y (1,1):")
 print("P_sim(1,0) = ", counts[(1,0)]/N)
 print("P_sim(1,1) = ", counts[(1,1)]/N)
 print("P_sim(Y|X=1) estimada (condicional) =")
-# condicional simulada: P(Y=y | X=1) = P_sim(1,y) / sum_y P_sim(1,y)
+## condicional simulada: P(Y=y | X=1) = P_sim(1,y) / sum_y P_sim(1,y)
 total_X1 = sum(counts[(1,y)] for y in [0,1,2])
 for y in [0,1,2]:
     print(f" y={y}: {counts[(1,y)]/total_X1:.6f}")
@@ -3457,25 +3457,25 @@ $$
 #### Código Python (analítico simbólico con `sympy` y numérico con `scipy`)
 
 ```python
-# Código para Colab: cálculo simbólico y numérico
+## Código para Colab: cálculo simbólico y numérico
 import sympy as sp
 from scipy.integrate import quad
 
-# Símbolos
+## Símbolos
 x, y = sp.symbols('x y')
 
-# Definición simbólica
+## Definición simbólica
 f_xy = x + y  # válido en [0,1]^2
 
-# Marginal f_X(x) simbólico (integral en y de 0 a 1)
+## Marginal f_X(x) simbólico (integral en y de 0 a 1)
 fX_sym = sp.integrate(f_xy, (y, 0, 1))
 sp.simplify(fX_sym)  # resultado: x + 1/2
 
-# PDF condicional simbólica
+## PDF condicional simbólica
 fY_given_X = (f_xy) / fX_sym
 sp.simplify(fY_given_X)  # (x+y)/(x+1/2)
 
-# Evaluar P(Y < 0.5 | X = 0.5) numéricamente
+## Evaluar P(Y < 0.5 | X = 0.5) numéricamente
 f_cond_numeric = lambda Y: 0.5 + Y  # derivado de sustituir x = 0.5
 prob, _ = quad(f_cond_numeric, 0, 0.5)
 print("P(Y < 0.5 | X = 0.5) =", prob)
@@ -3489,29 +3489,29 @@ print("P(Y < 0.5 | X = 0.5) =", prob)
 ---
 
 ```python
-# Código de comprobación en Colab
+## Código de comprobación en Colab
 from fractions import Fraction
 import numpy as np
 from collections import Counter
 
-# PMF conjunta (fracciones exactas)
+## PMF conjunta (fracciones exactas)
 P_XY = {
     (0,0): Fraction(0,15), (0,1): Fraction(2,15), (0,2): Fraction(1,15),
     (1,0): Fraction(3,15), (1,1): Fraction(6,15), (1,2): Fraction(0,15),
     (2,0): Fraction(3,15), (2,1): Fraction(0,15), (2,2): Fraction(0,15)
 }
 
-# Marginal P_X(1)
+## Marginal P_X(1)
 P_X_1 = sum(P for (x,y),P in P_XY.items() if x==1)
 print("P_X(1) =", P_X_1)  # Esperado: 9/15
 
-# PMF condicional exacta
+## PMF condicional exacta
 print("P(Y|X=1):")
 for y in [0,1,2]:
     val = P_XY[(1,y)] / P_X_1
     print(f" y={y}: {val} = {float(val):.6f}")
 
-# Simulación para validar (aprox.)
+## Simulación para validar (aprox.)
 urn = [ 'R' ]*3 + [ 'A' ]*2 + [ 'V' ]*1
 N = 200000
 counts = Counter()
@@ -3525,32 +3525,32 @@ print("\nFrecuencias simuladas (normalizadas) para (1,0) y (1,1):")
 print("P_sim(1,0) = ", counts[(1,0)]/N)
 print("P_sim(1,1) = ", counts[(1,1)]/N)
 print("P_sim(Y|X=1) estimada (condicional) =")
-# condicional simulada: P(Y=y | X=1) = P_sim(1,y) / sum_y P_sim(1,y)
+## condicional simulada: P(Y=y | X=1) = P_sim(1,y) / sum_y P_sim(1,y)
 total_X1 = sum(counts[(1,y)] for y in [0,1,2])
 for y in [0,1,2]:
     print(f" y={y}: {counts[(1,y)]/total_X1:.6f}")
 ```
 
 ```python
-# Código para Colab: cálculo simbólico y numérico
+## Código para Colab: cálculo simbólico y numérico
 import sympy as sp
 from scipy.integrate import quad
 
-# Símbolos
+## Símbolos
 x, y = sp.symbols('x y')
 
-# Definición simbólica
+## Definición simbólica
 f_xy = x + y  # válido en [0,1]^2
 
-# Marginal f_X(x) simbólico (integral en y de 0 a 1)
+## Marginal f_X(x) simbólico (integral en y de 0 a 1)
 fX_sym = sp.integrate(f_xy, (y, 0, 1))
 sp.simplify(fX_sym)  # resultado: x + 1/2
 
-# PDF condicional simbólica
+## PDF condicional simbólica
 fY_given_X = (f_xy) / fX_sym
 sp.simplify(fY_given_X)  # (x+y)/(x+1/2)
 
-# Evaluar P(Y < 0.5 | X = 0.5) numéricamente
+## Evaluar P(Y < 0.5 | X = 0.5) numéricamente
 f_cond_numeric = lambda Y: 0.5 + Y  # derivado de sustituir x = 0.5
 prob, _ = quad(f_cond_numeric, 0, 0.5)
 print("P(Y < 0.5 | X = 0.5) =", prob)
@@ -3613,24 +3613,24 @@ $$
 #### Código Python: cálculo de $E[Y|X=x]$ y verificación de LET (exacto y por simulación)
 
 ```python
-# Cálculo de E[Y|X=x] exacto usando Fracciones y verificación de LET
+## Cálculo de E[Y|X=x] exacto usando Fracciones y verificación de LET
 from fractions import Fraction
 import numpy as np
 
-# PMF conjunta (fracciones)
+## PMF conjunta (fracciones)
 P_XY = {
     (0,0): Fraction(0,15), (0,1): Fraction(2,15), (0,2): Fraction(1,15),
     (1,0): Fraction(3,15), (1,1): Fraction(6,15), (1,2): Fraction(0,15),
     (2,0): Fraction(3,15), (2,1): Fraction(0,15), (2,2): Fraction(0,15)
 }
 
-# Marginal P_X
+## Marginal P_X
 P_X = {x: sum(P for (xx,yy),P in P_XY.items() if xx==x) for x in [0,1,2]}
 
-# E[Y | X=x] exacto
+## E[Y | X=x] exacto
 E_Y_given_X = {}
 for x in [0,1,2]:
-# sumar y * P_{Y|X}(y|x) = sum_y y * P(x,y) / P_X(x)
+## sumar y * P_{Y|X}(y|x) = sum_y y * P(x,y) / P_X(x)
     if P_X[x] == 0:
         E_Y_given_X[x] = None
     else:
@@ -3639,7 +3639,7 @@ for x in [0,1,2]:
 print("P_X:", P_X)
 print("E[Y | X=x]:", E_Y_given_X)
 
-# Verificación Ley de la Expectativa Total
+## Verificación Ley de la Expectativa Total
 E_Y = sum(E_Y_given_X[x] * P_X[x] for x in [0,1,2])
 print("E[Y] (por LET) =", E_Y, " = ", float(E_Y))
 ```
@@ -3658,24 +3658,24 @@ print("E[Y] (por LET) =", E_Y, " = ", float(E_Y))
 * La LET es extremadamente útil cuando la marginal $f_Y$ es difícil de obtener pero las condicionales $f_{Y|X}$ o $P_{Y|X}$ son manejables.
 
 ```python
-# Cálculo de E[Y|X=x] exacto usando Fracciones y verificación de LET
+## Cálculo de E[Y|X=x] exacto usando Fracciones y verificación de LET
 from fractions import Fraction
 import numpy as np
 
-# PMF conjunta (fracciones)
+## PMF conjunta (fracciones)
 P_XY = {
     (0,0): Fraction(0,15), (0,1): Fraction(2,15), (0,2): Fraction(1,15),
     (1,0): Fraction(3,15), (1,1): Fraction(6,15), (1,2): Fraction(0,15),
     (2,0): Fraction(3,15), (2,1): Fraction(0,15), (2,2): Fraction(0,15)
 }
 
-# Marginal P_X
+## Marginal P_X
 P_X = {x: sum(P for (xx,yy),P in P_XY.items() if xx==x) for x in [0,1,2]}
 
-# E[Y | X=x] exacto
+## E[Y | X=x] exacto
 E_Y_given_X = {}
 for x in [0,1,2]:
-# sumar y * P_{Y|X}(y|x) = sum_y y * P(x,y) / P_X(x)
+## sumar y * P_{Y|X}(y|x) = sum_y y * P(x,y) / P_X(x)
     if P_X[x] == 0:
         E_Y_given_X[x] = None
     else:
@@ -3684,7 +3684,7 @@ for x in [0,1,2]:
 print("P_X:", P_X)
 print("E[Y | X=x]:", E_Y_given_X)
 
-# Verificación Ley de la Expectativa Total
+## Verificación Ley de la Expectativa Total
 E_Y = sum(E_Y_given_X[x] * P_X[x] for x in [0,1,2])
 print("E[Y] (por LET) =", E_Y, " = ", float(E_Y))
 ```
@@ -3765,7 +3765,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 p = np.ones(6)/6  # pmf de un dado
-# convolución discreta (modo 'full')
+## convolución discreta (modo 'full')
 pz = np.convolve(p, p)
 z_vals = np.arange(2, 13)
 print("P(Z=z) para z=2..12:", np.round(pz, 4))
@@ -4038,7 +4038,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 p = np.ones(6)/6  # pmf de un dado
-# convolución discreta (modo 'full')
+## convolución discreta (modo 'full')
 pz = np.convolve(p, p)
 z_vals = np.arange(2, 13)
 print("P(Z=z) para z=2..12:", np.round(pz, 4))
@@ -4279,7 +4279,7 @@ Implementa en Python Monte Carlo la comprobación de la PMF conjunta y las condi
 1. **Usar `np.linalg.eigh` para covarianzas simétricas**
 
 ```python
-# en PCAFromScratch o analisis_espectral_completo
+## en PCAFromScratch o analisis_espectral_completo
 eigenvals, eigenvecs = np.linalg.eigh(cov_matrix)  # más estable
 idx = np.argsort(eigenvals)[::-1]
 eigenvals, eigenvecs = eigenvals[idx], eigenvecs[:, idx]
@@ -4288,14 +4288,14 @@ eigenvals, eigenvecs = eigenvals[idx], eigenvecs[:, idx]
 2. **Whitening: usar pseudoinversa para estabilidad**
 
 ```python
-# dentro de fit()
+## dentro de fit()
 eps = 1e-12
 D_inv_sqrt = np.diag(1.0 / np.sqrt(self.eigenvals + eps))
 if self.method == 'pca':
     self.W = self.eigenvecs @ D_inv_sqrt @ self.eigenvecs.T
 elif self.method == 'zca':
     self.W = self.eigenvecs @ D_inv_sqrt @ self.eigenvecs.T @ self.eigenvecs @ np.diag(np.sqrt(self.eigenvals)) @ self.eigenvecs.T
-# (o usar pinv si conviene)
+## (o usar pinv si conviene)
 ```
 
 3. **Simulación urna (reproducible)**
@@ -4303,7 +4303,7 @@ elif self.method == 'zca':
 ```python
 np.random.seed(0)
 N = 200000
-# resto del código igual
+## resto del código igual
 ```
 
 4. **Pequeña corrección tipográfica en el PDF-continua verificación:** al mostrar la integral analítica utiliza `\left[\cdots\right]` para claridad. (Esto no cambia el cálculo, solo mejora presentación.)
@@ -4359,11 +4359,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy import integrate
 
-# Verificación de normalización
+## Verificación de normalización
 result, error = integrate.dblquad(lambda y, x: 2, 0, 1, lambda x: 0, lambda x: x)
 print(f"Integral de la PDF: {result}, Error: {error}")
 
-# Visualización
+## Visualización
 x_vals = np.linspace(0, 1, 100)
 y_vals = np.linspace(0, 1, 100)
 X, Y = np.meshgrid(x_vals, y_vals)
@@ -4387,14 +4387,14 @@ $$
 **Ejemplo analítico extendido:** Para la distribución triangular anterior:
 
 ```python
-# Cálculo de esperanzas marginales
+## Cálculo de esperanzas marginales
 E_X = integrate.dblquad(lambda y, x: x * 2, 0, 1, lambda x: 0, lambda x: x)[0]
 E_Y = integrate.dblquad(lambda y, x: y * 2, 0, 1, lambda x: 0, lambda x: x)[0]
 
 print(f"E[X] = {E_X:.3f}")
 print(f"E[Y] = {E_Y:.3f}")
 
-# Cálculo usando sympy para precisión analítica
+## Cálculo usando sympy para precisión analítica
 import sympy as sp
 x, y = sp.symbols('x y', real=True, positive=True)
 f_xy = 2
@@ -4429,18 +4429,18 @@ $$
 ```python
 def calcular_covarianza_analitica():
     """Cálculo analítico completo de la matriz de covarianza"""
-# Para la distribución triangular f(x,y)=2, 0≤y≤x≤1
+## Para la distribución triangular f(x,y)=2, 0≤y≤x≤1
     
-# Esperanzas
+## Esperanzas
     E_X = 2/3
     E_Y = 1/3
     
-# Segundos momentos
+## Segundos momentos
     E_X2 = sp.integrate(x**2 * f_xy, (y, 0, x), (x, 0, 1))
     E_Y2 = sp.integrate(y**2 * f_xy, (y, 0, x), (x, 0, 1))
     E_XY = sp.integrate(x*y * f_xy, (y, 0, x), (x, 0, 1))
     
-# Varianzas y covarianza
+## Varianzas y covarianza
     Var_X = E_X2 - E_X**2
     Var_Y = E_Y2 - E_Y**2
     Cov_XY = E_XY - E_X * E_Y
@@ -4452,7 +4452,7 @@ Sigma_analitica = calcular_covarianza_analitica()
 print("Matriz de covarianza analítica:")
 print(Sigma_analitica)
 
-# Verificación por simulación
+## Verificación por simulación
 def generar_muestra_triangular(n=10000):
     """Genera muestras de la distribución triangular"""
     u1 = np.random.uniform(0, 1, n)
@@ -4484,16 +4484,16 @@ def visualizar_normal_multivariada():
     mu = np.array([0, 0])
     Sigma = np.array([[2, 1], [1, 1]])
     
-# Generar puntos en la elipse de confianza
+## Generar puntos en la elipse de confianza
     theta = np.linspace(0, 2*np.pi, 100)
     circle = np.column_stack([np.cos(theta), np.sin(theta)])
     
-# Descomposición espectral para transformar círculo a elipse
+## Descomposición espectral para transformar círculo a elipse
     eigenvals, eigenvecs = np.linalg.eig(Sigma)
     ellipse = circle @ np.diag(np.sqrt(eigenvals)) @ eigenvecs.T
     ellipse += mu
     
-# Gráfico
+## Gráfico
     plt.figure(figsize=(10, 8))
     plt.plot(ellipse[:, 0], ellipse[:, 1], 'r-', linewidth=2, label='Elipse 1-sigma')
     plt.quiver(mu[0], mu[1], eigenvecs[0,0]*np.sqrt(eigenvals[0]),
@@ -4517,11 +4517,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy import integrate
 
-# Verificación de normalización
+## Verificación de normalización
 result, error = integrate.dblquad(lambda y, x: 2, 0, 1, lambda x: 0, lambda x: x)
 print(f"Integral de la PDF: {result}, Error: {error}")
 
-# Visualización
+## Visualización
 x_vals = np.linspace(0, 1, 100)
 y_vals = np.linspace(0, 1, 100)
 X, Y = np.meshgrid(x_vals, y_vals)
@@ -4537,14 +4537,14 @@ plt.show()
 ```
 
 ```python
-# Cálculo de esperanzas marginales
+## Cálculo de esperanzas marginales
 E_X = integrate.dblquad(lambda y, x: x * 2, 0, 1, lambda x: 0, lambda x: x)[0]
 E_Y = integrate.dblquad(lambda y, x: y * 2, 0, 1, lambda x: 0, lambda x: x)[0]
 
 print(f"E[X] = {E_X:.3f}")
 print(f"E[Y] = {E_Y:.3f}")
 
-# Cálculo usando sympy para precisión analítica
+## Cálculo usando sympy para precisión analítica
 import sympy as sp
 x, y = sp.symbols('x y', real=True, positive=True)
 f_xy = 2
@@ -4559,18 +4559,18 @@ print(f"E[Y] (analítico) = {E_Y_sym} = {float(E_Y_sym):.3f}")
 ```python
 def calcular_covarianza_analitica():
     """Cálculo analítico completo de la matriz de covarianza"""
-# Para la distribución triangular f(x,y)=2, 0≤y≤x≤1
+## Para la distribución triangular f(x,y)=2, 0≤y≤x≤1
 
-# Esperanzas
+## Esperanzas
     E_X = 2/3
     E_Y = 1/3
 
-# Segundos momentos
+## Segundos momentos
     E_X2 = sp.integrate(x**2 * f_xy, (y, 0, x), (x, 0, 1))
     E_Y2 = sp.integrate(y**2 * f_xy, (y, 0, x), (x, 0, 1))
     E_XY = sp.integrate(x*y * f_xy, (y, 0, x), (x, 0, 1))
 
-# Varianzas y covarianza
+## Varianzas y covarianza
     Var_X = E_X2 - E_X**2
     Var_Y = E_Y2 - E_Y**2
     Cov_XY = E_XY - E_X * E_Y
@@ -4582,7 +4582,7 @@ Sigma_analitica = calcular_covarianza_analitica()
 print("Matriz de covarianza analítica:")
 print(Sigma_analitica)
 
-# Verificación por simulación
+## Verificación por simulación
 def generar_muestra_triangular(n=10000):
     """Genera muestras de la distribución triangular"""
     u1 = np.random.uniform(0, 1, n)
@@ -4604,16 +4604,16 @@ def visualizar_normal_multivariada():
     mu = np.array([0, 0])
     Sigma = np.array([[2, 1], [1, 1]])
 
-# Generar puntos en la elipse de confianza
+## Generar puntos en la elipse de confianza
     theta = np.linspace(0, 2*np.pi, 100)
     circle = np.column_stack([np.cos(theta), np.sin(theta)])
 
-# Descomposición espectral para transformar círculo a elipse
+## Descomposición espectral para transformar círculo a elipse
     eigenvals, eigenvecs = np.linalg.eig(Sigma)
     ellipse = circle @ np.diag(np.sqrt(eigenvals)) @ eigenvecs.T
     ellipse += mu
 
-# Gráfico
+## Gráfico
     plt.figure(figsize=(10, 8))
     plt.plot(ellipse[:, 0], ellipse[:, 1], 'r-', linewidth=2, label='Elipse 1-sigma')
     plt.quiver(mu[0], mu[1], eigenvecs[0,0]*np.sqrt(eigenvals[0]),
@@ -4647,18 +4647,18 @@ $$
 ```python
 def transformacion_lineal_multivariada():
     """Ejemplo completo de transformación lineal de vector gaussiano"""
-# Distribución original
+## Distribución original
     mu_X = np.array([1, 2, 3])
     Sigma_X = np.array([[4, 1, 0.5],
                        [1, 3, 0.8],
                        [0.5, 0.8, 2]])
     
-# Matriz de transformación (reducción de dimensionalidad)
+## Matriz de transformación (reducción de dimensionalidad)
     A = np.array([[1, 0.5, 0],
                   [0, 1, 1]])
     b = np.array([-1, 2])
     
-# Distribución transformada
+## Distribución transformada
     mu_Y = A @ mu_X + b
     Sigma_Y = A @ Sigma_X @ A.T
     
@@ -4670,7 +4670,7 @@ def transformacion_lineal_multivariada():
     print(f"μ_Y = {mu_Y}")
     print(f"Σ_Y =\n{Sigma_Y}")
     
-# Verificación por simulación
+## Verificación por simulación
     X = np.random.multivariate_normal(mu_X, Sigma_X, 10000)
     Y_sim = (A @ X.T + b.reshape(-1, 1)).T
     
@@ -4699,10 +4699,10 @@ def analisis_espectral_completo(Sigma):
     print(f"Eigenvalores: {eigenvals}")
     print(f"Eigenvectores:\n{eigenvecs}")
     
-# Verificación de ortogonalidad
+## Verificación de ortogonalidad
     print(f"\nOrtogonalidad (V·V^T):\n{eigenvecs @ eigenvecs.T}")
     
-# Proporción de varianza explicada
+## Proporción de varianza explicada
     var_total = np.sum(eigenvals)
     prop_var = eigenvals / var_total
     print(f"\nProporción de varianza explicada: {prop_var}")
@@ -4731,14 +4731,14 @@ class WhiteningTransformer:
         X_centered = X - self.mu
         self.Sigma = np.cov(X_centered, rowvar=False)
         
-# Descomposición espectral
+## Descomposición espectral
         self.eigenvals, self.eigenvecs = np.linalg.eig(self.Sigma)
         
         if self.method == 'pca':
-# Blanqueamiento PCA
+## Blanqueamiento PCA
             self.W = self.eigenvecs @ np.diag(1.0 / np.sqrt(self.eigenvals)) @ self.eigenvecs.T
         elif self.method == 'zca':
-# Blanqueamiento ZCA (Mahalanobis)
+## Blanqueamiento ZCA (Mahalanobis)
             self.W = np.linalg.inv(self.eigenvecs @ np.diag(np.sqrt(self.eigenvals)) @ self.eigenvecs.T)
         else:  # Cholesky
             self.W = np.linalg.cholesky(np.linalg.inv(self.Sigma))
@@ -4752,7 +4752,7 @@ class WhiteningTransformer:
     def inverse_transform(self, Z):
         return Z @ np.linalg.inv(self.W.T) + self.mu
 
-# Ejemplo de uso
+## Ejemplo de uso
 X_data = np.random.multivariate_normal([1, 2], [[4, 2], [2, 3]], 1000)
 whitener = WhiteningTransformer(method='zca').fit(X_data)
 Z_white = whitener.transform(X_data)
@@ -4764,18 +4764,18 @@ print("\nCovarianza después de blanqueamiento:\n", np.cov(Z_white.T))
 ```python
 def transformacion_lineal_multivariada():
     """Ejemplo completo de transformación lineal de vector gaussiano"""
-# Distribución original
+## Distribución original
     mu_X = np.array([1, 2, 3])
     Sigma_X = np.array([[4, 1, 0.5],
                        [1, 3, 0.8],
                        [0.5, 0.8, 2]])
 
-# Matriz de transformación (reducción de dimensionalidad)
+## Matriz de transformación (reducción de dimensionalidad)
     A = np.array([[1, 0.5, 0],
                   [0, 1, 1]])
     b = np.array([-1, 2])
 
-# Distribución transformada
+## Distribución transformada
     mu_Y = A @ mu_X + b
     Sigma_Y = A @ Sigma_X @ A.T
 
@@ -4787,7 +4787,7 @@ def transformacion_lineal_multivariada():
     print(f"μ_Y = {mu_Y}")
     print(f"Σ_Y =\n{Sigma_Y}")
 
-# Verificación por simulación
+## Verificación por simulación
     X = np.random.multivariate_normal(mu_X, Sigma_X, 10000)
     Y_sim = (A @ X.T + b.reshape(-1, 1)).T
 
@@ -4807,10 +4807,10 @@ def analisis_espectral_completo(Sigma):
     print(f"Eigenvalores: {eigenvals}")
     print(f"Eigenvectores:\n{eigenvecs}")
 
-# Verificación de ortogonalidad
+## Verificación de ortogonalidad
     print(f"\nOrtogonalidad (V·V^T):\n{eigenvecs @ eigenvecs.T}")
 
-# Proporción de varianza explicada
+## Proporción de varianza explicada
     var_total = np.sum(eigenvals)
     prop_var = eigenvals / var_total
     print(f"\nProporción de varianza explicada: {prop_var}")
@@ -4835,14 +4835,14 @@ class WhiteningTransformer:
         X_centered = X - self.mu
         self.Sigma = np.cov(X_centered, rowvar=False)
 
-# Descomposición espectral
+## Descomposición espectral
         self.eigenvals, self.eigenvecs = np.linalg.eig(self.Sigma)
 
         if self.method == 'pca':
-# Blanqueamiento PCA
+## Blanqueamiento PCA
             self.W = self.eigenvecs @ np.diag(1.0 / np.sqrt(self.eigenvals)) @ self.eigenvecs.T
         elif self.method == 'zca':
-# Blanqueamiento ZCA (Mahalanobis)
+## Blanqueamiento ZCA (Mahalanobis)
             self.W = np.linalg.inv(self.eigenvecs @ np.diag(np.sqrt(self.eigenvals)) @ self.eigenvecs.T)
         else:  # Cholesky
             self.W = np.linalg.cholesky(np.linalg.inv(self.Sigma))
@@ -4856,7 +4856,7 @@ class WhiteningTransformer:
     def inverse_transform(self, Z):
         return Z @ np.linalg.inv(self.W.T) + self.mu
 
-# Ejemplo de uso
+## Ejemplo de uso
 X_data = np.random.multivariate_normal([1, 2], [[4, 2], [2, 3]], 1000)
 whitener = WhiteningTransformer(method='zca').fit(X_data)
 Z_white = whitener.transform(X_data)
@@ -4885,28 +4885,28 @@ class PCAFromScratch:
         self.n_components = n_components
         
     def fit(self, X):
-# Centrado
+## Centrado
         self.mean_ = np.mean(X, axis=0)
         X_centered = X - self.mean_
         
-# Matriz de covarianza
+## Matriz de covarianza
         n_samples = X.shape[0]
         self.cov_matrix_ = (X_centered.T @ X_centered) / (n_samples - 1)
         
-# Descomposición espectral
+## Descomposición espectral
         eigenvals, eigenvecs = np.linalg.eig(self.cov_matrix_)
         
-# Ordenar por eigenvalores descendentes
+## Ordenar por eigenvalores descendentes
         idx = np.argsort(eigenvals)[::-1]
         self.eigenvalues_ = eigenvals[idx]
         self.components_ = eigenvecs[:, idx]
         
-# Seleccionar componentes
+## Seleccionar componentes
         if self.n_components is not None:
             self.components_ = self.components_[:, :self.n_components]
             self.eigenvalues_ = self.eigenvalues_[:self.n_components]
             
-# Varianza explicada
+## Varianza explicada
         self.explained_variance_ratio_ = self.eigenvalues_ / np.sum(self.eigenvalues_)
         
         return self
@@ -4918,19 +4918,19 @@ class PCAFromScratch:
     def inverse_transform(self, Y):
         return Y @ self.components_.T + self.mean_
 
-# Comparación con scikit-learn
+## Comparación con scikit-learn
 from sklearn.decomposition import PCA
 from sklearn.datasets import load_iris
 
-# Datos de ejemplo
+## Datos de ejemplo
 iris = load_iris()
 X = iris.data
 
-# Nuestra implementación
+## Nuestra implementación
 pca_scratch = PCAFromScratch(n_components=2).fit(X)
 X_pca_scratch = pca_scratch.transform(X)
 
-# Scikit-learn
+## Scikit-learn
 pca_sklearn = PCA(n_components=2).fit(X)
 X_pca_sklearn = pca_sklearn.transform(X)
 
@@ -4945,13 +4945,13 @@ print("Varianza explicada (sklearn):", pca_sklearn.explained_variance_ratio_)
 ```python
 def pca_2d_demo():
     """Demo visual de PCA en 2 dimensiones"""
-# Generar datos correlacionados
+## Generar datos correlacionados
     np.random.seed(42)
     n_points = 300
     theta = np.random.uniform(0, 2*np.pi, n_points)
     r = np.random.normal(0, 0.3, n_points)
     
-# Elipse rotada
+## Elipse rotada
     rotation_angle = np.pi/4
     rotation_matrix = np.array([[np.cos(rotation_angle), -np.sin(rotation_angle)],
                               [np.sin(rotation_angle), np.cos(rotation_angle)]])
@@ -4959,14 +4959,14 @@ def pca_2d_demo():
     X_ellipse = np.column_stack([2*np.cos(theta) + r, 0.5*np.sin(theta) + r])
     X = X_ellipse @ rotation_matrix.T + [1, 2]
     
-# Aplicar PCA
+## Aplicar PCA
     pca = PCAFromScratch(n_components=2).fit(X)
     X_pca = pca.transform(X)
     
-# Visualización
+## Visualización
     fig, axes = plt.subplots(1, 3, figsize=(15, 5))
     
-# Datos originales
+## Datos originales
     axes[0].scatter(X[:, 0], X[:, 1], alpha=0.6)
     axes[0].set_title('Datos Originales')
     axes[0].set_xlabel('X1')
@@ -4974,7 +4974,7 @@ def pca_2d_demo():
     axes[0].grid(True, alpha=0.3)
     axes[0].axis('equal')
     
-# Datos + componentes principales
+## Datos + componentes principales
     axes[1].scatter(X[:, 0], X[:, 1], alpha=0.6)
     for length, vector in zip(pca.eigenvalues_, pca.components_.T):
         v = vector * np.sqrt(length) * 3  # Escalar para visualización
@@ -4986,7 +4986,7 @@ def pca_2d_demo():
     axes[1].grid(True, alpha=0.3)
     axes[1].axis('equal')
     
-# Datos transformados
+## Datos transformados
     axes[2].scatter(X_pca[:, 0], X_pca[:, 1], alpha=0.6)
     axes[2].set_title('Espacio PCA (Decorrelacionado)')
     axes[2].set_xlabel('PC1')
@@ -5005,25 +5005,25 @@ pca_2d_demo()
 ```python
 def pca_3d_demo():
     """Demo visual de PCA en 3 dimensiones con reducción a 2D"""
-# Generar datos 3D correlacionados
+## Generar datos 3D correlacionados
     np.random.seed(42)
     n_points = 500
     
-# Tres variables con diferentes correlaciones
+## Tres variables con diferentes correlaciones
     X1 = np.random.normal(0, 2, n_points)
     X2 = 0.7 * X1 + np.random.normal(0, 1, n_points)
     X3 = 0.5 * X1 + 0.3 * X2 + np.random.normal(0, 0.5, n_points)
     
     X_3d = np.column_stack([X1, X2, X3])
     
-# Aplicar PCA
+## Aplicar PCA
     pca_3d = PCAFromScratch(n_components=2).fit(X_3d)
     X_2d = pca_3d.transform(X_3d)
     
-# Visualización 3D
+## Visualización 3D
     fig = plt.figure(figsize=(15, 5))
     
-# Subplot 1: Datos originales 3D
+## Subplot 1: Datos originales 3D
     ax1 = fig.add_subplot(131, projection='3d')
     scatter = ax1.scatter(X_3d[:, 0], X_3d[:, 1], X_3d[:, 2],
                          c=X_3d[:, 0], cmap='viridis', alpha=0.6)
@@ -5032,11 +5032,11 @@ def pca_3d_demo():
     ax1.set_ylabel('X2')
     ax1.set_zlabel('X3')
     
-# Subplot 2: Componentes principales en 3D
+## Subplot 2: Componentes principales en 3D
     ax2 = fig.add_subplot(132, projection='3d')
     ax2.scatter(X_3d[:, 0], X_3d[:, 1], X_3d[:, 2], alpha=0.3)
     
-# Dibujar componentes principales
+## Dibujar componentes principales
     for length, vector in zip(pca_3d.eigenvalues_, pca_3d.components_.T):
         v = vector * np.sqrt(length) * 3
         ax2.quiver(pca_3d.mean_[0], pca_3d.mean_[1], pca_3d.mean_[2],
@@ -5047,7 +5047,7 @@ def pca_3d_demo():
     ax2.set_ylabel('X2')
     ax2.set_zlabel('X3')
     
-# Subplot 3: Proyección 2D
+## Subplot 3: Proyección 2D
     ax3 = fig.add_subplot(133)
     scatter_2d = ax3.scatter(X_2d[:, 0], X_2d[:, 1], c=X_3d[:, 0], cmap='viridis', alpha=0.6)
     ax3.set_title(f'Proyección PCA 2D\n(Varianza explicada: {np.sum(pca_3d.explained_variance_ratio_):.2%})')
@@ -5087,12 +5087,12 @@ def analisis_reconstruccion_pca():
         X_transformed = pca.transform(X_digits)
         X_reconstructed = pca.inverse_transform(X_transformed)
         
-# Error de reconstrucción
+## Error de reconstrucción
         mse = np.mean((X_digits - X_reconstructed) ** 2)
         mse_values.append(mse)
         var_explained.append(np.sum(pca.explained_variance_ratio_))
     
-# Gráfico de trade-off
+## Gráfico de trade-off
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
     
     ax1.plot(n_components_range, mse_values, 'bo-', linewidth=2)
@@ -5133,28 +5133,28 @@ class PCAFromScratch:
         self.n_components = n_components
 
     def fit(self, X):
-# Centrado
+## Centrado
         self.mean_ = np.mean(X, axis=0)
         X_centered = X - self.mean_
 
-# Matriz de covarianza
+## Matriz de covarianza
         n_samples = X.shape[0]
         self.cov_matrix_ = (X_centered.T @ X_centered) / (n_samples - 1)
 
-# Descomposición espectral
+## Descomposición espectral
         eigenvals, eigenvecs = np.linalg.eig(self.cov_matrix_)
 
-# Ordenar por eigenvalores descendentes
+## Ordenar por eigenvalores descendentes
         idx = np.argsort(eigenvals)[::-1]
         self.eigenvalues_ = eigenvals[idx]
         self.components_ = eigenvecs[:, idx]
 
-# Seleccionar componentes
+## Seleccionar componentes
         if self.n_components is not None:
             self.components_ = self.components_[:, :self.n_components]
             self.eigenvalues_ = self.eigenvalues_[:self.n_components]
 
-# Varianza explicada
+## Varianza explicada
         self.explained_variance_ratio_ = self.eigenvalues_ / np.sum(self.eigenvalues_)
 
         return self
@@ -5166,19 +5166,19 @@ class PCAFromScratch:
     def inverse_transform(self, Y):
         return Y @ self.components_.T + self.mean_
 
-# Comparación con scikit-learn
+## Comparación con scikit-learn
 from sklearn.decomposition import PCA
 from sklearn.datasets import load_iris
 
-# Datos de ejemplo
+## Datos de ejemplo
 iris = load_iris()
 X = iris.data
 
-# Nuestra implementación
+## Nuestra implementación
 pca_scratch = PCAFromScratch(n_components=2).fit(X)
 X_pca_scratch = pca_scratch.transform(X)
 
-# Scikit-learn
+## Scikit-learn
 pca_sklearn = PCA(n_components=2).fit(X)
 X_pca_sklearn = pca_sklearn.transform(X)
 
@@ -5189,13 +5189,13 @@ print("Varianza explicada (sklearn):", pca_sklearn.explained_variance_ratio_)
 ```python
 def pca_2d_demo():
     """Demo visual de PCA en 2 dimensiones"""
-# Generar datos correlacionados
+## Generar datos correlacionados
     np.random.seed(42)
     n_points = 300
     theta = np.random.uniform(0, 2*np.pi, n_points)
     r = np.random.normal(0, 0.3, n_points)
 
-# Elipse rotada
+## Elipse rotada
     rotation_angle = np.pi/4
     rotation_matrix = np.array([[np.cos(rotation_angle), -np.sin(rotation_angle)],
                               [np.sin(rotation_angle), np.cos(rotation_angle)]])
@@ -5203,14 +5203,14 @@ def pca_2d_demo():
     X_ellipse = np.column_stack([2*np.cos(theta) + r, 0.5*np.sin(theta) + r])
     X = X_ellipse @ rotation_matrix.T + [1, 2]
 
-# Aplicar PCA
+## Aplicar PCA
     pca = PCAFromScratch(n_components=2).fit(X)
     X_pca = pca.transform(X)
 
-# Visualización
+## Visualización
     fig, axes = plt.subplots(1, 3, figsize=(15, 5))
 
-# Datos originales
+## Datos originales
     axes[0].scatter(X[:, 0], X[:, 1], alpha=0.6)
     axes[0].set_title('Datos Originales')
     axes[0].set_xlabel('X1')
@@ -5218,7 +5218,7 @@ def pca_2d_demo():
     axes[0].grid(True, alpha=0.3)
     axes[0].axis('equal')
 
-# Datos + componentes principales
+## Datos + componentes principales
     axes[1].scatter(X[:, 0], X[:, 1], alpha=0.6)
     for length, vector in zip(pca.eigenvalues_, pca.components_.T):
         v = vector * np.sqrt(length) * 3  # Escalar para visualización
@@ -5230,7 +5230,7 @@ def pca_2d_demo():
     axes[1].grid(True, alpha=0.3)
     axes[1].axis('equal')
 
-# Datos transformados
+## Datos transformados
     axes[2].scatter(X_pca[:, 0], X_pca[:, 1], alpha=0.6)
     axes[2].set_title('Espacio PCA (Decorrelacionado)')
     axes[2].set_xlabel('PC1')
@@ -5247,25 +5247,25 @@ pca_2d_demo()
 ```python
 def pca_3d_demo():
     """Demo visual de PCA en 3 dimensiones con reducción a 2D"""
-# Generar datos 3D correlacionados
+## Generar datos 3D correlacionados
     np.random.seed(42)
     n_points = 500
 
-# Tres variables con diferentes correlaciones
+## Tres variables con diferentes correlaciones
     X1 = np.random.normal(0, 2, n_points)
     X2 = 0.7 * X1 + np.random.normal(0, 1, n_points)
     X3 = 0.5 * X1 + 0.3 * X2 + np.random.normal(0, 0.5, n_points)
 
     X_3d = np.column_stack([X1, X2, X3])
 
-# Aplicar PCA
+## Aplicar PCA
     pca_3d = PCAFromScratch(n_components=2).fit(X_3d)
     X_2d = pca_3d.transform(X_3d)
 
-# Visualización 3D
+## Visualización 3D
     fig = plt.figure(figsize=(15, 5))
 
-# Subplot 1: Datos originales 3D
+## Subplot 1: Datos originales 3D
     ax1 = fig.add_subplot(131, projection='3d')
     scatter = ax1.scatter(X_3d[:, 0], X_3d[:, 1], X_3d[:, 2],
                          c=X_3d[:, 0], cmap='viridis', alpha=0.6)
@@ -5274,11 +5274,11 @@ def pca_3d_demo():
     ax1.set_ylabel('X2')
     ax1.set_zlabel('X3')
 
-# Subplot 2: Componentes principales en 3D
+## Subplot 2: Componentes principales en 3D
     ax2 = fig.add_subplot(132, projection='3d')
     ax2.scatter(X_3d[:, 0], X_3d[:, 1], X_3d[:, 2], alpha=0.3)
 
-# Dibujar componentes principales
+## Dibujar componentes principales
     for length, vector in zip(pca_3d.eigenvalues_, pca_3d.components_.T):
         v = vector * np.sqrt(length) * 3
         ax2.quiver(pca_3d.mean_[0], pca_3d.mean_[1], pca_3d.mean_[2],
@@ -5289,7 +5289,7 @@ def pca_3d_demo():
     ax2.set_ylabel('X2')
     ax2.set_zlabel('X3')
 
-# Subplot 3: Proyección 2D
+## Subplot 3: Proyección 2D
     ax3 = fig.add_subplot(133)
     scatter_2d = ax3.scatter(X_2d[:, 0], X_2d[:, 1], c=X_3d[:, 0], cmap='viridis', alpha=0.6)
     ax3.set_title(f'Proyección PCA 2D\n(Varianza explicada: {np.sum(pca_3d.explained_variance_ratio_):.2%})')
@@ -5325,12 +5325,12 @@ def analisis_reconstruccion_pca():
         X_transformed = pca.transform(X_digits)
         X_reconstructed = pca.inverse_transform(X_transformed)
 
-# Error de reconstrucción
+## Error de reconstrucción
         mse = np.mean((X_digits - X_reconstructed) ** 2)
         mse_values.append(mse)
         var_explained.append(np.sum(pca.explained_variance_ratio_))
 
-# Gráfico de trade-off
+## Gráfico de trade-off
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
 
     ax1.plot(n_components_range, mse_values, 'bo-', linewidth=2)
@@ -5598,22 +5598,22 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from IPython.display import display, Math
 
-# Parámetros: [Diámetro (nm), Potencial Zeta (mV)]
+## Parámetros: [Diámetro (nm), Potencial Zeta (mV)]
 mu = np.array([25.0, -40.0])
 cov = np.array([
     [16.0, -18.0],   # Varianza X=16, Cov(X,Y)=-18
     [-18.0, 36.0]    # Varianza Y=36
 ])
 
-# Descomposición de Cholesky
+## Descomposición de Cholesky
 L = np.linalg.cholesky(cov)
 
-# Muestreo
+## Muestreo
 np.random.seed(99)
 Z = stats.norm.rvs(size=(2, 10_000))
 muestras_bivariadas = (mu.reshape(2, 1) + L @ Z).T
 
-# Visualización
+## Visualización
 df_bivariado = pd.DataFrame(muestras_bivariadas, columns=["Diametro_nm", "PotencialZeta_mV"])
 g = sns.jointplot(data=df_bivariado, x="Diametro_nm", y="PotencialZeta_mV", kind="kde", cmap="Blues", fill=True)
 g.fig.suptitle("Simulación Bivariada por Cholesky: Diámetro vs Potencial Zeta", y=1.02, fontweight="bold")
@@ -5640,10 +5640,10 @@ from IPython.display import display, Math
 x, y = sp.symbols('x y', real=True)
 c = sp.Symbol('c', positive=True)
 
-# Densidad conjunta f(x,y) = c * x * y en [0,1]x[0,1]
+## Densidad conjunta f(x,y) = c * x * y en [0,1]x[0,1]
 f_xy = c * x * y
 
-# Cálculo de la constante de normalización 'c'
+## Cálculo de la constante de normalización 'c'
 integral_doble = sp.integrate(f_xy, (x, 0, 1), (y, 0, 1))
 c_resuelto = sp.solve(integral_doble - 1, c)[0]
 

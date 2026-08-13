@@ -186,10 +186,10 @@ plt.show()
 
 ```python
 from pickle import TRUE
-# Crear la figura con 3 subgráficos
+## Crear la figura con 3 subgráficos
 fig, axes = plt.subplots(1, 3, figsize=(18, 3))
 
-# Histograma usando Seaborn
+## Histograma usando Seaborn
 sns.histplot(np.random.rand(10000), ax=axes[0], kde=True)
 axes[0].set_title("rand")
 
@@ -199,7 +199,7 @@ axes[1].set_title("randn")
 sns.histplot(np.random.randint(low=1, high=10, size=10000), ax=axes[2], bins=9, kde=False)
 axes[2].set_title("randint(low=1, high=10)")
 
-# Mostrar el gráfico
+## Mostrar el gráfico
 plt.show()
 ```
 
@@ -499,13 +499,13 @@ data = X.rvs(size=1000)  # Generate 1000 samples
 ```python
 import numpy as np
 
-# 1erd central moment (variance)
+## 1erd central moment (variance)
 first_central_moment = np.mean((data - mean)**1)
 first_central_moment
 ```
 
 ```python
-# 2nd central moment (variance)
+## 2nd central moment (variance)
 second_central_moment = np.mean((data - mean)**2)
 second_central_moment
 ```
@@ -528,13 +528,13 @@ Si aumentaras significativamente el tamaño de tu muestra (por ejemplo, a 10,000
 El valor calculado de $0.239998...$ es una estimación de la varianza, y su ligera desviación del valor teórico es esperada debido a la naturaleza aleatoria del proceso de muestreo.
 
 ```python
-# 3rd central moment
+## 3rd central moment
 third_central_moment = np.mean((data - mean)**3)
 
-# 4th central moment
+## 4th central moment
 fourth_central_moment = np.mean((data - mean)**4)
 
-# etc...
+## etc...
 ```
 
 Y podemos obtener una lista de estadísticas dependiente de la distribución utilizando el método `stats`.
@@ -558,15 +558,15 @@ import matplotlib.pyplot as plt
 from scipy import stats
 import numpy as np
 
-# Asumiendo que X ya está definido como stats.norm(1, 0.5)
+## Asumiendo que X ya está definido como stats.norm(1, 0.5)
 x_values = [0, 1, 2]
 pdf_values = X.pdf(x_values)
 
-# Crear un rango de valores de x para la curva suave
+## Crear un rango de valores de x para la curva suave
 x_range = np.linspace(X.ppf(0.01), X.ppf(0.99), 100)
 pdf_range = X.pdf(x_range)
 
-# Crear el gráfico con Seaborn
+## Crear el gráfico con Seaborn
 sns.lineplot(x=x_range, y=pdf_range) # Curva suave
 plt.stem(x_values, pdf_values, linefmt='r-', markerfmt='ro', basefmt='k-') # Puntos específicos
 plt.title('Función de Densidad de Probabilidad (PDF)')
@@ -585,11 +585,11 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 from scipy import stats
 
-# Asumiendo que X ya está definido como stats.norm(1, 0.5)
+## Asumiendo que X ya está definido como stats.norm(1, 0.5)
 x_values = [0, 1, 2, 3, 4]
 cdf_values = X.cdf(x_values)
 
-# Crear el gráfico con Seaborn
+## Crear el gráfico con Seaborn
 sns.lineplot(x=x_values, y=cdf_values, marker='o')
 plt.title('Función de Distribución Acumulada (CDF)')
 plt.xlabel('x')
@@ -645,7 +645,7 @@ def plot_rv_distribution(X, axes=None):
         axes[0].plot(x999, X.pdf(x999), label="PDF")
         axes[0].fill_between(x95, X.pdf(x95), alpha=0.25)
     else:
-# discrete random variables do not have a pdf method, instead we use pmf:
+## discrete random variables do not have a pdf method, instead we use pmf:
         x999_int = np.unique(x999.astype(int))
         axes[0].bar(x999_int, X.pmf(x999_int), label="PMF")
     axes[1].plot(x999, X.cdf(x999), label="CDF")
@@ -659,8 +659,8 @@ import matplotlib.pyplot as plt
 import scipy.stats as stats
 
 fig, axes = plt.subplots(3, 3, figsize=(12, 9))
-# Assuming plot_rv_distribution is defined elsewhere
-# and takes X and axes as arguments.
+## Assuming plot_rv_distribution is defined elsewhere
+## and takes X and axes as arguments.
 X = stats.norm()
 plot_rv_distribution(X, axes=axes[0, :])
 axes[0, 0].set_ylabel("Normal dist.")
@@ -690,24 +690,24 @@ def plot_rv_distribution(X, axes=None):
     x95 = np.linspace(x_min_95, x_max_95, 1000)
 
     if hasattr(X.dist, "pdf"):
-# PDF plot using Seaborn
+## PDF plot using Seaborn
         axes[0].plot(x999, X.pdf(x999), label="PDF")
         axes[0].fill_between(x95, X.pdf(x95), alpha=0.25)
 
     else:
-# PMF plot using Seaborn (for Poisson)
+## PMF plot using Seaborn (for Poisson)
         x999_int = np.unique(x999.astype(int))
 
-# Create a DataFrame for Seaborn barplot (easier to work with)
+## Create a DataFrame for Seaborn barplot (easier to work with)
         df = pd.DataFrame({'x': x999_int, 'pmf': X.pmf(x999_int)})
         sns.barplot(x='x', y='pmf', data=df, ax=axes[0], label="PMF", color="skyblue")
         axes[0].set_xticks(x999_int)
 
-# CDF and SF plot using Seaborn
+## CDF and SF plot using Seaborn
     axes[1].plot(x999, X.cdf(x999), label="CDF")
     axes[1].plot(x999, X.sf(x999), label="SF")
 
-# PPF plot using Seaborn
+## PPF plot using Seaborn
     axes[2].plot(x999, X.ppf(x999), label="PPF")
 
     for ax in axes:
@@ -871,23 +871,23 @@ def plot_dist_samples(X, X_samples, title=None, ax=None):
     if ax is None:
         fig, ax = plt.subplots(1, 1, figsize=(8, 4))
 
-# Obtener el rango adecuado para la gráfica utilizando el método de intervalo
+## Obtener el rango adecuado para la gráfica utilizando el método de intervalo
     x_lim = X.interval(.99)
     x = np.linspace(*x_lim, num=100)
 
-# Graficar la PDF de la distribución
+## Graficar la PDF de la distribución
     ax.plot(x, X.pdf(x), label="PDF", lw=3)
 
-# Graficar el histograma de las muestras
+## Graficar el histograma de las muestras
     ax.hist(X_samples, label="samples", density=1, bins=75)
 
-# Establecer el rango del eje x
+## Establecer el rango del eje x
     ax.set_xlim(*x_lim)
 
-# Agregar la leyenda
+## Agregar la leyenda
     ax.legend()
 
-# Establecer el título de la gráfica si se proporciona
+## Establecer el título de la gráfica si se proporciona
     if title:
         ax.set_title(title)
 
@@ -899,21 +899,21 @@ Cabe destacar que en esta función hemos utilizado la sintaxis de desempaquetado
 A continuación, usamos esta función para visualizar 2000 muestras de tres variables aleatorias con diferentes distribuciones: aquí utilizamos la distribución t de Student, la distribución $\chi^2$ y la distribución exponencial, y los resultados se muestran en la Figura 13-3. Dado que 2000 es una muestra bastante grande, los gráficos del histograma de las muestras coinciden bien con la función de distribución de probabilidad. Con un número aún mayor de muestras, se puede esperar que la concordancia sea aún mejor.
 
 ```python
-# Crear una figura con 3 subgráficas
+## Crear una figura con 3 subgráficas
 fig, axes = plt.subplots(1, 3, figsize=(12, 3))
 
-# Número de muestras
+## Número de muestras
 N = 2000
 
-# Distribución t de Student
+## Distribución t de Student
 X = stats.t(7.0)
 plot_dist_samples(X, X.rvs(N), "Distribución t de Student", ax=axes[0])
 
-# Distribución chi-cuadrada
+## Distribución chi-cuadrada
 X = stats.chi2(5.0)
 plot_dist_samples(X, X.rvs(N), r"$\chi^2$ dist.", ax=axes[1])
 
-# Distribución exponencial
+## Distribución exponencial
 X = stats.expon(0.5)
 plot_dist_samples(X, X.rvs(N), "Distribución exponencial", ax=axes[2])
 
@@ -935,7 +935,7 @@ El **ajuste de maxima verosimilitud (MLE)** estima parametros que maximizan la p
 - **Anderson-Darling**: Mas sensible en las colas de la distribucion
 
 ```python
-# Ajuste de Maxima Verosimilitud - Analisis Completo
+## Ajuste de Maxima Verosimilitud - Analisis Completo
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy import stats
@@ -961,7 +961,7 @@ dist_teorica = stats.chi2(df=5)
 print('\n3. Generando visualizaciones...')
 fig, axes = plt.subplots(2, 2, figsize=(16, 12))
 
-# Histograma vs PDF
+## Histograma vs PDF
 ax1 = axes[0, 0]
 ax1.hist(datos_reales, bins=50, density=True, alpha=0.6, color='skyblue',
          edgecolor='black', label='Datos reales')
@@ -974,7 +974,7 @@ ax1.set_title('Comparacion: Datos vs Distribuciones', fontsize=14, fontweight='b
 ax1.legend()
 ax1.grid(True, alpha=0.3)
 
-# CDF
+## CDF
 ax2 = axes[0, 1]
 datos_ord = np.sort(datos_reales)
 cdf_emp = np.arange(1, len(datos_ord)+1) / len(datos_ord)
@@ -987,7 +987,7 @@ ax2.set_title('Funciones de Distribucion Acumulada', fontsize=14, fontweight='bo
 ax2.legend()
 ax2.grid(True, alpha=0.3)
 
-# Q-Q Plot
+## Q-Q Plot
 ax3 = axes[1, 0]
 stats.probplot(datos_reales, dist=stats.chi2, sparams=parametros_ajustados, plot=ax3)
 ax3.get_lines()[0].set_marker('o')
@@ -997,7 +997,7 @@ ax3.get_lines()[1].set_linewidth(2)
 ax3.set_title('Q-Q Plot: Validacion del Ajuste', fontsize=14, fontweight='bold')
 ax3.grid(True, alpha=0.3)
 
-# Residuos
+## Residuos
 ax4 = axes[1, 1]
 valores_esp = dist_ajustada.ppf(cdf_emp)
 residuos = datos_ord - valores_esp
@@ -1061,8 +1061,8 @@ La distribución Chi-cuadrada ajustada Y proporciona una forma de modelar y ente
 
 ```python
 x=5
-# Y=parametros_ajustados # This was a tuple of parameters, not a distribution object
-# Create the chi-squared distribution object using the fitted parameters
+## Y=parametros_ajustados # This was a tuple of parameters, not a distribution object
+## Create the chi-squared distribution object using the fitted parameters
 df_aj, loc_aj, scale_aj = parametros_ajustados
 Y = stats.chi2(df=df_aj, loc=loc_aj, scale=scale_aj)
 Y.pdf(x)
@@ -1080,43 +1080,43 @@ def plot_rv_distribution(rv):
     Args:
         rv: A SciPy stats random variable object.
     """
-# Create x-axis values for plotting
+## Create x-axis values for plotting
     x = np.linspace(rv.ppf(0.01), rv.ppf(0.99), 100)
 
-# Create subplots for PDF, CDF, SF, and PPF
+## Create subplots for PDF, CDF, SF, and PPF
     fig, axes = plt.subplots(2, 2, figsize=(12, 8))
 
-# Plot PDF
+## Plot PDF
     axes[0, 0].plot(x, rv.pdf(x), 'r-', lw=2, label='PDF')
     axes[0, 0].set_title('Probability Density Function (PDF)')
 
-# Plot CDF
+## Plot CDF
     axes[0, 1].plot(x, rv.cdf(x), 'b-', lw=2, label='CDF')
     axes[0, 1].set_title('Cumulative Distribution Function (CDF)')
 
-# Plot SF (Survival Function)
+## Plot SF (Survival Function)
     axes[1, 0].plot(x, rv.sf(x), 'g-', lw=2, label='SF')
     axes[1, 0].set_title('Survival Function (SF)')
 
-# Plot PPF (Percent Point Function)
+## Plot PPF (Percent Point Function)
     axes[1, 1].plot(x, rv.ppf(x), 'm-', lw=2, label='PPF')
     axes[1, 1].set_title('Percent Point Function (PPF)')
 
-# Add legends and grid to subplots
+## Add legends and grid to subplots
     for ax in axes.flatten():
         ax.legend(loc='best', frameon=False)
         ax.grid(True)
 
-# Adjust spacing between subplots
+## Adjust spacing between subplots
     plt.tight_layout()
 
-# Define Y as a normal random variable with mean 1 and standard deviation 0.5
+## Define Y as a normal random variable with mean 1 and standard deviation 0.5
 Y = stats.norm(1, 0.5)
 
-# Generate the plots (PDF, CDF, SF, PPF)
+## Generate the plots (PDF, CDF, SF, PPF)
 plot_rv_distribution(Y)
 
-# Show the plot
+## Show the plot
 plt.show()
 ```
 
@@ -1137,19 +1137,19 @@ El usuario proporciona la muestra de datos y el algoritmo devuelve la distribuci
 
 from distfit import distfit
 
-# Generar una muestra de datos
+## Generar una muestra de datos
 data = np.random.normal(loc=0, scale=1, size=1000)
 
-# Instanciar el objeto distfit
+## Instanciar el objeto distfit
 dist = distfit()
 
-# Ajustar las distribuciones a los datos
+## Ajustar las distribuciones a los datos
 dist.fit_transform(data)
 
-# Mostrar la mejor distribución encontrada
+## Mostrar la mejor distribución encontrada
 print(dist.model)
 
-# Visualizar el ajuste
+## Visualizar el ajuste
 dist.plot()
 ```
 
@@ -1182,7 +1182,7 @@ Las **redes neuronales probabilisticas** combinan deep learning con teoria de pr
 | Datos requeridos | Pocos | Muchos |
 
 ```python
-# RED NEURONAL PROBABILISTICA: Analisis Train/Test Completo
+## RED NEURONAL PROBABILISTICA: Analisis Train/Test Completo
 import numpy as np
 import tensorflow as tf
 import tensorflow_probability as tfp
@@ -1201,7 +1201,7 @@ print('='*80)
 print(' '*20 + 'RED NEURONAL PROBABILISTICA')
 print('='*80)
 
-# 1. DATOS
+## 1. DATOS
 print('\n[1/6] Generando datos...')
 n_samples = 2000
 X_data = np.random.randn(n_samples, 1).astype(np.float32)
@@ -1214,7 +1214,7 @@ print(f'   Total: {n_samples} muestras')
 print(f'   Train: {X_train.shape[0]} ({X_train.shape[0]/n_samples*100:.0f}%)')
 print(f'   Test: {X_test.shape[0]} ({X_test.shape[0]/n_samples*100:.0f}%)')
 
-# 2. MODELO
+## 2. MODELO
 print('\n[2/6] Construyendo modelo...')
 model = tf.keras.Sequential([
     tf.keras.layers.Dense(64, activation='relu', input_shape=(1,)),
@@ -1225,39 +1225,39 @@ model = tf.keras.Sequential([
     tf.keras.layers.Dense(2),  # Output layer now directly outputs loc and scale
 ])
 
-# Modified loss function to create distribution from model output
+## Modified loss function to create distribution from model output
 def neg_log_likelihood(y_true, y_pred_params):
-# y_pred_params will be the output of the last Dense layer (loc and scale)
+## y_pred_params will be the output of the last Dense layer (loc and scale)
     loc, scale = tf.split(y_pred_params, num_or_size_splits=2, axis=-1)
-# Ensure scale is positive using softplus
+## Ensure scale is positive using softplus
     scale = tf.math.softplus(scale)
-# Create the distribution
+## Create the distribution
     y_pred_dist = tfd.Normal(loc=loc, scale=scale)
-# Compute the negative log probability
+## Compute the negative log probability
     return -y_pred_dist.log_prob(y_true)
 
 model.compile(
     optimizer=tf.keras.optimizers.Adam(0.001),
     loss=neg_log_likelihood,
-# Can add metrics that work with tensor output, e.g., 'mae' if desired,
-# but be mindful that this is comparing the mean of the predicted distribution
-# to the true value, not evaluating the full distribution fit.
-# For now, keeping metrics simple or removed to avoid potential issues.
-# metrics=['mae'] # Re-add MAE if needed and compatible
+## Can add metrics that work with tensor output, e.g., 'mae' if desired,
+## but be mindful that this is comparing the mean of the predicted distribution
+## to the true value, not evaluating the full distribution fit.
+## For now, keeping metrics simple or removed to avoid potential issues.
+## metrics=['mae'] # Re-add MAE if needed and compatible
 )
 
 print(f'   Parametros: {model.count_params():,}')
 
-# 3. ENTRENAR
+## 3. ENTRENAR
 print('\n[3/6] Entrenando...')
 early_stop = tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=15, restore_best_weights=True)
 history = model.fit(X_train, y_train, validation_split=0.2, epochs=200, batch_size=32, callbacks=[early_stop], verbose=0)
 
 print(f'   Epocas: {len(history.history["loss"])}')
 
-# 4. PREDICCIONES
+## 4. PREDICCIONES
 print('\n[4/6] Predicciones...')
-# When predicting after training, get the parameters and create the distribution
+## When predicting after training, get the parameters and create the distribution
 y_pred_params_train = model(X_train)
 y_pred_dist_train = tfd.Normal(loc=y_pred_params_train[..., :1], scale=tf.math.softplus(y_pred_params_train[..., 1:]))
 y_pred_train = y_pred_dist_train.mean().numpy()
@@ -1266,7 +1266,7 @@ y_pred_params_test = model(X_test)
 y_pred_dist_test = tfd.Normal(loc=y_pred_params_test[..., :1], scale=tf.math.softplus(y_pred_params_test[..., 1:]))
 y_pred_test = y_pred_dist_test.mean().numpy()
 
-# 5. METRICAS
+## 5. METRICAS
 print('\n[5/6] Calculando metricas...')
 mae_train = mean_absolute_error(y_train, y_pred_train)
 rmse_train = np.sqrt(mean_squared_error(y_train, y_pred_train))
@@ -1295,13 +1295,13 @@ print(f'  Delta RMSE: {abs(rmse_train-rmse_test):.6f}')
 print(f'  Delta R2:   {abs(r2_train-r2_test):.6f}')
 print('='*80)
 
-# 6. VISUALIZACIONES
+## 6. VISUALIZACIONES
 print('\n[6/6] Generando visualizaciones...')
 
 fig = plt.figure(figsize=(20, 14))
 gs = fig.add_gridspec(3, 3, hspace=0.35, wspace=0.3)
 
-# Loss
+## Loss
 ax1 = fig.add_subplot(gs[0, 0])
 epochs = range(1, len(history.history['loss'])+1)
 ax1.plot(epochs, history.history['loss'], 'b-', lw=2, label='Train', alpha=0.8)
@@ -1312,16 +1312,16 @@ ax1.set_title('Curva de Aprendizaje: Loss', fontsize=13, fontweight='bold')
 ax1.legend()
 ax1.grid(True, alpha=0.3)
 
-# MAE
-# MAE is calculated manually after training, not available in history
-# ax2 = fig.add_subplot(gs[0, 1])
-# ax2.set_xlabel('Epoca', fontsize=11, fontweight='bold')
-# ax2.set_ylabel('MAE', fontsize=11, fontweight='bold')
-# ax2.set_title('Curva de Aprendizaje: MAE (Calculated Post-Training)', fontsize=13, fontweight='bold')
-# ax2.grid(True, alpha=0.3)
-# Placeholder for MAE plot if history was available or calculated per epoch
+## MAE
+## MAE is calculated manually after training, not available in history
+## ax2 = fig.add_subplot(gs[0, 1])
+## ax2.set_xlabel('Epoca', fontsize=11, fontweight='bold')
+## ax2.set_ylabel('MAE', fontsize=11, fontweight='bold')
+## ax2.set_title('Curva de Aprendizaje: MAE (Calculated Post-Training)', fontsize=13, fontweight='bold')
+## ax2.grid(True, alpha=0.3)
+## Placeholder for MAE plot if history was available or calculated per epoch
 
-# Barras metricas
+## Barras metricas
 ax3 = fig.add_subplot(gs[0, 2])
 metricas = ['MAE', 'RMSE', 'R2']
 train_vals = [mae_train, rmse_train, r2_train]
@@ -1341,7 +1341,7 @@ for bars in [bars1, bars2]:
         h = bar.get_height()
         ax3.text(bar.get_x()+bar.get_width()/2, h, f'{h:.3f}', ha='center', va='bottom', fontsize=8)
 
-# Scatter Train
+## Scatter Train
 ax4 = fig.add_subplot(gs[1, 0])
 ax4.scatter(y_train, y_pred_train, alpha=0.4, s=25, c='steelblue')
 lims = [min(y_train.min(), y_pred_train.min()), max(y_train.max(), y_pred_train.max())]
@@ -1353,7 +1353,7 @@ ax4.legend()
 ax4.grid(True, alpha=0.3)
 ax4.set_aspect('equal', adjustable='box')
 
-# Scatter Test
+## Scatter Test
 ax5 = fig.add_subplot(gs[1, 1])
 ax5.scatter(y_test, y_pred_test, alpha=0.4, s=25, c='coral')
 lims = [min(y_test.min(), y_pred_test.min()), max(y_test.max(), y_pred_test.max())]
@@ -1365,7 +1365,7 @@ ax5.legend()
 ax5.grid(True, alpha=0.3)
 ax5.set_aspect('equal', adjustable='box')
 
-# Combinado
+## Combinado
 ax6 = fig.add_subplot(gs[1, 2])
 ax6.scatter(y_train, y_pred_train, alpha=0.3, s=20, c='steelblue', label='Train')
 ax6.scatter(y_test, y_pred_test, alpha=0.3, s=20, c='coral', label='Test')
@@ -1381,7 +1381,7 @@ ax6.legend()
 ax6.grid(True, alpha=0.3)
 ax6.set_aspect('equal', adjustable='box')
 
-# Residuos Train
+## Residuos Train
 ax7 = fig.add_subplot(gs[2, 0])
 res_train = (y_train - y_pred_train).flatten()
 ax7.scatter(y_pred_train, res_train, alpha=0.4, s=25, c='steelblue')
@@ -1392,7 +1392,7 @@ ax7.set_title('Residuos: Train', fontsize=13, fontweight='bold')
 ax7.legend()
 ax7.grid(True, alpha=0.3)
 
-# Residuos Test
+## Residuos Test
 ax8 = fig.add_subplot(gs[2, 1])
 res_test = (y_test - y_pred_test).flatten()
 ax8.scatter(y_pred_test, res_test, alpha=0.4, s=25, c='coral')
@@ -1403,7 +1403,7 @@ ax8.set_title('Residuos: Test', fontsize=13, fontweight='bold')
 ax8.legend()
 ax8.grid(True, alpha=0.3)
 
-# Distribucion errores
+## Distribucion errores
 ax9 = fig.add_subplot(gs[2, 2])
 ax9.hist(res_train, bins=50, alpha=0.6, label='Train', color='steelblue', density=True, edgecolor='black')
 ax9.hist(res_test, bins=50, alpha=0.6, label='Test', color='coral', density=True, edgecolor='black')
@@ -1428,10 +1428,10 @@ print('='*80)
 Puedes guardar tu modelo usando el método `model.save()`. Especifica la ruta donde quieres guardar el modelo.
 
 ```python
-# Define la ruta donde quieres guardar el modelo
+## Define la ruta donde quieres guardar el modelo
 model_save_path = 'probabilistic_model.keras' # Added .keras extension
 
-# Guarda el modelo en formato SavedModel
+## Guarda el modelo en formato SavedModel
 model.save(model_save_path)
 
 print(f"Modelo guardado en: {model_save_path}")
@@ -1442,8 +1442,8 @@ print(f"Modelo guardado en: {model_save_path}")
 Para usar el modelo más tarde, puedes cargarlo usando `tf.keras.models.load_model()`. Es importante que la función de pérdida personalizada (`neg_log_likelihood`) esté disponible en el entorno donde cargas el modelo, ya que es necesaria para la configuración del modelo.
 
 ```python
-# Carga el modelo guardado
-# Asegúrate de que la funcion neg_log_likelihood este definida en este entorno
+## Carga el modelo guardado
+## Asegúrate de que la funcion neg_log_likelihood este definida en este entorno
 loaded_model = tf.keras.models.load_model(model_save_path, custom_objects={'neg_log_likelihood': neg_log_likelihood})
 
 print("Modelo cargado exitosamente.")
@@ -1478,24 +1478,24 @@ Utilizarías el código que ya tenemos para:
 Este problema ilustra cómo el modelo probabilístico va más allá de una simple predicción puntual, proporcionando información valiosa sobre la variabilidad y permitiendo cálculos de probabilidad esenciales para el control de calidad en un contexto de nanotecnología.
 
 ```python
-# Genera algunos datos nuevos para prediccion
+## Genera algunos datos nuevos para prediccion
 new_data = np.array([[1.5], [-0.8], [0.0], [2.1]], dtype=np.float32)
 
-# Realiza predicciones con el modelo cargado
-# The loaded model outputs the raw parameters (loc and scale)
+## Realiza predicciones con el modelo cargado
+## The loaded model outputs the raw parameters (loc and scale)
 predicted_params = loaded_model(new_data)
 
-# Explicitly create the distribution object from the predicted parameters
+## Explicitly create the distribution object from the predicted parameters
 loc, scale = tf.split(predicted_params, num_or_size_splits=2, axis=-1)
-# Ensure scale is positive using softplus, consistent with training
+## Ensure scale is positive using softplus, consistent with training
 scale = tf.math.softplus(scale)
 predicted_distribution = tfd.Normal(loc=loc, scale=scale)
 
-# Ahora puedes usar los metodos de la distribucion para calculos probabilisticos
+## Ahora puedes usar los metodos de la distribucion para calculos probabilisticos
 mean_predictions = predicted_distribution.mean().numpy()
 stddev_predictions = predicted_distribution.stddev().numpy()
-# You can also sample from the distribution
-# samples = predicted_distribution.sample(100)
+## You can also sample from the distribution
+## samples = predicted_distribution.sample(100)
 
 print("Predicciones (Media):")
 print(mean_predictions)
@@ -1503,8 +1503,8 @@ print(mean_predictions)
 print("\nPredicciones (Desviacion Estandar):")
 print(stddev_predictions)
 
-# Ejemplo: Calcular la probabilidad de que el primer nuevo dato sea mayor que 1.0
-# This is equivalent to 1 - CDF(1.0)
+## Ejemplo: Calcular la probabilidad de que el primer nuevo dato sea mayor que 1.0
+## This is equivalent to 1 - CDF(1.0)
 probability_greater_than_1 = 1.0 - predicted_distribution.cdf(1.0).numpy()
 print(f"\nProbabilidad de que el primer dato sea > 1.0: {probability_greater_than_1[0][0]:.4f}")
 ```
@@ -1561,19 +1561,19 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from IPython.display import display, Math
 
-# Generación de muestra sintética bimodal (nanopartículas coloidales)
+## Generación de muestra sintética bimodal (nanopartículas coloidales)
 np.random.seed(101)
 muestras_nano = np.concatenate([
     stats.norm.rvs(loc=15, scale=2, size=300),
     stats.norm.rvs(loc=35, scale=5, size=700)
 ])
 
-# Estimación KDE
+## Estimación KDE
 kde = stats.gaussian_kde(muestras_nano, bw_method='silverman')
 x_grid = np.linspace(5, 55, 500)
 pdf_kde = kde.evaluate(x_grid)
 
-# Visualización
+## Visualización
 plt.figure(figsize=(10, 5))
 sns.histplot(muestras_nano, bins=30, stat="density", color="skyblue", label="Histrograma Muestral")
 plt.plot(x_grid, pdf_kde, color="darkblue", linewidth=2.5, label="Estimación KDE (Kernel Gaussiano)")
@@ -1604,8 +1604,8 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from IPython.display import display, Math
 
-# 1. Simulación / Carga de Estructura de Datos de Materials Project (mp-api)
-# Campos extraídos: material_id, formula, band_gap (eV), formation_energy_per_atom (eV/atom), volume (A^3)
+## 1. Simulación / Carga de Estructura de Datos de Materials Project (mp-api)
+## Campos extraídos: material_id, formula, band_gap (eV), formation_energy_per_atom (eV/atom), volume (A^3)
 np.random.seed(2026)
 n_materiales = 150
 
@@ -1623,7 +1623,7 @@ datos_materials_project = {
 
 df_mp = pd.DataFrame(datos_materials_project)
 
-# 2. Análisis Estadístico Descriptivo de Band Gap (eV)
+## 2. Análisis Estadístico Descriptivo de Band Gap (eV)
 band_gap_data = df_mp["band_gap"]
 
 media_bg = band_gap_data.mean()
@@ -1635,16 +1635,16 @@ display(Math(fr"\text{{Resumen Estadístico del Band Gap }} (E_g):"))
 display(Math(fr"\text{{Media: }} \bar{{X}} = {media_bg:.3f} \text{{ eV}}, \quad \text{{Mediana: }} \tilde{{X}} = {mediana_bg:.3f} \text{{ eV}}"))
 display(Math(fr"\text{{Desviación Estándar: }} s = {std_bg:.3f} \text{{ eV}}, \quad \text{{Asimetría (Skewness): }} {skewness_bg:.3f}"))
 
-# 3. Visualización Exploratoria Combinada: Histograma KDE + Boxplot
+## 3. Visualización Exploratoria Combinada: Histograma KDE + Boxplot
 fig, axes = plt.subplots(1, 2, figsize=(13, 5))
 
-# Histograma con curva KDE por Fórmula de Material
+## Histograma con curva KDE por Fórmula de Material
 sns.histplot(data=df_mp, x="band_gap", hue="formula", kde=True, element="step", ax=axes[0], palette="Set1")
 axes[0].set_title("Distribución de Band Gap por Material (Materials Project)", fontsize=11, fontweight="bold")
 axes[0].set_xlabel("Band Gap (eV)")
 axes[0].set_ylabel("Frecuencia")
 
-# Q-Q Plot de Normalidad
+## Q-Q Plot de Normalidad
 stats.probplot(band_gap_data, dist="norm", plot=axes[1])
 axes[1].set_title("Q-Q Plot de Band Gap vs Distribución Normal", fontsize=11, fontweight="bold")
 
@@ -1667,15 +1667,15 @@ $$\boxed{\bar{X} = \frac{1}{n} \sum_{i=1}^n X_i}$$
 import sympy as sp
 from IPython.display import display, Math
 
-# Definición de variables simbólicas
+## Definición de variables simbólicas
 n = sp.Symbol('n', positive=True, integer=True)
 x = sp.IndexedBase('x')
 i = sp.Symbol('i', integer=True)
 
-# Expresión simbólica de la media muestral
+## Expresión simbólica de la media muestral
 media_simbolica = (1/n) * sp.Sum(x[i], (i, 1, n))
 
-# Expresión simbólica de la varianza muestral sesgada e imparcial (n-1)
+## Expresión simbólica de la varianza muestral sesgada e imparcial (n-1)
 varianza_simbolica = (1/(n - 1)) * sp.Sum((x[i] - media_simbolica)**2, (i, 1, n))
 
 display(Math(fr"\text{{Fórmula Simbólica de la Media Muestral }} \bar{{X}}: {sp.latex(media_simbolica)}"))

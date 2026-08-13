@@ -179,10 +179,10 @@ plt.show()
 
 ```python
 from pickle import TRUE
-# Crear la figura con 3 subgráficos
+## Crear la figura con 3 subgráficos
 fig, axes = plt.subplots(1, 3, figsize=(18, 3))
 
-# Histograma usando Seaborn
+## Histograma usando Seaborn
 sns.histplot(np.random.rand(10000), ax=axes[0], kde=True)
 axes[0].set_title("rand")
 
@@ -192,7 +192,7 @@ axes[1].set_title("randn")
 sns.histplot(np.random.randint(low=1, high=10, size=10000), ax=axes[2], bins=9, kde=False)
 axes[2].set_title("randint(low=1, high=10)")
 
-# Mostrar el gráfico
+## Mostrar el gráfico
 plt.show()
 ```
 
@@ -492,13 +492,13 @@ data = X.rvs(size=1000)  # Generate 1000 samples
 ```python
 import numpy as np
 
-# 1erd central moment (variance)
+## 1erd central moment (variance)
 first_central_moment = np.mean((data - mean)**1)
 first_central_moment
 ```
 
 ```python
-# 2nd central moment (variance)
+## 2nd central moment (variance)
 second_central_moment = np.mean((data - mean)**2)
 second_central_moment
 ```
@@ -521,13 +521,13 @@ Si aumentaras significativamente el tamaño de tu muestra (por ejemplo, a 10,000
 El valor calculado de $0.239998...$ es una estimación de la varianza, y su ligera desviación del valor teórico es esperada debido a la naturaleza aleatoria del proceso de muestreo.
 
 ```python
-# 3rd central moment
+## 3rd central moment
 third_central_moment = np.mean((data - mean)**3)
 
-# 4th central moment
+## 4th central moment
 fourth_central_moment = np.mean((data - mean)**4)
 
-# etc...
+## etc...
 ```
 
 Y podemos obtener una lista de estadísticas dependiente de la distribución utilizando el método `stats`.
@@ -551,15 +551,15 @@ import matplotlib.pyplot as plt
 from scipy import stats
 import numpy as np
 
-# Asumiendo que X ya está definido como stats.norm(1, 0.5)
+## Asumiendo que X ya está definido como stats.norm(1, 0.5)
 x_values = [0, 1, 2]
 pdf_values = X.pdf(x_values)
 
-# Crear un rango de valores de x para la curva suave
+## Crear un rango de valores de x para la curva suave
 x_range = np.linspace(X.ppf(0.01), X.ppf(0.99), 100)
 pdf_range = X.pdf(x_range)
 
-# Crear el gráfico con Seaborn
+## Crear el gráfico con Seaborn
 sns.lineplot(x=x_range, y=pdf_range) # Curva suave
 plt.stem(x_values, pdf_values, linefmt='r-', markerfmt='ro', basefmt='k-') # Puntos específicos
 plt.title('Función de Densidad de Probabilidad (PDF)')
@@ -578,11 +578,11 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 from scipy import stats
 
-# Asumiendo que X ya está definido como stats.norm(1, 0.5)
+## Asumiendo que X ya está definido como stats.norm(1, 0.5)
 x_values = [0, 1, 2, 3, 4]
 cdf_values = X.cdf(x_values)
 
-# Crear el gráfico con Seaborn
+## Crear el gráfico con Seaborn
 sns.lineplot(x=x_values, y=cdf_values, marker='o')
 plt.title('Función de Distribución Acumulada (CDF)')
 plt.xlabel('x')
@@ -638,7 +638,7 @@ def plot_rv_distribution(X, axes=None):
         axes[0].plot(x999, X.pdf(x999), label="PDF")
         axes[0].fill_between(x95, X.pdf(x95), alpha=0.25)
     else:
-# discrete random variables do not have a pdf method, instead we use pmf:
+## discrete random variables do not have a pdf method, instead we use pmf:
         x999_int = np.unique(x999.astype(int))
         axes[0].bar(x999_int, X.pmf(x999_int), label="PMF")
     axes[1].plot(x999, X.cdf(x999), label="CDF")
@@ -652,8 +652,8 @@ import matplotlib.pyplot as plt
 import scipy.stats as stats
 
 fig, axes = plt.subplots(3, 3, figsize=(12, 9))
-# Assuming plot_rv_distribution is defined elsewhere
-# and takes X and axes as arguments.
+## Assuming plot_rv_distribution is defined elsewhere
+## and takes X and axes as arguments.
 X = stats.norm()
 plot_rv_distribution(X, axes=axes[0, :])
 axes[0, 0].set_ylabel("Normal dist.")
@@ -683,24 +683,24 @@ def plot_rv_distribution(X, axes=None):
     x95 = np.linspace(x_min_95, x_max_95, 1000)
 
     if hasattr(X.dist, "pdf"):
-# PDF plot using Seaborn
+## PDF plot using Seaborn
         axes[0].plot(x999, X.pdf(x999), label="PDF")
         axes[0].fill_between(x95, X.pdf(x95), alpha=0.25)
 
     else:
-# PMF plot using Seaborn (for Poisson)
+## PMF plot using Seaborn (for Poisson)
         x999_int = np.unique(x999.astype(int))
 
-# Create a DataFrame for Seaborn barplot (easier to work with)
+## Create a DataFrame for Seaborn barplot (easier to work with)
         df = pd.DataFrame({'x': x999_int, 'pmf': X.pmf(x999_int)})
         sns.barplot(x='x', y='pmf', data=df, ax=axes[0], label="PMF", color="skyblue")
         axes[0].set_xticks(x999_int)
 
-# CDF and SF plot using Seaborn
+## CDF and SF plot using Seaborn
     axes[1].plot(x999, X.cdf(x999), label="CDF")
     axes[1].plot(x999, X.sf(x999), label="SF")
 
-# PPF plot using Seaborn
+## PPF plot using Seaborn
     axes[2].plot(x999, X.ppf(x999), label="PPF")
 
     for ax in axes:
@@ -864,23 +864,23 @@ def plot_dist_samples(X, X_samples, title=None, ax=None):
     if ax is None:
         fig, ax = plt.subplots(1, 1, figsize=(8, 4))
 
-# Obtener el rango adecuado para la gráfica utilizando el método de intervalo
+## Obtener el rango adecuado para la gráfica utilizando el método de intervalo
     x_lim = X.interval(.99)
     x = np.linspace(*x_lim, num=100)
 
-# Graficar la PDF de la distribución
+## Graficar la PDF de la distribución
     ax.plot(x, X.pdf(x), label="PDF", lw=3)
 
-# Graficar el histograma de las muestras
+## Graficar el histograma de las muestras
     ax.hist(X_samples, label="samples", density=1, bins=75)
 
-# Establecer el rango del eje x
+## Establecer el rango del eje x
     ax.set_xlim(*x_lim)
 
-# Agregar la leyenda
+## Agregar la leyenda
     ax.legend()
 
-# Establecer el título de la gráfica si se proporciona
+## Establecer el título de la gráfica si se proporciona
     if title:
         ax.set_title(title)
 
@@ -892,21 +892,21 @@ Cabe destacar que en esta función hemos utilizado la sintaxis de desempaquetado
 A continuación, usamos esta función para visualizar 2000 muestras de tres variables aleatorias con diferentes distribuciones: aquí utilizamos la distribución t de Student, la distribución $\chi^2$ y la distribución exponencial, y los resultados se muestran en la Figura 13-3. Dado que 2000 es una muestra bastante grande, los gráficos del histograma de las muestras coinciden bien con la función de distribución de probabilidad. Con un número aún mayor de muestras, se puede esperar que la concordancia sea aún mejor.
 
 ```python
-# Crear una figura con 3 subgráficas
+## Crear una figura con 3 subgráficas
 fig, axes = plt.subplots(1, 3, figsize=(12, 3))
 
-# Número de muestras
+## Número de muestras
 N = 2000
 
-# Distribución t de Student
+## Distribución t de Student
 X = stats.t(7.0)
 plot_dist_samples(X, X.rvs(N), "Distribución t de Student", ax=axes[0])
 
-# Distribución chi-cuadrada
+## Distribución chi-cuadrada
 X = stats.chi2(5.0)
 plot_dist_samples(X, X.rvs(N), r"$\chi^2$ dist.", ax=axes[1])
 
-# Distribución exponencial
+## Distribución exponencial
 X = stats.expon(0.5)
 plot_dist_samples(X, X.rvs(N), "Distribución exponencial", ax=axes[2])
 
@@ -928,7 +928,7 @@ El **ajuste de maxima verosimilitud (MLE)** estima parametros que maximizan la p
 - **Anderson-Darling**: Mas sensible en las colas de la distribucion
 
 ```python
-# Ajuste de Maxima Verosimilitud - Analisis Completo
+## Ajuste de Maxima Verosimilitud - Analisis Completo
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy import stats
@@ -954,7 +954,7 @@ dist_teorica = stats.chi2(df=5)
 print('\n3. Generando visualizaciones...')
 fig, axes = plt.subplots(2, 2, figsize=(16, 12))
 
-# Histograma vs PDF
+## Histograma vs PDF
 ax1 = axes[0, 0]
 ax1.hist(datos_reales, bins=50, density=True, alpha=0.6, color='skyblue',
          edgecolor='black', label='Datos reales')
@@ -967,7 +967,7 @@ ax1.set_title('Comparacion: Datos vs Distribuciones', fontsize=14, fontweight='b
 ax1.legend()
 ax1.grid(True, alpha=0.3)
 
-# CDF
+## CDF
 ax2 = axes[0, 1]
 datos_ord = np.sort(datos_reales)
 cdf_emp = np.arange(1, len(datos_ord)+1) / len(datos_ord)
@@ -980,7 +980,7 @@ ax2.set_title('Funciones de Distribucion Acumulada', fontsize=14, fontweight='bo
 ax2.legend()
 ax2.grid(True, alpha=0.3)
 
-# Q-Q Plot
+## Q-Q Plot
 ax3 = axes[1, 0]
 stats.probplot(datos_reales, dist=stats.chi2, sparams=parametros_ajustados, plot=ax3)
 ax3.get_lines()[0].set_marker('o')
@@ -990,7 +990,7 @@ ax3.get_lines()[1].set_linewidth(2)
 ax3.set_title('Q-Q Plot: Validacion del Ajuste', fontsize=14, fontweight='bold')
 ax3.grid(True, alpha=0.3)
 
-# Residuos
+## Residuos
 ax4 = axes[1, 1]
 valores_esp = dist_ajustada.ppf(cdf_emp)
 residuos = datos_ord - valores_esp
@@ -1063,8 +1063,8 @@ La distribución Chi-cuadrada ajustada Y proporciona una forma de modelar y ente
 
 ```python
 x=5
-# Y=parametros_ajustados # This was a tuple of parameters, not a distribution object
-# Create the chi-squared distribution object using the fitted parameters
+## Y=parametros_ajustados # This was a tuple of parameters, not a distribution object
+## Create the chi-squared distribution object using the fitted parameters
 df_aj, loc_aj, scale_aj = parametros_ajustados
 Y = stats.chi2(df=df_aj, loc=loc_aj, scale=scale_aj)
 Y.pdf(x)
@@ -1082,43 +1082,43 @@ def plot_rv_distribution(rv):
     Args:
         rv: A SciPy stats random variable object.
     """
-# Create x-axis values for plotting
+## Create x-axis values for plotting
     x = np.linspace(rv.ppf(0.01), rv.ppf(0.99), 100)
 
-# Create subplots for PDF, CDF, SF, and PPF
+## Create subplots for PDF, CDF, SF, and PPF
     fig, axes = plt.subplots(2, 2, figsize=(12, 8))
 
-# Plot PDF
+## Plot PDF
     axes[0, 0].plot(x, rv.pdf(x), 'r-', lw=2, label='PDF')
     axes[0, 0].set_title('Probability Density Function (PDF)')
 
-# Plot CDF
+## Plot CDF
     axes[0, 1].plot(x, rv.cdf(x), 'b-', lw=2, label='CDF')
     axes[0, 1].set_title('Cumulative Distribution Function (CDF)')
 
-# Plot SF (Survival Function)
+## Plot SF (Survival Function)
     axes[1, 0].plot(x, rv.sf(x), 'g-', lw=2, label='SF')
     axes[1, 0].set_title('Survival Function (SF)')
 
-# Plot PPF (Percent Point Function)
+## Plot PPF (Percent Point Function)
     axes[1, 1].plot(x, rv.ppf(x), 'm-', lw=2, label='PPF')
     axes[1, 1].set_title('Percent Point Function (PPF)')
 
-# Add legends and grid to subplots
+## Add legends and grid to subplots
     for ax in axes.flatten():
         ax.legend(loc='best', frameon=False)
         ax.grid(True)
 
-# Adjust spacing between subplots
+## Adjust spacing between subplots
     plt.tight_layout()
 
-# Define Y as a normal random variable with mean 1 and standard deviation 0.5
+## Define Y as a normal random variable with mean 1 and standard deviation 0.5
 Y = stats.norm(1, 0.5)
 
-# Generate the plots (PDF, CDF, SF, PPF)
+## Generate the plots (PDF, CDF, SF, PPF)
 plot_rv_distribution(Y)
 
-# Show the plot
+## Show the plot
 plt.show()
 ```
 
@@ -1139,19 +1139,19 @@ El usuario proporciona la muestra de datos y el algoritmo devuelve la distribuci
 
 from distfit import distfit
 
-# Generar una muestra de datos
+## Generar una muestra de datos
 data = np.random.normal(loc=0, scale=1, size=1000)
 
-# Instanciar el objeto distfit
+## Instanciar el objeto distfit
 dist = distfit()
 
-# Ajustar las distribuciones a los datos
+## Ajustar las distribuciones a los datos
 dist.fit_transform(data)
 
-# Mostrar la mejor distribución encontrada
+## Mostrar la mejor distribución encontrada
 print(dist.model)
 
-# Visualizar el ajuste
+## Visualizar el ajuste
 dist.plot()
 ```
 
@@ -1184,7 +1184,7 @@ Las **redes neuronales probabilisticas** combinan deep learning con teoria de pr
 | Datos requeridos | Pocos | Muchos |
 
 ```python
-# RED NEURONAL PROBABILISTICA: Analisis Train/Test Completo
+## RED NEURONAL PROBABILISTICA: Analisis Train/Test Completo
 import numpy as np
 import tensorflow as tf
 import tensorflow_probability as tfp
@@ -1203,7 +1203,7 @@ print('='*80)
 print(' '*20 + 'RED NEURONAL PROBABILISTICA')
 print('='*80)
 
-# 1. DATOS
+## 1. DATOS
 print('\n[1/6] Generando datos...')
 n_samples = 2000
 X_data = np.random.randn(n_samples, 1).astype(np.float32)
@@ -1216,7 +1216,7 @@ print(f'   Total: {n_samples} muestras')
 print(f'   Train: {X_train.shape[0]} ({X_train.shape[0]/n_samples*100:.0f}%)')
 print(f'   Test: {X_test.shape[0]} ({X_test.shape[0]/n_samples*100:.0f}%)')
 
-# 2. MODELO
+## 2. MODELO
 print('\n[2/6] Construyendo modelo...')
 model = tf.keras.Sequential([
     tf.keras.layers.Dense(64, activation='relu', input_shape=(1,)),
@@ -1227,39 +1227,39 @@ model = tf.keras.Sequential([
     tf.keras.layers.Dense(2),  # Output layer now directly outputs loc and scale
 ])
 
-# Modified loss function to create distribution from model output
+## Modified loss function to create distribution from model output
 def neg_log_likelihood(y_true, y_pred_params):
-# y_pred_params will be the output of the last Dense layer (loc and scale)
+## y_pred_params will be the output of the last Dense layer (loc and scale)
     loc, scale = tf.split(y_pred_params, num_or_size_splits=2, axis=-1)
-# Ensure scale is positive using softplus
+## Ensure scale is positive using softplus
     scale = tf.math.softplus(scale)
-# Create the distribution
+## Create the distribution
     y_pred_dist = tfd.Normal(loc=loc, scale=scale)
-# Compute the negative log probability
+## Compute the negative log probability
     return -y_pred_dist.log_prob(y_true)
 
 model.compile(
     optimizer=tf.keras.optimizers.Adam(0.001),
     loss=neg_log_likelihood,
-# Can add metrics that work with tensor output, e.g., 'mae' if desired,
-# but be mindful that this is comparing the mean of the predicted distribution
-# to the true value, not evaluating the full distribution fit.
-# For now, keeping metrics simple or removed to avoid potential issues.
-# metrics=['mae'] # Re-add MAE if needed and compatible
+## Can add metrics that work with tensor output, e.g., 'mae' if desired,
+## but be mindful that this is comparing the mean of the predicted distribution
+## to the true value, not evaluating the full distribution fit.
+## For now, keeping metrics simple or removed to avoid potential issues.
+## metrics=['mae'] # Re-add MAE if needed and compatible
 )
 
 print(f'   Parametros: {model.count_params():,}')
 
-# 3. ENTRENAR
+## 3. ENTRENAR
 print('\n[3/6] Entrenando...')
 early_stop = tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=15, restore_best_weights=True)
 history = model.fit(X_train, y_train, validation_split=0.2, epochs=200, batch_size=32, callbacks=[early_stop], verbose=0)
 
 print(f'   Epocas: {len(history.history["loss"])}')
 
-# 4. PREDICCIONES
+## 4. PREDICCIONES
 print('\n[4/6] Predicciones...')
-# When predicting after training, get the parameters and create the distribution
+## When predicting after training, get the parameters and create the distribution
 y_pred_params_train = model(X_train)
 y_pred_dist_train = tfd.Normal(loc=y_pred_params_train[..., :1], scale=tf.math.softplus(y_pred_params_train[..., 1:]))
 y_pred_train = y_pred_dist_train.mean().numpy()
@@ -1268,7 +1268,7 @@ y_pred_params_test = model(X_test)
 y_pred_dist_test = tfd.Normal(loc=y_pred_params_test[..., :1], scale=tf.math.softplus(y_pred_params_test[..., 1:]))
 y_pred_test = y_pred_dist_test.mean().numpy()
 
-# 5. METRICAS
+## 5. METRICAS
 print('\n[5/6] Calculando metricas...')
 mae_train = mean_absolute_error(y_train, y_pred_train)
 rmse_train = np.sqrt(mean_squared_error(y_train, y_pred_train))
@@ -1297,13 +1297,13 @@ print(f'  Delta RMSE: {abs(rmse_train-rmse_test):.6f}')
 print(f'  Delta R2:   {abs(r2_train-r2_test):.6f}')
 print('='*80)
 
-# 6. VISUALIZACIONES
+## 6. VISUALIZACIONES
 print('\n[6/6] Generando visualizaciones...')
 
 fig = plt.figure(figsize=(20, 14))
 gs = fig.add_gridspec(3, 3, hspace=0.35, wspace=0.3)
 
-# Loss
+## Loss
 ax1 = fig.add_subplot(gs[0, 0])
 epochs = range(1, len(history.history['loss'])+1)
 ax1.plot(epochs, history.history['loss'], 'b-', lw=2, label='Train', alpha=0.8)
@@ -1314,16 +1314,16 @@ ax1.set_title('Curva de Aprendizaje: Loss', fontsize=13, fontweight='bold')
 ax1.legend()
 ax1.grid(True, alpha=0.3)
 
-# MAE
-# MAE is calculated manually after training, not available in history
-# ax2 = fig.add_subplot(gs[0, 1])
-# ax2.set_xlabel('Epoca', fontsize=11, fontweight='bold')
-# ax2.set_ylabel('MAE', fontsize=11, fontweight='bold')
-# ax2.set_title('Curva de Aprendizaje: MAE (Calculated Post-Training)', fontsize=13, fontweight='bold')
-# ax2.grid(True, alpha=0.3)
-# Placeholder for MAE plot if history was available or calculated per epoch
+## MAE
+## MAE is calculated manually after training, not available in history
+## ax2 = fig.add_subplot(gs[0, 1])
+## ax2.set_xlabel('Epoca', fontsize=11, fontweight='bold')
+## ax2.set_ylabel('MAE', fontsize=11, fontweight='bold')
+## ax2.set_title('Curva de Aprendizaje: MAE (Calculated Post-Training)', fontsize=13, fontweight='bold')
+## ax2.grid(True, alpha=0.3)
+## Placeholder for MAE plot if history was available or calculated per epoch
 
-# Barras metricas
+## Barras metricas
 ax3 = fig.add_subplot(gs[0, 2])
 metricas = ['MAE', 'RMSE', 'R2']
 train_vals = [mae_train, rmse_train, r2_train]
@@ -1343,7 +1343,7 @@ for bars in [bars1, bars2]:
         h = bar.get_height()
         ax3.text(bar.get_x()+bar.get_width()/2, h, f'{h:.3f}', ha='center', va='bottom', fontsize=8)
 
-# Scatter Train
+## Scatter Train
 ax4 = fig.add_subplot(gs[1, 0])
 ax4.scatter(y_train, y_pred_train, alpha=0.4, s=25, c='steelblue')
 lims = [min(y_train.min(), y_pred_train.min()), max(y_train.max(), y_pred_train.max())]
@@ -1355,7 +1355,7 @@ ax4.legend()
 ax4.grid(True, alpha=0.3)
 ax4.set_aspect('equal', adjustable='box')
 
-# Scatter Test
+## Scatter Test
 ax5 = fig.add_subplot(gs[1, 1])
 ax5.scatter(y_test, y_pred_test, alpha=0.4, s=25, c='coral')
 lims = [min(y_test.min(), y_pred_test.min()), max(y_test.max(), y_pred_test.max())]
@@ -1367,7 +1367,7 @@ ax5.legend()
 ax5.grid(True, alpha=0.3)
 ax5.set_aspect('equal', adjustable='box')
 
-# Combinado
+## Combinado
 ax6 = fig.add_subplot(gs[1, 2])
 ax6.scatter(y_train, y_pred_train, alpha=0.3, s=20, c='steelblue', label='Train')
 ax6.scatter(y_test, y_pred_test, alpha=0.3, s=20, c='coral', label='Test')
@@ -1383,7 +1383,7 @@ ax6.legend()
 ax6.grid(True, alpha=0.3)
 ax6.set_aspect('equal', adjustable='box')
 
-# Residuos Train
+## Residuos Train
 ax7 = fig.add_subplot(gs[2, 0])
 res_train = (y_train - y_pred_train).flatten()
 ax7.scatter(y_pred_train, res_train, alpha=0.4, s=25, c='steelblue')
@@ -1394,7 +1394,7 @@ ax7.set_title('Residuos: Train', fontsize=13, fontweight='bold')
 ax7.legend()
 ax7.grid(True, alpha=0.3)
 
-# Residuos Test
+## Residuos Test
 ax8 = fig.add_subplot(gs[2, 1])
 res_test = (y_test - y_pred_test).flatten()
 ax8.scatter(y_pred_test, res_test, alpha=0.4, s=25, c='coral')
@@ -1405,7 +1405,7 @@ ax8.set_title('Residuos: Test', fontsize=13, fontweight='bold')
 ax8.legend()
 ax8.grid(True, alpha=0.3)
 
-# Distribucion errores
+## Distribucion errores
 ax9 = fig.add_subplot(gs[2, 2])
 ax9.hist(res_train, bins=50, alpha=0.6, label='Train', color='steelblue', density=True, edgecolor='black')
 ax9.hist(res_test, bins=50, alpha=0.6, label='Test', color='coral', density=True, edgecolor='black')
@@ -1430,10 +1430,10 @@ print('='*80)
 Puedes guardar tu modelo usando el método `model.save()`. Especifica la ruta donde quieres guardar el modelo.
 
 ```python
-# Define la ruta donde quieres guardar el modelo
+## Define la ruta donde quieres guardar el modelo
 model_save_path = 'probabilistic_model.keras' # Added .keras extension
 
-# Guarda el modelo en formato SavedModel
+## Guarda el modelo en formato SavedModel
 model.save(model_save_path)
 
 print(f"Modelo guardado en: {model_save_path}")
@@ -1444,8 +1444,8 @@ print(f"Modelo guardado en: {model_save_path}")
 Para usar el modelo más tarde, puedes cargarlo usando `tf.keras.models.load_model()`. Es importante que la función de pérdida personalizada (`neg_log_likelihood`) esté disponible en el entorno donde cargas el modelo, ya que es necesaria para la configuración del modelo.
 
 ```python
-# Carga el modelo guardado
-# Asegúrate de que la funcion neg_log_likelihood este definida en este entorno
+## Carga el modelo guardado
+## Asegúrate de que la funcion neg_log_likelihood este definida en este entorno
 loaded_model = tf.keras.models.load_model(model_save_path, custom_objects={'neg_log_likelihood': neg_log_likelihood})
 
 print("Modelo cargado exitosamente.")
@@ -1480,24 +1480,24 @@ Utilizarías el código que ya tenemos para:
 Este problema ilustra cómo el modelo probabilístico va más allá de una simple predicción puntual, proporcionando información valiosa sobre la variabilidad y permitiendo cálculos de probabilidad esenciales para el control de calidad en un contexto de nanotecnología.
 
 ```python
-# Genera algunos datos nuevos para prediccion
+## Genera algunos datos nuevos para prediccion
 new_data = np.array([[1.5], [-0.8], [0.0], [2.1]], dtype=np.float32)
 
-# Realiza predicciones con el modelo cargado
-# The loaded model outputs the raw parameters (loc and scale)
+## Realiza predicciones con el modelo cargado
+## The loaded model outputs the raw parameters (loc and scale)
 predicted_params = loaded_model(new_data)
 
-# Explicitly create the distribution object from the predicted parameters
+## Explicitly create the distribution object from the predicted parameters
 loc, scale = tf.split(predicted_params, num_or_size_splits=2, axis=-1)
-# Ensure scale is positive using softplus, consistent with training
+## Ensure scale is positive using softplus, consistent with training
 scale = tf.math.softplus(scale)
 predicted_distribution = tfd.Normal(loc=loc, scale=scale)
 
-# Ahora puedes usar los metodos de la distribucion para calculos probabilisticos
+## Ahora puedes usar los metodos de la distribucion para calculos probabilisticos
 mean_predictions = predicted_distribution.mean().numpy()
 stddev_predictions = predicted_distribution.stddev().numpy()
-# You can also sample from the distribution
-# samples = predicted_distribution.sample(100)
+## You can also sample from the distribution
+## samples = predicted_distribution.sample(100)
 
 print("Predicciones (Media):")
 print(mean_predictions)
@@ -1505,8 +1505,8 @@ print(mean_predictions)
 print("\nPredicciones (Desviacion Estandar):")
 print(stddev_predictions)
 
-# Ejemplo: Calcular la probabilidad de que el primer nuevo dato sea mayor que 1.0
-# This is equivalent to 1 - CDF(1.0)
+## Ejemplo: Calcular la probabilidad de que el primer nuevo dato sea mayor que 1.0
+## This is equivalent to 1 - CDF(1.0)
 probability_greater_than_1 = 1.0 - predicted_distribution.cdf(1.0).numpy()
 print(f"\nProbabilidad de que el primer dato sea > 1.0: {probability_greater_than_1[0][0]:.4f}")
 ```
@@ -1910,14 +1910,14 @@ Este ejemplo trata sobre la prueba de hipótesis para la igualdad de proporcione
 import numpy as np
 from scipy.stats import chi2, chi2_contingency
 
-# --- 1. Definición de Parámetros y Datos ---
-# Nivel de significancia (alpha)
+## --- 1. Definición de Parámetros y Datos ---
+## Nivel de significancia (alpha)
 alpha = 0.05
-# Grados de libertad (k - 1, donde k=4 marcas de neumáticos)
+## Grados de libertad (k - 1, donde k=4 marcas de neumáticos)
 df = 4 - 1
-# Datos observados (xi: número de fallas)
+## Datos observados (xi: número de fallas)
 fallas_observadas = np.array([26, 23, 15, 32])
-# Tamaños de muestra (ni)
+## Tamaños de muestra (ni)
 n_muestras = np.array([200, 200, 200, 200])
 
 print(f"Nivel de significancia (alpha): {alpha}")
@@ -1925,16 +1925,16 @@ print(f"Grados de libertad (df): {df}")
 print(f"Fallas observadas (xi): {fallas_observadas}")
 print(f"Tamaños de muestra (ni): {n_muestras}\n")
 
-# --- 2. Estimación de la Proporción Común (p̂) ---
-# Número total de fallas (Sumatoria de xi)
+## --- 2. Estimación de la Proporción Común (p̂) ---
+## Número total de fallas (Sumatoria de xi)
 total_fallas = np.sum(fallas_observadas)
-# Número total de neumáticos (Sumatoria de ni)
+## Número total de neumáticos (Sumatoria de ni)
 total_neumaticos = np.sum(n_muestras)
 
-# Proporción estimada combinada (p̂ = Sum(xi) / Sum(ni))
+## Proporción estimada combinada (p̂ = Sum(xi) / Sum(ni))
 p_hat = total_fallas / total_neumaticos
 
-# Proporción de éxito (proporción de neumáticos que NO fallaron)
+## Proporción de éxito (proporción de neumáticos que NO fallaron)
 q_hat = 1 - p_hat
 
 print(f"Total de fallas: {total_fallas}")
@@ -1942,17 +1942,17 @@ print(f"Total de neumáticos: {total_neumaticos}")
 print(f"Proporción estimada combinada (p̂): {p_hat:.4f} (El PDF indica 32/800 = 0.120)")
 print(f"Proporción de éxito (q̂): {q_hat:.4f}\n")
 
-# --- 3. Cálculo de las Frecuencias Esperadas (Ei) ---
-# Frecuencias esperadas de fallas (ni * p̂)
+## --- 3. Cálculo de las Frecuencias Esperadas (Ei) ---
+## Frecuencias esperadas de fallas (ni * p̂)
 E_fallas = n_muestras * p_hat
-# Frecuencias esperadas de NO fallas (ni * q̂)
+## Frecuencias esperadas de NO fallas (ni * q̂)
 E_no_fallas = n_muestras * q_hat
 
-# Creación de las frecuencias observadas y esperadas para el Chi-cuadrado:
-# Observado (Oij): Matriz 4x2 [Fallas, No_Fallas]
+## Creación de las frecuencias observadas y esperadas para el Chi-cuadrado:
+## Observado (Oij): Matriz 4x2 [Fallas, No_Fallas]
 O = np.array([fallas_observadas, n_muestras - fallas_observadas]).T
 
-# Esperado (Eij): Matriz 4x2 [Fallas, No_Fallas]
+## Esperado (Eij): Matriz 4x2 [Fallas, No_Fallas]
 E = np.array([E_fallas, E_no_fallas]).T
 
 print("Frecuencias Observadas (O):")
@@ -1960,46 +1960,46 @@ print(O)
 print("\nFrecuencias Esperadas (E):")
 print(E)
 
-# --- 4. Cálculo del Estadístico de Prueba Chi-cuadrado (D²₀) y Valor p ---
-# Usamos chi2_contingency para replicar el cálculo con la tabla 4x2:
-# Ojo: El método del PDF para proporciones iguales calcula D²₀ = Sum((Oi - Ei)² / Ei)
-# con Oi = fallas_observadas y Ei = E_fallas (Solo usa la columna de fallas)
-# D²₀ = 4.673 (según el PDF)
+## --- 4. Cálculo del Estadístico de Prueba Chi-cuadrado (D²₀) y Valor p ---
+## Usamos chi2_contingency para replicar el cálculo con la tabla 4x2:
+## Ojo: El método del PDF para proporciones iguales calcula D²₀ = Sum((Oi - Ei)² / Ei)
+## con Oi = fallas_observadas y Ei = E_fallas (Solo usa la columna de fallas)
+## D²₀ = 4.673 (según el PDF)
 
-# Cálculo manual solo con las fallas (como se hace en el PDF para D²₀)
+## Cálculo manual solo con las fallas (como se hace en el PDF para D²₀)
 D20_manual = np.sum((fallas_observadas - E_fallas)**2 / E_fallas)
 print(f"\nEstadístico de Prueba D²₀ (manual, solo fallas): {D20_manual:.3f} (El PDF indica 4.673)\n")
 
-# Cálculo usando chi2_contingency (generalmente para tablas de contingencia)
-# El estadístico aquí es la versión que considera ambas columnas (fallas y no fallas)
+## Cálculo usando chi2_contingency (generalmente para tablas de contingencia)
+## El estadístico aquí es la versión que considera ambas columnas (fallas y no fallas)
 chi2_stat, p_value, df_contingency, expected_contingency = chi2_contingency(O)
 
 print(f"Estadístico Chi-Cuadrado (usando scipy): {chi2_stat:.3f}")
 print(f"Valor p (usando scipy): {p_value:.4f}")
 print(f"Grados de libertad (tabla 4x2): {df_contingency}")
 
-# Dado que el ejemplo del PDF usa D²₀ = 4.673 y df=3, continuamos con esos valores
-# para replicar su resultado.
+## Dado que el ejemplo del PDF usa D²₀ = 4.673 y df=3, continuamos con esos valores
+## para replicar su resultado.
 
-# Valor p para D²₀ = 4.673 con df = 3
+## Valor p para D²₀ = 4.673 con df = 3
 p_value_D20 = 1 - chi2.cdf(D20_manual, df)
 print(f"Valor p para D²₀={D20_manual:.3f} (df=3): {p_value_D20:.4f}\n")
 
-# --- 5. Valor Crítico y Decisión ---
-# Valor crítico de Chi-cuadrado para un test de dos colas (alpha/2)
-# El PDF usa un valor crítico de una cola para la comparación final,
-# pero en el enunciado el test es de dos colas. Usaremos el del PDF:
-# χ²_3,0.025 = 9.348 (Según tabla A.9 del PDF, esto es un valor superior)
-# Nota: La tabla A.9 probablemente es la de la distribución Chi-cuadrado,
-# y para df=3 y 0.025 en la cola superior, es 9.348.
+## --- 5. Valor Crítico y Decisión ---
+## Valor crítico de Chi-cuadrado para un test de dos colas (alpha/2)
+## El PDF usa un valor crítico de una cola para la comparación final,
+## pero en el enunciado el test es de dos colas. Usaremos el del PDF:
+## χ²_3,0.025 = 9.348 (Según tabla A.9 del PDF, esto es un valor superior)
+## Nota: La tabla A.9 probablemente es la de la distribución Chi-cuadrado,
+## y para df=3 y 0.025 en la cola superior, es 9.348.
 
-# Valor crítico del PDF (tomado de χ²_3,0.025 = 9.348)
+## Valor crítico del PDF (tomado de χ²_3,0.025 = 9.348)
 valor_critico_pdf = 9.348
 
 print(f"Valor Crítico (χ²_{df},{alpha/2}) según el PDF: {valor_critico_pdf}")
 
-# Decisión basada en el Estadístico D²₀ y Valor Crítico del PDF:
-# Regla: Rechazar H₀ si D²₀ > χ²_critico (o si D²₀ < χ²_3,1-α/2 que no se da)
+## Decisión basada en el Estadístico D²₀ y Valor Crítico del PDF:
+## Regla: Rechazar H₀ si D²₀ > χ²_critico (o si D²₀ < χ²_3,1-α/2 que no se da)
 if D20_manual > valor_critico_pdf:
     decision = "Rechazar H₀: al menos dos proporciones son diferentes."
 elif D20_manual < valor_critico_pdf:
@@ -2012,8 +2012,8 @@ print(f"Valor Crítico = {valor_critico_pdf}")
 print(f"Decisión (Comparación con Valor Crítico): {decision}")
 print("\n---")
 
-# Decisión basada en el Valor p (para un test de una cola, como se interpreta el resultado del PDF):
-# Regla: Rechazar H₀ si p-value < alpha
+## Decisión basada en el Valor p (para un test de una cola, como se interpreta el resultado del PDF):
+## Regla: Rechazar H₀ si p-value < alpha
 if p_value_D20 < alpha:
     decision_p_value = "Rechazar H₀: al menos dos proporciones son diferentes."
 else:
@@ -2023,8 +2023,8 @@ print(f"Valor p (D²₀) = {p_value_D20:.4f}")
 print(f"Alpha = {alpha}")
 print(f"Decisión (Comparación con Valor p): {decision_p_value}")
 
-# --- 6. Conclusión ---
-# El resultado es consistente con el PDF: D²₀ (4.673) < χ²_3,0.025 (9.348), por lo tanto, no se rechaza H₀.
+## --- 6. Conclusión ---
+## El resultado es consistente con el PDF: D²₀ (4.673) < χ²_3,0.025 (9.348), por lo tanto, no se rechaza H₀.
 print("\nConclusión: No hay diferencia significativa en la calidad de las cuatro marcas de neumáticos.")
 ```
 
@@ -2041,27 +2041,27 @@ Explicación de las Secciones
 ```python
 from scipy.stats import chi2
 
-# --- Contexto ---
-# Hipótesis: H0: Exponencial con λ=0.005. H1: No es exponencial.
-# Datos: n=150, k=4 grupos. α=0.01.
-# Frecuencias Observadas (O_i) y Frecuencias Esperadas (E_i) del ejemplo.
+## --- Contexto ---
+## Hipótesis: H0: Exponencial con λ=0.005. H1: No es exponencial.
+## Datos: n=150, k=4 grupos. α=0.01.
+## Frecuencias Observadas (O_i) y Frecuencias Esperadas (E_i) del ejemplo.
 O_i = np.array([55, 38, 30, 27]) # Las frecuencias observadas no se especifican, se infieren de la suma.
 E_i = np.array([58.5, 36.0, 21.0, 33.0])
 alfa = 0.01
 k = len(O_i) # Número de grupos
 df = k - 1 # Grados de libertad (sin estimar parámetros)
 
-# --- 1. Calcular el Estadístico de Prueba (D^2_0) ---
+## --- 1. Calcular el Estadístico de Prueba (D^2_0) ---
 D2_0 = np.sum((O_i - E_i)**2 / E_i)
-# El valor de la fuente es 12.79, usaremos ese valor como referencia,
-# ya que las O_i del ejemplo no están explícitas, sino solo los sumandos.
+## El valor de la fuente es 12.79, usaremos ese valor como referencia,
+## ya que las O_i del ejemplo no están explícitas, sino solo los sumandos.
 D2_0_fuente = 12.79
 
-# --- 2. Determinar la Región Crítica (Valor Crítico) ---
-# Prueba unilateral derecha, χ^2_(k-1, α).
+## --- 2. Determinar la Región Crítica (Valor Crítico) ---
+## Prueba unilateral derecha, χ^2_(k-1, α).
 chi2_critico = chi2.ppf(1 - alfa, df)
 
-# --- 3. Decisión ---
+## --- 3. Decisión ---
 decision = ""
 if D2_0_fuente > chi2_critico:
     decision = "Rechazada (Existe evidencia para afirmar que no sigue la distribución exponencial)."
@@ -2081,10 +2081,10 @@ print(f"Decisión: H0 es {decision}")
 ```python
 from scipy.stats import chi2
 
-# --- Contexto ---
-# H0: Género y carrera son independientes. H1: Dependientes.
-# Datos de Frecuencias Observadas (n_ij)
-# Filas: [Mujeres, Hombres], Columnas: [NS, SS, H]
+## --- Contexto ---
+## H0: Género y carrera son independientes. H1: Dependientes.
+## Datos de Frecuencias Observadas (n_ij)
+## Filas: [Mujeres, Hombres], Columnas: [NS, SS, H]
 n_ij = np.array([
     [10, 16, 8],  # Mujeres
     [11, 7, 5]   # Hombres
@@ -2093,20 +2093,20 @@ alfa = 0.05
 r, c = n_ij.shape
 N = n_ij.sum()
 
-# --- 1. Calcular Frecuencias Esperadas (e_ij) ---
+## --- 1. Calcular Frecuencias Esperadas (e_ij) ---
 r_totales = n_ij.sum(axis=1) # Totales de fila
 c_totales = n_ij.sum(axis=0) # Totales de columna
 e_ij = np.outer(r_totales, c_totales) / N
 
-# --- 2. Calcular el Estadístico de Prueba (D^2_0) ---
+## --- 2. Calcular el Estadístico de Prueba (D^2_0) ---
 D2_0 = np.sum((n_ij - e_ij)**2 / e_ij)
 D2_0_fuente = 2.229 # Valor explícito en el ejemplo
 
-# --- 3. Determinar la Región Crítica (Valor Crítico) ---
+## --- 3. Determinar la Región Crítica (Valor Crítico) ---
 df = (r - 1) * (c - 1)
 chi2_critico = chi2.ppf(1 - alfa, df)
 
-# --- 4. Decisión ---
+## --- 4. Decisión ---
 decision = ""
 if D2_0_fuente > chi2_critico:
     decision = "Rechazada (Existe evidencia de que género y carrera son dependientes)."
@@ -2114,7 +2114,7 @@ else:
     decision = "No Rechazada (No hay suficiente evidencia para rechazar la independencia)."
 
 print("\n### Ejemplo 5.14: Prueba de Tablas de Contingencia ###")
-# print("Frecuencias Esperadas (e_ij):\n", np.round(e_ij, 3)) # Opcional
+## print("Frecuencias Esperadas (e_ij):\n", np.round(e_ij, 3)) # Opcional
 print(f"Estadístico de Prueba (D^2_0, calculado): {D2_0:.3f}")
 print(f"Estadístico de Prueba (D^2_0, valor fuente): {D2_0_fuente:.3f}")
 print(f"Grados de Libertad (df=(r-1)(c-1)): {df}")
@@ -2128,28 +2128,28 @@ print(f"Decisión: H0 es {decision}")
 ```python
 from scipy.stats import norm
 
-# --- Contexto ---
-# Hipótesis: H0: p ≥ 0.45 vs H1: p < 0.45 (Unilateral Izquierda).
-# Datos: n=200, x=70 (éxitos), p_0=0.45. α=0.05.
+## --- Contexto ---
+## Hipótesis: H0: p ≥ 0.45 vs H1: p < 0.45 (Unilateral Izquierda).
+## Datos: n=200, x=70 (éxitos), p_0=0.45. α=0.05.
 n = 200
 x = 70
 p_0 = 0.45
 alfa = 0.05
 
-# --- 1. Calcular el Estadístico de Prueba (z_0) ---
+## --- 1. Calcular el Estadístico de Prueba (z_0) ---
 numerador = x - (n * p_0)
 denominador = sqrt(n * p_0 * (1 - p_0))
 z_0 = numerador / denominador
 
-# --- 2. Determinar la Región Crítica (Valor Crítico) ---
-# Prueba unilateral izquierda, -z_α.
+## --- 2. Determinar la Región Crítica (Valor Crítico) ---
+## Prueba unilateral izquierda, -z_α.
 z_critico_negativo = norm.ppf(alfa)
 
-# --- 3. P-value (Unilateral Izquierda) ---
-# P-value = P(Z < z_0)
+## --- 3. P-value (Unilateral Izquierda) ---
+## P-value = P(Z < z_0)
 p_value = norm.cdf(z_0)
 
-# --- 4. Decisión ---
+## --- 4. Decisión ---
 decision = ""
 if z_0 < z_critico_negativo:
     decision = "Rechazada (z_0 cae en la región de rechazo, H0 no es sostenible)."
@@ -2172,11 +2172,11 @@ import pandas as pd
 ```
 
 ```python
-# Frecuencias observadas (Tabla de contingencia 4x2)
-# Fila 1: Marca A (Fallaron, No Fallaron)
-# Fila 2: Marca B (Fallaron, No Fallaron)
-# Fila 3: Marca C (Fallaron, No Fallaron)
-# Fila 4: Marca D (Fallaron, No Fallaron)
+## Frecuencias observadas (Tabla de contingencia 4x2)
+## Fila 1: Marca A (Fallaron, No Fallaron)
+## Fila 2: Marca B (Fallaron, No Fallaron)
+## Fila 3: Marca C (Fallaron, No Fallaron)
+## Fila 4: Marca D (Fallaron, No Fallaron)
 datos_observados = np.array([
     [26, 174],  # Marca A: 26 fallaron, 200-26=174 no fallaron
     [23, 177],  # Marca B: 23 fallaron, 200-23=177 no fallaron
@@ -2202,8 +2202,8 @@ print(f"\nNivel de Significación (alpha): {alpha}")
 Cálculo del Estadístico Chi-Cuadrado ($\chi^2$) y el Valor PUsamos la función chi2_contingency de scipy.stats. Esta función calcula automáticamente el estadístico $\chi^2$, el valor $p$, los grados de libertad ($df$) y las frecuencias esperadas
 
 ```python
-# Realizar la prueba de Chi-Cuadrado
-# El resultado es una tupla: (estadístico_chi2, p_valor, grados_libertad, frecuencias_esperadas)
+## Realizar la prueba de Chi-Cuadrado
+## El resultado es una tupla: (estadístico_chi2, p_valor, grados_libertad, frecuencias_esperadas)
 chi2_stat, p_valor, df, frec_esperadas = chi2_contingency(datos_observados, correction=False) # 'correction=False' para replicar el método manual del PDF
 
 print("\n--- Resultados de la Prueba Chi-Cuadrado ---")
@@ -2211,7 +2211,7 @@ print(f"Estadístico Chi-Cuadrado (D²₀): {chi2_stat:.4f}")
 print(f"Valor P (p-value): {p_valor:.4f}")
 print(f"Grados de Libertad (df): {df}")
 
-# Mostrar las Frecuencias Esperadas bajo H₀
+## Mostrar las Frecuencias Esperadas bajo H₀
 df_esperado = pd.DataFrame(frec_esperadas,
                             index=['Marca A', 'Marca B', 'Marca C', 'Marca D'],
                             columns=['Fallaron', 'No Fallaron'])
@@ -2243,7 +2243,7 @@ Comparación del Estadístico de Prueba y el Valor CríticoEl valor crítico de 
 Valor Crítico ($\chi^2_{crítico}$) para $\alpha=0.05$ y $df=3$:
 
 ```python
-# Calcular el valor crítico (usando la función de cuantil inverso, ppf)
+## Calcular el valor crítico (usando la función de cuantil inverso, ppf)
 valor_critico = chi2.ppf(1 - alpha, df)
 
 print(f"\n--- Decisión (Método del Valor Crítico) ---")
@@ -2282,35 +2282,35 @@ import numpy as np
 import scipy.stats as stats
 import pandas as pd
 
-# --- Información del Ejemplo 5.17 del PDF ---
-# H0: p1 = p2 = p3 = p4 (No hay diferencia en la calidad de los cuatro tipos de neumáticos)
-# H1: Al menos dos proporciones son diferentes
-# Nivel de significancia (alpha) = 0.05
+## --- Información del Ejemplo 5.17 del PDF ---
+## H0: p1 = p2 = p3 = p4 (No hay diferencia en la calidad de los cuatro tipos de neumáticos)
+## H1: Al menos dos proporciones son diferentes
+## Nivel de significancia (alpha) = 0.05
 
-# Datos de la muestra (x_i: número de fallas; n_i: tamaño de la muestra)
+## Datos de la muestra (x_i: número de fallas; n_i: tamaño de la muestra)
 x = np.array([26, 23, 15, 32]) # Número de neumáticos que fallaron (ni)
 n_i = 200 # Tamaño de la muestra para cada marca
 k = len(x) # Número de grupos (marcas de neumáticos) = 4
 
-# 1. Estimar la proporción común p̂
+## 1. Estimar la proporción común p̂
 n_total = k * n_i
 x_total = np.sum(x)
 p_hat = x_total / n_total
 
-# 2. Calcular las frecuencias esperadas (E_i)
-# La frecuencia esperada (E_i) es n_i * p̂
+## 2. Calcular las frecuencias esperadas (E_i)
+## La frecuencia esperada (E_i) es n_i * p̂
 E_i = n_i * p_hat
 E = np.array([E_i] * k) # Las frecuencias esperadas son las mismas para cada grupo
 
-# 3. Calcular las frecuencias observadas de "Falla" (O_i) y "No Falla" (O_i')
+## 3. Calcular las frecuencias observadas de "Falla" (O_i) y "No Falla" (O_i')
 O_falla = x # Frecuencias observadas de "Falla"
 O_no_falla = n_i - x # Frecuencias observadas de "No Falla"
 
-# Frecuencias esperadas de "Falla" (E_i) y "No Falla" (E_i')
+## Frecuencias esperadas de "Falla" (E_i) y "No Falla" (E_i')
 E_falla = E
 E_no_falla = n_i - E
 
-# 4. Construir la Tabla de Contingencia para visualización
+## 4. Construir la Tabla de Contingencia para visualización
 data = {
     'Marca': ['A', 'B', 'C', 'D'],
     'Observadas (Falla)': O_falla,
@@ -2321,42 +2321,42 @@ data = {
 }
 df = pd.DataFrame(data).set_index('Marca')
 
-# 5. Calcular el estadístico de prueba (D₀² o Chi-cuadrado χ²)
-# El estadístico de prueba para la igualdad de k proporciones es la suma
-# de las contribuciones de (O - E)² / E para todas las celdas.
-# En este caso, para k proporciones y sus complementos, hay 2*k celdas.
+## 5. Calcular el estadístico de prueba (D₀² o Chi-cuadrado χ²)
+## El estadístico de prueba para la igualdad de k proporciones es la suma
+## de las contribuciones de (O - E)² / E para todas las celdas.
+## En este caso, para k proporciones y sus complementos, hay 2*k celdas.
 
-# Contribuciones de las fallas
+## Contribuciones de las fallas
 chi2_falla_contrib = (O_falla - E_falla)**2 / E_falla
 
-# Contribuciones de las no fallas
+## Contribuciones de las no fallas
 chi2_no_falla_contrib = (O_no_falla - E_no_falla)**2 / E_no_falla
 
-# Estadístico de prueba D₀² (Chi-cuadrado total)
+## Estadístico de prueba D₀² (Chi-cuadrado total)
 D_squared_0 = np.sum(chi2_falla_contrib) + np.sum(chi2_no_falla_contrib)
 
-# 6. Determinar los grados de libertad (gl) y el valor crítico
-# gl = k - 1 (se resta 1 porque se estimó el parámetro p̂ a partir de los datos)
+## 6. Determinar los grados de libertad (gl) y el valor crítico
+## gl = k - 1 (se resta 1 porque se estimó el parámetro p̂ a partir de los datos)
 gl = k - 1
 
-# Valor crítico para α = 0.05 (prueba de dos colas, usando α/2)
-# El PDF usa χ²_{k-1, α/2} = χ²_{3, 0.025}
-# Sin embargo, la prueba de homogeneidad/independencia (la que se hace aquí) es
-# intrínsecamente de una cola (cola derecha) para el estadístico Chi-cuadrado.
-# El PDF parece usar el punto crítico de la distribución de Chi-cuadrado de dos colas
-# para el ejemplo de las proporciones, lo cual es inusual pero se respeta su procedimiento:
-# El PDF indica χ²_{3, 0.025} = 9.348 (esto es el cuantil 0.975)
-# Usaremos el cuantil 0.975 (1 - α/2)
+## Valor crítico para α = 0.05 (prueba de dos colas, usando α/2)
+## El PDF usa χ²_{k-1, α/2} = χ²_{3, 0.025}
+## Sin embargo, la prueba de homogeneidad/independencia (la que se hace aquí) es
+## intrínsecamente de una cola (cola derecha) para el estadístico Chi-cuadrado.
+## El PDF parece usar el punto crítico de la distribución de Chi-cuadrado de dos colas
+## para el ejemplo de las proporciones, lo cual es inusual pero se respeta su procedimiento:
+## El PDF indica χ²_{3, 0.025} = 9.348 (esto es el cuantil 0.975)
+## Usaremos el cuantil 0.975 (1 - α/2)
 chi2_critical_pdf = stats.chi2.ppf(1 - 0.025, gl)
-# ¡Nota! El valor 9.348 del PDF corresponde a la tabla A.9 (cuantiles) para gl=3 y p=0.025
+## ¡Nota! El valor 9.348 del PDF corresponde a la tabla A.9 (cuantiles) para gl=3 y p=0.025
 
-# Usando el enfoque estándar de Chi-cuadrado (cola derecha para α = 0.05)
+## Usando el enfoque estándar de Chi-cuadrado (cola derecha para α = 0.05)
 chi2_critical_standard = stats.chi2.ppf(1 - 0.05, gl)
 
-# 7. Calcular el p-valor
+## 7. Calcular el p-valor
 p_value = 1 - stats.chi2.cdf(D_squared_0, gl)
 
-# --- Impresión de Resultados ---
+## --- Impresión de Resultados ---
 print("--- Resultados del Análisis de Proporciones Múltiples (Ejemplo 5.17) ---")
 print(f"1. Proporción Estimada Común (p̂): {p_hat:.4f}")
 print(f"2. Frecuencias Esperadas (E_i): {E_i:.4f}")
@@ -2368,13 +2368,13 @@ print(f"5. Grados de Libertad (gl): {gl}")
 print(f"6. Nivel de Significancia (α): {0.05}")
 print("-------------------------------------------------------------------")
 
-# Criterio de Decisión
+## Criterio de Decisión
 print("\n--- Criterio de Decisión ---")
 print(f"Valor Crítico según el PDF (χ²_{gl, 0.025}): {chi2_critical_pdf:.4f}")
 print(f"Valor Crítico Estándar (χ²_{gl, 0.05}): {chi2_critical_standard:.4f}")
 print(f"P-valor: {p_value:.4f}")
 
-# Decisión basada en el p-valor
+## Decisión basada en el p-valor
 if p_value < 0.05:
     decision = "Rechazar H₀"
     conclusion = "Hay suficiente evidencia para concluir que al menos dos de las proporciones de falla son diferentes (la calidad de los neumáticos varía)."
@@ -2382,14 +2382,14 @@ else:
     decision = "No Rechazar H₀"
     conclusion = "No hay suficiente evidencia para concluir que las proporciones de falla son diferentes."
 
-# Decisión basada en el estadístico de prueba (usando el criterio del PDF)
+## Decisión basada en el estadístico de prueba (usando el criterio del PDF)
 if D_squared_0 > chi2_critical_pdf:
     decision_pdf = "Rechazar H₀"
 else:
-# Nota: El PDF usa el criterio D² < χ²_{k-1, 1-α/2} O D² > χ²_{k-1, α/2}
-# En el ejemplo el valor es 9.348, que es χ²_{3, 0.025} (cuantil 0.975).
-# Como D²₀ = 6.8407 < 9.348 (como se muestra en el PDF), la condición es D²₀ < χ²_{3, α/2}
-# Por lo tanto, no se rechaza H₀ según el criterio del PDF.
+## Nota: El PDF usa el criterio D² < χ²_{k-1, 1-α/2} O D² > χ²_{k-1, α/2}
+## En el ejemplo el valor es 9.348, que es χ²_{3, 0.025} (cuantil 0.975).
+## Como D²₀ = 6.8407 < 9.348 (como se muestra en el PDF), la condición es D²₀ < χ²_{3, α/2}
+## Por lo tanto, no se rechaza H₀ según el criterio del PDF.
     decision_pdf = "No Rechazar H₀ (Siguiendo el Criterio del PDF)"
 
 print(f"\nDecisión (P-valor): {decision}")
@@ -2433,25 +2433,25 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from scipy.stats import linregress
 
-# 1. Simulación de Datos basados en la Ley de Beer-Lambert
+## 1. Simulación de Datos basados en la Ley de Beer-Lambert
 
-# Parámetros (valores típicos)
+## Parámetros (valores típicos)
 epsilon = 5000  # Absortividad molar (ϵ) en M⁻¹ cm⁻¹
 path_length_b = 1.0  # Longitud del camino óptico (b) en cm
 slope_m = epsilon * path_length_b # Pendiente ideal (m = ϵb)
 
-# Concentraciones (c) en M
+## Concentraciones (c) en M
 concentrations = np.array([0.0, 1.0e-5, 2.0e-5, 4.0e-5, 6.0e-5, 8.0e-5, 10.0e-5])
 
-# Absorbancia ideal (A = m * c)
+## Absorbancia ideal (A = m * c)
 absorbance_ideal = slope_m * concentrations
 
-# Añadir ruido aleatorio (simulando errores de medición)
+## Añadir ruido aleatorio (simulando errores de medición)
 np.random.seed(42) # Para reproducibilidad
 noise = np.random.normal(0, 0.015, len(concentrations))
 absorbance_measured = absorbance_ideal + noise
 
-# Crear un DataFrame para mostrar los datos
+## Crear un DataFrame para mostrar los datos
 data = pd.DataFrame({
     'Concentración (M)': concentrations,
     'Absorbancia (A)': absorbance_measured
@@ -2460,36 +2460,36 @@ print("--- Datos Simulados (Absorbancia vs. Concentración) ---")
 print(data.to_string(index=False))
 print("\n" + "="*70 + "\n")
 
-# 2. Aplicación de Regresión Lineal (Modelado de la Ley de Beer-Lambert)
+## 2. Aplicación de Regresión Lineal (Modelado de la Ley de Beer-Lambert)
 
-# Realizar la regresión lineal
-# La función asume un modelo y = mx + c_int
+## Realizar la regresión lineal
+## La función asume un modelo y = mx + c_int
 slope_fit, intercept_fit, r_value, p_value, std_err = linregress(concentrations, absorbance_measured)
 
-# Calcular los valores predichos por el modelo
+## Calcular los valores predichos por el modelo
 absorbance_predicted = slope_fit * concentrations + intercept_fit
 
-# Determinar la absortividad molar experimental (ϵ_exp)
-# Como la pendiente ajustada (slope_fit) es ϵ * b, y b=1.0 cm:
+## Determinar la absortividad molar experimental (ϵ_exp)
+## Como la pendiente ajustada (slope_fit) es ϵ * b, y b=1.0 cm:
 epsilon_experimental = slope_fit / path_length_b
 
-# 3. Visualización de los Resultados (Similar al Gráfico de la Imagen)
+## 3. Visualización de los Resultados (Similar al Gráfico de la Imagen)
 
 plt.figure(figsize=(10, 6))
 
-# Título y etiquetas
+## Título y etiquetas
 plt.title(f'Gráfico de Calibración: Ley de Beer-Lambert\n$A = \epsilon b c$', fontsize=16)
 plt.xlabel('Concentración, $c$ (M)', fontsize=14)
 plt.ylabel('Absorbancia, $A$', fontsize=14)
 
-# Puntos de datos (Absorbancia Medida)
+## Puntos de datos (Absorbancia Medida)
 plt.scatter(concentrations, absorbance_measured, color='blue', label='Datos Medidos', s=60, zorder=5)
 
-# Línea de mejor ajuste (Regresión Lineal)
+## Línea de mejor ajuste (Regresión Lineal)
 plt.plot(concentrations, absorbance_predicted, color='red', linestyle='--',
          label=f'Regresión Lineal: $A = {slope_fit:.2f}c + {intercept_fit:.4f}$', linewidth=2)
 
-# Mostrar la fórmula y R² en el gráfico
+## Mostrar la fórmula y R² en el gráfico
 plt.text(0.05, 0.9,
          f'Absortividad Molar ($\epsilon$) = {epsilon_experimental:.0f} $M^{{-1}} cm^{{-1}}$\n'
          f'Coeficiente de Determinación ($R^2$) = {r_value**2:.4f}',
@@ -2497,14 +2497,14 @@ plt.text(0.05, 0.9,
          fontsize=12,
          bbox=dict(boxstyle="round,pad=0.5", fc="white", alpha=0.7))
 
-# Configuración del gráfico
+## Configuración del gráfico
 plt.grid(True, linestyle=':', alpha=0.6)
 plt.legend(loc='lower right')
 plt.ylim(0, np.max(absorbance_measured) * 1.1)
 plt.xlim(0, np.max(concentrations) * 1.1)
 plt.show()
 
-# 4. Resumen de Resultados
+## 4. Resumen de Resultados
 
 print("\n--- Resultados de la Regresión Lineal ---")
 print(f"Pendiente ajustada (m = ϵb): {slope_fit:.2f}")
@@ -2559,18 +2559,18 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.integrate import quad
 
-# 1. Constante de Normalización (k = 1/8)
+## 1. Constante de Normalización (k = 1/8)
 k = 1/8
 def f_x(x):
     """Función de Densidad de Probabilidad (PDF) del Ejercicio 1 y 2."""
     return k * x
 
-# 2. Verificación por Integración
+## 2. Verificación por Integración
 integral_total, error = quad(f_x, 0, 4)
 print(f"Valor de k: {k}")
 print(f"Verificación: Integral de f(x) de 0 a 4 = {integral_total:.4f}")
 
-# 3. Gráfico de la PDF
+## 3. Gráfico de la PDF
 x_vals = np.linspace(0, 4, 100)
 y_vals = f_x(x_vals)
 
@@ -2602,20 +2602,20 @@ Plantamiento:
 Se utiliza el valor de k=1/8. La probabilidad P(1<X<3) es el área bajo la PDF entre 1 y 3:$$P(1 < X < 3) = \int_{1}^{3} f(x) \, dx = \int_{1}^{3} \frac{1}{8}x \, dx$$$$= \frac{1}{8} \left[ \frac{x^2}{2} \right]_{1}^{3} = \frac{1}{16} (3^2 - 1^2) = \frac{1}{16} (9 - 1) = \frac{8}{16} = \mathbf{0.5}$$
 
 ```python
-# Utiliza f_x(x) y k = 1/8 del Ejercicio 1
+## Utiliza f_x(x) y k = 1/8 del Ejercicio 1
 
-# 1. Cálculo de la Probabilidad P(1 < X < 3)
+## 1. Cálculo de la Probabilidad P(1 < X < 3)
 probabilidad, error = quad(f_x, 1, 3)
 print(f"Probabilidad P(1 < X < 3): {probabilidad:.4f}")
 
-# 2. Gráfico de la PDF con la región sombreada
+## 2. Gráfico de la PDF con la región sombreada
 x_vals = np.linspace(0, 4, 100)
 y_vals = f_x(x_vals)
 
 plt.figure(figsize=(8, 4))
 plt.plot(x_vals, y_vals, label=r'$f(x) = \frac{1}{8}x$', color='blue')
 
-# Sombreado de P(1 < X < 3)
+## Sombreado de P(1 < X < 3)
 x_prob = np.linspace(1, 3, 50)
 y_prob = f_x(x_prob)
 plt.fill_between(x_prob, y_prob, color='red', alpha=0.6, label=f'$P(1 < X < 3) = {probabilidad:.2f}$')
@@ -2649,18 +2649,18 @@ $$E[X] = \int_{-\infty}^{\infty} x \cdot f(x) \, dx = \int_{0}^{4} x \cdot \frac
 $$= \frac{1}{8} \left[ \frac{x^3}{3} \right]_{0}^{4} = \frac{1}{24} (4^3 - 0^3) = \frac{64}{24} = \mathbf{\frac{8}{3} \approx 2.667}$$
 
 ```python
-# Utiliza f_x(x) y k = 1/8 del Ejercicio 1
+## Utiliza f_x(x) y k = 1/8 del Ejercicio 1
 
 def g_x_e(x):
     """Función para el cálculo del Valor Esperado E[X]."""
     return x * f_x(x)
 
-# 1. Cálculo del Valor Esperado E[X]
+## 1. Cálculo del Valor Esperado E[X]
 E_X, error_e = quad(g_x_e, 0, 4)
 E_X_val = 8/3 # Valor exacto
 print(f"Valor Esperado E[X] (Media): {E_X_val:.4f} voltios")
 
-# 2. Gráfico de la PDF con E[X] marcado
+## 2. Gráfico de la PDF con E[X] marcado
 x_vals = np.linspace(0, 4, 100)
 y_vals = f_x(x_vals)
 
@@ -2668,7 +2668,7 @@ plt.figure(figsize=(8, 4))
 plt.plot(x_vals, y_vals, label=r'$f(x) = \frac{1}{8}x$', color='blue')
 plt.fill_between(x_vals, y_vals, color='lightblue', alpha=0.5)
 
-# Marcar el Valor Esperado E[X]
+## Marcar el Valor Esperado E[X]
 plt.axvline(x=E_X_val, color='green', linestyle='-', linewidth=2, label=f'$E[X] = {E_X_val:.3f}$')
 plt.title('PDF del Voltaje y su Valor Esperado')
 plt.xlabel('Voltaje (X en voltios)')
@@ -2707,17 +2707,17 @@ La Desviación Estándar (σ):
 $$\sigma = \sqrt{\text{Var}(X)} = \sqrt{\frac{8}{9}} = \mathbf{\frac{\sqrt{8}}{3} \approx 0.943}$$
 
 ```python
-# Utiliza f_x(x) del Ejercicio 1 y E_X_val = 8/3 del Ejercicio 3
+## Utiliza f_x(x) del Ejercicio 1 y E_X_val = 8/3 del Ejercicio 3
 
 def g_x_e2(x):
     """Función para el cálculo del Segundo Momento E[X^2]."""
     return x**2 * f_x(x)
 
-# 1. Cálculo de E[X^2]
+## 1. Cálculo de E[X^2]
 E_X2, error_e2 = quad(g_x_e2, 0, 4)
 print(f"Segundo Momento E[X^2]: {E_X2:.4f}")
 
-# 2. Cálculo de Varianza y Desviación Estándar
+## 2. Cálculo de Varianza y Desviación Estándar
 Var_X = E_X2 - (E_X_val)**2
 sigma = np.sqrt(Var_X)
 
@@ -2750,7 +2750,7 @@ Luego, se aplica la propiedad:$E[Y] = 3 E[X] - 5 = 3(3) - 5 = 9 - 5 = \mathbf{4}
 Nota: $f(x) = \frac{3}{64}x^2$ para $0 \le x \le 4$
 
 ```python
-# PDF del beneficio f(x) = (3/64)x^2
+## PDF del beneficio f(x) = (3/64)x^2
 def f_beneficio(x):
     return (3/64) * x**2
 
@@ -2758,11 +2758,11 @@ def g_x_e_beneficio(x):
     """Función para el cálculo de E[X] del beneficio."""
     return x * f_beneficio(x)
 
-# 1. Cálculo de E[X]
+## 1. Cálculo de E[X]
 E_X_beneficio, error_e_b = quad(g_x_e_beneficio, 0, 4)
 print(f"Valor Esperado del beneficio original E[X]: {E_X_beneficio:.4f} (miles de USD)")
 
-# 2. Aplicación de la transformación lineal E[Y] = 3*E[X] - 5
+## 2. Aplicación de la transformación lineal E[Y] = 3*E[X] - 5
 E_Y = 3 * E_X_beneficio - 5
 print(f"Valor Esperado del beneficio ajustado E[Y]: {E_Y:.4f} (miles de USD)")
 ```
@@ -2835,7 +2835,7 @@ $$
 import numpy as np
 import matplotlib.pyplot as plt
 
-# Definición de la PDF f(x)
+## Definición de la PDF f(x)
 def pdf_fx(x):
     if 0 <= x <= 3:
         return (1/9) * x
@@ -2844,47 +2844,47 @@ def pdf_fx(x):
     else:
         return 0
 
-# Definición de la CDF F(x)
+## Definición de la CDF F(x)
 def cdf_fx(x):
     if x < 0:
         return 0
     elif 0 <= x <= 3:
-# F(x) = x^2 / 18
+## F(x) = x^2 / 18
         return (x**2) / 18
     elif 3 < x <= 6:
-# F(x) = (2/3)x - x^2/18 - 1
+## F(x) = (2/3)x - x^2/18 - 1
         return (2/3) * x - (x**2) / 18 - 1
     else: # x > 6
         return 1
 
-# Crear un array de valores x para el gráfico
+## Crear un array de valores x para el gráfico
 x_vals = np.linspace(-1, 7, 500)
 
-# Calcular los valores de la PDF y la CDF
+## Calcular los valores de la PDF y la CDF
 pdf_vals = np.array([pdf_fx(x) for x in x_vals])
 cdf_vals = np.array([cdf_fx(x) for x in x_vals])
 
-# Crear los gráficos adyacentes
+## Crear los gráficos adyacentes
 fig, axes = plt.subplots(1, 2, figsize=(14, 5)) # Una fila, dos columnas
 
-# --- Gráfico de la PDF f(x) ---
+## --- Gráfico de la PDF f(x) ---
 axes[0].plot(x_vals, pdf_vals, label='$f(x)$', color='blue')
 axes[0].set_title('Función de Densidad de Probabilidad (PDF)')
 axes[0].set_xlabel('Vida Útil (X, años)')
 axes[0].set_ylabel('$f(x)$')
 axes[0].grid(True, linestyle='--')
-# Marcar el punto de cambio x=3
+## Marcar el punto de cambio x=3
 axes[0].vlines(3, 0, pdf_fx(3), color='red', linestyle=':', label='Punto de cambio $x=3$')
 axes[0].scatter(3, pdf_fx(3), color='red', s=50, zorder=5) # Punto en x=3
 axes[0].legend()
 
-# --- Gráfico de la CDF F(x) ---
+## --- Gráfico de la CDF F(x) ---
 axes[1].plot(x_vals, cdf_vals, label='$F(x)$', color='green')
 axes[1].set_title('Función de Distribución Acumulativa (CDF)')
 axes[1].set_xlabel('Vida Útil (X, años)')
 axes[1].set_ylabel('$F(x)$')
 axes[1].grid(True, linestyle='--')
-# Marcar el punto de cambio x=3
+## Marcar el punto de cambio x=3
 axes[1].vlines(3, 0, cdf_fx(3), color='red', linestyle=':', label='Punto de cambio $x=3$')
 axes[1].scatter(3, cdf_fx(3), color='red', s=50, zorder=5) # Punto en x=3, F(3)=0.5
 axes[1].hlines(0.5, 0, 3, color='orange', linestyle='--', alpha=0.6, label='$F(3)=0.5$')
@@ -2937,20 +2937,20 @@ $$f(t) = \begin{cases} 2e^{-2t} & \text{para } t \ge 0 \\ 0 & \text{para } t < 0
 import numpy as np
 import matplotlib.pyplot as plt
 
-# Rango de valores de t (tiempo)
+## Rango de valores de t (tiempo)
 t = np.linspace(0, 4, 200) # Se usa 0 a 4 segundos para visualizar la mayor parte de la distribución
 
-# 1. Función de Distribución Acumulativa (CDF)
+## 1. Función de Distribución Acumulativa (CDF)
 F_t = 1 - np.exp(-2 * t)
 
-# 2. Función de Densidad de Probabilidad (PDF)
+## 2. Función de Densidad de Probabilidad (PDF)
 f_t = 2 * np.exp(-2 * t)
 
-# Crear la figura y los subgráficos
+## Crear la figura y los subgráficos
 fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
 fig.suptitle('Ejercicio 7: CDF y PDF del Tiempo de Respuesta de un Servidor')
 
-# Gráfico de la CDF F(t)
+## Gráfico de la CDF F(t)
 ax1.plot(t, F_t, label='$F(t) = 1 - e^{-2t}$', color='blue')
 ax1.set_title('Función de Distribución Acumulativa (CDF)')
 ax1.set_xlabel('Tiempo $t$ (segundos)')
@@ -2960,7 +2960,7 @@ ax1.axhline(1, color='gray', linestyle=':', linewidth=1)
 ax1.legend()
 ax1.text(0.1, 0.8, 'Pendiente en $t=0$ es $f(0)=2$', color='red', transform=ax1.transAxes)
 
-# Gráfico de la PDF f(t)
+## Gráfico de la PDF f(t)
 ax2.plot(t, f_t, label='$f(t) = 2e^{-2t}$', color='red')
 ax2.set_title('Función de Densidad de Probabilidad (PDF)')
 ax2.set_xlabel('Tiempo $t$ (segundos)')
@@ -3028,33 +3028,33 @@ El **razonamiento lógico** es que, dado que $f(x)$ es una PDF válida, el área
 import numpy as np
 from scipy.integrate import quad
 
-# --- 1. Cálculo de la Mediana (m) ---
+## --- 1. Cálculo de la Mediana (m) ---
 
-# Fórmula para m: m = cúbica(32)
+## Fórmula para m: m = cúbica(32)
 m = np.cbrt(32)
 
-# Imprimir el valor de la Mediana
+## Imprimir el valor de la Mediana
 print(f"El valor de la Mediana (m) es: {m:.4f} miles de USD")
 
-# --- 2. Cálculo del Valor Esperado E[X] (para la interpretación/comparación) ---
+## --- 2. Cálculo del Valor Esperado E[X] (para la interpretación/comparación) ---
 
-# PDF: f(x) = (3/64) * x^2
+## PDF: f(x) = (3/64) * x^2
 def pdf_fx(x):
     return (3/64) * x**2
 
-# Función para el valor esperado E[X] = Integral(x * f(x) dx)
+## Función para el valor esperado E[X] = Integral(x * f(x) dx)
 def integrand_ex(x):
     return x * pdf_fx(x)
 
-# Calcular E[X] con integración numérica
+## Calcular E[X] con integración numérica
 E_X, err_E_X = quad(integrand_ex, 0, 4)
 
-# Imprimir el valor de E[X]
+## Imprimir el valor de E[X]
 print(f"El Valor Esperado (Media, E[X]) es: {E_X:.4f} miles de USD")
 
-# --- 3. Verificación de F(m) = 0.5 (Opcional) ---
+## --- 3. Verificación de F(m) = 0.5 (Opcional) ---
 
-# Verificar la integral de 0 a m de f(x)
+## Verificar la integral de 0 a m de f(x)
 F_m, err_F_m = quad(pdf_fx, 0, m)
 print(f"Verificación: F(m) = P(X <= m) = {F_m:.4f}")
 ```
@@ -3106,7 +3106,7 @@ Razonamiento Lógico
 import numpy as np
 import matplotlib.pyplot as plt
 
-# Definición de la PDF f(x) por tramos
+## Definición de la PDF f(x) por tramos
 def f_pdf(x):
     if 0 <= x <= 3:
         return (1/9) * x
@@ -3115,27 +3115,27 @@ def f_pdf(x):
     else:
         return 0
 
-# Vectorizar la función para usarla con arrays de numpy
+## Vectorizar la función para usarla con arrays de numpy
 f_pdf_v = np.vectorize(f_pdf)
 
-# Rango de x para la gráfica
+## Rango de x para la gráfica
 x_vals = np.linspace(0, 6, 500)
 y_vals = f_pdf_v(x_vals)
 
-# El valor de la Moda encontrado analíticamente
+## El valor de la Moda encontrado analíticamente
 moda = 3
 f_moda = f_pdf(moda)
 
-# Crear el gráfico
+## Crear el gráfico
 plt.figure(figsize=(10, 6))
 plt.plot(x_vals, y_vals, label=r'$f(x) = \text{PDF}$')
 
-# [cite_start]Señalar la Moda en el gráfico [cite: 59]
+## [cite_start]Señalar la Moda en el gráfico [cite: 59]
 plt.scatter([moda], [f_moda], color='red', s=100, zorder=5, label=f'Moda = {moda} años')
 plt.annotate(f'Máximo: ({moda}, {f_moda:.3f})', (moda, f_moda),
              textcoords="offset points", xytext=(15, -10), ha='center', fontsize=12, color='red')
 
-# Etiquetas y título
+## Etiquetas y título
 plt.title(r'Función de Densidad de Probabilidad (PDF) y la Moda')
 plt.xlabel('Vida Útil (X, en años)')
 plt.ylabel('f(x)')
@@ -3177,16 +3177,16 @@ La CDF, $F(r)$, se define como $F(r) = P(R \le r)$, es decir, la probabilidad de
     $$P(5<R\le10) = P(R\le10) - P(R\le5) = F(10) - F(5)$$
 
 ```python
-# Valores dados de la CDF
+## Valores dados de la CDF
 F_5 = 0.15  # F(5)
 F_10 = 0.85 # F(10)
 
-# --- Cálculo de P(R > 10) ---
-# P(R > 10) = 1 - F(10)
+## --- Cálculo de P(R > 10) ---
+## P(R > 10) = 1 - F(10)
 P_R_mayor_10 = 1 - F_10
 
-# --- Cálculo de P(5 < R <= 10) ---
-# P(5 < R <= 10) = F(10) - F(5)
+## --- Cálculo de P(5 < R <= 10) ---
+## P(5 < R <= 10) = F(10) - F(5)
 P_5_a_10 = F_10 - F_5
 
 print(f"La probabilidad P(R > 10) es: {P_R_mayor_10:.2f}")
@@ -3253,15 +3253,15 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.stats import uniform
 
-# Parámetros
+## Parámetros
 a, b = -0.05, 0.05
 dist = uniform(loc=a, scale=b - a)
 
-# Probabilidad P(X < 0.02)
+## Probabilidad P(X < 0.02)
 p = dist.cdf(0.02)
 print(f"P(X < 0.02) = {p:.4f}")
 
-# Gráfico de la PDF
+## Gráfico de la PDF
 x = np.linspace(-0.06, 0.06, 400)
 plt.plot(x, dist.pdf(x), color='navy', lw=2)
 plt.fill_between(x, dist.pdf(x), where=(x>=a)&(x<=0.02), color='skyblue', alpha=0.4)
@@ -3315,19 +3315,19 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.stats import expon
 
-# Parámetros
+## Parámetros
 lambda_ = 0.4
 dist = expon(scale=1/lambda_)  # scale = 1/lambda
 
-# Probabilidad P(T > 10)
+## Probabilidad P(T > 10)
 p = dist.sf(10)  # survival function = P(T > 10)
 print(f"P(T > 10) = {p:.4f}")
 
-# Datos para graficar
+## Datos para graficar
 t = np.linspace(0, 20, 400)
 pdf = dist.pdf(t)
 
-# Gráfico
+## Gráfico
 plt.plot(t, pdf, color='darkred', lw=2, label='PDF: $f(t) = 0.4 e^{-0.4t}$')
 plt.fill_between(t, pdf, where=(t>10), color='salmon', alpha=0.5, label='Área: P(T>10)')
 plt.axvline(10, color='gray', ls='--')
@@ -3396,15 +3396,15 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.stats import norm
 
-# Parámetros
+## Parámetros
 mu, sigma = 75, 8
 dist = norm(loc=mu, scale=sigma)
 
-# Probabilidad entre 65 y 90
+## Probabilidad entre 65 y 90
 p = dist.cdf(90) - dist.cdf(65)
 print(f"P(65 < X < 90) = {p:.4f}")
 
-# Gráfico
+## Gráfico
 x = np.linspace(50, 100, 400)
 pdf = dist.pdf(x)
 
@@ -3461,11 +3461,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.stats import norm
 
-# Percentil 95
+## Percentil 95
 z_95 = norm.ppf(0.95)
 print(f"z_0.95 = {z_95:.4f}")
 
-# Gráfico
+## Gráfico
 x = np.linspace(-4, 4, 400)
 pdf = norm.pdf(x)
 
@@ -3550,19 +3550,19 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.integrate import quad
 
-# Definir PDF de X
+## Definir PDF de X
 def f_X(x):
     return 1/100 if 0 <= x <= 100 else 0
 
-# Función g(X) = X^2
+## Función g(X) = X^2
 def g(x):
     return x**2
 
-# Calcular E[Y] = E[X^2] mediante integración
+## Calcular E[Y] = E[X^2] mediante integración
 E_Y, error = quad(lambda x: g(x)*f_X(x), 0, 100)
 print(f"E[Y] = {E_Y:.2f}")
 
-# Graficar PDF de X
+## Graficar PDF de X
 x_vals = np.linspace(0, 100, 500)
 pdf_vals = [f_X(x) for x in x_vals]
 
@@ -3605,7 +3605,7 @@ from IPython.display import display, Math
 np.random.seed(42)
 muestra_exp = stats.expon.rvs(scale=12.5, size=40) # Muestra original
 
-# Bootstrap (B = 10,000 réplicas)
+## Bootstrap (B = 10,000 réplicas)
 B = 10_000
 medias_boot = [np.mean(np.random.choice(muestra_exp, size=len(muestra_exp), replace=True)) for _ in range(B)]
 
@@ -3633,10 +3633,10 @@ from IPython.display import display, Math
 mu, sigma, n = sp.symbols('mu sigma n', positive=True)
 sum_x = sp.Symbol('(\sum X_i)', real=True)
 
-# Log-Verosimilitud de n observaciones normales
+## Log-Verosimilitud de n observaciones normales
 log_L = - (n / 2) * sp.log(2 * sp.pi * sigma**2) - (1 / (2 * sigma**2)) * (sp.Symbol('(\sum X_i^2)') - 2 * mu * sum_x + n * mu**2)
 
-# Derivada respecto a mu
+## Derivada respecto a mu
 d_logL_dmu = sp.diff(log_L, mu)
 mu_mle = sp.solve(d_logL_dmu, mu)[0]
 
