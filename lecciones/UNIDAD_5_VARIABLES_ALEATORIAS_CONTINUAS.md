@@ -1,15 +1,15 @@
 # UNIDAD 5: Variables Aleatorias Continuas y Modelos de Simulación
-## Asignatura: Probabilidad y Estadística Inferencial
-### UCEMICH — Ingeniería en IA y Nanotecnología
-### Autor y Profesor: Mtro. Luis José Yudico Anaya
+> **Asignatura: Probabilidad y Estadística Inferencial**
+> **UCEMICH — Ingeniería en IA y Nanotecnología**
+> **Autor y Profesor: Mtro. Luis José Yudico Anaya**
 
 ---
 
 #### TEMA: DISTRIBUCIONES DE PROBABILIDAD CON PYTHON
 
-## Modelos para Variables Aleatorias Continuas
+## 1. Modelos para Variables Aleatorias Continuas
 
-### Listado de las distribuciones de probabilidad continuas más utilizadas
+### 1.1 Listado de las distribuciones de probabilidad continuas más utilizadas
 
 En las disciplinas de nanotecnología, ciencias de los materiales, inteligencia artificial, diseño de experimentos y pruebas de hipótesis, se destacan las siguientes distribuciones de probabilidad continuas:
 
@@ -95,7 +95,7 @@ En las disciplinas de nanotecnología, ciencias de los materiales, inteligencia 
 
 Cada una de estas distribuciones juega un papel crucial en la modelación, análisis y comprensión de datos en sus respectivos campos, permitiendo realizar inferencias precisas y fundamentadas en experimentos y estudios estadísticos.
 
-### Distribución Uniforme
+### 1.2 Distribución Uniforme
 
 * **Descripción**: Modelo donde todos los valores en un intervalo \([a, b]\) son igualmente probables.
 
@@ -142,13 +142,13 @@ $$
 
 **Comandos en R**:
 ```r
-## PDF
+### 1.3 PDF
 dunif(x, min = a, max = b)
 
-## CDF
+### 1.4 CDF
 punif(x, min = a, max = b)
 
-## Simulación
+### 1.5 Simulación
 runif(n, min = a, max = b)
 
 #### Ejemplo de Gráfica de la Distribución Uniforme
@@ -159,23 +159,23 @@ En esta gráfica, se muestran diferentes funciones de densidad de probabilidad $
 
 ```python
 """
-## Cargar librerías necesarias
+# Cargar librerías necesarias
 library(ggplot2)
 
-## Definir los parámetros de la distribución uniforme
+# Definir los parámetros de la distribución uniforme
 a <- 0  # límite inferior
 b <- 1  # límite superior
 
-## Crear un rango de valores para x
+# Crear un rango de valores para x
 x <- seq(a - 0.1, b + 0.1, by = 0.01)
 
-## Calcular la PDF para la distribución uniforme
+# Calcular la PDF para la distribución uniforme
 pdf <- dunif(x, min = a, max = b)
 
-## Crear un data frame
+# Crear un data frame
 data <- data.frame(x = x, pdf = pdf)
 
-## Graficar la PDF de la distribución uniforme
+# Graficar la PDF de la distribución uniforme
 ggplot(data, aes(x = x, y = pdf)) +
   geom_line(color = "blue", size = 1) +
   labs(title = "Gráfica de la Distribución Uniforme",
@@ -202,17 +202,17 @@ Aquí tienes ejemplos y usos recomendados de cada tipo:
 
 ---
 
-## I. Distribución Uniforme Discreta
+## 2. Distribución Uniforme Discreta
 
 Se aplica cuando una variable aleatoria solo puede tomar un **número finito de valores** y la probabilidad de cada uno de ellos es idéntica.
 
-### Fórmula (Función de Masa de Probabilidad - PMF)
+### 2.1 Fórmula (Función de Masa de Probabilidad - PMF)
 
 $$P(X = k) = \frac{1}{n}$$
 
 Donde $n$ es el número total de resultados posibles.
 
-### Ejemplos Típicos
+### 2.2 Ejemplos Típicos
 
 | Escenario | Parámetros | Usos Recomendados |
 | :--- | :--- | :--- |
@@ -221,7 +221,7 @@ Donde $n$ es el número total de resultados posibles.
 | **Números de Lotería Simples** | Resultados: $\{1, 2, \dots, 49\}$ $n=49$ | Modelar la probabilidad de que salga un número específico antes del sorteo. |
 | **Selección aleatoria de un producto** | Resultados: $\{Producto \ 1, \dots, Producto \ n\}$ | Asignación aleatoria de participantes en un **estudio** o selección aleatoria de elementos en un **control de calidad**. |
 
-### Usos Recomendados
+### 2.3 Usos Recomendados
 
 1.  **Modelos de Sorteos y Juegos:** Es el modelo base para cualquier proceso de selección o experimento donde se garantiza la total aleatoriedad e igualdad de oportunidades.
 2.  **Criptografía y Seguridad:** Se utiliza para generar secuencias de bits o claves criptográficas, donde es vital que cada bit tenga la misma probabilidad de ser 0 o 1 para evitar patrones predecibles.
@@ -229,17 +229,17 @@ Donde $n$ es el número total de resultados posibles.
 
 ---
 
-## II. Distribución Uniforme Continua
+## 3. Distribución Uniforme Continua
 
 Se aplica cuando una variable aleatoria puede tomar **cualquier valor dentro de un intervalo fijo** (entre $a$ y $b$), y la probabilidad de que caiga en cualquier subintervalo de igual longitud es la misma.
 
-### Fórmula (Función de Densidad de Probabilidad - PDF)
+### 3.1 Fórmula (Función de Densidad de Probabilidad - PDF)
 
 $$f(x) = \begin{cases} \frac{1}{b-a} & \text{si } a \le x \le b \\ 0 & \text{en otro caso} \end{cases}$$
 
 Donde $a$ es el límite inferior y $b$ es el límite superior.
 
-### Ejemplos Típicos
+### 3.2 Ejemplos Típicos
 
 | Escenario | Parámetros | Usos Recomendados |
 | :--- | :--- | :--- |
@@ -255,81 +255,81 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns # Opcional: para mejorar la estética de la gráfica
 
-## ----------------------------------------------------
-## 1. Cargar librerías necesarias (importaciones)
-## Ya hecho arriba
-## ----------------------------------------------------
+# ----------------------------------------------------
+# 1. Cargar librerías necesarias (importaciones)
+# Ya hecho arriba
+# ----------------------------------------------------
 
-## 2. Definir los parámetros de la distribución uniforme
+# 2. Definir los parámetros de la distribución uniforme
 a = 0  # Límite inferior
 b = 1  # Límite superior
 
-## 3. Crear un rango de valores para x
-## Similar a seq(a - 0.1, b + 0.1, by = 0.01) en R
+# 3. Crear un rango de valores para x
+# Similar a seq(a - 0.1, b + 0.1, by = 0.01) en R
 x = np.arange(a - 0.1, b + 0.1, 0.01)
 
-## 4. Calcular la PDF para la distribución uniforme
-## En la distribución uniforme, la PDF es 1/(b-a) dentro del rango [a, b] y 0 fuera.
-## Definimos una función equivalente a dunif(x, min=a, max=b)
+# 4. Calcular la PDF para la distribución uniforme
+# En la distribución uniforme, la PDF es 1/(b-a) dentro del rango [a, b] y 0 fuera.
+# Definimos una función equivalente a dunif(x, min=a, max=b)
 def uniform_pdf(x_val, a, b):
-## La altura de la PDF dentro del rango
+# La altura de la PDF dentro del rango
     height = 1 / (b - a)
 
-## Crea un array de ceros para la misma forma que x_val
+# Crea un array de ceros para la misma forma que x_val
     pdf_val = np.zeros_like(x_val, dtype=float)
 
-## Identifica los índices donde x_val está en el rango [a, b]
+# Identifica los índices donde x_val está en el rango [a, b]
     in_range = (x_val >= a) & (x_val <= b)
 
-## Asigna la altura a esos índices
+# Asigna la altura a esos índices
     pdf_val[in_range] = height
 
     return pdf_val
 
 pdf = uniform_pdf(x, a, b)
 
-## 5. Crear un data frame (Aunque no es estrictamente necesario para la gráfica,
-## la estructura de datos es similar a la creada por numpy)
-## Los arrays 'x' y 'pdf' contienen los datos.
+# 5. Crear un data frame (Aunque no es estrictamente necesario para la gráfica,
+# la estructura de datos es similar a la creada por numpy)
+# Los arrays 'x' y 'pdf' contienen los datos.
 
-## 6. Graficar la PDF de la distribución uniforme (usando Matplotlib/Seaborn)
-## Configuración de Seaborn para el estilo (Opcional)
+# 6. Graficar la PDF de la distribución uniforme (usando Matplotlib/Seaborn)
+# Configuración de Seaborn para el estilo (Opcional)
 sns.set_theme(style="whitegrid")
 
 plt.figure(figsize=(8, 6))
 
-## Trazar la línea (equivalente a geom_line en ggplot2)
+# Trazar la línea (equivalente a geom_line en ggplot2)
 plt.plot(x, pdf, color="blue", linewidth=2) # size=1 en R es linewidth=2 en Matplotlib para mejor visibilidad
 
-## Añadir etiquetas y título (equivalente a labs)
+# Añadir etiquetas y título (equivalente a labs)
 plt.title("Gráfica de la Distribución Uniforme", fontsize=16)
 plt.xlabel("x", fontsize=12)
 plt.ylabel("Densidad de Probabilidad (PDF)", fontsize=12)
 
-## Usar theme_minimal (ajustes de Matplotlib)
+# Usar theme_minimal (ajustes de Matplotlib)
 plt.gca().spines['top'].set_visible(False)
 plt.gca().spines['right'].set_visible(False)
 
-## Mostrar la gráfica
+# Mostrar la gráfica
 plt.grid(True, linestyle='--', alpha=0.6)
 plt.show()
 
-## ----------------------------------------------------
-## Nota: Si se quisiera usar la librería 'scipy.stats' para mayor fidelidad a R,
-## el cálculo de la PDF sería:
-## from scipy.stats import uniform
-## pdf_scipy = uniform.pdf(x, loc=a, scale=b-a)
-## (loc es el mínimo, scale es la longitud b-a)
-## ----------------------------------------------------
+# ----------------------------------------------------
+# Nota: Si se quisiera usar la librería 'scipy.stats' para mayor fidelidad a R,
+# el cálculo de la PDF sería:
+# from scipy.stats import uniform
+# pdf_scipy = uniform.pdf(x, loc=a, scale=b-a)
+# (loc es el mínimo, scale es la longitud b-a)
+# ----------------------------------------------------
 ```
 
-## Descripción del Código Python para la Gráfica de la Distribución Uniforme
+### 3.3 Descripción del Código Python para la Gráfica de la Distribución Uniforme
 
 El código presentado en **Python** tiene el propósito de calcular y visualizar la **Función de Densidad de Probabilidad (PDF)** de una **Distribución Uniforme** en el intervalo $[0, 1]$. Utiliza la librería **NumPy** para operaciones numéricas y **Matplotlib/Seaborn** para la generación del gráfico.
 
 ---
 
-### 1. Inicialización y Parámetros
+### 3.4 1. Inicialización y Parámetros
 
 | Código | Descripción |
 | :--- | :--- |
@@ -342,7 +342,7 @@ El código presentado en **Python** tiene el propósito de calcular y visualizar
 
 ---
 
-### 2. Cálculo de la Función de Densidad (PDF)
+### 3.5 2. Cálculo de la Función de Densidad (PDF)
 
 | Código | Descripción |
 | :--- | :--- |
@@ -354,7 +354,7 @@ El código presentado en **Python** tiene el propósito de calcular y visualizar
 
 ---
 
-### 3. Visualización de la Gráfica
+### 3.6 3. Visualización de la Gráfica
 
 | Código | Descripción |
 | :--- | :--- |
@@ -368,7 +368,7 @@ El código presentado en **Python** tiene el propósito de calcular y visualizar
 
 El código genera un gráfico que visualiza la distribución de probabilidad de forma rectangular, con una altura de **1** constante entre $x=0$ y $x=1$, y **cero** fuera de ese rango.
 
-### Distribución Exponencial
+### 3.7 Distribución Exponencial
 
 * **Descripción**: Modelo de tiempo hasta el próximo evento en un proceso de Poisson.
 
@@ -405,13 +405,13 @@ $$
 
 **Comandos en R**:
 ```r
-## PDF
+### 3.8 PDF
 dexp(x, rate = lambda)
 
-## CDF
+### 3.9 CDF
 pexp(x, rate = lambda)
 
-## Simulación
+### 3.10 Simulación
 rexp(n, rate = lambda)
 
 #### Ejemplo de Gráfica de la Distribución Exponencial
@@ -422,33 +422,33 @@ En esta gráfica, se muestran diferentes funciones de densidad de probabilidad $
 
 ```python
 """
-## Instalar y cargar la librería necesaria
+# Instalar y cargar la librería necesaria
 #install.packages('ggplot2')  # Descomentar si no está instalada
 library(ggplot2)
 
-## Aquí tienes un ejemplo de varios gráficos de la distribución exponencial
-## con diferentes valores de lambda. El código incluye la configuración
-## necesaria para generar los gráficos:
+# Aquí tienes un ejemplo de varios gráficos de la distribución exponencial
+# con diferentes valores de lambda. El código incluye la configuración
+# necesaria para generar los gráficos:
 
-## Definir un rango de valores para x
+# Definir un rango de valores para x
 x <- seq(0, 5, by = 0.01)
 
-## Crear un data frame vacío para almacenar los resultados
+# Crear un data frame vacío para almacenar los resultados
 data_list <- list()
 
-## Valores de lambda a usar
+# Valores de lambda a usar
 lambda_values <- c(0.5, 1, 1.5)
 
-## Calcular la PDF para cada valor de lambda y almacenar en el data frame
+# Calcular la PDF para cada valor de lambda y almacenar en el data frame
 for (lambda in lambda_values) {
   pdf <- dexp(x, rate = lambda)
   data_list[[as.character(lambda)]] <- data.frame(x = x, pdf = pdf, lambda = lambda)
 }
 
-## Combinar todos los data frames en uno solo
+# Combinar todos los data frames en uno solo
 data <- do.call(rbind, data_list)
 
-## Graficar la distribución exponencial para diferentes valores de lambda
+# Graficar la distribución exponencial para diferentes valores de lambda
 ggplot(data, aes(x = x, y = pdf, color = as.factor(lambda))) +
   geom_line() +
   labs(title = "Distribución Exponencial para Diferentes Valores de Lambda",
@@ -510,11 +510,11 @@ Aquí tienes ejemplos y usos recomendados en Nanotecnología, Inteligencia Artif
 
 ***
 
-## ⚛️ Nanotecnología
+### 3.11 ⚛️ Nanotecnología
 
 En nanotecnología, la Distribución Normal se utiliza para modelar la variabilidad inherente en las estructuras y procesos a escala nanométrica.
 
-### Ejemplos y Usos Recomendados
+### 3.12 Ejemplos y Usos Recomendados
 
 1.  **Distribución de Tamaño de Nanopartículas:**
     * **Ejemplo:** Al sintetizar **puntos cuánticos** o nanopartículas de oro, el tamaño promedio ($\mu$) y la desviación estándar ($\sigma$) del lote siguen una distribución normal.
@@ -530,11 +530,11 @@ En nanotecnología, la Distribución Normal se utiliza para modelar la variabili
 
 ***
 
-## 🤖 Inteligencia Artificial (IA) y Aprendizaje Automático
+### 3.13 🤖 Inteligencia Artificial (IA) y Aprendizaje Automático
 
 La Distribución Normal es fundamental tanto en la teoría como en la aplicación de numerosos algoritmos de IA, especialmente en el aprendizaje automático (*Machine Learning*).
 
-### Ejemplos y Usos Recomendados
+### 3.14 Ejemplos y Usos Recomendados
 
 1.  **Inicialización de Pesos en Redes Neuronales:**
     * **Ejemplo:** Al construir una red neuronal profunda, los **pesos sinápticos** se inicializan a menudo muestreándolos de una distribución normal con media cero y una desviación estándar pequeña (p. ej., Inicialización de Xavier o He).
@@ -550,11 +550,11 @@ La Distribución Normal es fundamental tanto en la teoría como en la aplicació
 
 ***
 
-## 🧪 Diseño de Experimentos (DOE)
+### 3.15 🧪 Diseño de Experimentos (DOE)
 
 En DOE, la distribución normal no solo se usa para modelar los datos, sino que es una **suposición fundamental** para validar los resultados de las pruebas estadísticas más comunes.
 
-### Ejemplos y Usos Recomendados
+### 3.16 Ejemplos y Usos Recomendados
 
 1.  **Análisis de Varianza (ANOVA):**
     * **Ejemplo:** Un experimento para determinar cómo dos factores (temperatura y presión) afectan la resistencia de un material.
@@ -577,24 +577,24 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from scipy.stats import expon # Importamos la función de distribución exponencial
 
-## ----------------------------------------------------
-## 1. Definir un rango de valores para x
-## Similar a seq(0, 5, by = 0.01) en R
+# ----------------------------------------------------
+# 1. Definir un rango de valores para x
+# Similar a seq(0, 5, by = 0.01) en R
 x = np.arange(0, 5.01, 0.01) # Usamos 5.01 para asegurar que incluya el 5
 
-## 2. Valores de lambda a usar (rate en scipy.stats)
+# 2. Valores de lambda a usar (rate en scipy.stats)
 lambda_values = [0.5, 1.0, 1.5]
 
-## 3. Crear una lista para almacenar los DataFrames de cada lambda
+# 3. Crear una lista para almacenar los DataFrames de cada lambda
 data_list = []
 
-## 4. Calcular la PDF para cada valor de lambda y almacenar
+# 4. Calcular la PDF para cada valor de lambda y almacenar
 for lambda_val in lambda_values:
-## La función .pdf() de scipy.stats es el equivalente a dexp() en R
-## 'rate' es el parámetro lambda (tasa)
+# La función .pdf() de scipy.stats es el equivalente a dexp() en R
+# 'rate' es el parámetro lambda (tasa)
     pdf = expon.pdf(x, scale=1/lambda_val)
 
-## Crear un DataFrame para este lambda
+# Crear un DataFrame para este lambda
     df_temp = pd.DataFrame({
         'x': x,
         'pdf': pdf,
@@ -602,18 +602,18 @@ for lambda_val in lambda_values:
     })
     data_list.append(df_temp)
 
-## 5. Combinar todos los DataFrames en uno solo (equivalente a do.call(rbind, ...))
+# 5. Combinar todos los DataFrames en uno solo (equivalente a do.call(rbind, ...))
 data = pd.concat(data_list, ignore_index=True)
 
-## 6. Configurar Seaborn para una estética similar a ggplot2 y graficar
+# 6. Configurar Seaborn para una estética similar a ggplot2 y graficar
 sns.set_theme(style="whitegrid")
 
-## Definir colores manualmente
+# Definir colores manualmente
 colores = {"0.5": "blue", "1.0": "red", "1.5": "green"}
 
 plt.figure(figsize=(10, 6))
 
-## Usar seaborn.lineplot para graficar (similar a ggplot + geom_line)
+# Usar seaborn.lineplot para graficar (similar a ggplot + geom_line)
 sns.lineplot(
     data=data,
     x='x',
@@ -623,25 +623,25 @@ sns.lineplot(
     linewidth=2
 )
 
-## Añadir etiquetas y título (equivalente a labs)
+# Añadir etiquetas y título (equivalente a labs)
 plt.title("Distribución Exponencial para Diferentes Valores de Lambda", fontsize=16)
 plt.xlabel("x", fontsize=12)
 plt.ylabel("Densidad de Probabilidad", fontsize=12)
 
-## Configurar la leyenda (equivalente a color = "Lambda" en labs)
+# Configurar la leyenda (equivalente a color = "Lambda" en labs)
 plt.legend(title='Lambda')
 
-## Mostrar la gráfica
+# Mostrar la gráfica
 plt.show()
 ```
 
-## Descripción del Código Python para la Gráfica de la Distribución Exponencial
+### 3.17 Descripción del Código Python para la Gráfica de la Distribución Exponencial
 
 El código en **Python** calcula y visualiza la **Función de Densidad de Probabilidad (PDF)** de la **Distribución Exponencial** para **múltiples valores del parámetro de tasa ($\lambda$)**. El objetivo es ilustrar cómo $\lambda$ afecta la forma de la distribución, utilizando **NumPy** para los cálculos, **Pandas** para la manipulación de datos y **Matplotlib/Seaborn** para la representación gráfica.
 
 ***
 
-### 1. Inicialización y Preparación de Datos
+### 3.18 1. Inicialización y Preparación de Datos
 
 | Código | Descripción |
 | :--- | :--- |
@@ -651,7 +651,7 @@ El código en **Python** calcula y visualiza la **Función de Densidad de Probab
 
 ***
 
-### 2. Cálculo de la Función de Densidad (PDF)
+### 3.19 2. Cálculo de la Función de Densidad (PDF)
 
 | Código | Descripción |
 | :--- | :--- |
@@ -662,7 +662,7 @@ El código en **Python** calcula y visualiza la **Función de Densidad de Probab
 
 ***
 
-### 3. Visualización y Estilizado
+### 3.20 3. Visualización y Estilizado
 
 | Código | Descripción |
 | :--- | :--- |
@@ -676,7 +676,7 @@ El código en **Python** calcula y visualiza la **Función de Densidad de Probab
 
 El resultado es un gráfico que muestra tres curvas de densidad exponencial, todas comenzando en $\lambda$ en $x=0$ y decayendo a cero a medida que $x$ aumenta. Se observa que **a mayor valor de $\lambda$, mayor es la densidad inicial y más rápido es el decaimiento** de la probabilidad.
 
-### Distribución Normal
+### 3.21 Distribución Normal
 
 * **Descripción**: La distribución normal es una distribución continua caracterizada por su forma simétrica y campaniforme. Se denota como $X \sim N(\mu, \sigma^2)$, donde $\mu$ es la media y $\sigma$ es la desviación estándar.
 
@@ -711,16 +711,16 @@ $$
 
 * **Comandos en R**:
 ```r
-## PDF
+### 3.22 PDF
  dnorm(x, mean = mu, sd = sigma)
 
-## CDF
+### 3.23 CDF
  pnorm(x, mean = mu, sd = sigma)
 
-## Percentiles
+### 3.24 Percentiles
  qnorm(s, mean = mu, sd = sigma)
 
-## Simulación
+### 3.25 Simulación
  rnorm(n, mean = mu, sd = sigma)
 
 #### Ejemplo de Gráfica de la Distribución Normal
@@ -731,31 +731,31 @@ En esta gráfica, se presentan diferentes funciones de densidad de probabilidad 
 
 ```python
 """
-## Cargar librerías necesarias
+# Cargar librerías necesarias
 library(ggplot2)
 
-## Definir un rango de valores para x
+# Definir un rango de valores para x
 x <- seq(-10, 10, by = 0.1)
 
-## Definir diferentes valores de media (mu) y desviación estándar (sigma)
+# Definir diferentes valores de media (mu) y desviación estándar (sigma)
 params <- data.frame(mu = c(-2, 0, 2), sigma = c(1, 1, 1.5))
 
-## Crear un data frame vacío para almacenar los resultados de la PDF
+# Crear un data frame vacío para almacenar los resultados de la PDF
 pdf_data <- data.frame()
 
-## Calcular la PDF para cada combinación de mu y sigma
+# Calcular la PDF para cada combinación de mu y sigma
 for (i in 1:nrow(params)) {
   mu <- params$mu[i]
   sigma <- params$sigma[i]
 
-## Calcular la función de densidad de probabilidad
+# Calcular la función de densidad de probabilidad
   pdf_values <- dnorm(x, mean = mu, sd = sigma)
 
-## Almacenar los resultados en un data frame
+# Almacenar los resultados en un data frame
   pdf_data <- rbind(pdf_data, data.frame(x = x, y = pdf_values, mu = mu, sigma = sigma))
 }
 
-## Graficar la distribución normal
+# Graficar la distribución normal
 ggplot(pdf_data, aes(x = x, y = y, color = as.factor(mu), linetype = as.factor(sigma))) +
   geom_line(size = 1) +
   labs(title = "Funciones de Densidad de Probabilidad de la Distribución Normal",
@@ -954,11 +954,11 @@ La Distribución Normal (o Distribución Gaussiana) es la distribución de proba
 
 ***
 
-## ⚛️ Nanotecnología
+### 3.26 ⚛️ Nanotecnología
 
 En nanotecnología, la Distribución Normal se utiliza para modelar la variabilidad inherente en las estructuras y procesos a escala nanométrica.
 
-### Ejemplos y Usos Recomendados
+### 3.27 Ejemplos y Usos Recomendados
 
 1.  **Distribución de Tamaño de Nanopartículas:**
     * **Ejemplo:** Al sintetizar **puntos cuánticos** o nanopartículas de oro, el tamaño promedio ($\mu$) y la desviación estándar ($\sigma$) del lote siguen una distribución normal.
@@ -974,11 +974,11 @@ En nanotecnología, la Distribución Normal se utiliza para modelar la variabili
 
 ***
 
-## 🤖 Inteligencia Artificial (IA) y Aprendizaje Automático
+### 3.28 🤖 Inteligencia Artificial (IA) y Aprendizaje Automático
 
 La Distribución Normal es fundamental tanto en la teoría como en la aplicación de numerosos algoritmos de IA, especialmente en el aprendizaje automático (*Machine Learning*).
 
-### Ejemplos y Usos Recomendados
+### 3.29 Ejemplos y Usos Recomendados
 
 1.  **Inicialización de Pesos en Redes Neuronales:**
     * **Ejemplo:** Al construir una red neuronal profunda, los **pesos sinápticos** se inicializan a menudo muestreándolos de una distribución normal con media cero y una desviación estándar pequeña (p. ej., Inicialización de Xavier o He).
@@ -994,11 +994,11 @@ La Distribución Normal es fundamental tanto en la teoría como en la aplicació
 
 ***
 
-## 🧪 Diseño de Experimentos (DOE)
+### 3.30 🧪 Diseño de Experimentos (DOE)
 
 En DOE, la distribución normal no solo se usa para modelar los datos, sino que es una **suposición fundamental** para validar los resultados de las pruebas estadísticas más comunes.
 
-### Ejemplos y Usos Recomendados
+### 3.31 Ejemplos y Usos Recomendados
 
 1.  **Análisis de Varianza (ANOVA):**
     * **Ejemplo:** Un experimento para determinar cómo dos factores (temperatura y presión) afectan la resistencia de un material.
@@ -1012,54 +1012,54 @@ En DOE, la distribución normal no solo se usa para modelar los datos, sino que 
     * **Ejemplo:** Monitorear el peso promedio de tabletas en una línea farmacéutica o el voltaje de salida de una fuente de alimentación.
     * **Uso Recomendado:** Se utilizan **Gráficos de Control** basados en la normal (como los gráficos $\bar{X}$ y R) para establecer límites de control (generalmente $\mu \pm 3\sigma$). Si una muestra cae fuera de este rango, el proceso se considera "fuera de control" y requiere investigación.
 
-### Codigo en phyton
+### 3.32 Codigo en phyton
 
 ```python
 """
-## Cargar librerías necesarias
+# Cargar librerías necesarias
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 from scipy.stats import norm
 
-## Definir un rango de valores para x
-## Se usa np.linspace para replicar la secuencia de valores
+# Definir un rango de valores para x
+# Se usa np.linspace para replicar la secuencia de valores
 x = np.linspace(-10, 10, num=201) # 201 puntos para tener el mismo paso de 0.1
 
-## Definir diferentes valores de media (mu) y desviación estándar (sigma)
+# Definir diferentes valores de media (mu) y desviación estándar (sigma)
 params = pd.DataFrame({
     'mu': [-2, 0, 2],
     'sigma': [1, 1, 1.5]
 })
 
-## Crear un data frame vacío para almacenar los resultados de la PDF
+# Crear un data frame vacío para almacenar los resultados de la PDF
 pdf_data = pd.DataFrame()
 
-## Calcular la PDF para cada combinación de mu y sigma
+# Calcular la PDF para cada combinación de mu y sigma
 for index, row in params.iterrows():
     mu = row['mu']
     sigma = row['sigma']
 
-## Calcular la función de densidad de probabilidad
-## norm.pdf(x, loc=mu, scale=sigma) es el equivalente a dnorm(x, mean = mu, sd = sigma)
+# Calcular la función de densidad de probabilidad
+# norm.pdf(x, loc=mu, scale=sigma) es el equivalente a dnorm(x, mean = mu, sd = sigma)
     pdf_values = norm.pdf(x, loc=mu, scale=sigma)
 
-## Almacenar los resultados en un data frame
+# Almacenar los resultados en un data frame
     temp_df = pd.DataFrame({
         'x': x,
         'y': pdf_values,
-## Convertir mu y sigma a string para que seaborn los trate como variables categóricas
+# Convertir mu y sigma a string para que seaborn los trate como variables categóricas
         'mu': str(mu),
         'sigma': str(sigma)
     })
     pdf_data = pd.concat([pdf_data, temp_df], ignore_index=True)
 
-## ----------------------------------------------------------------------
-## Graficar la distribución normal
+# ----------------------------------------------------------------------
+# Graficar la distribución normal
 plt.figure(figsize=(10, 6))
 
-## Usar seaborn para trazar las líneas
+# Usar seaborn para trazar las líneas
 sns.lineplot(
     data=pdf_data,
     x='x',
@@ -1067,32 +1067,32 @@ sns.lineplot(
     hue='mu',           # Mapea 'mu' a color
     style='sigma',      # Mapea 'sigma' al estilo de línea (linetype)
     linewidth=2,
-## Definir los colores manualmente, asegurando que coincidan con los valores string de 'mu'
+# Definir los colores manualmente, asegurando que coincidan con los valores string de 'mu'
     palette={' -2': 'blue', ' 0': 'red', ' 2': 'green'}
 )
 
-## Configurar etiquetas y título (usando notación LaTeX para mu y sigma)
+# Configurar etiquetas y título (usando notación LaTeX para mu y sigma)
 plt.title("Funciones de Densidad de Probabilidad de la Distribución Normal", fontsize=16)
 plt.xlabel("Valor", fontsize=12)
 plt.ylabel("Densidad", fontsize=12)
 
-## Ajustar la leyenda
-## Seaborn crea la leyenda automáticamente. Se ajustan los títulos.
+# Ajustar la leyenda
+# Seaborn crea la leyenda automáticamente. Se ajustan los títulos.
 legend = plt.legend(title='Media ($\mu$)', loc='upper center', bbox_to_anchor=(0.5, 1.15), ncol=5)
 
-## Iterar sobre los elementos de la leyenda para renombrar el título de 'sigma' si es necesario
+# Iterar sobre los elementos de la leyenda para renombrar el título de 'sigma' si es necesario
 for text in legend.get_texts():
     if text.get_text() in ['sigma', '1', '1.5']:
         text.set_text(text.get_text().replace('sigma', 'Desviación Estándar ($\sigma$)'))
 
-## Configurar estilo y mostrar la gráfica
+# Configurar estilo y mostrar la gráfica
 sns.despine(trim=True) # Similar a theme_minimal()
 plt.grid(axis='y', linestyle='--', alpha=0.6)
 plt.show()
 """
 ```
 
-## Descripción del Código Python para la Gráfica de la Distribución Normal
+### 3.33 Descripción del Código Python para la Gráfica de la Distribución Normal
 
 El código en **Python** tiene como objetivo ilustrar la **Función de Densidad de Probabilidad (PDF)** de la **Distribución Normal (Gaussiana)**, también conocida como la curva de campana, para **múltiples combinaciones de media ($\mu$) y desviación estándar ($\sigma$)**. Esto se logra mediante el uso de **NumPy** para operaciones numéricas, **Pandas** para estructurar los datos y **SciPy** para la función estadística, con **Matplotlib** y **Seaborn** para la visualización.
 
@@ -1136,7 +1136,7 @@ El resultado es un gráfico que muestra tres curvas de campana:
 1.  **Curvas $( -2, 1)$ y $(0, 1)$**: Tienen la misma forma (misma $\sigma$), pero están **desplazadas** horizontalmente, demostrando el efecto de $\mu$.
 2.  **Curvas $(0, 1)$ y $(2, 1.5)$**: Tienen diferentes $\sigma$. La curva con $\sigma=1.5$ es más **ancha** y **baja** que la curva con $\sigma=1$, lo que ilustra cómo $\sigma$ afecta la dispersión de los datos.
 
-### Distribución Log-Normal
+### 3.34 Distribución Log-Normal
 
 * **Descripción**: Modelo de variables aleatorias cuyo logaritmo sigue una distribución normal. Es útil para modelar variables que no pueden ser negativas y que tienen una distribución sesgada a la derecha.
 
@@ -1175,13 +1175,13 @@ donde $ \Phi $ es la función de distribución acumulativa de la distribución n
 
 **Comandos en R**:
 ```r
-## PDF
+### 3.35 PDF
 dlnorm(x, meanlog = mu, sdlog = sigma)
 
-## CDF
+### 3.36 CDF
 plnorm(x, meanlog = mu, sdlog = sigma)
 
-## Simulación
+### 3.37 Simulación
 rlnorm(n, meanlog = mu, sdlog = sigma)
 
 #### Ejemplo de Gráfica de la Distribución Log-Normal
@@ -1194,22 +1194,22 @@ La distribución log-normal es especialmente relevante en campos como la econom�
 
 ```python
 """
-## Cargar librerías
+# Cargar librerías
 library(ggplot2)
 
-## Definir un rango de valores para x
+# Definir un rango de valores para x
 x <- seq(0, 10, by = 0.01)
 
-## Definir diferentes valores de mu y sigma
+# Definir diferentes valores de mu y sigma
 params <- data.frame(
   mu = c(0, 1, 2),
   sigma = c(0.5, 1, 1.5)
 )
 
-## Crear un data frame vacío para almacenar los resultados
+# Crear un data frame vacío para almacenar los resultados
 results <- data.frame()
 
-## Calcular la PDF para cada combinación de mu y sigma
+# Calcular la PDF para cada combinación de mu y sigma
 for (i in 1:nrow(params)) {
   mu <- params$mu[i]
   sigma <- params$sigma[i]
@@ -1221,7 +1221,7 @@ for (i in 1:nrow(params)) {
   results <- rbind(results, temp_df)
 }
 
-## Graficar la PDF de la distribución log-normal
+# Graficar la PDF de la distribución log-normal
 ggplot(results, aes(x = x, y = PDF, color = interaction(mu, sigma))) +
   geom_line(size = 1) +
   labs(title = "Distribución Log-Normal para Diferentes Parámetros",
@@ -1249,46 +1249,46 @@ A continuación, se presentan ejemplos y usos recomendados en Nanotecnología, C
 
 ***
 
-## ⚛️ Nanotecnología y Ciencia de Materiales
+### 3.38 ⚛️ Nanotecnología y Ciencia de Materiales
 
 En estos campos, la Log-Normal es fundamental para modelar la **distribución de tamaños** y los **tiempos de vida o fatiga**, ya que estas variables no pueden ser negativas y tienden a concentrarse cerca de cero con una larga cola positiva.
 
-### Ejemplos y Usos Recomendados
+### 3.39 Ejemplos y Usos Recomendados
 
-### 1. Distribución de Tamaño de Partículas
+### 3.40 1. Distribución de Tamaño de Partículas
 
 * **Ejemplo:** El **diámetro de las nanopartículas** (metálicas, de óxido o poliméricas) o el **tamaño de grano** en materiales policristalinos.
 * **Uso Recomendado:** La formación de nanopartículas (nucleación y crecimiento) es un proceso multiplicativo. La Log-Normal es el **modelo estándar preferido** para describir la dispersión del tamaño de las partículas. Esto es crucial para predecir las propiedades ópticas, catalíticas o magnéticas que dependen críticamente del tamaño.
 
-### 2. Tiempos de Vida y Fatiga
+### 3.41 2. Tiempos de Vida y Fatiga
 
 * **Ejemplo:** La **vida útil** o el **tiempo hasta la falla** de ciertos recubrimientos, películas delgadas o materiales sujetos a procesos de degradación multiplicativa (como el crecimiento de grietas por fatiga).
 * **Uso Recomendado:** Se utiliza en **análisis de fiabilidad** (confiabilidad) cuando la tasa de fallo de un componente no es constante (como en la exponencial) sino que **aumenta con el tiempo**. Proporciona una estimación más precisa de la supervivencia en el largo plazo que la Distribución de Weibull en ciertos contextos.
 
-### 3. Distribución de Defectos y Dispersión
+### 3.42 3. Distribución de Defectos y Dispersión
 
 * **Ejemplo:** La dispersión en el **espesor** o la **conductividad** de películas depositadas por técnicas estocásticas, donde la variación no es simétrica alrededor de la media.
 * **Uso Recomendado:** Modelar la **variabilidad intrínseca** de los materiales. Permite a los ingenieros establecer límites de especificación basados en la probabilidad (por ejemplo, asegurar que el 99% de los granos son más pequeños que un tamaño dado).
 
 ***
 
-## 🤖 Inteligencia Artificial (IA) y Aprendizaje Automático
+### 3.43 🤖 Inteligencia Artificial (IA) y Aprendizaje Automático
 
 Aunque la Distribución Normal es más común en la IA (por el Teorema del Límite Central), la Log-Normal aparece en el modelado de datos del mundo real que exhiben asimetría y en sistemas complejos.
 
-### Ejemplos y Usos Recomendados
+### 3.44 Ejemplos y Usos Recomendados
 
-### 1. Distribución de Atributos Asimétricos
+### 3.45 1. Distribución de Atributos Asimétricos
 
 * **Ejemplo:** El **tiempo de respuesta** de un servidor, la **latencia** de red, el **número de comentarios** en una publicación, o el **ingreso** de los usuarios en un conjunto de datos. Todas estas variables son positivas y están sesgadas hacia la derecha.
 * **Uso Recomendado:** **Preprocesamiento de datos** y **selección de modelos**. Antes de aplicar algoritmos que asumen normalidad (como la Regresión Lineal o algunas pruebas estadísticas), se recomienda aplicar una **transformación logarítmica** a estas variables para hacerlas más "normales". Si el logaritmo transformado se ajusta bien a una normal, se dice que el atributo original sigue una Log-Normal.
 
-### 2. Modelos Generativos (Log-Normal VAEs)
+### 3.46 2. Modelos Generativos (Log-Normal VAEs)
 
 * **Ejemplo:** En el desarrollo de **Modelos Variacionales Auto-Codificadores (VAEs)** o en otros modelos generativos, se puede utilizar una distribución Log-Normal para modelar el **espacio latente** (el "código" interno) de datos que tienen una naturaleza intrínsecamente positiva y asimétrica.
 * **Uso Recomendado:** Mejorar la **calidad de la generación** de datos no negativos y sesgados, como el tamaño de las imágenes o la duración de los eventos en series temporales.
 
-### 3. Aprendizaje por Refuerzo y Modelado de Riesgo
+### 3.47 3. Aprendizaje por Refuerzo y Modelado de Riesgo
 
 * **Ejemplo:** El **tamaño de las recompensas** o las **pérdidas financieras** en simulaciones de aprendizaje por refuerzo aplicadas a escenarios económicos o de gestión de riesgos.
 * **Uso Recomendado:** Modelar la incertidumbre en sistemas donde los efectos son multiplicativos. La Log-Normal es esencial en modelos de finanzas matemáticas (como el modelo Black-Scholes), lo cual se extrapola a los modelos de IA que gestionan carteras de inversión o riesgos operativos, ya que asume que los retornos son Log-Normales.
@@ -1302,35 +1302,35 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from scipy.stats import lognorm # Importamos la función de distribución log-normal
 
-## ----------------------------------------------------
-## 1. Definir un rango de valores para x
-## Similar a seq(0, 10, by = 0.01) en R
+# ----------------------------------------------------
+# 1. Definir un rango de valores para x
+# Similar a seq(0, 10, by = 0.01) en R
 x = np.arange(0.01, 10.01, 0.01) # Empezamos ligeramente arriba de 0 para evitar log(0)
 
-## 2. Definir diferentes valores de mu (media del log) y sigma (desviación del log)
+# 2. Definir diferentes valores de mu (media del log) y sigma (desviación del log)
 params = pd.DataFrame({
     'mu': [0, 1, 2],
     'sigma': [0.5, 1, 1.5]
 })
 
-## 3. Crear una lista para almacenar los DataFrames de los resultados
+# 3. Crear una lista para almacenar los DataFrames de los resultados
 results_list = []
 
-## 4. Calcular la PDF para cada combinación de mu y sigma
+# 4. Calcular la PDF para cada combinación de mu y sigma
 for index, row in params.iterrows():
     mu = row['mu']
     sigma = row['sigma']
 
-## La función lognorm.pdf() de scipy.stats es el equivalente a dlnorm() en R.
-## Los parámetros son:
-## 's' es la desviación estándar del log (sdlog/sigma).
-## 'scale' es el valor de exp(mu) (antilogaritmo de meanlog).
+# La función lognorm.pdf() de scipy.stats es el equivalente a dlnorm() en R.
+# Los parámetros son:
+# 's' es la desviación estándar del log (sdlog/sigma).
+# 'scale' es el valor de exp(mu) (antilogaritmo de meanlog).
     pdf_values = lognorm.pdf(x, s=sigma, scale=np.exp(mu))
 
-## Crear una etiqueta combinada para la leyenda, similar a interaction(mu, sigma)
+# Crear una etiqueta combinada para la leyenda, similar a interaction(mu, sigma)
     label = f"({mu}, {sigma})"
 
-## Almacenar los resultados en un DataFrame temporal
+# Almacenar los resultados en un DataFrame temporal
     temp_df = pd.DataFrame({
         'x': x,
         'PDF': pdf_values,
@@ -1340,17 +1340,17 @@ for index, row in params.iterrows():
     })
     results_list.append(temp_df)
 
-## 5. Concatenar todos los DataFrames
+# 5. Concatenar todos los DataFrames
 results = pd.concat(results_list, ignore_index=True)
 
-## 6. Graficar la PDF de la distribución log-normal usando Seaborn
+# 6. Graficar la PDF de la distribución log-normal usando Seaborn
 
-## Configuración de Seaborn para el estilo
+# Configuración de Seaborn para el estilo
 sns.set_theme(style="whitegrid")
 
 plt.figure(figsize=(10, 6))
 
-## Usar seaborn.lineplot
+# Usar seaborn.lineplot
 sns.lineplot(
     data=results,
     x='x',
@@ -1359,19 +1359,19 @@ sns.lineplot(
     linewidth=2
 )
 
-## Añadir etiquetas y título (equivalente a labs)
+# Añadir etiquetas y título (equivalente a labs)
 plt.title("Distribución Log-Normal para Diferentes Parámetros", fontsize=16)
 plt.xlabel("x", fontsize=12)
 plt.ylabel("Densidad de Probabilidad (PDF)", fontsize=12)
 
-## Configurar la leyenda
+# Configurar la leyenda
 plt.legend(title='Parámetros (mu, sigma)', loc='upper right')
 
-## Mostrar la gráfica
+# Mostrar la gráfica
 plt.show()
 ```
 
-## Descripción del Código Python para la Gráfica de la Distribución Log-Normal
+### 3.48 Descripción del Código Python para la Gráfica de la Distribución Log-Normal
 
 El código en **Python** calcula y visualiza la **Función de Densidad de Probabilidad (PDF)** de la **Distribución Log-Normal** para múltiples combinaciones de sus parámetros. La distribución Log-Normal se utiliza a menudo para modelar variables aleatorias que son el resultado de la exponenciación de una variable con distribución Normal, por lo que solo toma valores positivos ($x > 0$) y está sesgada positivamente.
 
@@ -1379,7 +1379,7 @@ El código emplea **SciPy** para la función estadística, **NumPy** para operac
 
 ***
 
-### 1. Inicialización y Preparación de Parámetros
+### 3.49 1. Inicialización y Preparación de Parámetros
 
 | Código | Descripción |
 | :--- | :--- |
@@ -1393,7 +1393,7 @@ El código emplea **SciPy** para la función estadística, **NumPy** para operac
 | `s` | **`s`** | `sdlog` ($\sigma$) | La desviación estándar de $\ln(X)$. Controla la **forma y el sesgo**. |
 | `scale` | **`scale`** | $\exp(\mu)$ | El antilogaritmo de la media del log. Controla la **escala** de la distribución. |
 
-### 2. Cálculo de la Función de Densidad (PDF)
+### 3.50 2. Cálculo de la Función de Densidad (PDF)
 
 | Código | Descripción |
 | :--- | :--- |
@@ -1404,7 +1404,7 @@ El código emplea **SciPy** para la función estadística, **NumPy** para operac
 
 ***
 
-### 3. Visualización del Gráfico
+### 3.51 3. Visualización del Gráfico
 
 | Código | Descripción |
 | :--- | :--- |
@@ -1418,7 +1418,7 @@ El resultado final es un gráfico con tres curvas de densidad, todas con un sesg
 1.  **Incrementar $\mu$** (manteniendo $\sigma$ constante) desplaza el pico de la distribución más a la derecha y reduce su altura.
 2.  **Incrementar $\sigma$** (manteniendo $\mu$ constante o no) aumenta el sesgo, haciendo que la curva sea más ancha y más plana, lo que indica una mayor dispersión de los datos.
 
-### Distribución Gamma
+### 3.52 Distribución Gamma
 
 * **Descripción**: Modelo de tiempo hasta el k-ésimo evento en un proceso de Poisson. Se utiliza en diversos campos, como la teoría de colas y la fiabilidad.
 
@@ -1456,13 +1456,13 @@ $$
 
 **Comandos en R**:
 ```r
-## PDF
+### 3.53 PDF
 dgamma(x, shape = k, scale = theta)
 
-## CDF
+### 3.54 CDF
 pgamma(x, shape = k, scale = theta)
 
-## Simulación
+### 3.55 Simulación
 rgamma(n, shape = k, scale = theta)
 
 #### Función Gamma $Γ()$
@@ -1524,12 +1524,12 @@ $$
 La función gamma se puede calcular en R utilizando la función `gamma()`. Aquí te muestro cómo hacerlo:
 
 ```r
-## Cálculo de la función gamma
+### 3.56 Cálculo de la función gamma
 gamma_value <- gamma(z)
 
 ```python
 """
-## Cálculo de Gamma(5)
+# Cálculo de Gamma(5)
 z <- 5
 gamma_value <- gamma(z)
 print(gamma_value)
@@ -1540,19 +1540,19 @@ Gráfica de la función Gamma $Γ$
 
 ```python
 """
-## Cargar la librería necesaria
+# Cargar la librería necesaria
 library(ggplot2)
 
-## Crear un rango de valores para z
+# Crear un rango de valores para z
 z_values <- seq(0.1, 5, by = 0.1)
 
-## Calcular los valores de la función gamma
+# Calcular los valores de la función gamma
 gamma_values <- gamma(z_values)
 
-## Crear un data frame para ggplot
+# Crear un data frame para ggplot
 data <- data.frame(z = z_values, gamma = gamma_values)
 
-## Graficar la función gamma
+# Graficar la función gamma
 ggplot(data, aes(x = z, y = gamma)) +
   geom_line(color = "blue") +
   labs(title = "Gráfico de la Función Gamma",
@@ -1572,29 +1572,29 @@ La distribución gamma es especialmente relevante en áreas como la ingeniería,
 
 ```python
 """
-## Cargar la librería necesaria
+# Cargar la librería necesaria
 library(ggplot2)
 
-## Definir los parámetros de la distribución gamma
+# Definir los parámetros de la distribución gamma
 shape1 <- 2  # Parámetro de forma (k)
 scale1 <- 1  # Parámetro de escala (theta)
 
 shape2 <- 5  # Otro parámetro de forma
 scale2 <- 1  # Mismo parámetro de escala
 
-## Crear un rango de valores para x
+# Crear un rango de valores para x
 x_values <- seq(0, 20, by = 0.1)
 
-## Calcular la función de densidad de la distribución gamma
+# Calcular la función de densidad de la distribución gamma
 gamma_density1 <- dgamma(x_values, shape = shape1, scale = scale1)
 gamma_density2 <- dgamma(x_values, shape = shape2, scale = scale2)
 
-## Crear un data frame para ggplot
+# Crear un data frame para ggplot
 data <- data.frame(x = x_values,
                    density1 = gamma_density1,
                    density2 = gamma_density2)
 
-## Graficar la distribución gamma
+# Graficar la distribución gamma
 ggplot(data, aes(x = x)) +
   geom_line(aes(y = density1), color = "blue", linewidth = 1) +
   geom_line(aes(y = density2), color = "red", linewidth = 1) +
@@ -1628,13 +1628,13 @@ La **Distribución Gamma** es una distribución de probabilidad continua muy fle
 
 Se caracteriza por dos parámetros clave: el **parámetro de forma** ($k$ o $\alpha$) y el **parámetro de escala** ($\theta$ o $\beta$).
 
-## ⚛️ Nanotecnología y Ciencia de Materiales
+### 3.57 ⚛️ Nanotecnología y Ciencia de Materiales
 
 En estos campos, la Distribución Gamma es valiosa porque puede modelar la **variabilidad de los procesos de crecimiento** y la **acumulación de daño** que ocurren en múltiples etapas.
 
 ***
 
-### 1. Modelado de Procesos de Crecimiento de Materiales
+### 3.58 1. Modelado de Procesos de Crecimiento de Materiales
 
 Cuando una variable (como el tamaño de una partícula) es el resultado de una **suma de varias etapas de crecimiento exponencial**, la Distribución Gamma es el modelo ideal.
 
@@ -1645,7 +1645,7 @@ Cuando una variable (como el tamaño de una partícula) es el resultado de una *
 
 ***
 
-### 2. Análisis de Fiabilidad y Durabilidad
+### 3.59 2. Análisis de Fiabilidad y Durabilidad
 
 La Distribución Gamma se utiliza para modelar el tiempo de vida o la acumulación de daño, especialmente cuando el fallo es el resultado de superar un umbral de daño.
 
@@ -1656,7 +1656,7 @@ La Distribución Gamma se utiliza para modelar el tiempo de vida o la acumulaci�
 
 ***
 
-### 3. Modelado de Variables de Proceso
+### 3.60 3. Modelado de Variables de Proceso
 
 La Gamma puede modelar variables de proceso que son el resultado de la acumulación de muchos eventos aleatorios y son inherentemente no negativas.
 
@@ -1673,40 +1673,40 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from scipy.special import gamma # Importamos la función gamma de SciPy
 
-## ----------------------------------------------------
-## 1. Crear un rango de valores para z
-## Similar a seq(0.1, 5, by = 0.1) en R
+# ----------------------------------------------------
+# 1. Crear un rango de valores para z
+# Similar a seq(0.1, 5, by = 0.1) en R
 z_values = np.arange(0.1, 5.1, 0.1) # Usamos 5.1 para asegurar que incluya el 5
 
-## 2. Calcular los valores de la función gamma
-## gamma() de numpy/scipy.special es el equivalente a gamma() en R
+# 2. Calcular los valores de la función gamma
+# gamma() de numpy/scipy.special es el equivalente a gamma() en R
 gamma_values = gamma(z_values)
 
-## 3. Crear un data frame (opcional, pero ayuda a estructurar)
-## Aquí usamos directamente los arrays de NumPy
-## data = pd.DataFrame({'z': z_values, 'gamma': gamma_values})
+# 3. Crear un data frame (opcional, pero ayuda a estructurar)
+# Aquí usamos directamente los arrays de NumPy
+# data = pd.DataFrame({'z': z_values, 'gamma': gamma_values})
 
-## 4. Graficar la función gamma
+# 4. Graficar la función gamma
 sns.set_theme(style="whitegrid") # Similar a theme_minimal()
 
 plt.figure(figsize=(8, 6))
 
-## Trazar la línea (equivalente a geom_line)
+# Trazar la línea (equivalente a geom_line)
 plt.plot(z_values, gamma_values, color="blue", linewidth=2)
 
-## Añadir etiquetas y título (equivalente a labs)
+# Añadir etiquetas y título (equivalente a labs)
 plt.title("Gráfico de la Función Gamma", fontsize=16)
 plt.xlabel("z", fontsize=12)
 
-## Para usar notación matemática para gamma(z)
+# Para usar notación matemática para gamma(z)
 plt.ylabel(r"$\Gamma(z)$", fontsize=14)
 
-## Configuración de estética adicional de Matplotlib (simulando theme_minimal)
+# Configuración de estética adicional de Matplotlib (simulando theme_minimal)
 plt.grid(True, linestyle='--', alpha=0.6)
 plt.show()
 ```
 
-## Descripción del Código Python para la Gráfica de la Función Gamma
+### 3.61 Descripción del Código Python para la Gráfica de la Función Gamma
 
 El código en **Python** está diseñado para calcular y visualizar la **Función Gamma, $\Gamma(z)$**, en un rango específico de valores. La **Función Gamma** es una extensión del concepto de factorial a los números reales y complejos, donde $\Gamma(n) = (n-1)!$ para enteros positivos $n$.
 
@@ -1714,7 +1714,7 @@ El código utiliza **NumPy** para generar el rango de valores, **`scipy.special`
 
 ***
 
-### 1. Inicialización y Preparación de Valores
+### 3.62 1. Inicialización y Preparación de Valores
 
 | Código | Descripción |
 | :--- | :--- |
@@ -1724,7 +1724,7 @@ El código utiliza **NumPy** para generar el rango de valores, **`scipy.special`
 
 ***
 
-### 2. Cálculo de la Función Gamma
+### 3.63 2. Cálculo de la Función Gamma
 
 | Código | Descripción |
 | :--- | :--- |
@@ -1733,7 +1733,7 @@ El código utiliza **NumPy** para generar el rango de valores, **`scipy.special`
 
 ***
 
-### 3. Visualización del Gráfico
+### 3.64 3. Visualización del Gráfico
 
 | Código | Descripción |
 | :--- | :--- |
@@ -1756,25 +1756,25 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from scipy.stats import gamma # Importamos la función de distribución Gamma
 
-## ----------------------------------------------------
-## 1. Definir los parámetros de la distribución gamma
+# ----------------------------------------------------
+# 1. Definir los parámetros de la distribución gamma
 shape1 = 2    # Parámetro de forma (k)
 scale1 = 1    # Parámetro de escala (theta)
 
 shape2 = 5    # Otro parámetro de forma
 scale2 = 1    # Mismo parámetro de escala
 
-## 2. Crear un rango de valores para x
-## Similar a seq(0, 20, by = 0.1) en R
+# 2. Crear un rango de valores para x
+# Similar a seq(0, 20, by = 0.1) en R
 x_values = np.arange(0, 20.1, 0.1) # Incluimos 20.1 para asegurar que el 20 esté incluido
 
-## 3. Calcular la función de densidad de la distribución gamma
-## En SciPy, el parámetro 'a' es la forma (shape) y 'scale' es la escala.
+# 3. Calcular la función de densidad de la distribución gamma
+# En SciPy, el parámetro 'a' es la forma (shape) y 'scale' es la escala.
 gamma_density1 = gamma.pdf(x_values, a=shape1, scale=scale1)
 gamma_density2 = gamma.pdf(x_values, a=shape2, scale=scale2)
 
-## 4. Crear un data frame combinado (similar a la estructura final de ggplot)
-## Esto facilita el uso de Seaborn para las leyendas y colores
+# 4. Crear un data frame combinado (similar a la estructura final de ggplot)
+# Esto facilita el uso de Seaborn para las leyendas y colores
 data1 = pd.DataFrame({
     'x': x_values,
     'Density': gamma_density1,
@@ -1788,21 +1788,21 @@ data2 = pd.DataFrame({
 
 data = pd.concat([data1, data2], ignore_index=True)
 
-## 5. Graficar la distribución gamma usando Matplotlib y Seaborn
+# 5. Graficar la distribución gamma usando Matplotlib y Seaborn
 sns.set_theme(style="whitegrid") # Similar a theme_minimal()
 plt.figure(figsize=(10, 6))
 
-## Definir colores manualmente para la leyenda
+# Definir colores manualmente para la leyenda
 colors = {
     f'Gamma({shape1}, {scale1})': 'blue',
     f'Gamma({shape2}, {scale2})': 'red'
 }
 
-## 5a. Dibujar áreas sombreadas (equivalente a geom_area)
+# 5a. Dibujar áreas sombreadas (equivalente a geom_area)
 plt.fill_between(data1['x'], data1['Density'], color='blue', alpha=0.1)
 plt.fill_between(data2['x'], data2['Density'], color='red', alpha=0.1)
 
-## 5b. Dibujar las líneas (equivalente a geom_line)
+# 5b. Dibujar las líneas (equivalente a geom_line)
 sns.lineplot(
     data=data,
     x='x',
@@ -1812,19 +1812,19 @@ sns.lineplot(
     linewidth=2
 )
 
-## 5c. Añadir etiquetas y título (equivalente a labs)
+# 5c. Añadir etiquetas y título (equivalente a labs)
 plt.title("Gráfico de la Distribución Gamma", fontsize=16)
 plt.xlabel("x", fontsize=12)
 plt.ylabel("Densidad", fontsize=12)
 
-## Configurar la leyenda y su posición (equivalente a theme(legend.position = "top"))
+# Configurar la leyenda y su posición (equivalente a theme(legend.position = "top"))
 plt.legend(title="Distribución", loc='upper center', bbox_to_anchor=(0.5, 1.15), ncol=2)
 
-## Mostrar la gráfica
+# Mostrar la gráfica
 plt.show()
 ```
 
-## Descripción del Código Python para la Gráfica de la Distribución Gamma
+### 3.65 Descripción del Código Python para la Gráfica de la Distribución Gamma
 
 El código en **Python** tiene como propósito calcular y visualizar la **Función de Densidad de Probabilidad (PDF)** de la **Distribución Gamma** para **dos conjuntos de parámetros diferentes**. La Distribución Gamma se utiliza comúnmente en estadística para modelar tiempos de espera, procesos de conteo y variables aleatorias no negativas.
 
@@ -1832,7 +1832,7 @@ El script utiliza **SciPy** para la función estadística, **NumPy** para operac
 
 ***
 
-### 1. Inicialización y Definición de Parámetros
+### 3.66 1. Inicialización y Definición de Parámetros
 
 | Código | Descripción |
 | :--- | :--- |
@@ -1843,7 +1843,7 @@ El script utiliza **SciPy** para la función estadística, **NumPy** para operac
 
 ***
 
-### 2. Cálculo de la Función de Densidad (PDF)
+### 3.67 2. Cálculo de la Función de Densidad (PDF)
 
 | Código | Parámetro `gamma.pdf` | Parámetro Estadístico | Significado |
 | :--- | :--- | :--- | :--- |
@@ -1859,7 +1859,7 @@ El script utiliza **SciPy** para la función estadística, **NumPy** para operac
 
 ***
 
-### 3. Visualización y Estilizado del Gráfico
+### 3.68 3. Visualización y Estilizado del Gráfico
 
 | Código | Descripción |
 | :--- | :--- |
@@ -1870,7 +1870,7 @@ El script utiliza **SciPy** para la función estadística, **NumPy** para operac
 
 El gráfico resultante muestra dos curvas sesgadas a la derecha. La distribución $\text{Gamma}(5, 1)$ alcanza su pico en un valor mayor y es visualmente más simétrica que la distribución $\text{Gamma}(2, 1)$, que está más sesgada hacia el origen, ilustrando claramente el **efecto del parámetro de forma ($k$)** en la distribución Gamma.
 
-### Distribución Beta
+### 3.69 Distribución Beta
 
 * **Descripción**: Modelo de variables aleatorias que se distribuyen en el intervalo $[0, 1]$. Es útil para modelar fenómenos aleatorios que están restringidos a ese intervalo.
 
@@ -1908,13 +1908,13 @@ $$
 
 **Comandos en R**:
 ```r
-## PDF
+### 3.70 PDF
 dbeta(x, shape1 = alpha, shape2 = beta)
 
-## CDF
+### 3.71 CDF
 pbeta(x, shape1 = alpha, shape2 = beta)
 
-## Simulación
+### 3.72 Simulación
 rbeta(n, shape1 = alpha, shape2 = beta)
 
 #### Función Beta
@@ -1983,7 +1983,7 @@ $$
 La función beta se puede calcular en R utilizando la función `beta()`. Aquí te muestro cómo hacerlo:
 
 ```r
-## Cálculo de la función beta
+### 3.73 Cálculo de la función beta
 beta_value <- beta(x, y)
 
 ```python
@@ -1994,11 +1994,11 @@ beta_value <- beta(x, y)
 x <- 2
 y <- 3
 
-## Usando la función beta
+# Usando la función beta
 beta_value <- beta(x, y)
 print(beta_value)
 
-## Usando la relación con la función gamma
+# Usando la relación con la función gamma
 beta_value_gamma <- gamma(x) * gamma(y) / gamma(x + y)
 print(beta_value_gamma)
 """
@@ -2014,23 +2014,23 @@ La distribución beta es particularmente valiosa en campos como la estadística 
 
 ```python
 """
-## Cargar la librería necesaria
+# Cargar la librería necesaria
 library(ggplot2)
 
-## Crear un rango de valores para x
+# Crear un rango de valores para x
 x_values <- seq(0, 1, by = 0.01)
 
-## Definir los parámetros de la función beta
+# Definir los parámetros de la función beta
 shape1 <- 2  # Parámetro x
 shape2 <- 5  # Parámetro y
 
-## Calcular la función beta
+# Calcular la función beta
 beta_density <- dbeta(x_values, shape1, shape2)
 
-## Crear un data frame para ggplot
+# Crear un data frame para ggplot
 data <- data.frame(x = x_values, density = beta_density)
 
-## Graficar la función beta
+# Graficar la función beta
 ggplot(data, aes(x = x, y = density)) +
   geom_line(color = "blue", linewidth = 1) +
   labs(title = "Gráfico de la Función Beta",
@@ -2045,29 +2045,29 @@ ggplot(data, aes(x = x, y = density)) +
 
 ```python
 """
-## Cargar la librería necesaria
+# Cargar la librería necesaria
 library(ggplot2)
 
-## Crear un rango de valores para x
+# Crear un rango de valores para x
 x_values <- seq(0, 1, by = 0.01)
 
-## Definir los parámetros de la distribución beta
+# Definir los parámetros de la distribución beta
 alpha1 <- 2  # Parámetro alpha
 beta1 <- 5   # Parámetro beta
 
 alpha2 <- 5  # Otro parámetro alpha
 beta2 <- 2   # Otro parámetro beta
 
-## Calcular la función de densidad de la distribución beta
+# Calcular la función de densidad de la distribución beta
 beta_density1 <- dbeta(x_values, shape1 = alpha1, shape2 = beta1)
 beta_density2 <- dbeta(x_values, shape1 = alpha2, shape2 = beta2)
 
-## Crear un data frame para ggplot
+# Crear un data frame para ggplot
 data <- data.frame(x = x_values,
                    density1 = beta_density1,
                    density2 = beta_density2)
 
-## Graficar la distribución beta
+# Graficar la distribución beta
 ggplot(data, aes(x = x)) +
   geom_line(aes(y = density1), color = "blue", linewidth = 1) +
   geom_line(aes(y = density2), color = "red", linewidth = 1) +
@@ -2099,18 +2099,18 @@ A continuación, se detallan ejemplos y usos recomendados en Nanotecnología e I
 
 ***
 
-## ⚛️ Nanotecnología y Ciencia de Materiales
+### 3.74 ⚛️ Nanotecnología y Ciencia de Materiales
 
 En estos campos, la Distribución Beta es ideal para modelar la **variabilidad de proporciones y rendimientos** en procesos de síntesis y fabricación a escala nanométrica.
 
-### 1. Modelado de Rendimiento de Síntesis (Yield)
+### 3.75 1. Modelado de Rendimiento de Síntesis (Yield)
 
 | Escenario | Uso Recomendado | Concepto Clave |
 | :--- | :--- | :--- |
 | **Rendimiento de Producción** | Modelar el **porcentaje de nanopartículas** o nanocables funcionalizados con éxito en un lote químico, o el porcentaje de materiales que cumplen con una especificación crítica. | Los parámetros $\alpha$ y $\beta$ se ajustan a datos históricos del rendimiento de síntesis. Si $\alpha > \beta$, el rendimiento es alto (sesgado a 1); si $\alpha < \beta$, el rendimiento es bajo (sesgado a 0). |
 | **Pureza de Materiales** | Estimar la **proporción de un contaminante** o la fracción de un material deseado en una mezcla purificada. | Permite cuantificar la incertidumbre en la pureza de un lote. Se usa a menudo para **pruebas de hipótesis Bayesianas** sobre si la pureza excede un umbral (por ejemplo, 99%). |
 
-### 2. Eficiencia Cuántica y Absorción
+### 3.76 2. Eficiencia Cuántica y Absorción
 
 | Escenario | Uso Recomendado | Concepto Clave |
 | :--- | :--- | :--- |
@@ -2119,24 +2119,24 @@ En estos campos, la Distribución Beta es ideal para modelar la **variabilidad d
 
 ***
 
-## 🤖 Inteligencia Artificial (IA) y Aprendizaje Automático
+### 3.77 🤖 Inteligencia Artificial (IA) y Aprendizaje Automático
 
 La Distribución Beta es la **conjugada a priori** de la Distribución Binomial, lo que la hace indispensable en la estadística Bayesiana y en el modelado de proporciones de éxito o tasas de error.
 
-### 1. Inferencia Bayesiana y A/B Testing
+### 3.78 1. Inferencia Bayesiana y A/B Testing
 
 | Escenario | Uso Recomendado | Concepto Clave |
 | :--- | :--- | :--- |
 | **Tasa de Conversión (A/B Testing)** | Modelar la distribución de probabilidad de la **tasa de éxito** (o tasa de clics/conversión) de dos algoritmos de IA o dos versiones de una interfaz (A y B). | Si se observa $k$ éxitos en $n$ ensayos (Binomial), la distribución *a posteriori* de la probabilidad de éxito $p$ es una Beta($\alpha_{\text{priori}} + k$, $\beta_{\text{priori}} + n - k$). Esto permite decidir qué versión es mejor con incertidumbre cuantificada. |
 | **Clasificación Binaria** | En tareas de clasificación (p. ej., determinar si una imagen contiene un defecto o no), modelar la **incertidumbre sobre la verdadera tasa de precisión** del modelo. | Utiliza la Beta para representar nuestro conocimiento sobre la precisión real, actualizándolo con cada nuevo lote de datos evaluados. |
 
-### 2. Asignación Dinámica de Recursos y *Bandit Problems*
+### 3.79 2. Asignación Dinámica de Recursos y *Bandit Problems*
 
 | Escenario | Uso Recomendado | Concepto Clave |
 | :--- | :--- | :--- |
 | **Aprendizaje por Refuerzo (Bandidos)** | Se utiliza en el algoritmo **Thompson Sampling** para problemas de *multi-armed bandit* (como la optimización de *feeds* de noticias o anuncios). | La Beta se usa para modelar la **probabilidad de recompensa** de cada "brazo" (opción). En cada paso, el algoritmo muestrea una probabilidad de éxito de la distribución Beta de cada brazo y elige el que muestre el valor más alto, equilibrando automáticamente la exploración y la explotación.  |
 
-### 3. Representación de Variables Normalizadas
+### 3.80 3. Representación de Variables Normalizadas
 
 | Escenario | Uso Recomendado | Concepto Clave |
 | :--- | :--- | :--- |
@@ -2148,36 +2148,36 @@ La Distribución Beta es la **conjugada a priori** de la Distribución Binomial,
 import numpy as np
 from scipy.special import beta, gamma # Importamos las funciones Beta y Gamma
 
-## 1. Definir los parámetros (equivalente a x <- 2, y <- 3 en R)
+# 1. Definir los parámetros (equivalente a x <- 2, y <- 3 en R)
 x = 2
 y = 3
 
-## ----------------------------------------------------
-## 2. Usando la función beta (equivalente a beta_value <- beta(x, y))
-## La función beta(a, b) calcula B(a, b)
+# ----------------------------------------------------
+# 2. Usando la función beta (equivalente a beta_value <- beta(x, y))
+# La función beta(a, b) calcula B(a, b)
 beta_value = beta(x, y)
 
 print(f"Resultado usando la función beta (B({x}, {y})):")
 print(beta_value)
 
-## ----------------------------------------------------
-## 3. Usando la relación con la función gamma (equivalente a beta_value_gamma <- gamma(x) * gamma(y) / gamma(x + y))
-## Relación: B(x, y) = [Gamma(x) * Gamma(y)] / Gamma(x + y)
+# ----------------------------------------------------
+# 3. Usando la relación con la función gamma (equivalente a beta_value_gamma <- gamma(x) * gamma(y) / gamma(x + y))
+# Relación: B(x, y) = [Gamma(x) * Gamma(y)] / Gamma(x + y)
 beta_value_gamma = (gamma(x) * gamma(y)) / gamma(x + y)
 
 print(f"\nResultado usando la relación con la función gamma:")
 print(beta_value_gamma)
 
-## ----------------------------------------------------
-## Verificación (para B(2, 3))
-## La integral de B(2, 3) es 1 / (2 + 3) * C(2 + 3 - 1, 2 - 1) = 1/5 * C(4, 1) = 1/5 * 4 = 4/5?
-## Incorrecto. B(x, y) = (x-1)! * (y-1)! / (x+y-1)!
-## B(2, 3) = (2-1)! * (3-1)! / (2+3-1)! = 1! * 2! / 4! = 1 * 2 / 24 = 2/24 = 1/12
+# ----------------------------------------------------
+# Verificación (para B(2, 3))
+# La integral de B(2, 3) es 1 / (2 + 3) * C(2 + 3 - 1, 2 - 1) = 1/5 * C(4, 1) = 1/5 * 4 = 4/5?
+# Incorrecto. B(x, y) = (x-1)! * (y-1)! / (x+y-1)!
+# B(2, 3) = (2-1)! * (3-1)! / (2+3-1)! = 1! * 2! / 4! = 1 * 2 / 24 = 2/24 = 1/12
 print(f"\nVerificación matemática (1/12): {1/12}")
-## Ambos resultados deberían ser 0.08333...
+# Ambos resultados deberían ser 0.08333...
 ```
 
-## Descripción del Código Python para el Cálculo de la Función Beta
+### 3.81 Descripción del Código Python para el Cálculo de la Función Beta
 
 El código en **Python** demuestra dos métodos para calcular el valor de la **Función Beta, $B(x, y)$**, para un par de argumentos dados ($x=2$ y $y=3$). El propósito principal es verificar la **relación fundamental** entre las funciones Beta y Gamma.
 
@@ -2185,7 +2185,7 @@ El script utiliza **NumPy** para operaciones básicas y la sublibrería **`scipy
 
 ***
 
-### 1. Inicialización y Definición de Parámetros
+### 3.82 1. Inicialización y Definición de Parámetros
 
 | Código | Descripción |
 | :--- | :--- |
@@ -2194,7 +2194,7 @@ El script utiliza **NumPy** para operaciones básicas y la sublibrería **`scipy
 
 ***
 
-### 2. Cálculo Directo con la Función Beta
+### 3.83 2. Cálculo Directo con la Función Beta
 
 | Código | Descripción |
 | :--- | :--- |
@@ -2203,7 +2203,7 @@ El script utiliza **NumPy** para operaciones básicas y la sublibrería **`scipy
 
 ***
 
-### 3. Cálculo Usando la Relación con la Función Gamma
+### 3.84 3. Cálculo Usando la Relación con la Función Gamma
 
 | Código | Fórmula | Descripción |
 | :--- | :--- | :--- |
@@ -2212,7 +2212,7 @@ El script utiliza **NumPy** para operaciones básicas y la sublibrería **`scipy
 
 ***
 
-### 4. Verificación Matemática
+### 3.85 4. Verificación Matemática
 
 | Código | Cálculo Factorial | Explicación |
 | :--- | :--- | :--- |
@@ -2229,28 +2229,28 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from scipy.stats import beta # Importamos la función de distribución Beta
 
-## ----------------------------------------------------
-## 1. Crear un rango de valores para x
-## Similar a seq(0, 1, by = 0.01) en R
+# ----------------------------------------------------
+# 1. Crear un rango de valores para x
+# Similar a seq(0, 1, by = 0.01) en R
 x_values = np.arange(0, 1.01, 0.01) # Aseguramos incluir el 1
 
-## 2. Definir los parámetros de la distribución beta
+# 2. Definir los parámetros de la distribución beta
 shape1 = 2  # Parámetro alpha (equivalente a 'shape1' o 'a' en R)
 shape2 = 5  # Parámetro beta (equivalente a 'shape2' o 'b' en R)
 
-## 3. Calcular la función de densidad de la distribución beta
-## En SciPy, beta.pdf(x, a, b) es el equivalente a dbeta(x, shape1, shape2) en R
+# 3. Calcular la función de densidad de la distribución beta
+# En SciPy, beta.pdf(x, a, b) es el equivalente a dbeta(x, shape1, shape2) en R
 beta_density = beta.pdf(x_values, a=shape1, b=shape2)
 
-## 4. Crear un data frame para los datos (opcional, pero útil para seaborn)
+# 4. Crear un data frame para los datos (opcional, pero útil para seaborn)
 data = pd.DataFrame({'x': x_values, 'density': beta_density})
 
-## 5. Graficar la función beta
+# 5. Graficar la función beta
 sns.set_theme(style="whitegrid") # Similar a theme_minimal()
 
 plt.figure(figsize=(8, 6))
 
-## Usar seaborn.lineplot para graficar (similar a ggplot + geom_line)
+# Usar seaborn.lineplot para graficar (similar a ggplot + geom_line)
 sns.lineplot(
     data=data,
     x='x',
@@ -2259,19 +2259,19 @@ sns.lineplot(
     linewidth=2 # Corresponde a 'linewidth=1' en R para visibilidad
 )
 
-## Añadir etiquetas y título (equivalente a labs)
+# Añadir etiquetas y título (equivalente a labs)
 plt.title("Gráfico de la Distribución Beta", fontsize=16)
 plt.xlabel("x", fontsize=12)
 plt.ylabel("Densidad", fontsize=12)
 
-## Ajustar el eje y (equivalente a scale_y_continuous(expand = ...))
+# Ajustar el eje y (equivalente a scale_y_continuous(expand = ...))
 plt.ylim(bottom=0) # Asegura que el eje Y comience en 0
 
-## Mostrar la gráfica
+# Mostrar la gráfica
 plt.show()
 ```
 
-## Descripción del Código Python para la Gráfica de la Distribución Beta
+### 3.86 Descripción del Código Python para la Gráfica de la Distribución Beta
 
 El código en **Python** tiene como finalidad calcular y visualizar la **Función de Densidad de Probabilidad (PDF)** de una **Distribución Beta** específica. La Distribución Beta es fundamental en la inferencia Bayesiana, ya que modela probabilidades o proporciones, y solo está definida en el intervalo $[0, 1]$.
 
@@ -2279,7 +2279,7 @@ El script utiliza **SciPy** para la función estadística, **NumPy** para operac
 
 ***
 
-### 1. Inicialización y Definición de Parámetros
+### 3.87 1. Inicialización y Definición de Parámetros
 
 | Código | Descripción |
 | :--- | :--- |
@@ -2290,7 +2290,7 @@ El script utiliza **SciPy** para la función estadística, **NumPy** para operac
 
 ***
 
-### 2. Cálculo de la Función de Densidad (PDF)
+### 3.88 2. Cálculo de la Función de Densidad (PDF)
 
 | Código | Parámetro `beta.pdf` | Parámetro Estadístico | Significado |
 | :--- | :--- | :--- | :--- |
@@ -2304,7 +2304,7 @@ El script utiliza **SciPy** para la función estadística, **NumPy** para operac
 
 ***
 
-### 3. Visualización del Gráfico
+### 3.89 3. Visualización del Gráfico
 
 | Código | Descripción |
 | :--- | :--- |
@@ -2326,24 +2326,24 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from scipy.stats import beta # Importamos la función de distribución Beta
 
-## ----------------------------------------------------
-## 1. Crear un rango de valores para x
-## Similar a seq(0, 1, by = 0.01) en R
+# ----------------------------------------------------
+# 1. Crear un rango de valores para x
+# Similar a seq(0, 1, by = 0.01) en R
 x_values = np.arange(0, 1.01, 0.01) # Aseguramos incluir el 1
 
-## 2. Definir los parámetros de la distribución beta
+# 2. Definir los parámetros de la distribución beta
 alpha1 = 2  # Parámetro a (shape1)
 beta1 = 5   # Parámetro b (shape2)
 
 alpha2 = 5  # Otro parámetro a
 beta2 = 2   # Otro parámetro b
 
-## 3. Calcular la función de densidad de la distribución beta
-## En SciPy, beta.pdf(x, a, b) es el equivalente a dbeta(x, shape1, shape2) en R
+# 3. Calcular la función de densidad de la distribución beta
+# En SciPy, beta.pdf(x, a, b) es el equivalente a dbeta(x, shape1, shape2) en R
 beta_density1 = beta.pdf(x_values, a=alpha1, b=beta1)
 beta_density2 = beta.pdf(x_values, a=alpha2, b=beta2)
 
-## 4. Crear un data frame combinado y etiquetar las distribuciones
+# 4. Crear un data frame combinado y etiquetar las distribuciones
 data1 = pd.DataFrame({
     'x': x_values,
     'Density': beta_density1,
@@ -2357,21 +2357,21 @@ data2 = pd.DataFrame({
 
 data = pd.concat([data1, data2], ignore_index=True)
 
-## 5. Graficar la distribución beta usando Matplotlib y Seaborn
+# 5. Graficar la distribución beta usando Matplotlib y Seaborn
 sns.set_theme(style="whitegrid") # Similar a theme_minimal()
 plt.figure(figsize=(10, 6))
 
-## Definir colores manualmente
+# Definir colores manualmente
 colors = {
     f'Beta({alpha1}, {beta1})': 'blue',
     f'Beta({alpha2}, {beta2})': 'red'
 }
 
-## 5a. Dibujar áreas sombreadas (equivalente a geom_area)
+# 5a. Dibujar áreas sombreadas (equivalente a geom_area)
 plt.fill_between(data1['x'], data1['Density'], color='blue', alpha=0.1)
 plt.fill_between(data2['x'], data2['Density'], color='red', alpha=0.1)
 
-## 5b. Dibujar las líneas (equivalente a geom_line)
+# 5b. Dibujar las líneas (equivalente a geom_line)
 sns.lineplot(
     data=data,
     x='x',
@@ -2381,22 +2381,22 @@ sns.lineplot(
     linewidth=2
 )
 
-## 5c. Añadir etiquetas y título (equivalente a labs)
+# 5c. Añadir etiquetas y título (equivalente a labs)
 plt.title("Gráfico de la Distribución Beta", fontsize=16)
 plt.xlabel("x", fontsize=12)
 plt.ylabel("Densidad", fontsize=12)
 
-## Configurar el eje y (equivalente a scale_y_continuous(expand = ...))
+# Configurar el eje y (equivalente a scale_y_continuous(expand = ...))
 plt.ylim(bottom=0)
 
-## Configurar la leyenda y su posición (equivalente a theme(legend.position = "top"))
+# Configurar la leyenda y su posición (equivalente a theme(legend.position = "top"))
 plt.legend(title="Distribución", loc='upper center', bbox_to_anchor=(0.5, 1.1), ncol=2)
 
-## Mostrar la gráfica
+# Mostrar la gráfica
 plt.show()
 ```
 
-## Descripción del Código Python para la Gráfica de la Distribución Beta (Comparativa)
+### 3.90 Descripción del Código Python para la Gráfica de la Distribución Beta (Comparativa)
 
 El código en **Python** tiene el propósito de calcular y visualizar la **Función de Densidad de Probabilidad (PDF)** de **dos distribuciones Beta diferentes** para mostrar cómo la **simetría de los parámetros** ($\alpha$ y $\beta$) afecta la forma de la curva.
 
@@ -2404,7 +2404,7 @@ Al igual que en ejemplos anteriores, el script utiliza **SciPy** para la funció
 
 ***
 
-### 1. Inicialización y Definición de Parámetros
+### 3.91 1. Inicialización y Definición de Parámetros
 
 | Código | Descripción |
 | :--- | :--- |
@@ -2415,7 +2415,7 @@ Al igual que en ejemplos anteriores, el script utiliza **SciPy** para la funció
 
 ***
 
-### 2. Cálculo de la Función de Densidad (PDF)
+### 3.92 2. Cálculo de la Función de Densidad (PDF)
 
 | Código | Descripción |
 | :--- | :--- |
@@ -2425,7 +2425,7 @@ Al igual que en ejemplos anteriores, el script utiliza **SciPy** para la funció
 
 ***
 
-### 3. Visualización y Estilizado del Gráfico
+### 3.93 3. Visualización y Estilizado del Gráfico
 
 | Código | Descripción |
 | :--- | :--- |
@@ -2441,7 +2441,7 @@ El gráfico resultante muestra dos curvas de campana **invertidas** entre sí:
 
 Esta visualización demuestra cómo la Distribución Beta puede modelar una amplia variedad de formas en el intervalo $[0, 1]$, dependiendo de la relación entre sus parámetros $\alpha$ y $\beta$.
 
-### Distribución Weibull
+### 3.94 Distribución Weibull
 
 * **Descripción**: Modelo utilizado para analizar el tiempo hasta el fallo de un sistema o un componente. Es especialmente útil en el análisis de fiabilidad y en estudios de vida.
 
@@ -2488,13 +2488,13 @@ $$
 
 **Comandos en R**:
 ```r
-## PDF
+### 3.95 PDF
 dweibull(x, shape = k, scale = lambda)
 
-## CDF
+### 3.96 CDF
 pweibull(x, shape = k, scale = lambda)
 
-## Simulación
+### 3.97 Simulación
 rweibull(n, shape = k, scale = lambda)
 
 #### Ejemplo de Gráfica de la Distribución Weibull
@@ -2512,30 +2512,30 @@ La distribución Weibull es valiosa en diversas áreas, como la ingeniería y la
 
 ```python
 """
-## Cargar la librería necesaria
+# Cargar la librería necesaria
 library(ggplot2)
 
-## Definir los parámetros de la distribución Weibull
+# Definir los parámetros de la distribución Weibull
 k_values <- c(0.5, 1, 2)  # Parámetro de forma
 lambda_values <- c(1, 1, 1)  # Parámetro de escala
 
-## Crear un rango de valores para x
+# Crear un rango de valores para x
 x <- seq(0, 3, length.out = 100)
 
-## Crear un data frame vacío para almacenar los resultados
+# Crear un data frame vacío para almacenar los resultados
 data <- data.frame()
 
-## Calcular la PDF para cada combinación de k y lambda
+# Calcular la PDF para cada combinación de k y lambda
 for (i in 1:length(k_values)) {
   k <- k_values[i]
   lambda <- lambda_values[i]
   pdf_values <- dweibull(x, shape = k, scale = lambda)
 
-## Añadir los resultados al data frame
+# Añadir los resultados al data frame
   data <- rbind(data, data.frame(x = x, pdf = pdf_values, k = factor(k), lambda = lambda))
 }
 
-## Graficar las distribuciones
+# Graficar las distribuciones
 ggplot(data, aes(x = x, y = pdf, color = k)) +
   geom_line() +
   labs(title = "Funciones de Densidad de la Distribución Weibull",
@@ -2559,7 +2559,7 @@ ggplot(data, aes(x = x, y = pdf, color = k)) +
 
 La **Distribución de Weibull** es la herramienta estadística más crucial en **Ciencia de Materiales** y **Fiabilidad (Confiabilidad)**, especialmente cuando se modela el **tiempo hasta el fallo** o la **resistencia a la fractura** de los materiales. Su gran ventaja es el parámetro de forma ($k$ o $\beta$), que permite modelar diferentes tipos de mecanismos de fallo.
 
-## 🔬 Usos en la Resistencia a la Fractura
+### 3.98 🔬 Usos en la Resistencia a la Fractura
 
 La Weibull es el modelo estándar para la resistencia mecánica de los **materiales frágiles** (cerámicas, vidrio, compuestos y fibras).
 
@@ -2571,7 +2571,7 @@ La Weibull es el modelo estándar para la resistencia mecánica de los **materia
 
 ***
 
-## ⚙️ Usos en Fiabilidad y Vida Útil
+### 3.99 ⚙️ Usos en Fiabilidad y Vida Útil
 
 En ingeniería, la Weibull se utiliza para modelar el **tiempo de vida** de los componentes, ya que puede describir las tres fases de la **curva de la bañera**.
 
@@ -2581,7 +2581,7 @@ En ingeniería, la Weibull se utiliza para modelar el **tiempo de vida** de los 
 | **$k = 1$ (Tasa de fallo constante)** | **Fallos Aleatorios** (Comportamiento Exponencial). El fallo no depende de la edad del material. | Fallos por sobrecarga inesperada o eventos externos que actúan sobre un material con **propiedades nanoestructurales estables**. |
 | **$k > 1$ (Tasa de fallo creciente)** | **Desgaste o Envejecimiento**. Fallo debido a la acumulación de daño, corrosión o fatiga. | **Degradación de recubrimientos protectores**, crecimiento de grietas por **fatiga en metales** o envejecimiento de **polímeros**. |
 
-### Usos Recomendados
+### 3.100 Usos Recomendados
 
 * **Predicción de la Vida a Fatiga:** Modelar la relación entre el **número de ciclos** (tiempo) y la probabilidad de fallo de materiales sometidos a tensión cíclica. Es esencial en el diseño aeronáutico y automotriz.
 * **Cualificación de Materiales:** Comparar la durabilidad de nuevos **materiales compuestos o aleaciones** bajo condiciones extremas. Un mejor material tendrá una vida característica ($\eta$, el parámetro de escala) mayor para el mismo valor de forma ($k$).
@@ -2598,43 +2598,43 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from scipy.stats import weibull_min # Importamos la distribución Weibull
 
-## ----------------------------------------------------
-## 1. Definir los parámetros de la distribución Weibull
+# ----------------------------------------------------
+# 1. Definir los parámetros de la distribución Weibull
 k_values = [0.5, 1, 2]       # Parámetro de forma (c en SciPy)
 lambda_values = [1, 1, 1]    # Parámetro de escala (scale en SciPy)
 
-## 2. Crear un rango de valores para x
-## Similar a seq(0, 3, length.out = 100) en R
+# 2. Crear un rango de valores para x
+# Similar a seq(0, 3, length.out = 100) en R
 x = np.linspace(0, 3, 100)
 
-## 3. Crear una lista para almacenar los DataFrames de los resultados
+# 3. Crear una lista para almacenar los DataFrames de los resultados
 data_list = []
 
-## 4. Calcular la PDF para cada combinación de k y lambda
+# 4. Calcular la PDF para cada combinación de k y lambda
 for k, lambda_val in zip(k_values, lambda_values):
-## En SciPy, weibull_min.pdf(x, c, scale) es el equivalente a dweibull(x, shape=c, scale=lambda) en R
-## c es la forma (k) y scale es la escala (lambda)
+# En SciPy, weibull_min.pdf(x, c, scale) es el equivalente a dweibull(x, shape=c, scale=lambda) en R
+# c es la forma (k) y scale es la escala (lambda)
     pdf_values = weibull_min.pdf(x, c=k, scale=lambda_val)
 
-## Crear un DataFrame temporal
+# Crear un DataFrame temporal
     df_temp = pd.DataFrame({
         'x': x,
         'pdf': pdf_values,
-## Convertir k a string para usarlo como categoría discreta en la gráfica (color)
+# Convertir k a string para usarlo como categoría discreta en la gráfica (color)
         'k': str(k),
         'lambda': lambda_val
     })
     data_list.append(df_temp)
 
-## 5. Concatenar todos los DataFrames
+# 5. Concatenar todos los DataFrames
 data = pd.concat(data_list, ignore_index=True)
 
-## 6. Graficar la distribución Weibull usando Seaborn
+# 6. Graficar la distribución Weibull usando Seaborn
 sns.set_theme(style="whitegrid") # Similar a theme_minimal()
 
 plt.figure(figsize=(10, 6))
 
-## Usar seaborn.lineplot
+# Usar seaborn.lineplot
 sns.lineplot(
     data=data,
     x='x',
@@ -2644,19 +2644,19 @@ sns.lineplot(
     linewidth=2
 )
 
-## Añadir etiquetas y título (equivalente a labs)
+# Añadir etiquetas y título (equivalente a labs)
 plt.title("Funciones de Densidad de la Distribución Weibull", fontsize=16)
 plt.xlabel("x", fontsize=12)
 plt.ylabel("Densidad de Probabilidad (PDF)", fontsize=12)
 
-## Configurar la leyenda
+# Configurar la leyenda
 plt.legend(title="Parámetro k", loc='upper right')
 
-## Mostrar la gráfica
+# Mostrar la gráfica
 plt.show()
 ```
 
-## Descripción del Código Python para la Gráfica de la Distribución Weibull
+### 3.101 Descripción del Código Python para la Gráfica de la Distribución Weibull
 
 El código en **Python** calcula y visualiza la **Función de Densidad de Probabilidad (PDF)** de la **Distribución Weibull** para **diferentes valores del parámetro de forma ($k$)**, manteniendo el parámetro de escala ($\lambda$) constante. La Distribución Weibull es muy utilizada en ingeniería de confiabilidad y análisis de fallas para modelar la vida útil de componentes.
 
@@ -2664,7 +2664,7 @@ El script emplea **SciPy** para la función estadística, **NumPy** para operaci
 
 ***
 
-### 1. Inicialización y Definición de Parámetros
+### 3.102 1. Inicialización y Definición de Parámetros
 
 | Código | Descripción |
 | :--- | :--- |
@@ -2675,7 +2675,7 @@ El script emplea **SciPy** para la función estadística, **NumPy** para operaci
 
 ***
 
-### 2. Cálculo de la Función de Densidad (PDF)
+### 3.103 2. Cálculo de la Función de Densidad (PDF)
 
 | Parámetro SciPy | Parámetro Estadístico | Explicación |
 | :--- | :--- | :--- |
@@ -2690,7 +2690,7 @@ El script emplea **SciPy** para la función estadística, **NumPy** para operaci
 
 ***
 
-### 3. Visualización y Estilizado del Gráfico
+### 3.104 3. Visualización y Estilizado del Gráfico
 
 | Código | Descripción |
 | :--- | :--- |
@@ -2705,7 +2705,7 @@ El gráfico resultante muestra tres curvas con formas distintas, ilustrando el i
 * **$k=1$ (Verde):** La curva es una línea decreciente (coincide con la **Distribución Exponencial**).
 * **$k=2$ (Amarillo):** La curva es unimodal y se asemeja a una forma sesgada, con su pico alejado de cero.
 
-### Distribución de Dirichlet
+### 3.105 Distribución de Dirichlet
 
 * **Descripción**: Modelo de distribuciones de probabilidad sobre un conjunto de variables aleatorias que suman uno. Se utiliza comúnmente en la teoría bayesiana y en el análisis de composiciones.
 
@@ -2745,13 +2745,13 @@ $$
 * **Comandos en R**:
 
 ```r
-## PDF
+### 3.106 PDF
 ddirichlet(x, alpha)
 
-## CDF
+### 3.107 CDF
 pdirichlet(x, alpha)
 
-## Simulación
+### 3.108 Simulación
 rdirichlet(n, alpha)
 
 #### Ejemplo de Gráfica de la Distribución de Dirichlet
@@ -2768,28 +2768,28 @@ La distribución de Dirichlet es valiosa en campos como el aprendizaje automáti
 
 ```python
 """
-## Cargar las librerías necesarias
+# Cargar las librerías necesarias
 library(ggplot2)
 library(dplyr)
 library(MCMCpack)  # Asegúrate de que MCMCpack esté instalado
 
-## Definir los parámetros de la distribución Dirichlet
+# Definir los parámetros de la distribución Dirichlet
 alpha_values <- list(c(1, 1, 1), c(2, 5, 3), c(5, 1, 1))  # Diferentes vectores de parámetros
 
-## Inicializar una lista para almacenar los gráficos
+# Inicializar una lista para almacenar los gráficos
 plots <- list()
 
-## Generar muestras para cada conjunto de parámetros
+# Generar muestras para cada conjunto de parámetros
 for (alpha in alpha_values) {
-## Generar muestras aleatorias de la distribución Dirichlet
+# Generar muestras aleatorias de la distribución Dirichlet
   n_points <- 1000  # Número de muestras
   samples <- rdirichlet(n_points, alpha)
 
-## Convertir las muestras en un data frame
+# Convertir las muestras en un data frame
   sample_data <- as.data.frame(samples)
   colnames(sample_data) <- c("x1", "x2", "x3")  # Nombrar columnas
 
-## Graficar para cada conjunto de parámetros
+# Graficar para cada conjunto de parámetros
   p <- ggplot(sample_data, aes(x = x1, y = x2)) +
     geom_point(alpha = 0.5) +
     labs(title = paste("Distribución Dirichlet (α = (", paste(alpha, collapse = ", "), "))", sep = ""),
@@ -2798,11 +2798,11 @@ for (alpha in alpha_values) {
     theme_minimal() +
     xlim(0, 1) + ylim(0, 1)  # Limitar ejes a [0,1]
 
-## Almacenar el gráfico en la lista
+# Almacenar el gráfico en la lista
   plots[[length(plots) + 1]] <- p
 }
 
-## Mostrar los gráficos
+# Mostrar los gráficos
 for (plot in plots) {
   print(plot)
 }
@@ -2827,7 +2827,7 @@ for (plot in plots) {
 4. **Variabilidad**:
    - Las muestras generadas reflejan la variabilidad de las proporciones que se pueden obtener para un conjunto dado de parámetros $\alpha$. Por ejemplo, para valores de $\alpha$ muy diferentes entre sí, la variabilidad en las proporciones puede ser mayor, mientras que para valores más homogéneos, la variabilidad es menor.
 
-### Resumen
+### 3.109 Resumen
 Los diagramas de dispersión te permiten visualizar cómo la distribución Dirichlet modela combinaciones de proporciones en un contexto donde estas deben sumar 1. A medida que cambian los parámetros $\alpha$, la forma y la concentración de las muestras cambian, lo que refleja la influencia de esos parámetros en la distribución de probabilidad de las proporciones. Estos gráficos son útiles en campos como la estadística bayesiana, el aprendizaje automático y la teoría de juegos, donde entender la relación entre variables proporcionales es clave.
 
 #### Descripción del Código
@@ -2849,7 +2849,7 @@ Los diagramas de dispersión te permiten visualizar cómo la distribución Diric
 
 * **Almacenar y mostrar los gráficos**: Cada gráfico generado se almacena en la lista `plots`, y posteriormente se imprimen todos los gráficos utilizando un bucle.
 
-### Resumen
+### 3.110 Resumen
 Este código ilustra cómo generar y visualizar muestras de la distribución Dirichlet para diferentes configuraciones de parámetros. Los gráficos resultantes permiten observar la distribución de las proporciones en un espacio de probabilidades, lo que es útil en contextos de modelado estadístico y análisis de datos.
 
 **EJERCICIO 15**
@@ -2860,9 +2860,9 @@ Su principal utilidad en Inteligencia Artificial (IA) y Aprendizaje Automático 
 
 ---
 
-## 🤖 Usos Recomendados en Inteligencia Artificial
+### 3.111 🤖 Usos Recomendados en Inteligencia Artificial
 
-### 1. Modelado de Temas (Topic Modeling)
+### 3.112 1. Modelado de Temas (Topic Modeling)
 
 Este es el uso más famoso de la Distribución de Dirichlet, siendo el corazón del modelo **Latent Dirichlet Allocation (LDA)**, un algoritmo clave en el Procesamiento del Lenguaje Natural (NLP).
 
@@ -2872,7 +2872,7 @@ Este es el uso más famoso de la Distribución de Dirichlet, siendo el corazón 
     2.  **Distribución de Palabras por Tema:** Se utiliza otra Dirichlet para modelar la **proporción de palabras** que componen cada tema. Por ejemplo, el tema "Nanotecnología" puede estar compuesto por 10% la palabra "quantum", 5% "graphene", 3% "synthesis", etc.
 * **Parámetros:** Los parámetros $\alpha$ de la Dirichlet controlan la **dispersión** de estas distribuciones. Un valor bajo (cercano a 0) promueve distribuciones más dispersas (los documentos tratan sobre pocos temas), mientras que un valor alto promueve distribuciones más uniformes.
 
-### 2. Clasificación Bayesiana y Mezclas (Clustering)
+### 3.113 2. Clasificación Bayesiana y Mezclas (Clustering)
 
 La Beta y su generalización, la Dirichlet, son fundamentales en la estadística bayesiana.
 
@@ -2880,14 +2880,14 @@ La Beta y su generalización, la Dirichlet, son fundamentales en la estadística
 * **Uso Recomendado (Inferencia Bayesiana):** La distribución de Dirichlet es la **conjugada a priori** de la Distribución Multinomial. Esto significa que si se tienen datos de recuento (Multinomiales) y se usa una Dirichlet como *a priori* para la probabilidad de cada categoría, la distribución *a posteriori* también será una Dirichlet. Esto hace que la actualización del conocimiento (aprendizaje) sea matemáticamente simple y eficiente.
 * **Modelos de Mezclas Dirichlet (DPM):** Se utiliza para realizar *clustering* (agrupación) no paramétrico, donde el número de *clusters* o grupos **no tiene que ser especificado de antemano**. La Dirichlet permite que el modelo decida dinámicamente cuántos componentes (clusters) son necesarios para modelar los datos.
 
-### 3. Asignación de Recursos y Toma de Decisiones
+### 3.114 3. Asignación de Recursos y Toma de Decisiones
 
 En campos relacionados con la optimización y la toma de decisiones probabilísticas, la Dirichlet ayuda a modelar la incertidumbre sobre las preferencias o recompensas.
 
 * **Ejemplo:** En **Aprendizaje por Refuerzo** aplicado a la publicidad, modelar la **proporción de clics** que recibirá cada uno de los $K$ anuncios disponibles.
 * **Mecanismo:** Es una alternativa o complemento al uso de la Distribución Beta en problemas de **Multi-Armed Bandit** (como el Thompson Sampling). En lugar de modelar la probabilidad de éxito de cada "brazo" de forma independiente (con la Beta), la Dirichlet puede modelar la **distribución conjunta de las preferencias** de los usuarios entre $K$ opciones.
 
-### 4. Generación de Datos Sintéticos
+### 3.115 4. Generación de Datos Sintéticos
 
 * **Ejemplo:** Generar datos sintéticos para entrenamiento de modelos donde las entradas son **proporciones** que deben sumar a la unidad (p. ej., proporciones de diferentes tipos de células en un tejido, proporciones de ingredientes en una receta, o distribuciones de tráfico de red entre $K$ protocolos).
 * **Uso Recomendado:** Se utiliza como una herramienta de muestreo para crear **datos realistas y variados** que respetan la restricción de suma a uno, lo cual es fundamental para validar modelos de aprendizaje automático en entornos simulados.
@@ -2901,45 +2901,45 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from scipy.stats import gamma
 
-## ----------------------------------------------------
-## Función para generar muestras de la Distribución Dirichlet (basada en Gamma)
+# ----------------------------------------------------
+# Función para generar muestras de la Distribución Dirichlet (basada en Gamma)
 def rdirichlet(alpha, size=1):
     """
     Genera muestras aleatorias de la Distribución Dirichlet.
     alpha: Vector de parámetros (list o array)
     size: Número de muestras a generar
     """
-## Generar variables Gamma independientes para cada dimensión
-## La escala (scale) se fija a 1
-## La forma (shape/a) es el vector alpha
+# Generar variables Gamma independientes para cada dimensión
+# La escala (scale) se fija a 1
+# La forma (shape/a) es el vector alpha
     gamma_samples = np.array([gamma.rvs(a=a, scale=1, size=size) for a in alpha]).T
 
-## Normalizar las muestras sumando a 1 (X_i = Y_i / sum(Y_j))
+# Normalizar las muestras sumando a 1 (X_i = Y_i / sum(Y_j))
     dirichlet_samples = gamma_samples / np.sum(gamma_samples, axis=1, keepdims=True)
     return dirichlet_samples
 
-## ----------------------------------------------------
-## 1. Definir los parámetros de la distribución Dirichlet (alpha)
+# ----------------------------------------------------
+# 1. Definir los parámetros de la distribución Dirichlet (alpha)
 alpha_values = [[1, 1, 1], [2, 5, 3], [5, 1, 1]]
 
-## 2. Configuración de la figura para mostrar múltiples gráficos
+# 2. Configuración de la figura para mostrar múltiples gráficos
 n_plots = len(alpha_values)
 fig, axes = plt.subplots(1, n_plots, figsize=(5 * n_plots, 5))
-## Si solo hay un gráfico, axes no es un array, lo convertimos para el bucle
+# Si solo hay un gráfico, axes no es un array, lo convertimos para el bucle
 if n_plots == 1:
     axes = [axes]
 
 n_points = 1000  # Número de muestras
 
-## 3. Generar muestras y graficar para cada conjunto de parámetros
+# 3. Generar muestras y graficar para cada conjunto de parámetros
 for i, alpha in enumerate(alpha_values):
-## Generar muestras (K=3 dimensiones: x1, x2, x3)
+# Generar muestras (K=3 dimensiones: x1, x2, x3)
     samples = rdirichlet(alpha, size=n_points)
 
-## Convertir a DataFrame para facilitar el uso de Seaborn y etiquetas
+# Convertir a DataFrame para facilitar el uso de Seaborn y etiquetas
     sample_data = pd.DataFrame(samples, columns=["x1", "x2", "x3"])
 
-## Usar Seaborn o Matplotlib para graficar x1 vs x2
+# Usar Seaborn o Matplotlib para graficar x1 vs x2
     ax = axes[i]
     sns.scatterplot(
         data=sample_data,
@@ -2950,7 +2950,7 @@ for i, alpha in enumerate(alpha_values):
         ax=ax
     )
 
-## Configurar títulos y límites
+# Configurar títulos y límites
     alpha_str = ", ".join(map(str, alpha))
     ax.set_title(f"Distribución Dirichlet (α = ({alpha_str}))")
     ax.set_xlabel("$x_1$")
@@ -2959,12 +2959,12 @@ for i, alpha in enumerate(alpha_values):
     ax.set_ylim(0, 1)
     ax.set_aspect('equal', adjustable='box') # Hace que los ejes sean iguales
 
-## Ajustar el diseño para evitar superposiciones
+# Ajustar el diseño para evitar superposiciones
 plt.tight_layout()
 plt.show()
 ```
 
-## Descripción del Código Python para la Gráfica de la Distribución Dirichlet
+### 3.116 Descripción del Código Python para la Gráfica de la Distribución Dirichlet
 
 El código en **Python** tiene como objetivo simular y visualizar la **Distribución Dirichlet** para diferentes conjuntos de parámetros $\boldsymbol{\alpha} = (\alpha_1, \alpha_2, \ldots, \alpha_K)$. La Distribución Dirichlet es una **distribución de probabilidad multivariada** sobre una distribución de probabilidades, es decir, genera vectores $\mathbf{x}=(x_1, \ldots, x_K)$ donde $x_i \ge 0$ y $\sum x_i = 1$.
 
@@ -2972,7 +2972,7 @@ El método utilizado para la simulación es la relación fundamental entre la Di
 
 ***
 
-### 1. Función de Generación de Muestras (`rdirichlet`)
+### 3.117 1. Función de Generación de Muestras (`rdirichlet`)
 
 | Código | Concepto Matemático | Descripción |
 | :--- | :--- | :--- |
@@ -2982,7 +2982,7 @@ El método utilizado para la simulación es la relación fundamental entre la Di
 ***
 ***
 
-### 2. Parámetros y Simulación
+### 3.118 2. Parámetros y Simulación
 
 | Código | Descripción |
 | :--- | :--- |
@@ -2994,7 +2994,7 @@ El método utilizado para la simulación es la relación fundamental entre la Di
 
 ***
 
-### 3. Visualización de los Resultados
+### 3.119 3. Visualización de los Resultados
 
 La Distribución Dirichlet $K=3$ se representa en un **simplex 2D** (un triángulo equilátero), pero el código opta por graficar las coordenadas $x_1$ vs $x_2$ en un cuadrado $[0, 1] \times [0, 1]$, ya que $x_3$ se determina automáticamente por $x_3 = 1 - x_1 - x_2$.
 
@@ -3011,7 +3011,7 @@ La Distribución Dirichlet $K=3$ se representa en un **simplex 2D** (un triángu
 2.  **$\boldsymbol{\alpha} = (2, 5, 3)$:** La densidad de puntos se concentra donde $x_2$ es alto (hacia el eje $y$), ya que $\alpha_2=5$ es el parámetro dominante.
 3.  **$\boldsymbol{\alpha} = (5, 1, 1)$:** La densidad de puntos se concentra donde $x_1$ es alto (hacia el eje $x$), ya que $\alpha_1=5$ es el parámetro dominante.
 
-### Distribución de Chi-cuadrada $\chi^2$ o de Pearson
+### 3.120 Distribución de Chi-cuadrada $\chi^2$ o de Pearson
 
 * **Descripción**: Modelo de distribuciones que se utiliza en pruebas de hipótesis y en la construcción de intervalos de confianza para varianzas. Se deriva de la suma de los cuadrados de variables aleatorias normales estándar.
 
@@ -3054,13 +3054,13 @@ $$
 * **Comandos en R**:
 
 ```r
-## PDF
+### 3.121 PDF
 dchisq(x, df = k)
 
-## CDF
+### 3.122 CDF
 pchisq(x, df = k)
 
-## Simulación
+### 3.123 Simulación
 rchisq(n, df = k)
 
 #### Ejemplo de Gráfica de la Distribución Chi-Cuadrada
@@ -3077,28 +3077,28 @@ La distribución Chi-cuadrada es valiosa en diversas áreas, como la teoría de 
 
 ```python
 """
-## Cargar las librerías necesarias
+# Cargar las librerías necesarias
 library(ggplot2)
 library(tidyr)
 
-## Definir los grados de libertad
+# Definir los grados de libertad
 k_values <- c(1, 2, 5, 10)  # Diferentes valores de k
 
-## Crear un rango de valores para x
+# Crear un rango de valores para x
 x <- seq(0, 30, length.out = 500)
 
-## Calcular la PDF para cada valor de k
+# Calcular la PDF para cada valor de k
 pdf_data <- data.frame(x = x)
 
 for (k in k_values) {
   pdf_data[[paste("PDF_k", k, sep = "_")]] <- dchisq(x, df = k)
 }
 
-## Convertir el data frame a formato largo para graficar
+# Convertir el data frame a formato largo para graficar
 pdf_long <- pivot_longer(pdf_data, cols = starts_with("PDF_k"),
                           names_to = "k", values_to = "density")
 
-## Graficar las distribuciones Chi-cuadrada
+# Graficar las distribuciones Chi-cuadrada
 ggplot(pdf_long, aes(x = x, y = density, color = k)) +
   geom_line(linewidth = 1) +  # Cambiado size por linewidth
   labs(title = "Distribución Chi-Cuadrada para Diferentes Valores de k",
@@ -3127,42 +3127,42 @@ A continuación, se presentan sus ejemplos y usos recomendados en Ciencia de Mat
 
 ***
 
-## ⚛️ Ciencia de Materiales: Variabilidad y Ajuste de Modelos
+### 3.124 ⚛️ Ciencia de Materiales: Variabilidad y Ajuste de Modelos
 
 En Ciencia de Materiales, la distribución $\chi^2$ es fundamental para evaluar la calidad del ajuste entre los datos experimentales y los modelos teóricos, y para analizar la variabilidad de las mediciones.
 
-### 1. Bondad de Ajuste de Distribuciones de Vida Útil
+### 3.125 1. Bondad de Ajuste de Distribuciones de Vida Útil
 
 * **Uso Recomendado:** Determinar si un conjunto de datos de vida útil (tiempo hasta la falla) de un material o componente sigue realmente una distribución específica (como Weibull, Log-Normal o Exponencial).
 * **Mecanismo (Prueba de $\chi^2$):** Se aplica la **Prueba de Bondad de Ajuste de Chi-Cuadrada**. Se comparan las **frecuencias de fallo observadas** en diferentes intervalos de tiempo (datos experimentales) con las **frecuencias esperadas** según la distribución teórica propuesta. La estadística $\chi^2$ resultante cuantifica la discrepancia total. Si el valor $\chi^2$ es bajo, se acepta que el modelo teórico se ajusta bien a los datos del material.
 
-### 2. Análisis de Dispersión en Mediciones
+### 3.126 2. Análisis de Dispersión en Mediciones
 
 * **Uso Recomendado:** Analizar si la **varianza** ($\sigma^2$) en las mediciones de una propiedad del material (p. ej., resistencia, dureza, espesor de una capa delgada) es significativamente mayor o menor que un valor estándar o esperado.
 * **Mecanismo:** La distribución $\chi^2$ se utiliza para construir **Intervalos de Confianza para la Varianza Poblacional** o para realizar la **Prueba de Hipótesis sobre una Única Varianza**. Esto es crucial para el control de calidad, ya que la varianza excesiva a menudo indica problemas en el proceso de fabricación del material (p. ej., falta de homogeneidad).
 
-### 3. Ajuste de Modelos por Mínimos Cuadrados Ponderados
+### 3.127 3. Ajuste de Modelos por Mínimos Cuadrados Ponderados
 
 * **Uso Recomendado:** Evaluar la calidad general del ajuste en técnicas como la **Reflectividad de Rayos X (XRR)** o la **Elipsometría** (usadas para caracterizar películas delgadas y nanoláminas).
 * **Mecanismo:** Los programas de ajuste de datos que utilizan el método de Mínimos Cuadrados suelen reportar una estadística **$\chi^2$ reducida** (a menudo denominada *Goodness-of-Fit*). Este valor mide la suma de los errores cuadrados normalizados por la varianza experimental (el ruido). Un $\chi^2$ cercano a la unidad indica un ajuste excelente.
 
 ***
 
-## 🧪 Diseño de Experimentos (DOE): Categóricos y Varianza
+### 3.128 🧪 Diseño de Experimentos (DOE): Categóricos y Varianza
 
 En DOE, la distribución $\chi^2$ es esencial para tomar decisiones sobre los resultados experimentales, especialmente cuando se trabaja con datos categóricos o se comparan varianzas.
 
-### 4. Independencia de Factores Experimentales
+### 3.129 4. Independencia de Factores Experimentales
 
 * **Uso Recomendado:** Determinar si la **efectividad de un factor experimental** (p. ej., el tipo de catalizador: A, B o C) es independiente del resultado categórico (p. ej., el producto final fue "Éxito" o "Fallo").
 * **Mecanismo (Prueba de $\chi^2$ de Independencia):** Se utiliza una **Tabla de Contingencia** para organizar las frecuencias observadas. La prueba $\chi^2$ evalúa si las desviaciones entre las frecuencias observadas y las frecuencias que se esperarían bajo el supuesto de independencia son estadísticamente significativas. Es fundamental para el análisis de experimentos donde la variable de respuesta es cualitativa.
 
-### 5. Comparación de Varianzas entre Tratamientos
+### 3.130 5. Comparación de Varianzas entre Tratamientos
 
 * **Uso Recomendado:** En un DOE, verificar el **supuesto de homocedasticidad** (varianzas iguales) antes de aplicar un ANOVA (Análisis de Varianza).
 * **Mecanismo (Prueba de Bartlett o Levene):** La mayoría de las pruebas para homocedasticidad se basan en la distribución $\chi^2$ (o la distribución F, que se relaciona con ella). Si la varianza del resultado es significativamente diferente entre los distintos grupos de tratamiento, el ANOVA puede no ser válido. La prueba $\chi^2$ ayuda a confirmar si las varianzas de los diferentes "lotes" de materiales o procesos son iguales.
 
-### 6. Diseño de Experimentos Factoriales con Datos Categóricos
+### 3.131 6. Diseño de Experimentos Factoriales con Datos Categóricos
 
 * **Uso Recomendado:** Analizar los efectos de múltiples factores en un diseño factorial cuando la respuesta es binaria o nominal.
 * **Mecanismo:** Se utiliza la prueba $\chi^2$ para analizar si los **efectos de interacción** entre los factores son significativos, basándose en la proporción de éxitos o fracasos en cada combinación de tratamiento. Esto permite identificar qué combinaciones de factores (p. ej., Temperatura alta Y Catalizador X) tienen un impacto desproporcionado en el resultado categórico.
@@ -3176,27 +3176,27 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from scipy.stats import chi2 # Importamos la distribución Chi-cuadrada
 
-## ----------------------------------------------------
-## 1. Definir los grados de libertad
+# ----------------------------------------------------
+# 1. Definir los grados de libertad
 k_values = [1, 2, 5, 10]  # Diferentes valores de k (df)
 
-## 2. Crear un rango de valores para x
-## Similar a seq(0, 30, length.out = 500) en R
+# 2. Crear un rango de valores para x
+# Similar a seq(0, 30, length.out = 500) en R
 x = np.linspace(0, 30, 500)
 
-## 3. Crear un diccionario para almacenar los resultados de la PDF
+# 3. Crear un diccionario para almacenar los resultados de la PDF
 pdf_data_dict = {'x': x}
 
-## Calcular la PDF para cada valor de k
+# Calcular la PDF para cada valor de k
 for k in k_values:
-## chi2.pdf(x, df=k) es el equivalente a dchisq(x, df = k) en R
+# chi2.pdf(x, df=k) es el equivalente a dchisq(x, df = k) en R
     pdf_values = chi2.pdf(x, df=k)
     pdf_data_dict[f"k = {k}"] = pdf_values
 
-## Convertir el diccionario a un DataFrame
+# Convertir el diccionario a un DataFrame
 pdf_data = pd.DataFrame(pdf_data_dict)
 
-## 4. Convertir el DataFrame a formato largo para graficar (similar a pivot_longer)
+# 4. Convertir el DataFrame a formato largo para graficar (similar a pivot_longer)
 pdf_long = pdf_data.melt(
     id_vars='x',                                      # Columna de identificación
     value_vars=[f"k = {k}" for k in k_values],        # Columnas de valores
@@ -3204,12 +3204,12 @@ pdf_long = pdf_data.melt(
     value_name="density"                              # Nueva columna para los valores de densidad
 )
 
-## 5. Graficar las distribuciones Chi-cuadrada
+# 5. Graficar las distribuciones Chi-cuadrada
 sns.set_theme(style="whitegrid") # Similar a theme_minimal()
 
 plt.figure(figsize=(10, 6))
 
-## Usar seaborn.lineplot
+# Usar seaborn.lineplot
 sns.lineplot(
     data=pdf_long,
     x='x',
@@ -3218,19 +3218,19 @@ sns.lineplot(
     linewidth=2
 )
 
-## Añadir etiquetas y título (equivalente a labs)
+# Añadir etiquetas y título (equivalente a labs)
 plt.title("Distribución Chi-Cuadrada para Diferentes Valores de k", fontsize=16)
 plt.xlabel("$x$", fontsize=14)
 plt.ylabel("Densidad de Probabilidad (PDF)", fontsize=12)
 
-## Configurar la leyenda
+# Configurar la leyenda
 plt.legend(title="Grados de Libertad (k)", loc='upper right')
 
-## Mostrar la gráfica
+# Mostrar la gráfica
 plt.show()
 ```
 
-## Descripción del Código Python para la Gráfica de la Distribución Chi-Cuadrada
+### 3.132 Descripción del Código Python para la Gráfica de la Distribución Chi-Cuadrada
 
 El código en **Python** tiene el propósito de calcular y visualizar la **Función de Densidad de Probabilidad (PDF)** de la **Distribución Chi-Cuadrada ($\chi^2$)** para diferentes valores de sus **grados de libertad ($k$)**. La distribución Chi-Cuadrada es fundamental en la inferencia estadística, especialmente en pruebas de bondad de ajuste y análisis de varianza.
 
@@ -3238,7 +3238,7 @@ El script utiliza la función $\mathbf{chi2}$ de **SciPy** para el cálculo esta
 
 ***
 
-### 1. Inicialización y Parámetros
+### 3.133 1. Inicialización y Parámetros
 
 | Código | Descripción |
 | :--- | :--- |
@@ -3248,7 +3248,7 @@ El script utiliza la función $\mathbf{chi2}$ de **SciPy** para el cálculo esta
 
 ***
 
-### 2. Cálculo de la Función de Densidad (PDF) y Estructuración de Datos
+### 3.134 2. Cálculo de la Función de Densidad (PDF) y Estructuración de Datos
 
 | Código | Parámetro `chi2.pdf` | Parámetro Estadístico | Significado |
 | :--- | :--- | :--- | :--- |
@@ -3262,7 +3262,7 @@ El script utiliza la función $\mathbf{chi2}$ de **SciPy** para el cálculo esta
 
 ***
 
-### 3. Visualización y Estilizado del Gráfico
+### 3.135 3. Visualización y Estilizado del Gráfico
 
 | Código | Descripción |
 | :--- | :--- |
@@ -3275,7 +3275,7 @@ El gráfico resultante muestra que:
 2.  La distribución está **fuertemente sesgada a la derecha** para valores pequeños de $k$ (especialmente $k=1$ y $k=2$).
 3.  A medida que los **grados de libertad ($k$) aumentan**, la curva se vuelve más **simétrica** y se **desplaza** hacia la derecha, acercándose a la forma de una distribución Normal.
 
-### Distribución t-Student
+### 3.136 Distribución t-Student
 
 * **Descripción**: Modelo utilizado para estimar la media de una población cuando el tamaño de la muestra es pequeño y la varianza poblacional es desconocida. Es útil en pruebas de hipótesis y en intervalos de confianza.
 
@@ -3304,13 +3304,13 @@ $$
 
 **Comandos en R**:
 ```r
-## PDF
+### 3.137 PDF
 dt(x, df = nu)
 
-## CDF
+### 3.138 CDF
 pt(x, df = nu)
 
-## Simulación
+### 3.139 Simulación
 rt(n, df = nu)
 
 #### Ejemplo de Gráfica de la Distribución t-Student
@@ -3327,27 +3327,27 @@ La distribución t-Student es valiosa en campos como la estadística, la investi
 
 ```python
 """
-## Cargar la librería necesaria
+# Cargar la librería necesaria
 library(ggplot2)
 
-## Definir los grados de libertad
+# Definir los grados de libertad
 k_values <- c(1, 2, 5, 10)  # Diferentes valores de k
 
-## Crear un rango de valores para x
+# Crear un rango de valores para x
 x <- seq(-5, 5, length.out = 500)
 
-## Calcular la PDF para cada valor de k
+# Calcular la PDF para cada valor de k
 pdf_data <- data.frame(x = x)
 
 for (k in k_values) {
   pdf_data[[paste("PDF_k", k, sep = "_")]] <- dt(x, df = k)
 }
 
-## Convertir el data frame a formato largo para graficar
+# Convertir el data frame a formato largo para graficar
 pdf_long <- tidyr::pivot_longer(pdf_data, cols = starts_with("PDF_k"),
                                   names_to = "k", values_to = "density")
 
-## Graficar las distribuciones t-Student
+# Graficar las distribuciones t-Student
 ggplot(pdf_long, aes(x = x, y = density, color = k)) +
   geom_line(linewidth = 1) +
   labs(title = "Distribución t-Student para Diferentes Valores de k",
@@ -3368,7 +3368,7 @@ ggplot(pdf_long, aes(x = x, y = density, color = k)) +
 * **Convertir a formato largo**: Se transforma el data frame a un formato largo utilizando `pivot_longer()` para facilitar la graficación.
 * **Graficar**: Se utiliza `ggplot` para crear un gráfico de líneas que representa la $ PDF $ de la distribución t-Student para los diferentes valores de $k$.
 
-### Distribución F (Fisher-Snedecor)
+### 3.140 Distribución F (Fisher-Snedecor)
 
 * **Descripción**: Modelo utilizado para comparar dos varianzas a través de la relación entre dos variables aleatorias independientes que siguen distribuciones Chi-cuadrada. Se usa comúnmente en el análisis de varianza (ANOVA).
 
@@ -3408,13 +3408,13 @@ $$
 
 **Comandos en R**:
 ```r
-## PDF
+### 3.141 PDF
 df(x, df1 = d1, df2 = d2)
 
-## CDF
+### 3.142 CDF
 pf(x, df1 = d1, df2 = d2)
 
-## Simulación
+### 3.143 Simulación
 rf(n, df1 = d1, df2 = d2)
 
 #### Ejemplo de Gráfica de la Distribución F (Fisher-Snedecor)
@@ -3431,27 +3431,27 @@ La distribución F es valiosa en campos como la estadística, la ingeniería y l
 
 ```python
 """
-## Cargar la librería necesaria
+# Cargar la librería necesaria
 library(ggplot2)
 
-## Definir los grados de libertad
+# Definir los grados de libertad
 df_values <- list(c(2, 5), c(5, 2), c(5, 10), c(10, 5))  # Diferentes pares (d1, d2)
 
-## Crear un rango de valores para x
+# Crear un rango de valores para x
 x <- seq(0, 5, length.out = 500)
 
-## Calcular la PDF para cada par de grados de libertad
+# Calcular la PDF para cada par de grados de libertad
 pdf_data <- data.frame(x = x)
 
 for (df in df_values) {
   pdf_data[[paste("PDF_d1", df[1], "_d2", df[2], sep = "")]] <- df(x, df = df[1], df2 = df[2])
 }
 
-## Convertir el data frame a formato largo para graficar
+# Convertir el data frame a formato largo para graficar
 pdf_long <- tidyr::pivot_longer(pdf_data, cols = starts_with("PDF_d1"),
                                   names_to = "Degrees_of_Freedom", values_to = "density")
 
-## Graficar las distribuciones F
+# Graficar las distribuciones F
 ggplot(pdf_long, aes(x = x, y = density, color = Degrees_of_Freedom)) +
   geom_line(linewidth = 1) +
   labs(title = "Distribución F (Fisher-Snedecor) para Diferentes Pares de Grados de Libertad",
@@ -3482,11 +3482,11 @@ Donde $d_1$ y $d_2$ son los grados de libertad del numerador y del denominador, 
 
 ***
 
-## 🧪 Usos Clave en el Diseño de Experimentos (DOE)
+### 3.144 🧪 Usos Clave en el Diseño de Experimentos (DOE)
 
 La distribución F se utiliza principalmente para **comparar varianzas** y determinar si los efectos de diferentes **factores de tratamiento** son estadísticamente significativos.
 
-### 1. Análisis de Varianza (ANOVA)
+### 3.145 1. Análisis de Varianza (ANOVA)
 
 Este es el uso primordial de la distribución F en el DOE. El ANOVA se utiliza para probar si las medias de dos o más grupos son iguales, analizando la variación dentro de los grupos y entre ellos.
 
@@ -3497,14 +3497,14 @@ Este es el uso primordial de la distribución F en el DOE. El ANOVA se utiliza p
     * **Denominador (MS Error):** Representa la variación **dentro** de cada grupo (varianza residual o ruido experimental).
 * **Decisión:** Si los tratamientos no tienen ningún efecto, ambas varianzas deberían ser aproximadamente iguales, y $F$ sería cercano a 1. Si $F_{\text{calculada}}$ es significativamente mayor que 1, se **rechaza la hipótesis nula** (que las medias son iguales) y se concluye que **el factor de tratamiento tiene un efecto significativo** en la variable de respuesta.
 
-### 2. Pruebas de Hipótesis en Regresión Lineal
+### 3.146 2. Pruebas de Hipótesis en Regresión Lineal
 
 En los modelos de regresión lineal (que son una forma de ANOVA), la distribución F se utiliza para evaluar la bondad de ajuste del modelo.
 
 * **Uso Recomendado:** Determinar si el modelo de regresión en su conjunto explica una **proporción significativa** de la variabilidad total de los datos.
 * **Mecanismo:** La prueba F compara la varianza explicada por la regresión con la varianza no explicada (residual). Si la $F$ calculada es significativa, se concluye que **al menos una de las variables predictoras** está relacionada con la variable de respuesta.
 
-### 3. Comparación de Varianzas de Dos Poblaciones
+### 3.147 3. Comparación de Varianzas de Dos Poblaciones
 
 Aunque el ANOVA compara múltiples medias, la prueba F también se utiliza en un caso más simple: la comparación directa de las varianzas de dos poblaciones.
 
@@ -3513,7 +3513,7 @@ Aunque el ANOVA compara múltiples medias, la prueba F también se utiliza en un
 
 ***
 
-## 📊 Ejemplos Aplicados al Diseño Experimental
+### 3.148 📊 Ejemplos Aplicados al Diseño Experimental
 
 | Escenario DOE | Variable de Respuesta | Hipótesis Nula ($H_0$) | Uso de la Distribución F |
 | :--- | :--- | :--- | :--- |
@@ -3530,30 +3530,30 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from scipy.stats import f # Importamos la distribución F
 
-## ----------------------------------------------------
-## 1. Definir los grados de libertad
+# ----------------------------------------------------
+# 1. Definir los grados de libertad
 df_values = [(2, 5), (5, 2), (5, 10), (10, 5)]  # Diferentes pares (d1, d2)
 
-## 2. Crear un rango de valores para x
-## Similar a seq(0, 5, length.out = 500) en R
+# 2. Crear un rango de valores para x
+# Similar a seq(0, 5, length.out = 500) en R
 x = np.linspace(0.01, 5, 500) # Empezamos ligeramente arriba de 0
 
-## 3. Crear un diccionario para almacenar los resultados de la PDF
+# 3. Crear un diccionario para almacenar los resultados de la PDF
 pdf_data_dict = {'x': x}
 
-## Calcular la PDF para cada par de grados de libertad
+# Calcular la PDF para cada par de grados de libertad
 for d1, d2 in df_values:
-## f.pdf(x, dfn=d1, dfd=d2) es el equivalente a df(x, df1=d1, df2=d2) en R
+# f.pdf(x, dfn=d1, dfd=d2) es el equivalente a df(x, df1=d1, df2=d2) en R
     pdf_values = f.pdf(x, dfn=d1, dfd=d2)
-## Usar una etiqueta clara para el diccionario
+# Usar una etiqueta clara para el diccionario
     label = f"({d1}, {d2})"
     pdf_data_dict[label] = pdf_values
 
-## Convertir el diccionario a un DataFrame
+# Convertir el diccionario a un DataFrame
 pdf_data = pd.DataFrame(pdf_data_dict)
 
-## 4. Convertir el DataFrame a formato largo para graficar (similar a pivot_longer)
-## Nota: La lista de columnas a fundir es la lista de etiquetas de grados de libertad
+# 4. Convertir el DataFrame a formato largo para graficar (similar a pivot_longer)
+# Nota: La lista de columnas a fundir es la lista de etiquetas de grados de libertad
 label_columns = [f"({d1}, {d2})" for d1, d2 in df_values]
 
 pdf_long = pdf_data.melt(
@@ -3563,12 +3563,12 @@ pdf_long = pdf_data.melt(
     value_name="density"                        # Nombre de la columna para los valores de densidad
 )
 
-## 5. Graficar las distribuciones F
+# 5. Graficar las distribuciones F
 sns.set_theme(style="whitegrid") # Similar a theme_minimal()
 
 plt.figure(figsize=(10, 6))
 
-## Usar seaborn.lineplot
+# Usar seaborn.lineplot
 sns.lineplot(
     data=pdf_long,
     x='x',
@@ -3577,19 +3577,19 @@ sns.lineplot(
     linewidth=2
 )
 
-## Añadir etiquetas y título (equivalente a labs)
+# Añadir etiquetas y título (equivalente a labs)
 plt.title("Distribución F (Fisher-Snedecor) para Diferentes Pares de Grados de Libertad", fontsize=16)
 plt.xlabel("$x$", fontsize=14)
 plt.ylabel("Densidad de Probabilidad (PDF)", fontsize=12)
 
-## Configurar la leyenda
+# Configurar la leyenda
 plt.legend(title="Grados de Libertad $(d_1, d_2)$", loc='upper right')
 
-## Mostrar la gráfica
+# Mostrar la gráfica
 plt.show()
 ```
 
-## Descripción del Código Python para la Gráfica de la Distribución F
+### 3.149 Descripción del Código Python para la Gráfica de la Distribución F
 
 El código en **Python** tiene el propósito de calcular y visualizar la **Función de Densidad de Probabilidad (PDF)** de la **Distribución F (Fisher-Snedecor)** para diferentes pares de **grados de libertad** ($d_1$, $d_2$). La Distribución F es crucial en el **Análisis de Varianza (ANOVA)** y se define como la razón de dos variables aleatorias Chi-Cuadrada independientes divididas por sus respectivos grados de libertad.
 
@@ -3597,7 +3597,7 @@ El script utiliza la función $\mathbf{f}$ de **SciPy** para el cálculo estadí
 
 ***
 
-### 1. Inicialización y Parámetros
+### 3.150 1. Inicialización y Parámetros
 
 | Código | Descripción |
 | :--- | :--- |
@@ -3607,7 +3607,7 @@ El script utiliza la función $\mathbf{f}$ de **SciPy** para el cálculo estadí
 
 ***
 
-### 2. Cálculo de la Función de Densidad (PDF) y Estructuración de Datos
+### 3.151 2. Cálculo de la Función de Densidad (PDF) y Estructuración de Datos
 
 | Parámetro SciPy | Parámetro Estadístico | Significado |
 | :--- | :--- | :--- |
@@ -3622,7 +3622,7 @@ El script utiliza la función $\mathbf{f}$ de **SciPy** para el cálculo estadí
 
 ***
 
-### 3. Visualización y Estilizado del Gráfico
+### 3.152 3. Visualización y Estilizado del Gráfico
 
 | Código | Descripción |
 | :--- | :--- |
@@ -3638,13 +3638,13 @@ El gráfico resultante muestra curvas sesgadas positivamente (cola larga a la de
 
 ##**UCEMICH** 20/10/2025
 
-## TEMA: VARIABLES ALEATORIAS CONTINUAS
+### 3.153 TEMA: VARIABLES ALEATORIAS CONTINUAS
 
 20/10/2025
 
-## Ejercicios de Variables Aleatorias Continuas (V.A.C.) - Fundamentos
+### 3.154 Ejercicios de Variables Aleatorias Continuas (V.A.C.) - Fundamentos
 
-### Bloque I: Función de Densidad (PDF), Momentos y Varianza (4.1 & 4.2)
+### 3.155 Bloque I: Función de Densidad (PDF), Momentos y Varianza (4.1 & 4.2)
 
 **Ejercicio 1: Verificación de PDF (Constante de Normalización)**
 
@@ -3688,7 +3688,7 @@ El gráfico resultante muestra curvas sesgadas positivamente (cola larga a la de
 
 ---
 
-### Bloque II: Función de Distribución Acumulativa (CDF), Medidas de Tendencia Central (4.3 & 4.4)
+### 3.156 Bloque II: Función de Distribución Acumulativa (CDF), Medidas de Tendencia Central (4.3 & 4.4)
 
 **Ejercicio 6: Obtención de CDF a partir de PDF y Gráfico**
 
@@ -3732,7 +3732,7 @@ El gráfico resultante muestra curvas sesgadas positivamente (cola larga a la de
 
 ---
 
-### Bloque III: Distribuciones Típicas (Uniforme, Exponencial, Gaussiana) (4.5 & 4.6)
+### 3.157 Bloque III: Distribuciones Típicas (Uniforme, Exponencial, Gaussiana) (4.5 & 4.6)
 
 **Ejercicio 11: Distribución Uniforme (Error de Medición)**
 
@@ -3774,9 +3774,9 @@ El gráfico resultante muestra curvas sesgadas positivamente (cola larga a la de
 2.  **Código/Gráfico:** Utiliza Python para calcular la integral de $\displaystyle E[Y]$. **Grafica** la PDF de $X$. (Opcional avanzado: intenta derivar y graficar la PDF de $Y$).
 3.  **Interpretación:** ¿Por qué $\displaystyle E[Y]$ **no es** igual a $(E[X])^2$? Explica la diferencia en términos de la distribución de la energía.
 
-## 1
+## 1. Tema 1
 
-## Ejercicio 1: Verificación de PDF
+### 1.1 Ejercicio 1: Verificación de PDF
 
 ## 1. Planteamiento/Fórmula
 
@@ -3822,20 +3822,20 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy import integrate
 
-## Definir la PDF con k = 1/8
+# Definir la PDF con k = 1/8
 def pdf(x):
     return x/8
 
-## Verificar que la integral desde 0 a 4 es igual a 1
+# Verificar que la integral desde 0 a 4 es igual a 1
 integral, error = integrate.quad(pdf, 0, 4)
 print(f"La integral de 0 a 4 es: {integral:.6f}")
 print(f"Error de integración: {error:.2e}")
 
-## Crear array para graficar
+# Crear array para graficar
 x = np.linspace(-1, 5, 1000)
 y = np.piecewise(x, [x < 0, (x >= 0) & (x <= 4), x > 4], [0, pdf, 0])
 
-## Graficar la PDF
+# Graficar la PDF
 plt.figure(figsize=(10, 6))
 plt.plot(x, y, 'b-', linewidth=2, label='PDF: f(x) = x/8')
 plt.fill_between(x, y, alpha=0.3, color='blue')
@@ -3848,9 +3848,9 @@ plt.ylim(bottom=0)
 plt.show()
 ```
 
-## 2
+## 2. Tema 2
 
-## Ejercicio 2: Probabilidad por Integración
+### 2.1 Ejercicio 2: Probabilidad por Integración
 
 ## 1. Planteamiento/Fórmula
 
@@ -3891,30 +3891,30 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy import integrate
 
-## Definir la PDF
+# Definir la PDF
 def pdf(x):
     return x/8
 
-## Calcular probabilidad P(1 < X < 3)
+# Calcular probabilidad P(1 < X < 3)
 prob, error = integrate.quad(pdf, 1, 3)
 print(f"P(1 < X < 3) = {prob:.4f}")
 print(f"Esto representa un {prob*100:.1f}% de probabilidad")
 
-## Crear arrays para graficar
+# Crear arrays para graficar
 x = np.linspace(-1, 5, 1000)
 y = np.piecewise(x, [x < 0, (x >= 0) & (x <= 4), x > 4], [0, pdf, 0])
 
-## Graficar con región sombreada
+# Graficar con región sombreada
 plt.figure(figsize=(10, 6))
 plt.plot(x, y, 'b-', linewidth=2, label='PDF: f(x) = x/8')
 
-## Sombrear región de interés (1 < X < 3)
+# Sombrear región de interés (1 < X < 3)
 x_region = np.linspace(1, 3, 100)
 y_region = pdf(x_region)
 plt.fill_between(x_region, y_region, alpha=0.5, color='red',
                  label=f'P(1 < X < 3) = {prob:.3f}')
 
-## Configuraciones del gráfico
+# Configuraciones del gráfico
 plt.title('Probabilidad P(1 < X < 3) - Voltaje entre 1 y 3 voltios')
 plt.xlabel('Voltaje (voltios)')
 plt.ylabel('f(x)')
@@ -3923,13 +3923,13 @@ plt.legend()
 plt.ylim(bottom=0)
 plt.show()
 
-## Verificación adicional
+# Verificación adicional
 print(f"\nVerificación manual: (3² - 1²)/(2×8) = {(9-1)/16} = {8/16}")
 ```
 
-## 3
+## 3. Tema 3
 
-## Ejercicio 3: Valor Esperado (Media)
+### 3.1 Ejercicio 3: Valor Esperado (Media)
 
 ## 1. Planteamiento/Fórmula
 
@@ -3971,11 +3971,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy import integrate
 
-## Definir la PDF
+# Definir la PDF
 def pdf(x):
     return x/8
 
-## Calcular E[X] - Valor Esperado
+# Calcular E[X] - Valor Esperado
 def x_times_pdf(x):
     return x * pdf(x)
 
@@ -3983,19 +3983,19 @@ E_X, error = integrate.quad(x_times_pdf, 0, 4)
 print(f"E[X] = {E_X:.4f} voltios")
 print(f"En forma fraccionaria: 8/3 = {8/3:.4f}")
 
-## Crear arrays para graficar
+# Crear arrays para graficar
 x = np.linspace(-1, 5, 1000)
 y = np.piecewise(x, [x < 0, (x >= 0) & (x <= 4), x > 4], [0, pdf, 0])
 
-## Graficar con marca del valor esperado
+# Graficar con marca del valor esperado
 plt.figure(figsize=(10, 6))
 plt.plot(x, y, 'b-', linewidth=2, label='PDF: f(x) = x/8')
 
-## Marcar el valor esperado
+# Marcar el valor esperado
 plt.axvline(E_X, color='red', linestyle='--', linewidth=2,
             label=f'E[X] = {E_X:.3f} voltios')
 
-## Destacar el área que contribuye al valor esperado
+# Destacar el área que contribuye al valor esperado
 x_area = np.linspace(0, 4, 100)
 y_area = x_times_pdf(x_area)
 plt.fill_between(x_area, y_area, alpha=0.3, color='green',
@@ -4009,15 +4009,15 @@ plt.legend()
 plt.ylim(bottom=0)
 plt.show()
 
-## Verificación adicional
+# Verificación adicional
 print(f"\nVerificación manual:")
 print(f"∫x·f(x)dx de 0 a 4 = ∫x²/8 dx de 0 a 4")
 print(f"= [x³/24] de 0 a 4 = 64/24 = 8/3 = {8/3:.4f}")
 ```
 
-## 4
+## 4. Tema 4
 
-## Ejercicio 4: Varianza y Desviación Estándar
+### 4.1 Ejercicio 4: Varianza y Desviación Estándar
 
 ## 1. Planteamiento/Fórmula
 
@@ -4075,23 +4075,23 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy import integrate
 
-## Definir la PDF
+# Definir la PDF
 def pdf(x):
     return x/8
 
-## Calcular E[X] (ya conocido)
+# Calcular E[X] (ya conocido)
 def x_times_pdf(x):
     return x * pdf(x)
 
 E_X, _ = integrate.quad(x_times_pdf, 0, 4)
 
-## Calcular E[X^2]
+# Calcular E[X^2]
 def x_squared_times_pdf(x):
     return (x**2) * pdf(x)
 
 E_X2, error = integrate.quad(x_squared_times_pdf, 0, 4)
 
-## Calcular varianza y desviación estándar
+# Calcular varianza y desviación estándar
 var_X = E_X2 - E_X**2
 std_X = np.sqrt(var_X)
 
@@ -4100,25 +4100,25 @@ print(f"E[X²] = {E_X2:.4f}")
 print(f"Var(X) = E[X²] - (E[X])² = {E_X2:.4f} - ({E_X:.4f})² = {var_X:.4f}")
 print(f"Desviación estándar σ = √{var_X:.4f} = {std_X:.4f} voltios")
 
-## Graficar distribución con media ± desviación estándar
+# Graficar distribución con media ± desviación estándar
 x = np.linspace(-1, 5, 1000)
 y = np.piecewise(x, [x < 0, (x >= 0) & (x <= 4), x > 4], [0, pdf, 0])
 
 plt.figure(figsize=(12, 6))
 
-## Gráfico principal
+# Gráfico principal
 plt.plot(x, y, 'b-', linewidth=2, label='PDF: f(x) = x/8')
 
-## Marcar la media
+# Marcar la media
 plt.axvline(E_X, color='red', linestyle='--', linewidth=2,
             label=f'E[X] = {E_X:.3f} voltios')
 
-## Marcar intervalo E[X] ± σ
+# Marcar intervalo E[X] ± σ
 plt.axvline(E_X - std_X, color='orange', linestyle=':', linewidth=2,
             label=f'E[X] ± σ = [{E_X-std_X:.3f}, {E_X+std_X:.3f}]')
 plt.axvline(E_X + std_X, color='orange', linestyle=':', linewidth=2)
 
-## Sombrear región dentro de ±1σ
+# Sombrear región dentro de ±1σ
 x_1sigma = np.linspace(max(0, E_X - std_X), min(4, E_X + std_X), 100)
 y_1sigma = pdf(x_1sigma)
 plt.fill_between(x_1sigma, y_1sigma, alpha=0.3, color='orange',
@@ -4134,16 +4134,16 @@ plt.ylim(bottom=0)
 plt.tight_layout()
 plt.show()
 
-## Información adicional
+# Información adicional
 print(f"\n--- Información Adicional ---")
 print(f"Coeficiente de variación: {std_X/E_X*100:.2f}%")
 print(f"Rango E[X] ± σ: [{E_X-std_X:.3f}, {E_X+std_X:.3f}] voltios")
 print(f"Rango total posible: [0, 4] voltios")
 ```
 
-## 5
+## 5. Tema 5
 
-## Ejercicio 5: Esperanza de una Función de X (Transformación Lineal)
+### 5.1 Ejercicio 5: Esperanza de una Función de X (Transformación Lineal)
 
 ## 1. Planteamiento/Fórmula
 
@@ -4203,34 +4203,34 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy import integrate
 
-## Definir la PDF del beneficio
+# Definir la PDF del beneficio
 def pdf_beneficio(x):
     return (3/64) * x**2
 
-## Verificar que es PDF válida
+# Verificar que es PDF válida
 integral_verif, _ = integrate.quad(pdf_beneficio, 0, 4)
 print(f"Verificación PDF: ∫f(x)dx de 0 a 4 = {integral_verif:.6f}")
 
-## Calcular E[X]
+# Calcular E[X]
 def x_times_pdf_beneficio(x):
     return x * pdf_beneficio(x)
 
 E_X_beneficio, _ = integrate.quad(x_times_pdf_beneficio, 0, 4)
 
-## Calcular E[Y] usando propiedad de linealidad
+# Calcular E[Y] usando propiedad de linealidad
 E_Y = 3 * E_X_beneficio - 5
 
 print(f"\n--- Resultados ---")
 print(f"E[X] = {E_X_beneficio:.4f} miles de USD")
 print(f"E[Y] = E[3X - 5] = 3 × {E_X_beneficio:.1f} - 5 = {E_Y:.1f} miles de USD")
 
-## Graficar ambas distribuciones conceptualmente
+# Graficar ambas distribuciones conceptualmente
 x_beneficio = np.linspace(0, 4, 100)
 y_beneficio = pdf_beneficio(x_beneficio)
 
 plt.figure(figsize=(12, 6))
 
-## Gráfico 1: Distribución original X
+# Gráfico 1: Distribución original X
 plt.subplot(1, 2, 1)
 plt.plot(x_beneficio, y_beneficio, 'g-', linewidth=2, label='f(x) = (3/64)x²')
 plt.axvline(E_X_beneficio, color='red', linestyle='--', linewidth=2,
@@ -4242,15 +4242,15 @@ plt.ylabel('f(x)')
 plt.grid(True, alpha=0.3)
 plt.legend()
 
-## Gráfico 2: Valor esperado transformado
+# Gráfico 2: Valor esperado transformado
 plt.subplot(1, 2, 2)
-## Crear una representación conceptual de Y
+# Crear una representación conceptual de Y
 y_values = [E_Y]
 plt.axvline(E_Y, color='blue', linestyle='--', linewidth=3,
             label=f'E[Y] = {E_Y:.1f} miles USD')
 plt.scatter([E_Y], [0.1], color='blue', s=100, zorder=5)
 
-## Anotaciones explicativas
+# Anotaciones explicativas
 plt.text(E_Y, 0.15, 'Transformación:\nY = 3X - 5',
          ha='center', va='bottom', fontsize=10,
          bbox=dict(boxstyle="round,pad=0.3", facecolor="lightblue"))
@@ -4266,7 +4266,7 @@ plt.xlim(0, 10)
 plt.tight_layout()
 plt.show()
 
-## Cálculo directo alternativo para verificación
+# Cálculo directo alternativo para verificación
 print(f"\n--- Verificación Alternativa ---")
 print(f"Cálculo directo de E[Y]:")
 def y_pdf(x):
@@ -4276,9 +4276,9 @@ E_Y_direct, _ = integrate.quad(y_pdf, 0, 4)
 print(f"E[Y] = ∫(3x-5)·f(x)dx = {E_Y_direct:.4f} miles USD")
 ```
 
-## 6
+## 6. Tema 6
 
-## Ejercicio 6: Obtención de CDF a partir de PDF y Gráfico
+### 6.1 Ejercicio 6: Obtención de CDF a partir de PDF y Gráfico
 
 ## 1. Planteamiento/Fórmula
 
@@ -4322,7 +4322,7 @@ $
 import numpy as np
 import matplotlib.pyplot as plt
 
-## Definir PDF
+# Definir PDF
 def pdf(x):
     if x < 0:
         return 0
@@ -4333,7 +4333,7 @@ def pdf(x):
     else:
         return 0
 
-## Definir CDF
+# Definir CDF
 def cdf(x):
     if x < 0:
         return 0
@@ -4344,15 +4344,15 @@ def cdf(x):
     else:
         return 1
 
-## Crear arrays
+# Crear arrays
 x = np.linspace(-1, 7, 1000)
 y_pdf = [pdf(xi) for xi in x]
 y_cdf = [cdf(xi) for xi in x]
 
-## Graficar
+# Graficar
 fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 6))
 
-## PDF
+# PDF
 ax1.plot(x, y_pdf, 'b-', linewidth=2, label='PDF')
 ax1.axvline(3, color='red', linestyle='--', alpha=0.7, label='x = 3 (punto de inflexión)')
 ax1.set_title('Función de Densidad de Probabilidad (PDF)')
@@ -4362,7 +4362,7 @@ ax1.grid(True, alpha=0.3)
 ax1.legend()
 ax1.set_ylim(bottom=0)
 
-## CDF
+# CDF
 ax2.plot(x, y_cdf, 'r-', linewidth=2, label='CDF')
 ax2.axvline(3, color='red', linestyle='--', alpha=0.7, label='x = 3')
 ax2.axhline(0.5, color='green', linestyle=':', alpha=0.7, label='F(3) = 0.5')
@@ -4376,16 +4376,16 @@ ax2.set_ylim(0, 1)
 plt.tight_layout()
 plt.show()
 
-## Verificación en puntos clave
+# Verificación en puntos clave
 print("Verificación de la CDF:")
 print(f"F(0) = {cdf(0):.4f}")
 print(f"F(3) = {cdf(3):.4f}")
 print(f"F(6) = {cdf(6):.4f}")
 ```
 
-## 7
+## 7. Tema 7
 
-## Ejercicio 7: Recuperación de PDF a partir de CDF
+### 7.1 Ejercicio 7: Recuperación de PDF a partir de CDF
 
 ## 1. Planteamiento/Fórmula
 
@@ -4410,22 +4410,22 @@ $
 import numpy as np
 import matplotlib.pyplot as plt
 
-## Definir CDF y PDF
+# Definir CDF y PDF
 def cdf(t):
     return 1 - np.exp(-2*t)
 
 def pdf(t):
     return 2 * np.exp(-2*t)
 
-## Crear arrays
+# Crear arrays
 t = np.linspace(0, 3, 1000)
 y_cdf = cdf(t)
 y_pdf = pdf(t)
 
-## Graficar
+# Graficar
 fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 6))
 
-## CDF
+# CDF
 ax1.plot(t, y_cdf, 'r-', linewidth=2, label='F(t) = 1 - e⁻²ᵗ')
 ax1.set_title('Función de Distribución Acumulativa (CDF)')
 ax1.set_xlabel('Tiempo de respuesta (segundos)')
@@ -4434,7 +4434,7 @@ ax1.grid(True, alpha=0.3)
 ax1.legend()
 ax1.set_ylim(0, 1)
 
-## PDF
+# PDF
 ax2.plot(t, y_pdf, 'b-', linewidth=2, label='f(t) = 2e⁻²ᵗ')
 ax2.set_title('Función de Densidad de Probabilidad (PDF)')
 ax2.set_xlabel('Tiempo de respuesta (segundos)')
@@ -4446,15 +4446,15 @@ ax2.set_ylim(bottom=0)
 plt.tight_layout()
 plt.show()
 
-## Análisis de la pendiente en t=0
+# Análisis de la pendiente en t=0
 print("Análisis de la pendiente en t=0:")
 print(f"f(0) = {pdf(0):.4f}")
 print(f"Pendiente de F(t) en t=0: {pdf(0):.4f}")
 ```
 
-## 8
+## 8. Tema 8
 
-## Ejercicio 8: Cálculo de la Mediana
+### 8.1 Ejercicio 8: Cálculo de la Mediana
 
 ## 1. Planteamiento/Fórmula
 
@@ -4484,27 +4484,27 @@ $
 import numpy as np
 import matplotlib.pyplot as plt
 
-## Definir PDF
+# Definir PDF
 def pdf(x):
     return (3/64) * x**2
 
-## Definir CDF
+# Definir CDF
 def cdf(x):
     return (x**3) / 64
 
-## Calcular mediana y media
+# Calcular mediana y media
 median = (32)**(1/3)
 mean = 3  # Del Ejercicio 5
 
-## Crear arrays
+# Crear arrays
 x = np.linspace(0, 4, 1000)
 y_pdf = pdf(x)
 
-## Graficar
+# Graficar
 plt.figure(figsize=(10, 6))
 plt.plot(x, y_pdf, 'g-', linewidth=2, label='f(x) = (3/64)x²')
 
-## Marcar mediana y media
+# Marcar mediana y media
 plt.axvline(median, color='red', linestyle='--', linewidth=2,
             label=f'Mediana = {median:.3f}')
 plt.axvline(mean, color='blue', linestyle=':', linewidth=2,
@@ -4525,9 +4525,9 @@ print(f"Media E[X] = {mean:.1f} miles USD")
 print(f"Verificación: F({median:.4f}) = {cdf(median):.4f} ≈ 0.5")
 ```
 
-## 9
+## 9. Tema 9
 
-## Ejercicio 9: Cálculo de la Moda
+### 9.1 Ejercicio 9: Cálculo de la Moda
 
 ## 1. Planteamiento/Fórmula
 
@@ -4555,7 +4555,7 @@ print(f"Verificación: F({median:.4f}) = {cdf(median):.4f} ≈ 0.5")
 import numpy as np
 import matplotlib.pyplot as plt
 
-## Definir PDF del Ejercicio 6
+# Definir PDF del Ejercicio 6
 def pdf(x):
     if x < 0:
         return 0
@@ -4566,19 +4566,19 @@ def pdf(x):
     else:
         return 0
 
-## Crear arrays
+# Crear arrays
 x = np.linspace(0, 6, 1000)
 y_pdf = [pdf(xi) for xi in x]
 
-## Encontrar moda (máximo de PDF)
+# Encontrar moda (máximo de PDF)
 mode = 3
 max_pdf = pdf(mode)
 
-## Graficar
+# Graficar
 plt.figure(figsize=(10, 6))
 plt.plot(x, y_pdf, 'b-', linewidth=2, label='PDF')
 
-## Marcar moda
+# Marcar moda
 plt.axvline(mode, color='red', linestyle='--', linewidth=2,
             label=f'Moda = {mode} años')
 plt.plot(mode, max_pdf, 'ro', markersize=8, label=f'f({mode}) = {max_pdf:.3f}')
@@ -4597,9 +4597,9 @@ print(f"Moda = {mode} años")
 print(f"Valor máximo de PDF: f({mode}) = {max_pdf:.4f}")
 ```
 
-## 10
+## 10. Tema 10
 
-## Ejercicio 10: Propiedades de la CDF y Probabilidades
+### 10.1 Ejercicio 10: Propiedades de la CDF y Probabilidades
 
 ## 1. Planteamiento/Fórmula
 
@@ -4633,20 +4633,20 @@ $
 import numpy as np
 import matplotlib.pyplot as plt
 
-## Crear una CDF conceptual que cumpla con los puntos dados
+# Crear una CDF conceptual que cumpla con los puntos dados
 r = np.array([0, 5, 10, 15])
 F_r = np.array([0, 0.15, 0.85, 1.0])
 
 plt.figure(figsize=(10, 6))
 plt.plot(r, F_r, 'b-', linewidth=3, marker='o', markersize=8, label='CDF F(r)')
 
-## Marcar puntos importantes
+# Marcar puntos importantes
 plt.axhline(0.15, color='red', linestyle=':', alpha=0.7, label='F(5) = 0.15')
 plt.axhline(0.85, color='green', linestyle=':', alpha=0.7, label='F(10) = 0.85')
 plt.axvline(5, color='red', linestyle=':', alpha=0.7)
 plt.axvline(10, color='green', linestyle=':', alpha=0.7)
 
-## Anotar probabilidades
+# Anotar probabilidades
 plt.annotate('P(R ≤ 5) = 0.15', xy=(5, 0.15), xytext=(2, 0.3),
              arrowprops=dict(arrowstyle='->', color='red'))
 plt.annotate('P(5 < R ≤ 10) = 0.70', xy=(7.5, 0.5), xytext=(3, 0.7),
@@ -4668,9 +4668,9 @@ print(f"P(R > 10) = 1 - F(10) = 1 - 0.85 = {1-0.85:.2f}")
 print(f"P(5 < R ≤ 10) = F(10) - F(5) = 0.85 - 0.15 = {0.85-0.15:.2f}")
 ```
 
-## 11
+## 11. Tema 11
 
-## Ejercicio 11: Distribución Uniforme (Error de Medición)
+### 11.1 Ejercicio 11: Distribución Uniforme (Error de Medición)
 
 ## 1. Planteamiento/Fórmula
 
@@ -4701,30 +4701,30 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.stats import uniform
 
-## Parámetros de la distribución uniforme
+# Parámetros de la distribución uniforme
 a, b = -0.05, 0.05
 loc = a
 scale = b - a
 
-## Calcular P(X < 0.02)
+# Calcular P(X < 0.02)
 prob_less_than_002 = uniform.cdf(0.02, loc=loc, scale=scale)
 print(f"P(X < 0.02) = {prob_less_than_002:.4f}")
 
-## Crear arrays para graficar
+# Crear arrays para graficar
 x = np.linspace(-0.1, 0.1, 1000)
 pdf_values = uniform.pdf(x, loc=loc, scale=scale)
 
-## Graficar
+# Graficar
 plt.figure(figsize=(10, 6))
 plt.plot(x, pdf_values, 'b-', linewidth=2, label=f'Uniforme[{a}, {b}]')
 
-## Sombrear región P(X < 0.02)
+# Sombrear región P(X < 0.02)
 x_region = np.linspace(a, 0.02, 100)
 y_region = uniform.pdf(x_region, loc=loc, scale=scale)
 plt.fill_between(x_region, y_region, alpha=0.5, color='red',
                  label=f'P(X < 0.02) = {prob_less_than_002:.3f}')
 
-## Marcar la media
+# Marcar la media
 plt.axvline(0, color='green', linestyle='--', linewidth=2,
             label='Media E[X] = 0')
 
@@ -4740,9 +4740,9 @@ print(f"Media E[X] = {uniform.mean(loc=loc, scale=scale):.4f}")
 print(f"Desviación estándar = {uniform.std(loc=loc, scale=scale):.4f}")
 ```
 
-## 12
+## 12. Tema 12
 
-## Ejercicio 12: Distribución Exponencial (Tiempo de Espera)
+### 12.1 Ejercicio 12: Distribución Exponencial (Tiempo de Espera)
 
 ## 1. Planteamiento/Fórmula
 
@@ -4779,29 +4779,29 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.stats import expon
 
-## Parámetros de la distribución exponencial
+# Parámetros de la distribución exponencial
 lambda_rate = 0.4
 scale = 1 / lambda_rate  # scipy usa scale = 1/λ
 
-## Calcular P(T > 10)
+# Calcular P(T > 10)
 prob_greater_than_10 = expon.sf(10, scale=scale)
 print(f"P(T > 10) = {prob_greater_than_10:.4f}")
 
-## Crear arrays para graficar
+# Crear arrays para graficar
 t = np.linspace(0, 15, 1000)
 pdf_values = expon.pdf(t, scale=scale)
 
-## Graficar
+# Graficar
 plt.figure(figsize=(10, 6))
 plt.plot(t, pdf_values, 'b-', linewidth=2, label=f'Exponencial(λ={lambda_rate})')
 
-## Sombrear región P(T > 10)
+# Sombrear región P(T > 10)
 t_region = np.linspace(10, 15, 100)
 pdf_region = expon.pdf(t_region, scale=scale)
 plt.fill_between(t_region, pdf_region, alpha=0.5, color='red',
                  label=f'P(T > 10) = {prob_greater_than_10:.4f}')
 
-## Marcar la media
+# Marcar la media
 mean_time = expon.mean(scale=scale)
 plt.axvline(mean_time, color='green', linestyle='--', linewidth=2,
             label=f'Media E[T] = {mean_time:.1f} min')
@@ -4814,15 +4814,15 @@ plt.legend()
 plt.ylim(bottom=0)
 plt.show()
 
-## Verificación adicional
+# Verificación adicional
 print(f"\nVerificación:")
 print(f"Media E[T] = 1/λ = {mean_time:.1f} minutos")
 print(f"P(T > E[T]) = P(T > {mean_time}) = {expon.sf(mean_time, scale=scale):.4f}")
 ```
 
-## 13
+## 13. Tema 13
 
-## Ejercicio 13: Distribución Gaussiana General (Calificación de Proyectos)
+### 13.1 Ejercicio 13: Distribución Gaussiana General (Calificación de Proyectos)
 
 ## 1. Planteamiento/Fórmula
 
@@ -4863,32 +4863,32 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.stats import norm
 
-## Parámetros de la distribución normal
+# Parámetros de la distribución normal
 mu, sigma = 75, 8
 
-## Calcular P(65 < X < 90)
+# Calcular P(65 < X < 90)
 prob_between = norm.cdf(90, mu, sigma) - norm.cdf(65, mu, sigma)
 print(f"P(65 < X < 90) = {prob_between:.4f}")
 
-## Calcular porcentaje de aprobación (X ≥ 60)
+# Calcular porcentaje de aprobación (X ≥ 60)
 prob_aprobacion = norm.sf(60, mu, sigma)  # sf = 1 - cdf
 print(f"Porcentaje que aprueba (X ≥ 60) = {prob_aprobacion:.4f} = {prob_aprobacion*100:.1f}%")
 
-## Crear arrays para graficar
+# Crear arrays para graficar
 x = np.linspace(mu - 4*sigma, mu + 4*sigma, 1000)
 pdf_values = norm.pdf(x, mu, sigma)
 
-## Graficar
+# Graficar
 plt.figure(figsize=(12, 6))
 plt.plot(x, pdf_values, 'b-', linewidth=2, label=f'N(μ={mu}, σ={sigma})')
 
-## Sombrear región P(65 < X < 90)
+# Sombrear región P(65 < X < 90)
 x_region = np.linspace(65, 90, 100)
 pdf_region = norm.pdf(x_region, mu, sigma)
 plt.fill_between(x_region, pdf_region, alpha=0.5, color='green',
                  label=f'P(65 < X < 90) = {prob_between:.3f}')
 
-## Marcar puntos importantes
+# Marcar puntos importantes
 plt.axvline(60, color='red', linestyle=':', alpha=0.7,
             label=f'Umbral aprobación = 60')
 plt.axvline(mu, color='orange', linestyle='--', alpha=0.7,
@@ -4902,7 +4902,7 @@ plt.legend()
 plt.ylim(bottom=0)
 plt.show()
 
-## Verificación con estandarización
+# Verificación con estandarización
 z1 = (65 - mu) / sigma
 z2 = (90 - mu) / sigma
 z_aprob = (60 - mu) / sigma
@@ -4911,9 +4911,9 @@ print(f"Z₁ = (65-75)/8 = {z1:.3f}, Z₂ = (90-75)/8 = {z2:.3f}")
 print(f"Z_aprobación = (60-75)/8 = {z_aprob:.3f}")
 ```
 
-## 14
+## 14. Tema 14
 
-## Ejercicio 14: Distribución Gaussiana Estándar (Cálculo de Percentiles)
+### 14.1 Ejercicio 14: Distribución Gaussiana Estándar (Cálculo de Percentiles)
 
 ## 1. Planteamiento/Fórmula
 
@@ -4940,29 +4940,29 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.stats import norm
 
-## Calcular percentil 95
+# Calcular percentil 95
 percentil_95 = norm.ppf(0.95)
 print(f"Percentil 95 (z₀.₉₅) = {percentil_95:.4f}")
 
-## Crear arrays para graficar
+# Crear arrays para graficar
 z = np.linspace(-4, 4, 1000)
 pdf_values = norm.pdf(z)
 
-## Graficar
+# Graficar
 plt.figure(figsize=(12, 6))
 plt.plot(z, pdf_values, 'b-', linewidth=2, label='N(0,1)')
 
-## Marcar percentil 95 y región de cola
+# Marcar percentil 95 y región de cola
 plt.axvline(percentil_95, color='red', linestyle='--', linewidth=2,
             label=f'Percentil 95 = {percentil_95:.3f}')
 
-## Sombrear cola del 5%
+# Sombrear cola del 5%
 z_tail = np.linspace(percentil_95, 4, 100)
 pdf_tail = norm.pdf(z_tail)
 plt.fill_between(z_tail, pdf_tail, alpha=0.5, color='red',
                  label='Cola superior 5%')
 
-## Anotaciones
+# Anotaciones
 plt.annotate(f'95% de los valores\nz ≤ {percentil_95:.3f}',
              xy=(-1, 0.2), xytext=(-3.5, 0.3),
              arrowprops=dict(arrowstyle='->', color='blue'))
@@ -4978,7 +4978,7 @@ plt.legend()
 plt.ylim(bottom=0)
 plt.show()
 
-## Otros percentiles comunes
+# Otros percentiles comunes
 percentiles = [0.01, 0.05, 0.25, 0.5, 0.75, 0.95, 0.99]
 print(f"\nOtros percentiles importantes:")
 for p in percentiles:
@@ -4986,9 +4986,9 @@ for p in percentiles:
     print(f"Percentil {p*100:2.0f}%: z = {z_val:7.3f}")
 ```
 
-## 15
+## 15. Tema 15
 
-## Ejercicio 15: Función de Variables Aleatorias (Transformación No Lineal)
+### 15.1 Ejercicio 15: Función de Variables Aleatorias (Transformación No Lineal)
 
 ## 1. Planteamiento/Fórmula
 
@@ -5031,12 +5031,12 @@ import matplotlib.pyplot as plt
 from scipy.stats import uniform
 from scipy import integrate
 
-## Parámetros de la distribución uniforme
+# Parámetros de la distribución uniforme
 a, b = 0, 100
 loc = a
 scale = b - a
 
-## Calcular E[Y] = E[X²] por integración
+# Calcular E[Y] = E[X²] por integración
 def x_squared_times_pdf(x):
     return (x**2) * uniform.pdf(x, loc=loc, scale=scale)
 
@@ -5049,15 +5049,15 @@ print(f"(E[X])² = {E_X_squared:.2f}")
 print(f"E[Y] = E[X²] = {E_Y:.2f}")
 print(f"Diferencia: E[X²] - (E[X])² = {E_Y - E_X_squared:.2f}")
 
-## Crear arrays para graficar PDF de X
+# Crear arrays para graficar PDF de X
 x = np.linspace(-10, 110, 1000)
 pdf_x = uniform.pdf(x, loc=loc, scale=scale)
 
-## Graficar
+# Graficar
 plt.figure(figsize=(12, 6))
 plt.plot(x, pdf_x, 'b-', linewidth=2, label=f'X ~ Uniforme[{a}, {b}]')
 
-## Marcar valores importantes
+# Marcar valores importantes
 plt.axvline(E_X, color='red', linestyle='--', linewidth=2,
             label=f'E[X] = {E_X:.1f}')
 
@@ -5069,7 +5069,7 @@ plt.legend()
 plt.ylim(bottom=0)
 plt.show()
 
-## Visualización conceptual de la transformación
+# Visualización conceptual de la transformación
 print(f"\nTransformación Y = X²:")
 temperaturas = [0, 25, 50, 75, 100]
 energias = [t**2 for t in temperaturas]
@@ -5079,9 +5079,9 @@ for t, e in zip(temperaturas, energias):
 
 ---
 
-## 🏫 Universidad de La Ciénega del Estado de Michoacán de Ocampo 🏫
+### 3.1 🏫 Universidad de La Ciénega del Estado de Michoacán de Ocampo 🏫
 
-## 🔬 Ingenieria en Nanotecnología 🔬
+### 3.2 🔬 Ingenieria en Nanotecnología 🔬
 
 3° "A"
 
@@ -5089,13 +5089,13 @@ for t, e in zip(temperaturas, energias):
 
 📍 Sahuayo, Michoacán a 15 de octubre del 2025 📍
 
-## 📝Resumen del capitulo 4 "Variables Aleatorias Continuas"
+### 3.3 📝Resumen del capitulo 4 "Variables Aleatorias Continuas"
 
 El Capítulo 4 del texto, titulado **"Variables Aleatorias Continuas"**, marca la transición del estudio de eventos discretos a eventos donde la **aleatoriedad es continua**. El cambio conceptual más significativo es que la suma se reemplaza por la **integración**.
 
 El capítulo aborda los siguientes temas principales:
 
-### ⚙️ 4.1 Función de Densidad de Probabilidad (PDF)
+### 3.4 ⚙️ 4.1 Función de Densidad de Probabilidad (PDF)
 
 El desafío de las variables continuas es definir su probabilidad, ya que no se pueden contar. La probabilidad se define como una **medida del tamaño de un conjunto** mediante integración.
 
@@ -5105,7 +5105,7 @@ El desafío de las variables continuas es definir su probabilidad, ya que no se 
 *   **Probabilidad de un punto:** Para una variable continua, evaluar la probabilidad en un punto aislado resulta en **cero** ($P[X = x_0] = 0$).
 *   **Conexión con PMF:** Una PMF se puede representar como una PDF utilizando un tren de **funciones delta**.
 
-### 4.2 Esperanza, Momento y Varianza
+### 3.2 Esperanza, Momento y Varianza
 
 Para las variables continuas, la expectativa, el momento y la varianza se definen de forma análoga a las discretas, utilizando la integración en lugar de la sumatoria.
 
@@ -5115,7 +5115,7 @@ Para las variables continuas, la expectativa, el momento y la varianza se define
 *   **Momento $\boldsymbol{k}$:** $E[X^k] = \int_{\Omega} x^k f_X(x) dx$.
 *   **Varianza:** Se define como $Var[X] = E[(X - \mu)^2] = \int_{\Omega} (x - \mu)^2 f_X(x) dx$ o $Var[X] = E[X^2] - \mu^2$.
 
-### 4.3 Función de Distribución Acumulada (CDF)
+### 3.3 Función de Distribución Acumulada (CDF)
 
 La CDF ($F_X(x)$) es una función siempre bien definida, útil para unificar las variables aleatorias discretas y continuas.
 
@@ -5126,7 +5126,7 @@ La CDF ($F_X(x)$) es una función siempre bien definida, útil para unificar las
 *   **Recuperación del PDF:** El PDF es la **derivada** del CDF: $f_X(x) = dF_X(x)/dx$, siempre que $F_X$ sea diferenciable en $x$. Si $F_X$ es discontinua en $x=x_0$, el PDF incluye una delta: $f_X(x_0) = P[X=x_0]\delta(x-x_0)$.
 *   **Unificación:** La CDF es continua para variables continuas y una función escalonada para variables discretas.
 
-### 4.4 Mediana, Moda y Media
+### 3.4 Mediana, Moda y Media
 
 El capítulo define estos cuantificadores estadísticos desde la perspectiva de la distribución subyacente.
 
@@ -5134,7 +5134,7 @@ El capítulo define estos cuantificadores estadísticos desde la perspectiva de 
 *   **Moda ($c$):** El punto donde $f_X(x)$ es maximizado ($c = \text{argmax}_x f_X(x)$). También es el punto donde la CDF tiene la **pendiente más pronunciada**.
 *   **Media (Expectativa):** Puede calcularse a partir del CDF mediante la fórmula (menos común) que involucra la integración del complemento del CDF (para $X>0$).
 
-### 4.5 Variables Aleatorias Uniformes y Exponenciales
+### 3.5 Variables Aleatorias Uniformes y Exponenciales
 
 Se detallan dos distribuciones continuas fundamentales:
 
@@ -5145,7 +5145,7 @@ Se detallan dos distribuciones continuas fundamentales:
 
 La **variable exponencial** se utiliza a menudo para modelar el tiempo de inter-llegada entre eventos consecutivos de Poisson.
 
-### 4.6 Variables Aleatorias Gaussianas
+### 3.6 Variables Aleatorias Gaussianas
 
 *   **Definición:** La PDF de una variable **Gaussiana** $X \sim \text{Gaussian}(\mu, \sigma^2)$ tiene parámetros $\mu$ (media) y $\sigma^2$ (varianza). El PDF tiene una forma simétrica de campana.
 *   **Gaussiana Estándar:** $X \sim N(0, 1)$. Su CDF especial se denota $\Phi(\cdot)$.
@@ -5155,7 +5155,7 @@ La **variable exponencial** se utiliza a menudo para modelar el tiempo de inter-
     *   **Curtosis (Kurtosis $\boldsymbol{\kappa}$):** Cuarto momento central. Mide cuán pesada es la cola de la distribución. La Gaussiana tiene curtosis $\kappa=3$ (o exceso de curtosis 0).
 *   **Origen:** Las Gaussianas son omnipresentes debido al **Teorema del Límite Central (TLC)**. El TLC establece que la suma de muchas variables aleatorias independientes (que es equivalente a la convolución de sus PDFs) converge en distribución a una Gaussiana.
 
-### 4.7 Funciones de Variables Aleatorias (Transformación)
+### 3.7 Funciones de Variables Aleatorias (Transformación)
 
 Esta sección aborda el problema de encontrar la PDF ($f_Y(y)$) y CDF ($F_Y(y)$) de una nueva variable $Y = g(X)$, dada la distribución de $X$.
 
@@ -5163,17 +5163,17 @@ Esta sección aborda el problema de encontrar la PDF ($f_Y(y)$) y CDF ($F_Y(y)$)
 *   **Principio del PDF:** La PDF se obtiene derivando la CDF y aplicando la regla de la cadena: $f_Y(y) = \left(\frac{d g^{-1}(y)}{dy}\right) \cdot f_X(g^{-1}(y))$.
 *   La clave es visualizar cómo la transformación $g$ *comprime* o *estira* las muestras, lo que afecta la densidad y la pendiente del CDF.
 
-### 4.8 Generación de Números Aleatorios
+### 3.8 Generación de Números Aleatorios
 
 La técnica de transformación se aplica a la generación de números aleatorios a partir de una distribución deseada $F_X$, utilizando una variable uniforme $U \sim \text{Uniform}(0, 1)$.
 
 *   **Teorema de la Transformación Inversa:** La transformación $g$ que convierte $U$ en una variable $X$ con distribución $F_X(x)$ es la **inversa del CDF**: $X = g(U) = F_X^{-1}(U)$. Esto permite generar, por ejemplo, números Gaussianos o exponenciales a partir de números uniformes.
 
-### Resumen del Capítulo 4
+### 3.9 Resumen del Capítulo 4
 
 En resumen, el Capítulo 4 establece que las variables continuas se definen mediante **integraciones**. La **CDF** es la herramienta de unificación entre lo discreto (función escalonada) y lo continuo (función suave). El origen de las variables **Gaussianas** se encuentra en la suma de muchas variables independientes (TLC). Finalmente, la **transformación de variables** se realiza en el espacio CDF, donde la transformación inversa del CDF ($g = F_X^{-1}$) permite generar números aleatorios según cualquier distribución predefinida.
 
-### ➗Detallado de los símbolos y las fórmulas matemáticas
+### 3.10 ➗Detallado de los símbolos y las fórmulas matemáticas
 
 El **principio fundamental** de las variables continuas es que la probabilidad se calcula mediante la **integración** ($\int$) en lugar de la sumatoria ($\sum$).
 
@@ -5187,7 +5187,7 @@ La PDF, $f_X(x)$, es la función central para definir una variable continua.
 | $P[a \leq X \leq b] = \int_{a}^{b} f_X(x) dx$ | La probabilidad de que $X$ caiga en el intervalo $[a, b]$ es el **área bajo la curva** de la PDF en ese rango. | |
 | $\int_{\Omega} f_X(x) dx = 1$ | **Condición de Normalización**. La integral de la PDF sobre todo el espacio de muestra ($\Omega$) debe ser igual a uno. | |
 
-### 4.2 Esperanza, Momento y Varianza
+### 3.2 Esperanza, Momento y Varianza
 
 La expectativa se calcula reemplazando la sumatoria por la integral en la definición discreta.
 
@@ -5201,7 +5201,7 @@ La expectativa se calcula reemplazando la sumatoria por la integral en la defini
 | $Var[X] = E[(X - \mu)^2]$ | **Fórmula de la Varianza**. Se define como el momento central de segundo orden. | |
 | $Var[X] = E[X^2] - \mu^2$ | Fórmula alternativa que relaciona la varianza con el segundo momento ($E[X^2]$) y la media. | |
 
-### 4.3 Función de Distribución Acumulada (CDF)
+### 3.3 Función de Distribución Acumulada (CDF)
 
 La CDF, $F_X(x)$, unifica el tratamiento de variables discretas y continuas.
 
@@ -5212,14 +5212,14 @@ La CDF, $F_X(x)$, unifica el tratamiento de variables discretas y continuas.
 | $f_X(x) = \frac{d F_X(x)}{dx}$ | **Recuperación del PDF**. La PDF es la derivada del CDF, aplicando el Teorema Fundamental del Cálculo. | |
 | $P[a \leq X \leq b] = F_X(b) - F_X(a)$ | Cálculo de probabilidad para un intervalo usando el CDF. | |
 
-### 4.5 Distribuciones Comunes
+### 3.5 Distribuciones Comunes
 
 | Distribución | Símbolos | Función de Densidad ($f_X(x)$) | Parámetros | Fuente |
 | :--- | :--- | :--- | :--- | :--- |
 | **Uniforme** | $X \sim \text{Uniform}(a, b)$ | $\frac{1}{b-a}$, para $a \leq x \leq b$ | $a$: Límite inferior. $b$: Límite superior. | |
 | **Exponencial** | $X \sim \text{Exponential}(\lambda)$ | $\lambda e^{-\lambda x}$, para $x \geq 0$ | $\lambda$: Tasa (Rate Parameter). | |
 
-### 4.6 Variable Aleatoria Gaussiana
+### 3.6 Variable Aleatoria Gaussiana
 
 La distribución Gaussiana es fundamental, especialmente por el **Teorema del Límite Central (TLC)**.
 
@@ -5229,7 +5229,7 @@ La distribución Gaussiana es fundamental, especialmente por el **Teorema del L�
 | $f_X(x) = \frac{1}{\sqrt{2\pi\sigma^2}} \exp \left\{ -\frac{(x-\mu)^2}{2\sigma^2} \right\}$ | **PDF Gaussiana**. Función simétrica de campana. | |
 | $\boldsymbol{\Phi}(\cdot)$ | **CDF de la Gaussiana Estándar** ($N(0, 1)$). La $\mu=0$ y $\sigma^2=1$. | |
 
-### 4.7 Funciones de Variables Aleatorias (Transformación)
+### 3.7 Funciones de Variables Aleatorias (Transformación)
 
 Se busca encontrar la distribución de $Y = g(X)$, dada la distribución de $X$.
 
@@ -5242,11 +5242,11 @@ Se busca encontrar la distribución de $Y = g(X)$, dada la distribución de $X$.
 #🧪**INGENIERÍA EN NANOTECNOLOGÍA**
 ##**UCEMICH** 13/10/25
 
-## TEMA: DISTRIBUCIONES DE PROBABILIDAD CON PYTHON
+### 3.8 TEMA: DISTRIBUCIONES DE PROBABILIDAD CON PYTHON
 
-## 🧠Modelos para Variables Aleatorias Continuas
+### 3.9 🧠Modelos para Variables Aleatorias Continuas
 
-### 📋Listado de las distribuciones de probabilidad continuas más utilizadas
+### 3.10 📋Listado de las distribuciones de probabilidad continuas más utilizadas
 
 En las disciplinas de nanotecnología, ciencias de los materiales, inteligencia artificial, diseño de experimentos y pruebas de hipótesis, se destacan las siguientes distribuciones de probabilidad continuas:
 
@@ -5332,7 +5332,7 @@ En las disciplinas de nanotecnología, ciencias de los materiales, inteligencia 
 
 Cada una de estas distribuciones juega un papel crucial en la modelación, análisis y comprensión de datos en sus respectivos campos, permitiendo realizar inferencias precisas y fundamentadas en experimentos y estudios estadísticos.
 
-### ✨Distribución Uniforme
+### 3.11 ✨Distribución Uniforme
 
 * **Descripción**: Modelo donde todos los valores en un intervalo \([a, b]\) son igualmente probables.
 
@@ -5379,43 +5379,43 @@ $$
 
 **Comandos en R**:
 ```r
-## PDF
+### 3.12 PDF
 dunif(x, min = a, max = b)
 
-## CDF
+### 3.13 CDF
 punif(x, min = a, max = b)
 
-## Simulación
+### 3.14 Simulación
 runif(n, min = a, max = b)
 
 ```python
 import numpy as np
 from scipy.stats import uniform
 
-## Definición de parámetros
+# Definición de parámetros
 a = 0  # min
 b = 10 # max
 x = 5  # valor para PDF/CDF
 n = 10 # número de muestras para simulación
 
-## ----------------------------------------
-## PDF (Función de Densidad de Probabilidad)
-## dunif(x, min = a, max = b)
-## scipy.stats.uniform.pdf(x, loc=a, scale=b-a)
+# ----------------------------------------
+# PDF (Función de Densidad de Probabilidad)
+# dunif(x, min = a, max = b)
+# scipy.stats.uniform.pdf(x, loc=a, scale=b-a)
 pdf_value = uniform.pdf(x, loc=a, scale=b-a)
 print(f"PDF (uniform.pdf) para x={x}: {pdf_value}")
 
-## ----------------------------------------
-## CDF (Función de Distribución Acumulada)
-## punif(x, min = a, max = b)
-## scipy.stats.uniform.cdf(x, loc=a, scale=b-a)
+# ----------------------------------------
+# CDF (Función de Distribución Acumulada)
+# punif(x, min = a, max = b)
+# scipy.stats.uniform.cdf(x, loc=a, scale=b-a)
 cdf_value = uniform.cdf(x, loc=a, scale=b-a)
 print(f"CDF (uniform.cdf) para x={x}: {cdf_value}")
 
-## ----------------------------------------
-## Simulación/Muestreo
-## runif(n, min = a, max = b)
-## np.random.uniform(low=a, high=b, size=n)
+# ----------------------------------------
+# Simulación/Muestreo
+# runif(n, min = a, max = b)
+# np.random.uniform(low=a, high=b, size=n)
 samples = np.random.uniform(low=a, high=b, size=n)
 print(f"Muestras (np.random.uniform) n={n}: {samples}")
 ```
@@ -5429,23 +5429,23 @@ En esta gráfica, se muestran diferentes funciones de densidad de probabilidad $
 ```python
 """
 
-## Cargar librerías necesarias
+# Cargar librerías necesarias
 library(ggplot2)
 
-## Definir los parámetros de la distribución uniforme
+# Definir los parámetros de la distribución uniforme
 a <- 0  # límite inferior
 b <- 1  # límite superior
 
-## Crear un rango de valores para x
+# Crear un rango de valores para x
 x <- seq(a - 0.1, b + 0.1, by = 0.01)
 
-## Calcular la PDF para la distribución uniforme
+# Calcular la PDF para la distribución uniforme
 pdf <- dunif(x, min = a, max = b)
 
-## Crear un data frame
+# Crear un data frame
 data <- data.frame(x = x, pdf = pdf)
 
-## Graficar la PDF de la distribución uniforme
+# Graficar la PDF de la distribución uniforme
 ggplot(data, aes(x = x, y = pdf)) +
   geom_line(color = "blue", size = 1) +
   labs(title = "Gráfica de la Distribución Uniforme",
@@ -5463,46 +5463,46 @@ import seaborn as sns
 from scipy.stats import uniform
 import pandas as pd
 
-## ----------------------------------------
-## 1. Definir los parámetros de la distribución uniforme
+# ----------------------------------------
+# 1. Definir los parámetros de la distribución uniforme
 a = 0  # límite inferior (loc)
 b = 1  # límite superior (loc + scale)
 scale = b - a # Rango (b-a) requerido por scipy
 
-## ----------------------------------------
-## 2. Crear un rango de valores para x (equivalente a seq() en R)
-## Se usa np.linspace para crear un arreglo de puntos espaciados uniformemente
+# ----------------------------------------
+# 2. Crear un rango de valores para x (equivalente a seq() en R)
+# Se usa np.linspace para crear un arreglo de puntos espaciados uniformemente
 x = np.linspace(a - 0.1, b + 0.1, 500)
 
-## ----------------------------------------
-## 3. Calcular la PDF para la distribución uniforme (equivalente a dunif() en R)
-## El parámetro 'loc' es a, y 'scale' es (b-a)
+# ----------------------------------------
+# 3. Calcular la PDF para la distribución uniforme (equivalente a dunif() en R)
+# El parámetro 'loc' es a, y 'scale' es (b-a)
 pdf = uniform.pdf(x, loc=a, scale=scale)
 
-## ----------------------------------------
-## 4. Crear un DataFrame (opcional, pero ayuda a replicar el flujo de R)
+# ----------------------------------------
+# 4. Crear un DataFrame (opcional, pero ayuda a replicar el flujo de R)
 data = pd.DataFrame({'x': x, 'pdf': pdf})
 
-## ----------------------------------------
-## 5. Graficar la PDF de la distribución uniforme (equivalente a ggplot2)
-## Usaremos matplotlib junto con seaborn para un estilo moderno (theme_minimal)
+# ----------------------------------------
+# 5. Graficar la PDF de la distribución uniforme (equivalente a ggplot2)
+# Usaremos matplotlib junto con seaborn para un estilo moderno (theme_minimal)
 
 plt.figure(figsize=(10, 6))
 
-## Graficar la línea (equivalente a geom_line())
-## Se usa el DataFrame para graficar de forma similar a ggplot
+# Graficar la línea (equivalente a geom_line())
+# Se usa el DataFrame para graficar de forma similar a ggplot
 sns.lineplot(x='x', y='pdf', data=data, color="blue", linewidth=2)
 
-## Añadir títulos y etiquetas (equivalente a labs())
+# Añadir títulos y etiquetas (equivalente a labs())
 plt.title("Gráfica de la Distribución Uniforme", fontsize=16)
 plt.xlabel("x", fontsize=14)
 plt.ylabel("Densidad de Probabilidad (PDF)", fontsize=14)
 
-## Aplicar un estilo minimalista (equivalente a theme_minimal())
+# Aplicar un estilo minimalista (equivalente a theme_minimal())
 sns.set_style("whitegrid")
 plt.grid(True, linestyle='--', alpha=0.6)
 
-## Mostrar la gráfica
+# Mostrar la gráfica
 plt.show()
 ```
 
@@ -5519,7 +5519,7 @@ plt.show()
 
 Agrega ejemplos y los usos recomendados.
 
-### 🎯 Usos Recomendados de la Distribución Uniforme (Continua)
+### 3.15 🎯 Usos Recomendados de la Distribución Uniforme (Continua)
 
 La **Distribución Uniforme Continua** $\text{U}(a, b)$ describe una situación donde **todos los valores dentro de un rango definido son igualmente probables**.
 
@@ -5543,14 +5543,14 @@ La **Distribución Uniforme Continua** $\text{U}(a, b)$ describe una situación 
 
 ---
 
-## 🎲 Distribución Uniforme Discreta
+### 3.16 🎲 Distribución Uniforme Discreta
 
 Aunque la **Distribución Uniforme Continua** es la más común, existe su contraparte **Discreta**, donde un número **finito** de valores tiene la misma probabilidad.
 
 * **Ejemplo:** **Lanzamiento de un dado estándar de seis caras.** El conjunto de valores posibles es $\{1, 2, 3, 4, 5, 6\}$. La probabilidad de obtener cualquiera de estos valores es $\frac{1}{6}$ (es decir, la probabilidad es constante para cada resultado).
 * **Ejemplo:** Elegir al azar a **un empleado de una lista de 50** para una encuesta. La probabilidad de que sea elegido cualquier empleado en específico es $\frac{1}{50}$.
 
-### 💻Ejemplos en codigo
+### 3.17 💻Ejemplos en codigo
 
 Distribucion uniforme continua
 
@@ -5560,20 +5560,20 @@ Ejemplo 1
 import numpy as np
 import matplotlib.pyplot as plt
 
-## Parámetros de la distribución U(a, b)
+# Parámetros de la distribución U(a, b)
 a = 0.5  # Límite inferior (mínimo tiempo de reacción)
 b = 1.5  # Límite superior (máximo tiempo de reacción)
 n_simulaciones = 1000
 
-## Generar 1000 tiempos de reacción aleatorios
+# Generar 1000 tiempos de reacción aleatorios
 tiempos_reaccion = np.random.uniform(low=a, high=b, size=n_simulaciones)
 
-## Imprimir los primeros 10 resultados simulados y la media
+# Imprimir los primeros 10 resultados simulados y la media
 print(f"Parámetros: U({a}, {b})")
 print(f"Primeros 10 tiempos de reacción simulados (segundos): {tiempos_reaccion[:10].round(3)}")
 print(f"Media de la simulación: {np.mean(tiempos_reaccion):.3f} segundos")
 
-## Opcional: Visualización de la distribución
+# Opcional: Visualización de la distribución
 plt.hist(tiempos_reaccion, bins=20, density=True, color='skyblue', edgecolor='black')
 plt.title(f'Simulación de Tiempos de Reacción U({a}, {b})')
 plt.xlabel('Tiempo de Reacción (segundos)')
@@ -5586,19 +5586,19 @@ Ejemplo 2
 ```python
 from scipy.stats import uniform
 
-## Parámetros de la distribución U(a, b)
+# Parámetros de la distribución U(a, b)
 a = 30  # Mínimo de vida útil (meses)
 b = 50  # Máximo de vida útil (meses)
 
-## Rango de interés: Vida útil entre 35 y 45 meses
+# Rango de interés: Vida útil entre 35 y 45 meses
 x1 = 35
 x2 = 45
 
-## Calcular la probabilidad P(35 < X < 45)
-## CDF (Cumulative Distribution Function) es P(X <= x)
+# Calcular la probabilidad P(35 < X < 45)
+# CDF (Cumulative Distribution Function) es P(X <= x)
 probabilidad = uniform.cdf(x2, loc=a, scale=b-a) - uniform.cdf(x1, loc=a, scale=b-a)
 
-## Para la distribución uniforme, la probabilidad también es (x2 - x1) / (b - a)
+# Para la distribución uniforme, la probabilidad también es (x2 - x1) / (b - a)
 probabilidad_simple = (x2 - x1) / (b - a)
 
 print(f"Parámetros: U({a}, {b}) meses")
@@ -5611,18 +5611,18 @@ Ejemplo 3
 ```python
 from scipy.stats import uniform
 
-## Parámetros de la distribución U(a, b)
+# Parámetros de la distribución U(a, b)
 a = -0.01  # Error mínimo (mm)
 b = 0.01   # Error máximo (mm)
 
-## Punto de interés
+# Punto de interés
 x_punto = 0.003  # Error de 0.003 mm
 
-## Calcular la PDF (Probability Density Function) en el rango
-## La densidad es 1 / (b - a) dentro del rango [a, b]
+# Calcular la PDF (Probability Density Function) en el rango
+# La densidad es 1 / (b - a) dentro del rango [a, b]
 densidad = uniform.pdf(x_punto, loc=a, scale=b-a)
-## Nota: La probabilidad de un punto específico en una distribución continua es 0,
-## pero la densidad (altura) es constante.
+# Nota: La probabilidad de un punto específico en una distribución continua es 0,
+# pero la densidad (altura) es constante.
 
 print(f"Parámetros: U({a}, {b}) mm")
 print(f"El rango del error de medición es: {b - a} mm")
@@ -5636,23 +5636,23 @@ import matplotlib.pyplot as plt
 from scipy.stats import uniform, randint
 from collections import Counter
 
-## Configuración de los gráficos
+# Configuración de los gráficos
 plt.style.use('seaborn-v0_8-whitegrid')
 fig, axes = plt.subplots(3, 1, figsize=(10, 15))
 fig.suptitle('Ejemplos de la Distribución Uniforme', fontsize=16, y=1.02)
 
-## ====================================================================
-## 1. Simulación y Generación de Tiempos de Reacción (Continua)
-## ====================================================================
+# ====================================================================
+# 1. Simulación y Generación de Tiempos de Reacción (Continua)
+# ====================================================================
 
 a_cont = 0.5  # Límite inferior
 b_cont = 1.5  # Límite superior
 n_simulaciones = 1000
 
-## Generar 1000 tiempos de reacción aleatorios U(0.5, 1.5)
+# Generar 1000 tiempos de reacción aleatorios U(0.5, 1.5)
 tiempos_reaccion = np.random.uniform(low=a_cont, high=b_cont, size=n_simulaciones)
 
-## Calcular la densidad teórica (altura del rectángulo)
+# Calcular la densidad teórica (altura del rectángulo)
 densidad_teorica = 1 / (b_cont - a_cont)
 
 ax = axes[0]
@@ -5663,20 +5663,20 @@ ax.set_xlabel('Tiempo de Reacción (segundos)')
 ax.set_ylabel('Densidad de Probabilidad')
 ax.legend()
 
-## ====================================================================
-## 2. Modelado de la Ignorancia (Vida Útil) y Probabilidad de Rango (Continua)
-## ====================================================================
+# ====================================================================
+# 2. Modelado de la Ignorancia (Vida Útil) y Probabilidad de Rango (Continua)
+# ====================================================================
 
 a_vida = 30  # Mínimo de vida útil (meses)
 b_vida = 50  # Máximo de vida útil (meses)
 x1_rango = 35
 x2_rango = 45
 
-## Calcular la probabilidad P(35 < X < 45)
+# Calcular la probabilidad P(35 < X < 45)
 probabilidad = uniform.cdf(x2_rango, loc=a_vida, scale=b_vida-a_vida) - \
                uniform.cdf(x1_rango, loc=a_vida, scale=b_vida-a_vida)
 
-## Generar puntos para la PDF (función de densidad)
+# Generar puntos para la PDF (función de densidad)
 x_pdf = np.linspace(25, 55, 200)
 y_pdf = uniform.pdf(x_pdf, loc=a_vida, scale=b_vida-a_vida)
 
@@ -5691,23 +5691,23 @@ ax.set_ylabel('Densidad de Probabilidad')
 ax.set_ylim(0, 0.06)
 ax.legend()
 
-## ====================================================================
-## 3. Lanzamiento de un Dado (Uniforme Discreta)
-## ====================================================================
+# ====================================================================
+# 3. Lanzamiento de un Dado (Uniforme Discreta)
+# ====================================================================
 
 low_d = 1
 high_d = 7 # Exclusivo
 n_lanzamientos_d = 1000
 
-## Simular lanzamientos de dado
+# Simular lanzamientos de dado
 resultados_dado = np.random.randint(low=low_d, high=high_d, size=n_lanzamientos_d)
 
-## Contar la frecuencia de cada resultado
+# Contar la frecuencia de cada resultado
 frecuencias = Counter(resultados_dado)
 caras = np.arange(1, 7)
 prob_teorica_d = 1 / 6
 
-## Calcular probabilidades observadas para el gráfico
+# Calcular probabilidades observadas para el gráfico
 probabilidades_obs = [frecuencias.get(cara, 0) / n_lanzamientos_d for cara in caras]
 
 ax = axes[2]
@@ -5720,7 +5720,7 @@ ax.set_xticks(caras)
 ax.set_ylim(0, 0.25)
 ax.legend()
 
-## Ajustar diseño y mostrar
+# Ajustar diseño y mostrar
 plt.tight_layout()
 plt.show()
 ```
@@ -5733,17 +5733,17 @@ Ejemplo 1
 import numpy as np
 from collections import Counter
 
-## Parámetros: Los valores posibles (1 a 6)
+# Parámetros: Los valores posibles (1 a 6)
 caras_dado = np.arange(1, 7)
 n_lanzamientos = 100
 
-## Simular 100 lanzamientos de dado. El 'high' es exclusivo, por eso usamos 7.
+# Simular 100 lanzamientos de dado. El 'high' es exclusivo, por eso usamos 7.
 resultados = np.random.randint(low=1, high=7, size=n_lanzamientos)
 
-## Contar la frecuencia de cada resultado
+# Contar la frecuencia de cada resultado
 frecuencias = Counter(resultados)
 
-## Calcular la probabilidad teórica (constante)
+# Calcular la probabilidad teórica (constante)
 prob_teorica = 1 / 6
 
 print(f"Valores posibles del dado: {caras_dado}")
@@ -5757,7 +5757,7 @@ for cara in caras_dado:
     print(f"Cara {cara}: {frecuencia_observada} veces | P. Observada: {prob_observada:.4f}")
 ```
 
-### ✨Distribución Exponencial
+### 3.18 ✨Distribución Exponencial
 
 * **Descripción**: Modelo de tiempo hasta el próximo evento en un proceso de Poisson.
 
@@ -5794,49 +5794,49 @@ $$
 
 **Comandos en R**:
 ```r
-## PDF
+### 3.19 PDF
 dexp(x, rate = lambda)
 
-## CDF
+### 3.20 CDF
 pexp(x, rate = lambda)
 
-## Simulación
+### 3.21 Simulación
 rexp(n, rate = lambda)
 
 ```python
 import numpy as np
 from scipy.stats import expon
 
-## ----------------------------------------
-## Definición de parámetros (usando la notación de R)
+# ----------------------------------------
+# Definición de parámetros (usando la notación de R)
 lambda_rate = 0.5 # Tasa (rate) en R (lambda)
 x = 2             # valor para PDF/CDF
 n = 10            # número de muestras para simulación
 
-## ----------------------------------------
-## Conversión de parámetros para Scipy
-## Scipy usa 'scale' (beta), que es el inverso de 'rate' (lambda)
+# ----------------------------------------
+# Conversión de parámetros para Scipy
+# Scipy usa 'scale' (beta), que es el inverso de 'rate' (lambda)
 beta_scale = 1 / lambda_rate # scale = 1 / lambda
 
-## ----------------------------------------
-## PDF (Función de Densidad de Probabilidad)
-## dexp(x, rate = lambda)
-## scipy.stats.expon.pdf(x, scale=1/lambda)
+# ----------------------------------------
+# PDF (Función de Densidad de Probabilidad)
+# dexp(x, rate = lambda)
+# scipy.stats.expon.pdf(x, scale=1/lambda)
 pdf_value = expon.pdf(x, scale=beta_scale)
 print(f"PDF (expon.pdf) para x={x}: {pdf_value}")
 
-## ----------------------------------------
-## CDF (Función de Distribución Acumulada)
-## pexp(x, rate = lambda)
-## scipy.stats.expon.cdf(x, scale=1/lambda)
+# ----------------------------------------
+# CDF (Función de Distribución Acumulada)
+# pexp(x, rate = lambda)
+# scipy.stats.expon.cdf(x, scale=1/lambda)
 cdf_value = expon.cdf(x, scale=beta_scale)
 print(f"CDF (expon.cdf) para x={x}: {cdf_value}")
 
-## ----------------------------------------
-## Simulación/Muestreo
-## rexp(n, rate = lambda)
-## np.random.exponential(scale=1/lambda, size=n)
-## Nota: numpy también usa 'scale' (beta)
+# ----------------------------------------
+# Simulación/Muestreo
+# rexp(n, rate = lambda)
+# np.random.exponential(scale=1/lambda, size=n)
+# Nota: numpy también usa 'scale' (beta)
 samples = np.random.exponential(scale=beta_scale, size=n)
 print(f"Muestras (np.random.exponential) n={n}: {samples}")
 ```
@@ -5850,33 +5850,33 @@ En esta gráfica, se muestran diferentes funciones de densidad de probabilidad $
 ```python
 """
 
-## Instalar y cargar la librería necesaria
+# Instalar y cargar la librería necesaria
 #install.packages('ggplot2')  # Descomentar si no está instalada
 library(ggplot2)
 
-## Aquí tienes un ejemplo de varios gráficos de la distribución exponencial
-## con diferentes valores de lambda. El código incluye la configuración
-## necesaria para generar los gráficos:
+# Aquí tienes un ejemplo de varios gráficos de la distribución exponencial
+# con diferentes valores de lambda. El código incluye la configuración
+# necesaria para generar los gráficos:
 
-## Definir un rango de valores para x
+# Definir un rango de valores para x
 x <- seq(0, 5, by = 0.01)
 
-## Crear un data frame vacío para almacenar los resultados
+# Crear un data frame vacío para almacenar los resultados
 data_list <- list()
 
-## Valores de lambda a usar
+# Valores de lambda a usar
 lambda_values <- c(0.5, 1, 1.5)
 
-## Calcular la PDF para cada valor de lambda y almacenar en el data frame
+# Calcular la PDF para cada valor de lambda y almacenar en el data frame
 for (lambda in lambda_values) {
   pdf <- dexp(x, rate = lambda)
   data_list[[as.character(lambda)]] <- data.frame(x = x, pdf = pdf, lambda = lambda)
 }
 
-## Combinar todos los data frames en uno solo
+# Combinar todos los data frames en uno solo
 data <- do.call(rbind, data_list)
 
-## Graficar la distribución exponencial para diferentes valores de lambda
+# Graficar la distribución exponencial para diferentes valores de lambda
 ggplot(data, aes(x = x, y = pdf, color = as.factor(lambda))) +
   geom_line() +
   labs(title = "Distribución Exponencial para Diferentes Valores de Lambda",
@@ -5896,27 +5896,27 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from scipy.stats import expon
 
-## ----------------------------------------
-## 1. Definir un rango de valores para x (equivalente a seq() en R)
+# ----------------------------------------
+# 1. Definir un rango de valores para x (equivalente a seq() en R)
 x = np.linspace(0, 5, 501) # 501 puntos para tener una línea suave
 
-## ----------------------------------------
-## 2. Valores de lambda (tasa) a usar
+# ----------------------------------------
+# 2. Valores de lambda (tasa) a usar
 lambda_values = [0.5, 1, 1.5]
 
-## ----------------------------------------
-## 3. Crear una lista para almacenar los DataFrames
+# ----------------------------------------
+# 3. Crear una lista para almacenar los DataFrames
 data_list = []
 
-## 4. Calcular la PDF para cada valor de lambda y almacenar (equivalente al bucle for en R)
+# 4. Calcular la PDF para cada valor de lambda y almacenar (equivalente al bucle for en R)
 for lambda_rate in lambda_values:
-## Convertir lambda (tasa) a scale (escala) para scipy
+# Convertir lambda (tasa) a scale (escala) para scipy
     beta_scale = 1 / lambda_rate
 
-## Calcular la PDF (equivalente a dexp() en R)
+# Calcular la PDF (equivalente a dexp() en R)
     pdf = expon.pdf(x, scale=beta_scale)
 
-## Crear un DataFrame para este lambda
+# Crear un DataFrame para este lambda
     df_temp = pd.DataFrame({
         'x': x,
         'pdf': pdf,
@@ -5924,22 +5924,22 @@ for lambda_rate in lambda_values:
     })
     data_list.append(df_temp)
 
-## 5. Combinar todos los DataFrames en uno solo (equivalente a do.call(rbind, ...))
+# 5. Combinar todos los DataFrames en uno solo (equivalente a do.call(rbind, ...))
 data = pd.concat(data_list)
 
-## ----------------------------------------
-## 6. Graficar la distribución exponencial (equivalente a ggplot2)
+# ----------------------------------------
+# 6. Graficar la distribución exponencial (equivalente a ggplot2)
 
-## Configurar el estilo de Seaborn (similar a theme_minimal())
+# Configurar el estilo de Seaborn (similar a theme_minimal())
 sns.set_style("whitegrid")
 
 plt.figure(figsize=(10, 6))
 
-## Diccionario para mapear valores de lambda a colores (equivalente a scale_color_manual)
+# Diccionario para mapear valores de lambda a colores (equivalente a scale_color_manual)
 color_map = {0.5: "blue", 1.0: "red", 1.5: "green"}
 
-## Crear la gráfica con Seaborn (similar a ggplot con geom_line)
-## Se usa 'hue' para diferenciar las líneas por el valor de 'lambda'
+# Crear la gráfica con Seaborn (similar a ggplot con geom_line)
+# Se usa 'hue' para diferenciar las líneas por el valor de 'lambda'
 sns.lineplot(
     data=data,
     x='x',
@@ -5949,12 +5949,12 @@ sns.lineplot(
     linewidth=2
 )
 
-## Añadir títulos y etiquetas (equivalente a labs())
+# Añadir títulos y etiquetas (equivalente a labs())
 plt.title("Distribución Exponencial para Diferentes Valores de Lambda", fontsize=16)
 plt.xlabel("x", fontsize=14)
 plt.ylabel("Densidad de Probabilidad", fontsize=14)
 
-## Ajustar la leyenda (título) y mostrar la gráfica
+# Ajustar la leyenda (título) y mostrar la gráfica
 plt.legend(title='Lambda')
 plt.show()
 ```
@@ -6005,7 +6005,7 @@ $$
 
 Agrega ejemplos y los usos recomendados.
 
-### ⏳ Usos Recomendados de la Distribución Exponencial
+### 3.22 ⏳ Usos Recomendados de la Distribución Exponencial
 
 La **Distribución Exponencial** modela el **tiempo** que transcurre antes de que ocurra un evento, en un proceso donde los eventos ocurren de forma **continua e independiente a una tasa constante** ($\lambda$). Es la única distribución continua "sin memoria", lo que significa que el tiempo que ya ha transcurrido no afecta la probabilidad del tiempo restante hasta el próximo evento.
 
@@ -6029,7 +6029,7 @@ La **Distribución Exponencial** modela el **tiempo** que transcurre antes de qu
 
 ---
 
-## 🔗 Relación con la Distribución de Poisson
+### 3.23 🔗 Relación con la Distribución de Poisson
 
 La **Distribución Exponencial** y la **Distribución de Poisson** están íntimamente ligadas:
 
@@ -6038,65 +6038,65 @@ La **Distribución Exponencial** y la **Distribución de Poisson** están íntim
 
 Si una **tasa de eventos promedio** de Poisson es $\lambda$ (eventos por unidad de tiempo), la distribución exponencial utiliza $\lambda$ como su parámetro de tasa para modelar la duración del tiempo entre esos eventos.
 
-### 💻Ejemplos en codigo
+### 3.24 💻Ejemplos en codigo
 
 ```python
 from scipy.stats import expon
 
-## ====================================================================
-## 1. Fiabilidad y Tiempos de Vida Útil (Componente Electrónico)
-## ====================================================================
+# ====================================================================
+# 1. Fiabilidad y Tiempos de Vida Útil (Componente Electrónico)
+# ====================================================================
 print("--- 1. Fiabilidad (Vida Útil) ---")
 
-## Tasa de fallo (lambda) de un componente: 0.1 fallos por año
+# Tasa de fallo (lambda) de un componente: 0.1 fallos por año
 tasa_lambda = 0.1
-## El parámetro de escala (beta o 1/lambda) es 1 / 0.1 = 10 años
+# El parámetro de escala (beta o 1/lambda) es 1 / 0.1 = 10 años
 escala_beta = 1 / tasa_lambda
 tiempo_interes = 5  # Queremos P(X > 5 años)
 
-## Calcular P(X > 5) = 1 - CDF(5)
-## La función .sf() (Survival Function) es equivalente a 1 - CDF(x)
+# Calcular P(X > 5) = 1 - CDF(5)
+# La función .sf() (Survival Function) es equivalente a 1 - CDF(x)
 prob_mayor_5_años = expon.sf(tiempo_interes, scale=escala_beta)
 
 print(f"Parámetros: Tasa (λ) = {tasa_lambda} por año")
 print(f"Escala (β) = {escala_beta} años")
 print(f"Probabilidad de que el componente dure más de {tiempo_interes} años (P(X > 5)): {prob_mayor_5_años:.4f}")
 
-## ====================================================================
-## 2. Teoría de Colas (Tiempo entre Llamadas Consecutivas)
-## ====================================================================
+# ====================================================================
+# 2. Teoría de Colas (Tiempo entre Llamadas Consecutivas)
+# ====================================================================
 print("\n--- 2. Teoría de Colas (Tiempo entre Llamadas) ---")
 
-## Tasa de llegada (lambda): 5 llamadas por hora
+# Tasa de llegada (lambda): 5 llamadas por hora
 tasa_lambda_hr = 5
-## Escala (beta) en horas: 1 / 5 = 0.2 horas
+# Escala (beta) en horas: 1 / 5 = 0.2 horas
 escala_beta_hr = 1 / tasa_lambda_hr
 
-## Tiempo de interés: 5 minutos. Convertir a horas: 5 / 60 = 1/12 horas ≈ 0.0833 horas
+# Tiempo de interés: 5 minutos. Convertir a horas: 5 / 60 = 1/12 horas ≈ 0.0833 horas
 tiempo_interes_min = 5
 tiempo_interes_hr = tiempo_interes_min / 60
 
-## Queremos P(X < 5 minutos) = CDF(1/12 horas)
+# Queremos P(X < 5 minutos) = CDF(1/12 horas)
 prob_menor_5_min = expon.cdf(tiempo_interes_hr, scale=escala_beta_hr)
 
 print(f"Parámetros: Tasa (λ) = {tasa_lambda_hr} por hora")
 print(f"Tiempo de interés: {tiempo_interes_min} minutos ({tiempo_interes_hr:.4f} horas)")
 print(f"Probabilidad de que el tiempo entre llamadas sea menor a {tiempo_interes_min} minutos (P(X < 1/12)): {prob_menor_5_min:.4f}")
 
-## ====================================================================
-## 3. Procesos Aleatorios (Tiempo entre Desintegraciones Radioactivas)
-## ====================================================================
+# ====================================================================
+# 3. Procesos Aleatorios (Tiempo entre Desintegraciones Radioactivas)
+# ====================================================================
 print("\n--- 3. Procesos Aleatorios (Tiempo entre Desintegraciones) ---")
 
-## Tasa de desintegración (ejemplo): 0.05 desintegraciones por segundo
+# Tasa de desintegración (ejemplo): 0.05 desintegraciones por segundo
 tasa_lambda_radio = 0.05
-## Escala (beta) en segundos: 1 / 0.05 = 20 segundos
+# Escala (beta) en segundos: 1 / 0.05 = 20 segundos
 escala_beta_radio = 1 / tasa_lambda_radio
 
-## Calculemos el tiempo medio entre desintegraciones
+# Calculemos el tiempo medio entre desintegraciones
 media_exponencial = escala_beta_radio
 
-## Calculemos la probabilidad de que el tiempo entre desintegraciones sea mayor a 30 segundos
+# Calculemos la probabilidad de que el tiempo entre desintegraciones sea mayor a 30 segundos
 tiempo_interes_radio = 30
 prob_mayor_30_seg = expon.sf(tiempo_interes_radio, scale=escala_beta_radio)
 
@@ -6110,33 +6110,33 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.stats import expon
 
-## Configuración de los gráficos
+# Configuración de los gráficos
 plt.style.use('seaborn-v0_8-whitegrid')
 fig, axes = plt.subplots(3, 1, figsize=(10, 15))
 fig.suptitle('Ejemplos de la Distribución Exponencial', fontsize=16, y=1.02)
 
-## ====================================================================
-## 1. Fiabilidad y Tiempos de Vida Útil (Componente Electrónico)
-## ====================================================================
+# ====================================================================
+# 1. Fiabilidad y Tiempos de Vida Útil (Componente Electrónico)
+# ====================================================================
 
-## Tasa de fallo (lambda) de un componente: 0.1 fallos por año
+# Tasa de fallo (lambda) de un componente: 0.1 fallos por año
 tasa_lambda = 0.1
-## El parámetro de escala (beta o 1/lambda) es 1 / 0.1 = 10 años
+# El parámetro de escala (beta o 1/lambda) es 1 / 0.1 = 10 años
 escala_beta = 1 / tasa_lambda
 tiempo_interes = 5  # Queremos P(X > 5 años)
 
-## Calcular la probabilidad P(X > 5)
-## P(X > x) = 1 - CDF(x)
+# Calcular la probabilidad P(X > 5)
+# P(X > x) = 1 - CDF(x)
 prob_mayor_5_años = 1 - expon.cdf(tiempo_interes, scale=escala_beta)
 
-## Generar puntos para la PDF (función de densidad)
+# Generar puntos para la PDF (función de densidad)
 x_pdf = np.linspace(0, 40, 200)
 y_pdf = expon.pdf(x_pdf, scale=escala_beta)
 
 ax = axes[0]
 ax.plot(x_pdf, y_pdf, color='blue', label=f'PDF Exponencial (λ={tasa_lambda})')
 
-## Rellenar el área de interés P(X > 5)
+# Rellenar el área de interés P(X > 5)
 ax.fill_between(x_pdf, y_pdf, where=(x_pdf > tiempo_interes),
                 color='lightblue', alpha=0.6,
                 label=f'P(X > {tiempo_interes}) = {prob_mayor_5_años:.3f}')
@@ -6146,23 +6146,23 @@ ax.set_xlabel('Vida Útil (años)')
 ax.set_ylabel('Densidad de Probabilidad')
 ax.legend()
 
-## ====================================================================
-## 2. Teoría de Colas (Tiempo entre Llamadas Consecutivas)
-## ====================================================================
+# ====================================================================
+# 2. Teoría de Colas (Tiempo entre Llamadas Consecutivas)
+# ====================================================================
 
-## Tasa de llegada (lambda): 5 llamadas por hora
+# Tasa de llegada (lambda): 5 llamadas por hora
 tasa_lambda_hr = 5
-## Escala (beta) en horas: 1 / 5 = 0.2 horas
+# Escala (beta) en horas: 1 / 5 = 0.2 horas
 escala_beta_hr = 1 / tasa_lambda_hr
 
-## Tiempo de interés: 5 minutos. Convertir a horas: 5 / 60 = 1/12 horas
+# Tiempo de interés: 5 minutos. Convertir a horas: 5 / 60 = 1/12 horas
 tiempo_interes_hr = 5 / 60
-## Queremos P(X < 1/12 horas)
+# Queremos P(X < 1/12 horas)
 
-## Calcular la probabilidad P(X < 1/12)
+# Calcular la probabilidad P(X < 1/12)
 prob_menor_5_min = expon.cdf(tiempo_interes_hr, scale=escala_beta_hr)
 
-## Generar puntos para la PDF (en minutos para la gráfica)
+# Generar puntos para la PDF (en minutos para la gráfica)
 x_min = np.linspace(0, 40, 200) # De 0 a 40 minutos
 x_hr_pdf = x_min / 60
 y_pdf_min = expon.pdf(x_hr_pdf, scale=escala_beta_hr)
@@ -6170,7 +6170,7 @@ y_pdf_min = expon.pdf(x_hr_pdf, scale=escala_beta_hr)
 ax = axes[1]
 ax.plot(x_min, y_pdf_min, color='green', label=f'PDF Exponencial (λ={tasa_lambda_hr} por hr)')
 
-## Rellenar el área de interés P(X < 5 minutos)
+# Rellenar el área de interés P(X < 5 minutos)
 ax.fill_between(x_min, y_pdf_min, where=(x_min < 5),
                 color='lightgreen', alpha=0.6,
                 label=f'P(Tiempo < 5 min) = {prob_menor_5_min:.3f}')
@@ -6180,16 +6180,16 @@ ax.set_xlabel('Tiempo entre Llamadas (minutos)')
 ax.set_ylabel('Densidad de Probabilidad')
 ax.legend()
 
-## ====================================================================
-## 3. Simulación de Tiempos de Desintegración Radioactiva (Proceso Aleatorio)
-## ====================================================================
+# ====================================================================
+# 3. Simulación de Tiempos de Desintegración Radioactiva (Proceso Aleatorio)
+# ====================================================================
 
-## Tasa de desintegración (ejemplo): 0.05 desintegraciones por segundo
+# Tasa de desintegración (ejemplo): 0.05 desintegraciones por segundo
 tasa_lambda_radio = 0.05
 escala_beta_radio = 1 / tasa_lambda_radio
 n_simulaciones_radio = 1000
 
-## Simular 1000 tiempos entre desintegraciones
+# Simular 1000 tiempos entre desintegraciones
 tiempos_desintegracion = expon.rvs(scale=escala_beta_radio, size=n_simulaciones_radio)
 
 ax = axes[2]
@@ -6204,12 +6204,12 @@ ax.set_ylabel('Densidad de Probabilidad')
 ax.set_xlim(0, 40)
 ax.legend()
 
-## Ajustar diseño y mostrar
+# Ajustar diseño y mostrar
 plt.tight_layout()
 plt.show()
 ```
 
-### ✨Distribución Normal
+### 3.25 ✨Distribución Normal
 
 * **Descripción**: La distribución normal es una distribución continua caracterizada por su forma simétrica y campaniforme. Se denota como $X \sim N(\mu, \sigma^2)$, donde $\mu$ es la media y $\sigma$ es la desviación estándar.
 
@@ -6244,55 +6244,55 @@ $$
 
 * **Comandos en R**:
 ```r
-## PDF
+### 3.26 PDF
  dnorm(x, mean = mu, sd = sigma)
 
-## CDF
+### 3.27 CDF
  pnorm(x, mean = mu, sd = sigma)
 
-## Percentiles
+### 3.28 Percentiles
  qnorm(s, mean = mu, sd = sigma)
 
-## Simulación
+### 3.29 Simulación
  rnorm(n, mean = mu, sd = sigma)
 
 ```python
 import numpy as np
 from scipy.stats import norm
 
-## ----------------------------------------
-## Definición de parámetros
+# ----------------------------------------
+# Definición de parámetros
 mu = 5     # media (mean en R, loc en Python)
 sigma = 2  # desviación estándar (sd en R, scale en Python)
 x = 7      # valor para PDF/CDF
 s = 0.95   # percentil (quantile)
 n = 10     # número de muestras para simulación
 
-## ----------------------------------------
-## PDF (Función de Densidad de Probabilidad)
-## dnorm(x, mean = mu, sd = sigma)
-## scipy.stats.norm.pdf(x, loc=mu, scale=sigma)
+# ----------------------------------------
+# PDF (Función de Densidad de Probabilidad)
+# dnorm(x, mean = mu, sd = sigma)
+# scipy.stats.norm.pdf(x, loc=mu, scale=sigma)
 pdf_value = norm.pdf(x, loc=mu, scale=sigma)
 print(f"PDF (norm.pdf) para x={x}: {pdf_value}")
 
-## ----------------------------------------
-## CDF (Función de Distribución Acumulada)
-## pnorm(x, mean = mu, sd = sigma)
-## scipy.stats.norm.cdf(x, loc=mu, scale=sigma)
+# ----------------------------------------
+# CDF (Función de Distribución Acumulada)
+# pnorm(x, mean = mu, sd = sigma)
+# scipy.stats.norm.cdf(x, loc=mu, scale=sigma)
 cdf_value = norm.cdf(x, loc=mu, scale=sigma)
 print(f"CDF (norm.cdf) para x={x}: {cdf_value}")
 
-## ----------------------------------------
-## Percentiles (Función Cuantil)
-## qnorm(s, mean = mu, sd = sigma)
-## scipy.stats.norm.ppf(s, loc=mu, scale=sigma)
+# ----------------------------------------
+# Percentiles (Función Cuantil)
+# qnorm(s, mean = mu, sd = sigma)
+# scipy.stats.norm.ppf(s, loc=mu, scale=sigma)
 percentile_value = norm.ppf(s, loc=mu, scale=sigma)
 print(f"Percentil (norm.ppf) para s={s}: {percentile_value}")
 
-## ----------------------------------------
-## Simulación/Muestreo
-## rnorm(n, mean = mu, sd = sigma)
-## np.random.normal(loc=mu, scale=sigma, size=n)
+# ----------------------------------------
+# Simulación/Muestreo
+# rnorm(n, mean = mu, sd = sigma)
+# np.random.normal(loc=mu, scale=sigma, size=n)
 samples = np.random.normal(loc=mu, scale=sigma, size=n)
 print(f"Muestras (np.random.normal) n={n}: {samples}")
 ```
@@ -6306,31 +6306,31 @@ En esta gráfica, se presentan diferentes funciones de densidad de probabilidad 
 ```python
 """
 
-## Cargar librerías necesarias
+# Cargar librerías necesarias
 library(ggplot2)
 
-## Definir un rango de valores para x
+# Definir un rango de valores para x
 x <- seq(-10, 10, by = 0.1)
 
-## Definir diferentes valores de media (mu) y desviación estándar (sigma)
+# Definir diferentes valores de media (mu) y desviación estándar (sigma)
 params <- data.frame(mu = c(-2, 0, 2), sigma = c(1, 1, 1.5))
 
-## Crear un data frame vacío para almacenar los resultados de la PDF
+# Crear un data frame vacío para almacenar los resultados de la PDF
 pdf_data <- data.frame()
 
-## Calcular la PDF para cada combinación de mu y sigma
+# Calcular la PDF para cada combinación de mu y sigma
 for (i in 1:nrow(params)) {
   mu <- params$mu[i]
   sigma <- params$sigma[i]
 
-## Calcular la función de densidad de probabilidad
+# Calcular la función de densidad de probabilidad
   pdf_values <- dnorm(x, mean = mu, sd = sigma)
 
-## Almacenar los resultados en un data frame
+# Almacenar los resultados en un data frame
   pdf_data <- rbind(pdf_data, data.frame(x = x, y = pdf_values, mu = mu, sigma = sigma))
 }
 
-## Graficar la distribución normal
+# Graficar la distribución normal
 ggplot(pdf_data, aes(x = x, y = y, color = as.factor(mu), linetype = as.factor(sigma))) +
   geom_line(size = 1) +
   labs(title = "Funciones de Densidad de Probabilidad de la Distribución Normal",
@@ -6352,30 +6352,30 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from scipy.stats import norm
 
-## ----------------------------------------
-## 1. Definir un rango de valores para x (equivalente a seq() en R)
+# ----------------------------------------
+# 1. Definir un rango de valores para x (equivalente a seq() en R)
 x = np.linspace(-10, 10, 201) # 201 puntos para tener una línea suave
 
-## ----------------------------------------
-## 2. Definir diferentes valores de media (mu) y desviación estándar (sigma)
-## Se usa un diccionario para crear el DataFrame de parámetros
+# ----------------------------------------
+# 2. Definir diferentes valores de media (mu) y desviación estándar (sigma)
+# Se usa un diccionario para crear el DataFrame de parámetros
 params_data = {'mu': [-2, 0, 2], 'sigma': [1, 1, 1.5]}
 params = pd.DataFrame(params_data)
 
-## ----------------------------------------
-## 3. Crear una lista para almacenar los DataFrames de PDF
+# ----------------------------------------
+# 3. Crear una lista para almacenar los DataFrames de PDF
 pdf_data_list = []
 
-## 4. Calcular la PDF para cada combinación de mu y sigma (equivalente al bucle for)
+# 4. Calcular la PDF para cada combinación de mu y sigma (equivalente al bucle for)
 for index, row in params.iterrows():
     mu = row['mu']      # Media (loc en Python)
     sigma = row['sigma']  # Desviación Estándar (scale en Python)
 
-## Calcular la función de densidad de probabilidad (equivalente a dnorm() en R)
-## loc=mu y scale=sigma
+# Calcular la función de densidad de probabilidad (equivalente a dnorm() en R)
+# loc=mu y scale=sigma
     pdf_values = norm.pdf(x, loc=mu, scale=sigma)
 
-## Almacenar los resultados en un DataFrame temporal
+# Almacenar los resultados en un DataFrame temporal
     df_temp = pd.DataFrame({
         'x': x,
         'y': pdf_values,
@@ -6384,23 +6384,23 @@ for index, row in params.iterrows():
     })
     pdf_data_list.append(df_temp)
 
-## 5. Combinar todos los DataFrames en uno solo (equivalente a rbind() en R)
+# 5. Combinar todos los DataFrames en uno solo (equivalente a rbind() en R)
 pdf_data = pd.concat(pdf_data_list, ignore_index=True)
 
-## ----------------------------------------
-## 6. Graficar la distribución normal (equivalente a ggplot2)
+# ----------------------------------------
+# 6. Graficar la distribución normal (equivalente a ggplot2)
 
-## Configurar el estilo (similar a theme_minimal())
+# Configurar el estilo (similar a theme_minimal())
 sns.set_style("whitegrid")
 
 plt.figure(figsize=(10, 6))
 
-## Diccionario para mapear mu a colores (equivalente a scale_color_manual)
+# Diccionario para mapear mu a colores (equivalente a scale_color_manual)
 color_map = {-2: "blue", 0: "red", 2: "green"}
 
-## Crear la gráfica con Seaborn. Se usan 'hue' y 'style' para mapear estéticas:
-## hue: mapea a color (mu)
-## style: mapea a estilo de línea (sigma)
+# Crear la gráfica con Seaborn. Se usan 'hue' y 'style' para mapear estéticas:
+# hue: mapea a color (mu)
+# style: mapea a estilo de línea (sigma)
 sns.lineplot(
     data=pdf_data,
     x='x',
@@ -6410,15 +6410,15 @@ sns.lineplot(
     palette=color_map # Corrected palette argument
 )
 
-## Añadir titles and labels (equivalent to labs())
+# Añadir titles and labels (equivalent to labs())
 plt.title("Funciones de Densidad de Probabilidad de la Distribución Normal", fontsize=16)
 plt.xlabel("Valor", fontsize=14)
 plt.ylabel("Densidad", fontsize=14)
 
-## Position the legend at the top (equivalent to theme(legend.position = "top"))
+# Position the legend at the top (equivalent to theme(legend.position = "top"))
 plt.legend(title="Parámetros (mu, sigma)")
 
-## Show the plot
+# Show the plot
 plt.show()
 ```
 
@@ -6601,7 +6601,7 @@ $$
 x_{0.05} = 1.25 + 0.46 z_{0.05} = 1.25 + (0.46)(1.645) = 2.01.
 $$
 
-### 🔔 Usos Recomendados de la Distribución Normal (Campana de Gauss)
+### 3.30 🔔 Usos Recomendados de la Distribución Normal (Campana de Gauss)
 
 La **Distribución Normal** $\text{N}(\mu, \sigma^2)$, también conocida como la **Campana de Gauss**, es la distribución de probabilidad continua más importante. Modela el comportamiento de muchas variables aleatorias donde la mayoría de los valores se agrupan alrededor de un valor **central (la media $\mu$)** y los valores extremos son progresivamente menos probables. Esta concentración de datos ocurre debido al **Teorema del Límite Central**, que establece que la media de muchas variables aleatorias independientes y con idéntica distribución tiende a distribuirse normalmente, independientemente de la forma original de la distribución.
 
@@ -6624,7 +6624,7 @@ La **Distribución Normal** $\text{N}(\mu, \sigma^2)$, también conocida como la
     * **Aplicación:** Analizar los **errores de medición** en experimentos científicos, modelar el **rendimiento de los activos financieros** a corto plazo (asumiendo que los cambios son aleatorios) o la distribución de las **puntuaciones de un examen estandarizado**.
 
 ---
-### 📏 La Regla Empírica (68-95-99.7)
+### 3.31 📏 La Regla Empírica (68-95-99.7)
 
 Una propiedad clave de la Distribución Normal es la **Regla Empírica**, que permite una interpretación rápida de la dispersión de los datos:
 
@@ -6636,47 +6636,47 @@ Una propiedad clave de la Distribución Normal es la **Regla Empírica**, que pe
 
 Agrega ejemplos y los usos recomendados.
 
-### 💻Ejemplos en codigo
+### 3.32 💻Ejemplos en codigo
 
 ```python
 from scipy.stats import norm
 import numpy as np
 
-## ====================================================================
-## 1. Modelado de Estatura (Fenómenos Biológicos)
-## ====================================================================
+# ====================================================================
+# 1. Modelado de Estatura (Fenómenos Biológicos)
+# ====================================================================
 print("--- 1. Modelado de Estatura ---")
 
-## Parámetros: Estatura media (μ) y Desviación estándar (σ) en metros
+# Parámetros: Estatura media (μ) y Desviación estándar (σ) en metros
 mu_estatura = 1.75
 sigma_estatura = 0.08  # 8 cm
 estatura_interes = 1.90  # Queremos P(X > 1.90m)
 
-## 1a. Calcular P(X > 1.90) = 1 - CDF(1.90)
-## Usamos .sf() (Survival Function) que es 1 - CDF
+# 1a. Calcular P(X > 1.90) = 1 - CDF(1.90)
+# Usamos .sf() (Survival Function) que es 1 - CDF
 prob_mas_de_1_90 = norm.sf(estatura_interes, loc=mu_estatura, scale=sigma_estatura)
 
-## 1b. Calcular el valor Z para 1.90m
+# 1b. Calcular el valor Z para 1.90m
 valor_z = (estatura_interes - mu_estatura) / sigma_estatura
 
 print(f"Media (μ) = {mu_estatura}m, Desv. Est. (σ) = {sigma_estatura}m")
 print(f"Probabilidad de medir más de {estatura_interes}m (P(X > 1.90)): {prob_mas_de_1_90:.4f}")
 print(f"El valor Z correspondiente a 1.90m es: {valor_z:.2f}")
 
-## ====================================================================
-## 2. Control de Calidad (Volumen de Llenado)
-## ====================================================================
+# ====================================================================
+# 2. Control de Calidad (Volumen de Llenado)
+# ====================================================================
 print("\n--- 2. Control de Calidad (Volumen de Llenado) ---")
 
-## Parámetros: Volumen medio (μ) y Desviación estándar (σ) en ml
+# Parámetros: Volumen medio (μ) y Desviación estándar (σ) en ml
 mu_volumen = 500
 sigma_volumen = 2
 volumen_rechazo = 495  # Queremos P(X < 495 ml)
 
-## 2a. Calcular P(X < 495) = CDF(495)
+# 2a. Calcular P(X < 495) = CDF(495)
 prob_rechazo = norm.cdf(volumen_rechazo, loc=mu_volumen, scale=sigma_volumen)
 
-## 2b. Calcular el volumen que corresponde al percentil 1 (el 1% más bajo)
+# 2b. Calcular el volumen que corresponde al percentil 1 (el 1% más bajo)
 percentil_rechazo = 0.01
 volumen_percentil_1 = norm.ppf(percentil_rechazo, loc=mu_volumen, scale=sigma_volumen)
 
@@ -6684,19 +6684,19 @@ print(f"Media (μ) = {mu_volumen} ml, Desv. Est. (σ) = {sigma_volumen} ml")
 print(f"Probabilidad de rechazo (P(X < {volumen_rechazo} ml)): {prob_rechazo:.4f}")
 print(f"Para mantener el rechazo al 1%, el volumen de corte debería ser: {volumen_percentil_1:.2f} ml")
 
-## ====================================================================
-## 3. Inferencia y Regla Empírica
-## ====================================================================
+# ====================================================================
+# 3. Inferencia y Regla Empírica
+# ====================================================================
 print("\n--- 3. Inferencia y Regla Empírica (68-95-99.7) ---")
 
-## Se usa la Normal Estándar N(0, 1) para la regla empírica
+# Se usa la Normal Estándar N(0, 1) para la regla empírica
 mu_std = 0
 sigma_std = 1
 
-## 3a. P(μ - 1σ < X < μ + 1σ) -> P(-1 < Z < 1)
+# 3a. P(μ - 1σ < X < μ + 1σ) -> P(-1 < Z < 1)
 prob_1_sigma = norm.cdf(1, loc=mu_std, scale=sigma_std) - norm.cdf(-1, loc=mu_std, scale=sigma_std)
 
-## 3b. P(μ - 2σ < X < μ + 2σ) -> P(-2 < Z < 2)
+# 3b. P(μ - 2σ < X < μ + 2σ) -> P(-2 < Z < 2)
 prob_2_sigma = norm.cdf(2, loc=mu_std, scale=sigma_std) - norm.cdf(-2, loc=mu_std, scale=sigma_std)
 
 print(f"Porcentaje dentro de ±1 Desviación Estándar (μ ± 1σ): {prob_1_sigma * 100:.2f}% (Regla: 68%)")
@@ -6708,21 +6708,21 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.stats import norm
 
-## Configuración de los gráficos
+# Configuración de los gráficos
 plt.style.use('seaborn-v0_8-whitegrid')
 fig, axes = plt.subplots(3, 1, figsize=(10, 15))
 fig.suptitle('Visualización de la Distribución Normal (Campana de Gauss)', fontsize=16, y=1.02)
 
-## ====================================================================
-## 1. Modelado de Estatura (P(X > 1.90m))
-## ====================================================================
+# ====================================================================
+# 1. Modelado de Estatura (P(X > 1.90m))
+# ====================================================================
 mu_estatura = 1.75
 sigma_estatura = 0.08
 estatura_interes = 1.90
 
-## Generar puntos X (estatura)
+# Generar puntos X (estatura)
 x_estatura = np.linspace(mu_estatura - 4*sigma_estatura, mu_estatura + 4*sigma_estatura, 500)
-## Calcular la PDF (altura de la campana)
+# Calcular la PDF (altura de la campana)
 y_pdf = norm.pdf(x_estatura, loc=mu_estatura, scale=sigma_estatura)
 
 ax = axes[0]
@@ -6738,16 +6738,16 @@ ax.set_xlabel('Estatura (metros)')
 ax.set_ylabel('Densidad de Probabilidad')
 ax.legend()
 
-## ====================================================================
-## 2. Control de Calidad (P(X < 495ml))
-## ====================================================================
+# ====================================================================
+# 2. Control de Calidad (P(X < 495ml))
+# ====================================================================
 mu_volumen = 500
 sigma_volumen = 2
 volumen_rechazo = 495
 
-## Generar puntos X (volumen)
+# Generar puntos X (volumen)
 x_volumen = np.linspace(mu_volumen - 4*sigma_volumen, mu_volumen + 4*sigma_volumen, 500)
-## Calcular la PDF
+# Calcular la PDF
 y_pdf_volumen = norm.pdf(x_volumen, loc=mu_volumen, scale=sigma_volumen)
 
 ax = axes[1]
@@ -6763,24 +6763,24 @@ ax.set_xlabel('Volumen (ml)')
 ax.set_ylabel('Densidad de Probabilidad')
 ax.legend()
 
-## ====================================================================
-## 3. Regla Empírica (68-95-99.7) - Normal Estándar
-## ====================================================================
+# ====================================================================
+# 3. Regla Empírica (68-95-99.7) - Normal Estándar
+# ====================================================================
 mu_std = 0
 sigma_std = 1
 
-## Generar puntos Z (Normal Estándar)
+# Generar puntos Z (Normal Estándar)
 x_std = np.linspace(-4, 4, 500)
 y_pdf_std = norm.pdf(x_std, loc=mu_std, scale=sigma_std)
 
 ax = axes[2]
 ax.plot(x_std, y_pdf_std, color='purple')
 
-## Marcar el área de ±1σ (68%)
+# Marcar el área de ±1σ (68%)
 ax.fill_between(x_std, y_pdf_std, where=((x_std >= -1) & (x_std <= 1)),
                 color='gold', alpha=0.4,
                 label='±1σ (68.27%)')
-## Marcar el área de ±2σ (95%)
+# Marcar el área de ±2σ (95%)
 ax.fill_between(x_std, y_pdf_std, where=((x_std >= -2) & (x_std <= 2)),
                 color='orange', alpha=0.2,
                 label='±2σ (95.45%)')
@@ -6794,12 +6794,12 @@ ax.set_xlabel('Desviaciones Estándar (Z-Score)')
 ax.set_ylabel('Densidad de Probabilidad')
 ax.legend()
 
-## Ajustar diseño y mostrar
+# Ajustar diseño y mostrar
 plt.tight_layout()
 plt.show()
 ```
 
-### ✨Distribución Log-Normal
+### 3.33 ✨Distribución Log-Normal
 
 * **Descripción**: Modelo de variables aleatorias cuyo logaritmo sigue una distribución normal. Es útil para modelar variables que no pueden ser negativas y que tienen una distribución sesgada a la derecha.
 
@@ -6838,46 +6838,46 @@ donde $ \Phi $ es la función de distribución acumulativa de la distribución n
 
 **Comandos en R**:
 ```r
-## PDF
+### 3.34 PDF
 dlnorm(x, meanlog = mu, sdlog = sigma)
 
-## CDF
+### 3.35 CDF
 plnorm(x, meanlog = mu, sdlog = sigma)
 
-## Simulación
+### 3.36 Simulación
 rlnorm(n, meanlog = mu, sdlog = sigma)
 
 ```python
 import numpy as np
 from scipy.stats import lognorm
 
-## ----------------------------------------
-## Definición de parámetros (Log-espacio)
+# ----------------------------------------
+# Definición de parámetros (Log-espacio)
 mu = 1.5      # media logarítmica (meanlog en R, loc en Python si no es 0)
 sigma = 0.5   # desviación estándar logarítmica (sdlog en R, s en Python)
 x = 10        # valor para PDF/CDF (en el espacio original)
 n = 10        # número de muestras para simulación
 
-## ----------------------------------------
-## PDF (Función de Densidad de Probabilidad)
-## dlnorm(x, meanlog = mu, sdlog = sigma)
-## scipy.stats.lognorm.pdf(x, s=sigma, scale=np.exp(mu))
-## NOTA: En scipy, 's' es sdlog, y 'scale' es exp(meanlog) para la media logarítmica.
+# ----------------------------------------
+# PDF (Función de Densidad de Probabilidad)
+# dlnorm(x, meanlog = mu, sdlog = sigma)
+# scipy.stats.lognorm.pdf(x, s=sigma, scale=np.exp(mu))
+# NOTA: En scipy, 's' es sdlog, y 'scale' es exp(meanlog) para la media logarítmica.
 pdf_value = lognorm.pdf(x, s=sigma, scale=np.exp(mu))
 print(f"PDF (lognorm.pdf) para x={x}: {pdf_value}")
 
-## ----------------------------------------
-## CDF (Función de Distribución Acumulada)
-## plnorm(x, meanlog = mu, sdlog = sigma)
-## scipy.stats.lognorm.cdf(x, s=sigma, scale=np.exp(mu))
+# ----------------------------------------
+# CDF (Función de Distribución Acumulada)
+# plnorm(x, meanlog = mu, sdlog = sigma)
+# scipy.stats.lognorm.cdf(x, s=sigma, scale=np.exp(mu))
 cdf_value = lognorm.cdf(x, s=sigma, scale=np.exp(mu))
 print(f"CDF (lognorm.cdf) para x={x}: {cdf_value}")
 
-## ----------------------------------------
-## Simulación/Muestreo
-## rlnorm(n, meanlog = mu, sdlog = sigma)
-## np.random.lognormal(mean=mu, sigma=sigma, size=n)
-## NOTA: np.random.lognormal usa 'mean' y 'sigma' directamente.
+# ----------------------------------------
+# Simulación/Muestreo
+# rlnorm(n, meanlog = mu, sdlog = sigma)
+# np.random.lognormal(mean=mu, sigma=sigma, size=n)
+# NOTA: np.random.lognormal usa 'mean' y 'sigma' directamente.
 samples = np.random.lognormal(mean=mu, sigma=sigma, size=n)
 print(f"Muestras (np.random.lognormal) n={n}: {samples}")
 ```
@@ -6893,22 +6893,22 @@ La distribución log-normal es especialmente relevante en campos como la econom�
 ```python
 """
 
-## Cargar librerías
+# Cargar librerías
 library(ggplot2)
 
-## Definir un rango de valores para x
+# Definir un rango de valores para x
 x <- seq(0, 10, by = 0.01)
 
-## Definir diferentes valores de mu y sigma
+# Definir diferentes valores de mu y sigma
 params <- data.frame(
   mu = c(0, 1, 2),
   sigma = c(0.5, 1, 1.5)
 )
 
-## Crear un data frame vacío para almacenar los resultados
+# Crear un data frame vacío para almacenar los resultados
 results <- data.frame()
 
-## Calcular la PDF para cada combinación de mu y sigma
+# Calcular la PDF para cada combinación de mu y sigma
 for (i in 1:nrow(params)) {
   mu <- params$mu[i]
   sigma <- params$sigma[i]
@@ -6920,7 +6920,7 @@ for (i in 1:nrow(params)) {
   results <- rbind(results, temp_df)
 }
 
-## Graficar la PDF de la distribución log-normal
+# Graficar la PDF de la distribución log-normal
 ggplot(results, aes(x = x, y = PDF, color = interaction(mu, sigma))) +
   geom_line(size = 1) +
   labs(title = "Distribución Log-Normal para Diferentes Parámetros",
@@ -6939,59 +6939,59 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from scipy.stats import lognorm
 
-## ----------------------------------------
-## 1. Definir un rango de valores para x (equivalente a seq() en R)
+# ----------------------------------------
+# 1. Definir un rango de valores para x (equivalente a seq() en R)
 x = np.linspace(0.01, 10, 1000) # Se inicia en 0.01 para evitar problemas con log(0)
 
-## ----------------------------------------
-## 2. Definir diferentes valores de mu (meanlog) y sigma (sdlog)
+# ----------------------------------------
+# 2. Definir diferentes valores de mu (meanlog) y sigma (sdlog)
 params_data = {
     'mu': [0, 1, 2],      # meanlog (mu)
     'sigma': [0.5, 1, 1.5] # sdlog (sigma)
 }
 params = pd.DataFrame(params_data)
 
-## ----------------------------------------
-## 3. Crear una lista para almacenar los DataFrames de PDF
+# ----------------------------------------
+# 3. Crear una lista para almacenar los DataFrames de PDF
 results_list = []
 
-## 4. Calcular la PDF para cada combinación de mu y sigma (bucle for)
+# 4. Calcular la PDF para cada combinación de mu y sigma (bucle for)
 for index, row in params.iterrows():
     mu = row['mu']
     sigma = row['sigma']
 
-## Conversión de parámetros para Scipy:
-## 's' es sigma (sdlog)
-## 'scale' es exp(mu) (exp(meanlog))
+# Conversión de parámetros para Scipy:
+# 's' es sigma (sdlog)
+# 'scale' es exp(mu) (exp(meanlog))
     scale_param = np.exp(mu)
 
-## Calcular la PDF (equivalente a dlnorm() en R)
+# Calcular la PDF (equivalente a dlnorm() en R)
     pdf_values = lognorm.pdf(x, s=sigma, scale=scale_param)
 
-## Almacenar los resultados en un DataFrame temporal
+# Almacenar los resultados en un DataFrame temporal
     temp_df = pd.DataFrame({
         'x': x,
         'PDF': pdf_values,
         'mu': mu,
         'sigma': sigma,
-## Crear una columna de interacción para el color (similar a R interaction(mu, sigma))
+# Crear una columna de interacción para el color (similar a R interaction(mu, sigma))
         'params_label': f"mu={mu}, sigma={sigma}"
     })
     results_list.append(temp_df)
 
-## 5. Combinar todos los DataFrames en uno solo (equivalente a rbind() en R)
+# 5. Combinar todos los DataFrames en uno solo (equivalente a rbind() en R)
 results = pd.concat(results_list, ignore_index=True)
 
-## ----------------------------------------
-## 6. Graficar la PDF de la distribución log-normal (equivalente a ggplot2)
+# ----------------------------------------
+# 6. Graficar la PDF de la distribución log-normal (equivalente a ggplot2)
 
-## Configurar el estilo (theme_minimal)
+# Configurar el estilo (theme_minimal)
 sns.set_style("whitegrid")
 
 plt.figure(figsize=(10, 6))
 
-## Crear la gráfica con Seaborn, usando 'params_label' para el color
-## 'hue' mapea los diferentes sets de parámetros al color de la línea
+# Crear la gráfica con Seaborn, usando 'params_label' para el color
+# 'hue' mapea los diferentes sets de parámetros al color de la línea
 sns.lineplot(
     data=results,
     x='x',
@@ -7000,15 +7000,15 @@ sns.lineplot(
     linewidth=2
 )
 
-## Añadir títulos y etiquetas (labs)
+# Añadir títulos y etiquetas (labs)
 plt.title("Distribución Log-Normal para Diferentes Parámetros", fontsize=16)
 plt.xlabel("x", fontsize=14)
 plt.ylabel("Densidad de Probabilidad (PDF)", fontsize=14)
 
-## Ajustar la leyenda (el título se define con el parámetro 'hue' en lineplot)
+# Ajustar la leyenda (el título se define con el parámetro 'hue' en lineplot)
 plt.legend(title="Parámetros (mu, sigma)", loc='upper right', frameon=True)
 
-## Mostrar la gráfica
+# Mostrar la gráfica
 plt.show()
 ```
 
@@ -7025,7 +7025,7 @@ plt.show()
 
 Agrega ejemplos y los usos recomendados.
 
-### 📈 Usos Recomendados de la Distribución Log-Normal
+### 3.37 📈 Usos Recomendados de la Distribución Log-Normal
 
 La **Distribución Log-Normal** es la distribución de una variable aleatoria cuyo **logaritmo natural** sigue una Distribución Normal. Se caracteriza por ser **asimétrica a la derecha** (sesgada positivamente), es decir, tiene una cola larga a la derecha, y por no permitir valores negativos. Es ideal para modelar fenómenos que crecen de forma multiplicativa (en lugar de aditiva) o que están limitados por cero en el extremo inferior.
 
@@ -7048,7 +7048,7 @@ La **Distribución Log-Normal** es la distribución de una variable aleatoria cu
     * **Aplicación:** La **duración de las conversaciones** telefónicas o las **reacciones químicas**. La duración no puede ser negativa, y la mayoría de las llamadas son cortas, mientras que muy pocas son extremadamente largas.
 
 ---
-### 📐 Relación Clave
+### 3.38 📐 Relación Clave
 
 Si $X$ es una variable aleatoria Log-Normal, entonces $Y = \ln(X)$ sigue una Distribución Normal:
 
@@ -7056,40 +7056,40 @@ $$X \sim \text{Log-Normal}(\mu, \sigma^2) \implies Y = \ln(X) \sim \text{N}(\mu,
 
 Donde $\mu$ y $\sigma^2$ son la media y la varianza del **logaritmo de la variable**, no de la variable $X$ original. El uso del logaritmo transforma la asimetría y el límite inferior de cero en una distribución simétrica y sin límites (la Normal).
 
-### 💻Ejemplos en codigo
+### 3.39 💻Ejemplos en codigo
 
 ```python
 from scipy.stats import lognorm
 import numpy as np
 
-## NOTA: En scipy.stats.lognorm, los parámetros son:
-## 's' es la desviación estándar del logaritmo (sigma).
-## 'loc' es la ubicación (generalmente 0 para Log-Normal estándar).
-## 'scale' es el valor exponencial de la media del logaritmo (exp(mu)).
-## Sin embargo, es más común en ingeniería usar (mu_log, sigma_log).
+# NOTA: En scipy.stats.lognorm, los parámetros son:
+# 's' es la desviación estándar del logaritmo (sigma).
+# 'loc' es la ubicación (generalmente 0 para Log-Normal estándar).
+# 'scale' es el valor exponencial de la media del logaritmo (exp(mu)).
+# Sin embargo, es más común en ingeniería usar (mu_log, sigma_log).
 
-## Usaremos la parametrización: sigma_log (s), exp(mu_log) (scale)
+# Usaremos la parametrización: sigma_log (s), exp(mu_log) (scale)
 
-## ====================================================================
-## 1. Finanzas (Precio de Acciones)
-## ====================================================================
+# ====================================================================
+# 1. Finanzas (Precio de Acciones)
+# ====================================================================
 print("--- 1. Finanzas (Precio de Acciones) ---")
 
-## Parámetros del rendimiento logarítmico (Normal subyacente):
+# Parámetros del rendimiento logarítmico (Normal subyacente):
 mu_log = 0.05      # Media del logaritmo del precio (loc=0)
 sigma_log = 0.20   # Desviación estándar del logaritmo (s)
 
-## El precio actual (o escala) es exp(mu_log)
+# El precio actual (o escala) es exp(mu_log)
 scale_price = np.exp(mu_log)
 
 precio_objetivo = 150  # Queremos P(Precio > 150)
 precio_inicial = 100   # Precio base (solo para referencia, el modelo se ajusta a la escala)
 
-## Calcular P(Precio > 150)
-## Usamos .sf() (Survival Function) que es 1 - CDF(x)
+# Calcular P(Precio > 150)
+# Usamos .sf() (Survival Function) que es 1 - CDF(x)
 prob_precio_alto = lognorm.sf(precio_objetivo, s=sigma_log, scale=scale_price)
 
-## Calcular el valor que separa el 5% más alto (Percentil 95)
+# Calcular el valor que separa el 5% más alto (Percentil 95)
 percentil_alto = 0.95
 precio_percentil_95 = lognorm.ppf(percentil_alto, s=sigma_log, scale=scale_price)
 
@@ -7097,25 +7097,25 @@ print(f"Parámetros del logaritmo: μ = {mu_log}, σ = {sigma_log}")
 print(f"Probabilidad de que el precio de la acción sea > ${precio_objetivo}: {prob_precio_alto:.4f}")
 print(f"El 5% más alto de precios comienza en: ${precio_percentil_95:.2f}")
 
-## ====================================================================
-## 2. Fiabilidad (Vida Útil de Componente por Desgaste)
-## ====================================================================
+# ====================================================================
+# 2. Fiabilidad (Vida Útil de Componente por Desgaste)
+# ====================================================================
 print("\n--- 2. Fiabilidad (Vida Útil por Desgaste) ---")
 
-## Parámetros de la vida útil logarítmica (en horas):
+# Parámetros de la vida útil logarítmica (en horas):
 mu_log_vida = 7.0   # Corresponde a exp(7.0) ≈ 1097 horas
 sigma_log_vida = 0.5
 
-## Escala: exp(7.0)
+# Escala: exp(7.0)
 scale_vida = np.exp(mu_log_vida)
 
 tiempo_fallo = 1500  # Queremos P(X > 1500 horas)
 tiempo_garantia = 800 # Queremos P(X < 800 horas)
 
-## 2a. Calcular P(X > 1500)
+# 2a. Calcular P(X > 1500)
 prob_dure_mas_1500 = lognorm.sf(tiempo_fallo, s=sigma_log_vida, scale=scale_vida)
 
-## 2b. Calcular P(X < 800)
+# 2b. Calcular P(X < 800)
 prob_falle_antes_800 = lognorm.cdf(tiempo_garantia, s=sigma_log_vida, scale=scale_vida)
 
 print(f"Parámetros del logaritmo: μ = {mu_log_vida}, σ = {sigma_log_vida}")
@@ -7129,23 +7129,23 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.stats import lognorm
 
-## Configuración de los gráficos
+# Configuración de los gráficos
 plt.style.use('seaborn-v0_8-whitegrid')
 fig, axes = plt.subplots(2, 1, figsize=(10, 10))
 fig.suptitle('Visualización de la Distribución Log-Normal (Asimétrica)', fontsize=16, y=1.02)
 
-## ====================================================================
-## 1. Finanzas (Precio de Acciones)
-## ====================================================================
+# ====================================================================
+# 1. Finanzas (Precio de Acciones)
+# ====================================================================
 mu_log_fin = 0.05
 sigma_log_fin = 0.20
 scale_fin = np.exp(mu_log_fin)
 precio_objetivo = 150
 
-## Rango de X para el gráfico (Precios)
+# Rango de X para el gráfico (Precios)
 x_fin = np.linspace(lognorm.ppf(0.001, s=sigma_log_fin, scale=scale_fin),
                     lognorm.ppf(0.999, s=sigma_log_fin, scale=scale_fin), 500)
-## Calcular la PDF
+# Calcular la PDF
 y_pdf_fin = lognorm.pdf(x_fin, s=sigma_log_fin, scale=scale_fin)
 
 ax = axes[0]
@@ -7160,18 +7160,18 @@ ax.set_xlabel('Precio del Activo ($)')
 ax.set_ylabel('Densidad de Probabilidad')
 ax.legend()
 
-## ====================================================================
-## 2. Fiabilidad (Vida Útil de Componente por Desgaste)
-## ====================================================================
+# ====================================================================
+# 2. Fiabilidad (Vida Útil de Componente por Desgaste)
+# ====================================================================
 mu_log_vida = 7.0
 sigma_log_vida = 0.5
 scale_vida = np.exp(mu_log_vida)
 tiempo_garantia = 800
 
-## Rango de X para el gráfico (Horas)
+# Rango de X para el gráfico (Horas)
 x_vida = np.linspace(lognorm.ppf(0.001, s=sigma_log_vida, scale=scale_vida),
                      lognorm.ppf(0.999, s=sigma_log_vida, scale=scale_vida), 500)
-## Calcular la PDF
+# Calcular la PDF
 y_pdf_vida = lognorm.pdf(x_vida, s=sigma_log_vida, scale=scale_vida)
 
 ax = axes[1]
@@ -7186,12 +7186,12 @@ ax.set_xlabel('Tiempo de Vida Útil (horas)')
 ax.set_ylabel('Densidad de Probabilidad')
 ax.legend()
 
-## Ajustar diseño y mostrar
+# Ajustar diseño y mostrar
 plt.tight_layout()
 plt.show()
 ```
 
-### ✨Distribución Gamma
+### 3.40 ✨Distribución Gamma
 
 * **Descripción**: Modelo de tiempo hasta el k-ésimo evento en un proceso de Poisson. Se utiliza en diversos campos, como la teoría de colas y la fiabilidad.
 
@@ -7229,44 +7229,44 @@ $$
 
 **Comandos en R**:
 ```r
-## PDF
+### 3.41 PDF
 dgamma(x, shape = k, scale = theta)
 
-## CDF
+### 3.42 CDF
 pgamma(x, shape = k, scale = theta)
 
-## Simulación
+### 3.43 Simulación
 rgamma(n, shape = k, scale = theta)
 
 ```python
 import numpy as np
 from scipy.stats import gamma
 
-## ----------------------------------------
-## Definición de parámetros
+# ----------------------------------------
+# Definición de parámetros
 k = 2.0     # Parámetro de forma (shape en R, a en Python)
 theta = 1.5 # Parámetro de escala (scale en R y Python)
 x = 4.0     # valor para PDF/CDF
 n = 10      # número de muestras para simulación
 
-## ----------------------------------------
-## PDF (Función de Densidad de Probabilidad)
-## dgamma(x, shape = k, scale = theta)
-## scipy.stats.gamma.pdf(x, a=k, scale=theta)
+# ----------------------------------------
+# PDF (Función de Densidad de Probabilidad)
+# dgamma(x, shape = k, scale = theta)
+# scipy.stats.gamma.pdf(x, a=k, scale=theta)
 pdf_value = gamma.pdf(x, a=k, scale=theta)
 print(f"PDF (gamma.pdf) para x={x}: {pdf_value}")
 
-## ----------------------------------------
-## CDF (Función de Distribución Acumulada)
-## pgamma(x, shape = k, scale = theta)
-## scipy.stats.gamma.cdf(x, a=k, scale=theta)
+# ----------------------------------------
+# CDF (Función de Distribución Acumulada)
+# pgamma(x, shape = k, scale = theta)
+# scipy.stats.gamma.cdf(x, a=k, scale=theta)
 cdf_value = gamma.cdf(x, a=k, scale=theta)
 print(f"CDF (gamma.cdf) para x={x}: {cdf_value}")
 
-## ----------------------------------------
-## Simulación/Muestreo
-## rgamma(n, shape = k, scale = theta)
-## np.random.gamma(shape=k, scale=theta, size=n)
+# ----------------------------------------
+# Simulación/Muestreo
+# rgamma(n, shape = k, scale = theta)
+# np.random.gamma(shape=k, scale=theta, size=n)
 samples = np.random.gamma(shape=k, scale=theta, size=n)
 print(f"Muestras (np.random.gamma) n={n}: {samples}")
 ```
@@ -7330,31 +7330,31 @@ $$
 La función gamma se puede calcular en R utilizando la función `gamma()`. Aquí te muestro cómo hacerlo:
 
 ```r
-## Cálculo de la función gamma
+### 3.44 Cálculo de la función gamma
 gamma_value <- gamma(z)
 
 ```python
 import numpy as np
 from scipy.special import gamma
 
-## Definición del valor 'z' (el argumento de la función Gamma)
+# Definición del valor 'z' (el argumento de la función Gamma)
 z = 5
 
-## ----------------------------------------
-## Cálculo de la función Gamma
-## gamma_value <- gamma(z)
-## scipy.special.gamma(z)
+# ----------------------------------------
+# Cálculo de la función Gamma
+# gamma_value <- gamma(z)
+# scipy.special.gamma(z)
 gamma_value = gamma(z)
 print(f"El valor de gamma({z}) es: {gamma_value}")
 
-## Ejemplo con un número no entero
+# Ejemplo con un número no entero
 z_float = 3.5
 gamma_value_float = gamma(z_float)
 print(f"El valor de gamma({z_float}) es: {gamma_value_float}")
 ```
 
 ```python
-## Cálculo de Gamma(5)
+# Cálculo de Gamma(5)
 z <- 5
 gamma_value <- gamma(z)
 print(gamma_value)
@@ -7364,19 +7364,19 @@ print(gamma_value)
 from scipy.special import gamma
 import numpy as np
 
-## ----------------------------------------
-## Definición del valor 'z'
+# ----------------------------------------
+# Definición del valor 'z'
 z = 5
 
-## ----------------------------------------
-## Cálculo de la función Gamma(z) (equivalente a gamma(z) en R)
+# ----------------------------------------
+# Cálculo de la función Gamma(z) (equivalente a gamma(z) en R)
 gamma_value = gamma(z)
 
 print(f"El valor de z es: {z}")
 print(f"El valor de Gamma({z}) es: {gamma_value}")
 
-## Verificación: Para enteros positivos, Gamma(z) = (z-1)!
-## Gamma(5) = 4! = 24
+# Verificación: Para enteros positivos, Gamma(z) = (z-1)!
+# Gamma(5) = 4! = 24
 ```
 
 Gráfica de la función Gamma $Γ$
@@ -7384,19 +7384,19 @@ Gráfica de la función Gamma $Γ$
 ```python
 """
 
-## Cargar la librería necesaria
+# Cargar la librería necesaria
 library(ggplot2)
 
-## Crear un rango de valores para z
+# Crear un rango de valores para z
 z_values <- seq(0.1, 5, by = 0.1)
 
-## Calcular los valores de la función gamma
+# Calcular los valores de la función gamma
 gamma_values <- gamma(z_values)
 
-## Crear un data frame para ggplot
+# Crear un data frame para ggplot
 data <- data.frame(z = z_values, gamma = gamma_values)
 
-## Graficar la función gamma
+# Graficar la función gamma
 ggplot(data, aes(x = z, y = gamma)) +
   geom_line(color = "blue") +
   labs(title = "Gráfico de la Función Gamma",
@@ -7414,38 +7414,38 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from scipy.special import gamma # Importar la función gamma
 
-## ----------------------------------------
-## 1. Crear un rango de valores para z (equivalente a seq() en R)
+# ----------------------------------------
+# 1. Crear un rango de valores para z (equivalente a seq() en R)
 z_values = np.linspace(0.1, 5, 50)
-## np.linspace(inicio, fin, número_de_puntos). 50 puntos para una línea suave.
+# np.linspace(inicio, fin, número_de_puntos). 50 puntos para una línea suave.
 
-## ----------------------------------------
-## 2. Calcular los valores de la función gamma
-## gamma_values <- gamma(z_values)
+# ----------------------------------------
+# 2. Calcular los valores de la función gamma
+# gamma_values <- gamma(z_values)
 gamma_values = gamma(z_values)
 
-## ----------------------------------------
-## 3. Crear un DataFrame (equivalente a data.frame() en R)
+# ----------------------------------------
+# 3. Crear un DataFrame (equivalente a data.frame() en R)
 data = pd.DataFrame({'z': z_values, 'gamma': gamma_values})
 
-## ----------------------------------------
-## 4. Graficar la función gamma (equivalente a ggplot2)
+# ----------------------------------------
+# 4. Graficar la función gamma (equivalente a ggplot2)
 
-## Configurar el estilo (similar a theme_minimal())
+# Configurar el estilo (similar a theme_minimal())
 sns.set_style("whitegrid")
 
 plt.figure(figsize=(10, 6))
 
-## Graficar la línea (equivalente a geom_line())
+# Graficar la línea (equivalente a geom_line())
 sns.lineplot(x='z', y='gamma', data=data, color="blue", linewidth=2)
 
-## Añadir títulos y etiquetas (equivalente a labs())
+# Añadir títulos y etiquetas (equivalente a labs())
 plt.title("Gráfico de la Función Gamma", fontsize=16)
 plt.xlabel("z", fontsize=14)
-## Usamos LaTeX para la etiqueta del eje Y (equivalente a expression(gamma(z)))
+# Usamos LaTeX para la etiqueta del eje Y (equivalente a expression(gamma(z)))
 plt.ylabel(r"$\Gamma(z)$", fontsize=18)
 
-## Mostrar la gráfica
+# Mostrar la gráfica
 plt.show()
 ```
 
@@ -7460,29 +7460,29 @@ La distribución gamma es especialmente relevante en áreas como la ingeniería,
 ```python
 """
 
-## Cargar la librería necesaria
+# Cargar la librería necesaria
 library(ggplot2)
 
-## Definir los parámetros de la distribución gamma
+# Definir los parámetros de la distribución gamma
 shape1 <- 2  # Parámetro de forma (k)
 scale1 <- 1  # Parámetro de escala (theta)
 
 shape2 <- 5  # Otro parámetro de forma
 scale2 <- 1  # Mismo parámetro de escala
 
-## Crear un rango de valores para x
+# Crear un rango de valores para x
 x_values <- seq(0, 20, by = 0.1)
 
-## Calcular la función de densidad de la distribución gamma
+# Calcular la función de densidad de la distribución gamma
 gamma_density1 <- dgamma(x_values, shape = shape1, scale = scale1)
 gamma_density2 <- dgamma(x_values, shape = shape2, scale = scale2)
 
-## Crear un data frame para ggplot
+# Crear un data frame para ggplot
 data <- data.frame(x = x_values,
                    density1 = gamma_density1,
                    density2 = gamma_density2)
 
-## Graficar la distribución gamma
+# Graficar la distribución gamma
 ggplot(data, aes(x = x)) +
   geom_line(aes(y = density1), color = "blue", linewidth = 1) +
   geom_line(aes(y = density2), color = "red", linewidth = 1) +
@@ -7509,19 +7509,19 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from scipy.stats import gamma
 
-## ----------------------------------------
-## 1. Definir los parámetros de la distribución gamma
+# ----------------------------------------
+# 1. Definir los parámetros de la distribución gamma
 params = [
     {'k': 2, 'theta': 1, 'label': 'Gamma(k=2, \u03B8=1)', 'color': 'blue'},
     {'k': 5, 'theta': 1, 'label': 'Gamma(k=5, \u03B8=1)', 'color': 'red'}
 ]
 
-## ----------------------------------------
-## 2. Crear un rango de valores para x (equivalente a seq() en R)
+# ----------------------------------------
+# 2. Crear un rango de valores para x (equivalente a seq() en R)
 x_values = np.linspace(0, 20, 201)
 
-## ----------------------------------------
-## 3. Calcular la PDF y consolidar en un solo DataFrame (similar a Tidy Data)
+# ----------------------------------------
+# 3. Calcular la PDF y consolidar en un solo DataFrame (similar a Tidy Data)
 data_list = []
 
 for p in params:
@@ -7529,10 +7529,10 @@ for p in params:
     theta = p['theta']  # Parámetro de escala (scale -> 'scale' en scipy)
     label = p['label']
 
-## Calcular la función de densidad (equivalente a dgamma() en R)
+# Calcular la función de densidad (equivalente a dgamma() en R)
     gamma_density = gamma.pdf(x_values, a=k, scale=theta)
 
-## Crear DataFrame temporal
+# Crear DataFrame temporal
     df_temp = pd.DataFrame({
         'x': x_values,
         'Densidad': gamma_density,
@@ -7541,26 +7541,26 @@ for p in params:
     })
     data_list.append(df_temp)
 
-## Combinar todos los DataFrames
+# Combinar todos los DataFrames
 data = pd.concat(data_list, ignore_index=True)
 
-## ----------------------------------------
-## 4. Graficar la distribución gamma (equivalente a ggplot2)
+# ----------------------------------------
+# 4. Graficar la distribución gamma (equivalente a ggplot2)
 
-## Configurar el estilo (theme_minimal)
+# Configurar el estilo (theme_minimal)
 sns.set_style("whitegrid")
 plt.figure(figsize=(10, 6))
 
-## Mapear los colores manualmente
+# Mapear los colores manualmente
 color_map = {p['label']: p['color'] for p in params}
 
-## Graficar áreas (geom_area)
+# Graficar áreas (geom_area)
 for label, color in color_map.items():
     subset = data[data['Distribucion'] == label]
     plt.fill_between(subset['x'], subset['Densidad'],
                      color=color, alpha=0.1)
 
-## Graficar líneas (geom_line)
+# Graficar líneas (geom_line)
 sns.lineplot(
     data=data,
     x='x',
@@ -7570,15 +7570,15 @@ sns.lineplot(
     linewidth=2
 )
 
-## Añadir títulos y etiquetas (labs)
+# Añadir títulos y etiquetas (labs)
 plt.title("Gráfico de la Distribución Gamma", fontsize=16)
 plt.xlabel("x", fontsize=14)
 plt.ylabel("Densidad", fontsize=14)
 
-## Ajustar leyenda (similar a scale_color_manual y theme(legend.position = "top"))
+# Ajustar leyenda (similar a scale_color_manual y theme(legend.position = "top"))
 plt.legend(title="Distribución", loc='upper center', bbox_to_anchor=(0.5, 1.1), ncol=2)
 
-## Mostrar la gráfica
+# Mostrar la gráfica
 plt.show()
 ```
 
@@ -7595,7 +7595,7 @@ plt.show()
 
 Agrega ejemplos y los usos recomendados.
 
-### ⏳ Usos Recomendados de la Distribución Gamma
+### 3.45 ⏳ Usos Recomendados de la Distribución Gamma
 
 La **Distribución Gamma** $\text{Gamma}(\alpha, \beta)$ es una distribución continua y asimétrica que se utiliza para modelar **tiempos de espera**, duraciones y cantidades no negativas, especialmente cuando son la suma de varios procesos exponenciales independientes. Es notablemente flexible gracias a sus dos parámetros: **forma** ($\alpha$, a menudo denotado como $k$) y **escala** ($\beta$ o $1/\lambda$).
 
@@ -7618,7 +7618,7 @@ La **Distribución Gamma** $\text{Gamma}(\alpha, \beta)$ es una distribución co
     * **Aplicación:** El **consumo diario de energía** en una ciudad o la **demanda de recursos** (agua, electricidad).
 
 ---
-### ⚙️ Casos Particulares
+### 3.46 ⚙️ Casos Particulares
 
 La Distribución Gamma es una familia de distribuciones que incluye otras importantes como casos especiales:
 
@@ -7627,70 +7627,70 @@ La Distribución Gamma es una familia de distribuciones que incluye otras import
 * **Distribución Chi-Cuadrado ($\chi^2$):** Es un caso particular de la Gamma utilizado en inferencia estadística cuando $\alpha=v/2$ (donde $v$ son los grados de libertad) y $\beta=2$.
     $$\chi^2(v) \equiv \text{Gamma}(v/2, 2)$$
 
-### 💻Ejemplos en codigo
+### 3.47 💻Ejemplos en codigo
 
 ```python
 from scipy.stats import gamma
 
-## ====================================================================
-## 1. Teoría de Colas (Tiempo de Espera para el 3er Cliente - Erlang)
-## ====================================================================
+# ====================================================================
+# 1. Teoría de Colas (Tiempo de Espera para el 3er Cliente - Erlang)
+# ====================================================================
 print("--- 1. Teoría de Colas (Tiempo de Espera - Erlang) ---")
 
-## Tasa de servicio (lambda): 0.25 clientes/min (1 cliente cada 4 minutos)
+# Tasa de servicio (lambda): 0.25 clientes/min (1 cliente cada 4 minutos)
 tasa_lambda = 0.25
-## Parámetro de escala (beta): 1 / lambda = 4 minutos
+# Parámetro de escala (beta): 1 / lambda = 4 minutos
 escala_beta = 1 / tasa_lambda
 
-## Parámetro de forma (k): Tiempo hasta el 3er evento (3 clientes)
+# Parámetro de forma (k): Tiempo hasta el 3er evento (3 clientes)
 forma_k = 3
 
 tiempo_interes = 20  # Queremos P(X > 20 minutos)
 
-## 1a. Calcular P(X > 20 minutos)
-## Usamos .sf() (Survival Function) que es 1 - CDF(x)
+# 1a. Calcular P(X > 20 minutos)
+# Usamos .sf() (Survival Function) que es 1 - CDF(x)
 prob_mas_de_20_min = gamma.sf(tiempo_interes, a=forma_k, scale=escala_beta)
 
-## 1b. Calcular el tiempo medio esperado para atender a 3 clientes (E[X] = k * beta)
+# 1b. Calcular el tiempo medio esperado para atender a 3 clientes (E[X] = k * beta)
 tiempo_medio_esperado = forma_k * escala_beta
 
 print(f"Parámetros: Forma (k) = {forma_k}, Escala (β) = {escala_beta} min")
 print(f"Tiempo medio esperado para 3 clientes: {tiempo_medio_esperado:.2f} minutos")
 print(f"Probabilidad de que tarde más de {tiempo_interes} min (P(X > 20)): {prob_mas_de_20_min:.4f}")
 
-## ====================================================================
-## 2. Fiabilidad (Vida Útil de un Motor)
-## ====================================================================
+# ====================================================================
+# 2. Fiabilidad (Vida Útil de un Motor)
+# ====================================================================
 print("\n--- 2. Fiabilidad (Vida Útil de un Motor) ---")
 
-## Parámetros ajustados (ejemplo típico para modelar desgaste):
+# Parámetros ajustados (ejemplo típico para modelar desgaste):
 forma_alfa = 5.0  # k > 1 implica tasa de fallo creciente (desgaste)
 escala_beta_horas = 2500  # Escala en horas
 
 tiempo_interes_horas = 10000  # Queremos P(X > 10,000 horas)
 
-## 2a. Calcular P(X > 10,000 horas)
+# 2a. Calcular P(X > 10,000 horas)
 prob_dure_mas_10k_h = gamma.sf(tiempo_interes_horas, a=forma_alfa, scale=escala_beta_horas)
 
-## 2b. Calcular el tiempo medio de vida útil (E[X] = alfa * beta)
+# 2b. Calcular el tiempo medio de vida útil (E[X] = alfa * beta)
 tiempo_medio_vida = forma_alfa * escala_beta_horas
 
 print(f"Parámetros: Forma (α) = {forma_alfa}, Escala (β) = {escala_beta_horas} horas")
 print(f"Tiempo medio de vida útil: {tiempo_medio_vida:.0f} horas")
 print(f"Probabilidad de que dure más de {tiempo_interes_horas}h (P(X > 10000)): {prob_dure_mas_10k_h:.4f}")
 
-## ====================================================================
-## 3. Hidrología (Cantidad de Lluvia Acumulada)
-## ====================================================================
+# ====================================================================
+# 3. Hidrología (Cantidad de Lluvia Acumulada)
+# ====================================================================
 print("\n--- 3. Hidrología (Cantidad de Lluvia) ---")
 
-## Parámetros para lluvia (ejemplo sesgado a la derecha):
+# Parámetros para lluvia (ejemplo sesgado a la derecha):
 forma_lluvia = 1.8
 escala_lluvia = 100  # Escala en mm
 
 lluvia_extrema = 350  # Queremos P(X > 350 mm)
 
-## 3a. Calcular P(X > 350 mm)
+# 3a. Calcular P(X > 350 mm)
 prob_lluvia_extrema = gamma.sf(lluvia_extrema, a=forma_lluvia, scale=escala_lluvia)
 
 print(f"Parámetros: Forma (α) = {forma_lluvia}, Escala (β) = {escala_lluvia} mm")
@@ -7702,21 +7702,21 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.stats import gamma
 
-## Configuración de los gráficos
+# Configuración de los gráficos
 plt.style.use('seaborn-v0_8-whitegrid')
 fig, axes = plt.subplots(3, 1, figsize=(10, 15))
 fig.suptitle('Visualización de la Distribución Gamma (Tiempos y Cantidades)', fontsize=16, y=1.02)
 
-## ====================================================================
-## 1. Teoría de Colas (Tiempo de Espera para el 3er Cliente - Erlang)
-## ====================================================================
+# ====================================================================
+# 1. Teoría de Colas (Tiempo de Espera para el 3er Cliente - Erlang)
+# ====================================================================
 forma_k = 3
 escala_beta = 4
 tiempo_interes = 20
 
-## Rango de X (tiempo en minutos)
+# Rango de X (tiempo en minutos)
 x_col = np.linspace(0, 50, 500)
-## Calcular la PDF
+# Calcular la PDF
 y_pdf_col = gamma.pdf(x_col, a=forma_k, scale=escala_beta)
 
 ax = axes[0]
@@ -7731,16 +7731,16 @@ ax.set_xlabel('Tiempo (minutos)')
 ax.set_ylabel('Densidad de Probabilidad')
 ax.legend()
 
-## ====================================================================
-## 2. Fiabilidad (Vida Útil de un Motor)
-## ====================================================================
+# ====================================================================
+# 2. Fiabilidad (Vida Útil de un Motor)
+# ====================================================================
 forma_alfa = 5.0
 escala_beta_horas = 2500
 tiempo_interes_horas = 10000
 
-## Rango de X (tiempo en horas)
+# Rango de X (tiempo en horas)
 x_vida = np.linspace(0, 30000, 500)
-## Calcular la PDF
+# Calcular la PDF
 y_pdf_vida = gamma.pdf(x_vida, a=forma_alfa, scale=escala_beta_horas)
 
 ax = axes[1]
@@ -7756,16 +7756,16 @@ ax.set_xlabel('Tiempo de Vida Útil (horas)')
 ax.set_ylabel('Densidad de Probabilidad')
 ax.legend()
 
-## ====================================================================
-## 3. Hidrología (Cantidad de Lluvia Acumulada)
-## ====================================================================
+# ====================================================================
+# 3. Hidrología (Cantidad de Lluvia Acumulada)
+# ====================================================================
 forma_lluvia = 1.8
 escala_lluvia = 100
 lluvia_extrema = 350
 
-## Rango de X (cantidad de lluvia en mm)
+# Rango de X (cantidad de lluvia en mm)
 x_lluvia = np.linspace(0, 700, 500)
-## Calcular la PDF
+# Calcular la PDF
 y_pdf_lluvia = gamma.pdf(x_lluvia, a=forma_lluvia, scale=escala_lluvia)
 
 ax = axes[2]
@@ -7780,12 +7780,12 @@ ax.set_xlabel('Cantidad de Lluvia (mm)')
 ax.set_ylabel('Densidad de Probabilidad')
 ax.legend()
 
-## Ajustar diseño y mostrar
+# Ajustar diseño y mostrar
 plt.tight_layout()
 plt.show()
 ```
 
-### ✨Distribución Beta
+### 3.48 ✨Distribución Beta
 
 * **Descripción**: Modelo de variables aleatorias que se distribuyen en el intervalo $[0, 1]$. Es útil para modelar fenómenos aleatorios que están restringidos a ese intervalo.
 
@@ -7823,44 +7823,44 @@ $$
 
 **Comandos en R**:
 ```r
-## PDF
+### 3.49 PDF
 dbeta(x, shape1 = alpha, shape2 = beta)
 
-## CDF
+### 3.50 CDF
 pbeta(x, shape1 = alpha, shape2 = beta)
 
-## Simulación
+### 3.51 Simulación
 rbeta(n, shape1 = alpha, shape2 = beta)
 
 ```python
 import numpy as np
 from scipy.stats import beta
 
-## ----------------------------------------
-## Definición de parámetros
+# ----------------------------------------
+# Definición de parámetros
 alpha = 2.0  # Parámetro de forma 1 (shape1 en R, a en Python)
 beta_param = 5.0 # Parámetro de forma 2 (shape2 en R, b en Python)
 x = 0.4      # valor para PDF/CDF (debe estar entre 0 y 1)
 n = 10       # número de muestras para simulación
 
-## ----------------------------------------
-## PDF (Función de Densidad de Probabilidad)
-## dbeta(x, shape1 = alpha, shape2 = beta_param)
-## scipy.stats.beta.pdf(x, a=alpha, b=beta_param)
+# ----------------------------------------
+# PDF (Función de Densidad de Probabilidad)
+# dbeta(x, shape1 = alpha, shape2 = beta_param)
+# scipy.stats.beta.pdf(x, a=alpha, b=beta_param)
 pdf_value = beta.pdf(x, a=alpha, b=beta_param)
 print(f"PDF (beta.pdf) para x={x}: {pdf_value}")
 
-## ----------------------------------------
-## CDF (Función de Distribución Acumulada)
-## pbeta(x, shape1 = alpha, shape2 = beta_param)
-## scipy.stats.beta.cdf(x, a=alpha, b=beta_param)
+# ----------------------------------------
+# CDF (Función de Distribución Acumulada)
+# pbeta(x, shape1 = alpha, shape2 = beta_param)
+# scipy.stats.beta.cdf(x, a=alpha, b=beta_param)
 cdf_value = beta.cdf(x, a=alpha, b=beta_param)
 print(f"CDF (beta.cdf) para x={x}: {cdf_value}")
 
-## ----------------------------------------
-## Simulación/Muestreo
-## rbeta(n, shape1 = alpha, shape2 = beta_param)
-## np.random.beta(a=alpha, b=beta_param, size=n)
+# ----------------------------------------
+# Simulación/Muestreo
+# rbeta(n, shape1 = alpha, shape2 = beta_param)
+# np.random.beta(a=alpha, b=beta_param, size=n)
 samples = np.random.beta(a=alpha, b=beta_param, size=n)
 print(f"Muestras (np.random.beta) n={n}: {samples}")
 ```
@@ -7931,26 +7931,26 @@ $$
 La función beta se puede calcular en R utilizando la función `beta()`. Aquí te muestro cómo hacerlo:
 
 ```r
-## Cálculo de la función beta
+### 3.52 Cálculo de la función beta
 beta_value <- beta(x, y)
 
 ```python
 from scipy.special import beta
 import numpy as np
 
-## ----------------------------------------
-## Definición de los argumentos 'x' y 'y'
+# ----------------------------------------
+# Definición de los argumentos 'x' y 'y'
 x = 2.0
 y = 3.0
 
-## ----------------------------------------
-## Cálculo de la función Beta (equivalente a beta(x, y) en R)
-## B(x, y) = Gamma(x) * Gamma(y) / Gamma(x + y)
+# ----------------------------------------
+# Cálculo de la función Beta (equivalente a beta(x, y) en R)
+# B(x, y) = Gamma(x) * Gamma(y) / Gamma(x + y)
 beta_value = beta(x, y)
 print(f"El valor de Beta({x}, {y}) es: {beta_value}")
 
-## Verificación manual: B(2, 3) = Gamma(2) * Gamma(3) / Gamma(5)
-## B(2, 3) = 1! * 2! / 4! = 1 * 2 / 24 = 2/24 = 0.08333...
+# Verificación manual: B(2, 3) = Gamma(2) * Gamma(3) / Gamma(5)
+# B(2, 3) = 1! * 2! / 4! = 1 * 2 / 24 = 2/24 = 0.08333...
 ```
 
 ```python
@@ -7962,11 +7962,11 @@ print(f"El valor de Beta({x}, {y}) es: {beta_value}")
 x <- 2
 y <- 3
 
-## Usando la función beta
+# Usando la función beta
 beta_value <- beta(x, y)
 print(beta_value)
 
-## Usando la relación con la función gamma
+# Usando la relación con la función gamma
 beta_value_gamma <- gamma(x) * gamma(y) / gamma(x + y)
 print(beta_value_gamma)
 
@@ -7977,19 +7977,19 @@ print(beta_value_gamma)
 from scipy.special import beta, gamma
 import numpy as np
 
-## ----------------------------------------
-## Definición de los argumentos 'x' y 'y'
+# ----------------------------------------
+# Definición de los argumentos 'x' y 'y'
 x = 2
 y = 3
 
-## ----------------------------------------
-## 1. Usando la función beta (equivalente a beta(x, y) en R)
+# ----------------------------------------
+# 1. Usando la función beta (equivalente a beta(x, y) en R)
 beta_value = beta(x, y)
 print(f"El valor de Beta({x}, {y}) usando scipy.special.beta es: {beta_value}")
 
-## ----------------------------------------
-## 2. Usando la relación con la función gamma
-## beta_value_gamma <- gamma(x) * gamma(y) / gamma(x + y)
+# ----------------------------------------
+# 2. Usando la relación con la función gamma
+# beta_value_gamma <- gamma(x) * gamma(y) / gamma(x + y)
 beta_value_gamma = gamma(x) * gamma(y) / gamma(x + y)
 print(f"El valor de Beta({x}, {y}) usando la relación con Gamma es: {beta_value_gamma}")
 ```
@@ -8005,23 +8005,23 @@ La distribución beta es particularmente valiosa en campos como la estadística 
 ```python
 """
 
-## Cargar la librería necesaria
+# Cargar la librería necesaria
 library(ggplot2)
 
-## Crear un rango de valores para x
+# Crear un rango de valores para x
 x_values <- seq(0, 1, by = 0.01)
 
-## Definir los parámetros de la función beta
+# Definir los parámetros de la función beta
 shape1 <- 2  # Parámetro x
 shape2 <- 5  # Parámetro y
 
-## Calcular la función beta
+# Calcular la función beta
 beta_density <- dbeta(x_values, shape1, shape2)
 
-## Crear un data frame para ggplot
+# Crear un data frame para ggplot
 data <- data.frame(x = x_values, density = beta_density)
 
-## Graficar la función beta
+# Graficar la función beta
 ggplot(data, aes(x = x, y = density)) +
   geom_line(color = "blue", linewidth = 1) +
   labs(title = "Gráfico de la Función Beta",
@@ -8040,46 +8040,46 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from scipy.stats import beta
 
-## ----------------------------------------
-## 1. Crear un rango de valores para x (equivalente a seq() en R)
-## La distribución Beta está definida en el intervalo [0, 1]
+# ----------------------------------------
+# 1. Crear un rango de valores para x (equivalente a seq() en R)
+# La distribución Beta está definida en el intervalo [0, 1]
 x_values = np.linspace(0.001, 0.999, 100)
-## Usamos un rango ligeramente ajustado para evitar posibles divisiones por cero en los límites
+# Usamos un rango ligeramente ajustado para evitar posibles divisiones por cero en los límites
 
-## ----------------------------------------
-## 2. Definir los parámetros de la función beta
+# ----------------------------------------
+# 2. Definir los parámetros de la función beta
 shape1 = 2  # Parámetro a (alpha)
 shape2 = 5  # Parámetro b (beta)
 
-## ----------------------------------------
-## 3. Calcular la función de densidad de la distribución beta (equivalente a dbeta() en R)
-## scipy.stats.beta.pdf(x, a=shape1, b=shape2)
+# ----------------------------------------
+# 3. Calcular la función de densidad de la distribución beta (equivalente a dbeta() en R)
+# scipy.stats.beta.pdf(x, a=shape1, b=shape2)
 beta_density = beta.pdf(x_values, a=shape1, b=shape2)
 
-## ----------------------------------------
-## 4. Crear un DataFrame (equivalente a data.frame() en R)
+# ----------------------------------------
+# 4. Crear un DataFrame (equivalente a data.frame() en R)
 data = pd.DataFrame({'x': x_values, 'density': beta_density})
 
-## ----------------------------------------
-## 5. Graficar la función beta (equivalente a ggplot2)
+# ----------------------------------------
+# 5. Graficar la función beta (equivalente a ggplot2)
 
-## Configurar el estilo (similar a theme_minimal())
+# Configurar el estilo (similar a theme_minimal())
 sns.set_style("whitegrid")
 
 plt.figure(figsize=(10, 6))
 
-## Graficar la línea (equivalente a geom_line())
+# Graficar la línea (equivalente a geom_line())
 sns.lineplot(x='x', y='density', data=data, color="blue", linewidth=2)
 
-## Añadir títulos y etiquetas (equivalente a labs())
+# Añadir títulos y etiquetas (equivalente a labs())
 plt.title(f"Gráfico de la Distribución Beta (a={shape1}, b={shape2})", fontsize=16)
 plt.xlabel("x", fontsize=14)
 plt.ylabel("Densidad", fontsize=14)
 
-## Ajustar el eje Y para que comience en 0 (similar a scale_y_continuous con expand)
+# Ajustar el eje Y para que comience en 0 (similar a scale_y_continuous con expand)
 plt.ylim(0, max(beta_density) * 1.1)
 
-## Mostrar la gráfica
+# Mostrar la gráfica
 plt.show()
 ```
 
@@ -8088,29 +8088,29 @@ plt.show()
 ```python
 """
 
-## Cargar la librería necesaria
+# Cargar la librería necesaria
 library(ggplot2)
 
-## Crear un rango de valores para x
+# Crear un rango de valores para x
 x_values <- seq(0, 1, by = 0.01)
 
-## Definir los parámetros de la distribución beta
+# Definir los parámetros de la distribución beta
 alpha1 <- 2  # Parámetro alpha
 beta1 <- 5   # Parámetro beta
 
 alpha2 <- 5  # Otro parámetro alpha
 beta2 <- 2   # Otro parámetro beta
 
-## Calcular la función de densidad de la distribución beta
+# Calcular la función de densidad de la distribución beta
 beta_density1 <- dbeta(x_values, shape1 = alpha1, shape2 = beta1)
 beta_density2 <- dbeta(x_values, shape1 = alpha2, shape2 = beta2)
 
-## Crear un data frame para ggplot
+# Crear un data frame para ggplot
 data <- data.frame(x = x_values,
                    density1 = beta_density1,
                    density2 = beta_density2)
 
-## Graficar la distribución beta
+# Graficar la distribución beta
 ggplot(data, aes(x = x)) +
   geom_line(aes(y = density1), color = "blue", linewidth = 1) +
   geom_line(aes(y = density2), color = "red", linewidth = 1) +
@@ -8133,29 +8133,29 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from scipy.stats import beta
 
-## ----------------------------------------
-## 1. Crear un rango de valores para x (equivalente a seq() en R)
-## La distribución Beta está definida en [0, 1]
+# ----------------------------------------
+# 1. Crear un rango de valores para x (equivalente a seq() en R)
+# La distribución Beta está definida en [0, 1]
 x_values = np.linspace(0.001, 0.999, 200) # 200 puntos
 
-## ----------------------------------------
-## 2. Definir los parámetros de las dos distribuciones Beta
+# ----------------------------------------
+# 2. Definir los parámetros de las dos distribuciones Beta
 params = [
     {'a': 2, 'b': 5, 'label': 'Beta(\u03B1=2, \u03B2=5)', 'color': 'blue'},
     {'a': 5, 'b': 2, 'label': 'Beta(\u03B1=5, \u03B2=2)', 'color': 'red'}
 ]
-## Nota: alpha en R es 'a' en Python, beta en R es 'b' en Python
+# Nota: alpha en R es 'a' en Python, beta en R es 'b' en Python
 
-## ----------------------------------------
-## 3. Calcular la PDF y consolidar en un solo DataFrame
+# ----------------------------------------
+# 3. Calcular la PDF y consolidar en un solo DataFrame
 data_list = []
 
 for p in params:
-## Calcular la función de densidad (equivalente a dbeta() en R)
-## En scipy, dbeta(x, shape1, shape2) -> beta.pdf(x, a=shape1, b=shape2)
+# Calcular la función de densidad (equivalente a dbeta() en R)
+# En scipy, dbeta(x, shape1, shape2) -> beta.pdf(x, a=shape1, b=shape2)
     beta_density = beta.pdf(x_values, a=p['a'], b=p['b'])
 
-## Crear DataFrame temporal
+# Crear DataFrame temporal
     df_temp = pd.DataFrame({
         'x': x_values,
         'Densidad': beta_density,
@@ -8164,26 +8164,26 @@ for p in params:
     })
     data_list.append(df_temp)
 
-## Combinar todos los DataFrames
+# Combinar todos los DataFrames
 data = pd.concat(data_list, ignore_index=True)
 
-## ----------------------------------------
-## 4. Graficar la distribución Beta (equivalente a ggplot2)
+# ----------------------------------------
+# 4. Graficar la distribución Beta (equivalente a ggplot2)
 
-## Configurar el estilo (theme_minimal)
+# Configurar el estilo (theme_minimal)
 sns.set_style("whitegrid")
 plt.figure(figsize=(10, 6))
 
-## Mapear los colores manualmente para geom_area y geom_line
+# Mapear los colores manualmente para geom_area y geom_line
 color_map = {p['label']: p['color'] for p in params}
 
-## Graficar áreas (geom_area)
+# Graficar áreas (geom_area)
 for label, color in color_map.items():
     subset = data[data['Distribucion'] == label]
     plt.fill_between(subset['x'], subset['Densidad'],
                      color=color, alpha=0.1, label=f'Área {label}')
 
-## Graficar líneas (geom_line)
+# Graficar líneas (geom_line)
 sns.lineplot(
     data=data,
     x='x',
@@ -8193,12 +8193,12 @@ sns.lineplot(
     linewidth=2
 )
 
-## Añadir títulos y etiquetas (labs)
+# Añadir títulos y etiquetas (labs)
 plt.title("Gráfico de la Distribución Beta para Diferentes Parámetros", fontsize=16)
 plt.xlabel("x", fontsize=14)
 plt.ylabel("Densidad", fontsize=14)
 
-## Ajustar el eje Y para
+# Ajustar el eje Y para
 ```
 
 #### 📜**Descripción del Código**
@@ -8214,7 +8214,7 @@ plt.ylabel("Densidad", fontsize=14)
 
 Agrega ejemplos y los usos recomendados.
 
-### 📐 Usos Recomendados de la Distribución Beta
+### 3.53 📐 Usos Recomendados de la Distribución Beta
 
 La **Distribución Beta** $\text{Beta}(\alpha, \beta)$ es una distribución continua y flexible definida exclusivamente para valores en el intervalo $[0, 1]$. Sus dos parámetros de forma, $\alpha$ y $\beta$, controlan la forma de la distribución, permitiéndole modelar una amplia variedad de formas: uniforme, sesgada, en forma de U y en forma de campana (Normal). Su uso principal es modelar la **probabilidad de una probabilidad** o la **proporción** de un evento.
 
@@ -8238,7 +8238,7 @@ La **Distribución Beta** $\text{Beta}(\alpha, \beta)$ es una distribución cont
     * **Ejemplo:** Estimar el **tiempo de finalización** de una fase de proyecto, donde la duración está acotada por un tiempo **mínimo** ($a$), un tiempo **máximo** ($b$) y un tiempo **más probable** ($m$). El modelo PERT a menudo utiliza una forma de la Distribución Beta para calcular la duración esperada y su variabilidad dentro de estos límites.
 
 ---
-### ✏️ Flexibilidad de la Forma
+### 3.54 ✏️ Flexibilidad de la Forma
 
 La Distribución Beta puede tomar diversas formas controlando los parámetros $\alpha$ y $\beta$:
 
@@ -8249,31 +8249,31 @@ La Distribución Beta puede tomar diversas formas controlando los parámetros $\
 | $\alpha > 1, \beta < 1$      | Sesgada a la izquierda   | Modelar eventos casi seguros |
 | $\alpha = \beta > 1$         | Simétrica (Campana)      | Modelar estimaciones cercanas a 0.5 |
 
-### 💻Ejemplos en codigo
+### 3.55 💻Ejemplos en codigo
 
 ```python
 from scipy.stats import beta
 import numpy as np
 
-## ====================================================================
-## 1. Modelado de Proporciones (Proporción de Tiempo Operativo)
-## ====================================================================
+# ====================================================================
+# 1. Modelado de Proporciones (Proporción de Tiempo Operativo)
+# ====================================================================
 print("--- 1. Proporción de Tiempo Operativo (Beta) ---")
 
-## Parámetros basados en datos históricos (Beta(9, 2))
-## Esto implica que la máquina está operativa la mayor parte del tiempo
+# Parámetros basados en datos históricos (Beta(9, 2))
+# Esto implica que la máquina está operativa la mayor parte del tiempo
 alpha_op = 9
 beta_op = 2
 proporcion_interes = 0.85  # Queremos P(X < 0.85)
 
-## 1a. Calcular P(X < 0.85)
-## Usamos .cdf() (Cumulative Distribution Function)
+# 1a. Calcular P(X < 0.85)
+# Usamos .cdf() (Cumulative Distribution Function)
 prob_menor_85 = beta.cdf(proporcion_interes, a=alpha_op, b=beta_op)
 
-## 1b. Calcular la media de la proporción (E[X] = alpha / (alpha + beta))
+# 1b. Calcular la media de la proporción (E[X] = alpha / (alpha + beta))
 media_proporcion = alpha_op / (alpha_op + beta_op)
 
-## 1c. Calcular la moda (Si alpha, beta > 1, Moda = (alpha - 1) / (alpha + beta - 2))
+# 1c. Calcular la moda (Si alpha, beta > 1, Moda = (alpha - 1) / (alpha + beta - 2))
 moda_proporcion = (alpha_op - 1) / (alpha_op + beta_op - 2)
 
 print(f"Parámetros: Beta({alpha_op}, {beta_op})")
@@ -8281,22 +8281,22 @@ print(f"Media de la proporción operativa: {media_proporcion:.4f}")
 print(f"Moda de la proporción operativa: {moda_proporcion:.4f}")
 print(f"Probabilidad de que la proporción sea menor a {proporcion_interes} (P(X < 0.85)): {prob_menor_85:.4f}")
 
-## ====================================================================
-## 2. Inferencia Bayesiana (Moneda Sesgada - Distribución Posterior)
-## ====================================================================
+# ====================================================================
+# 2. Inferencia Bayesiana (Moneda Sesgada - Distribución Posterior)
+# ====================================================================
 print("\n--- 2. Inferencia Bayesiana (Distribución Posterior) ---")
 
-## A Priori: Uniforme Beta(1, 1).
-## Datos: 7 Caras (éxitos), 3 Cruces (fracasos).
+# A Priori: Uniforme Beta(1, 1).
+# Datos: 7 Caras (éxitos), 3 Cruces (fracasos).
 alpha_post = 1 + 7  # 8
 beta_post = 1 + 3   # 4
 probabilidad_rango = 0.6  # Queremos P(p < 0.6)
 
-## 2a. Calcular P(p < 0.6) para la probabilidad real de la moneda
+# 2a. Calcular P(p < 0.6) para la probabilidad real de la moneda
 prob_posterior = beta.cdf(probabilidad_rango, a=alpha_post, b=beta_post)
 
-## 2b. Calcular un Intervalo de Credibilidad del 95% para p (la probabilidad real)
-## Usamos .ppf() (Percent Point Function) o función cuantil
+# 2b. Calcular un Intervalo de Credibilidad del 95% para p (la probabilidad real)
+# Usamos .ppf() (Percent Point Function) o función cuantil
 limite_inferior = beta.ppf(0.025, a=alpha_post, b=beta_post)
 limite_superior = beta.ppf(0.975, a=alpha_post, b=beta_post)
 
@@ -8310,17 +8310,17 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.stats import beta
 
-## Configuración de los gráficos
+# Configuración de los gráficos
 plt.style.use('seaborn-v0_8-whitegrid')
 fig, axes = plt.subplots(3, 1, figsize=(10, 15))
 fig.suptitle('Visualización de la Distribución Beta (Proporciones y Probabilidades)', fontsize=16, y=1.02)
 
-## Rango de la variable X (siempre [0, 1])
+# Rango de la variable X (siempre [0, 1])
 x_beta = np.linspace(0.01, 0.99, 500)
 
-## ====================================================================
-## 1. Modelado de Proporciones (Tiempo Operativo: Beta(9, 2))
-## ====================================================================
+# ====================================================================
+# 1. Modelado de Proporciones (Tiempo Operativo: Beta(9, 2))
+# ====================================================================
 alpha_op, beta_op = 9, 2
 proporcion_interes = 0.85
 
@@ -8337,9 +8337,9 @@ ax.set_xlabel('Proporción')
 ax.set_ylabel('Densidad de Probabilidad')
 ax.legend()
 
-## ====================================================================
-## 2. Inferencia Bayesiana (Moneda Sesgada - Posterior: Beta(8, 4))
-## ====================================================================
+# ====================================================================
+# 2. Inferencia Bayesiana (Moneda Sesgada - Posterior: Beta(8, 4))
+# ====================================================================
 alpha_post, beta_post = 8, 4
 lim_inf, lim_sup = beta.ppf([0.025, 0.975], a=alpha_post, b=beta_post)
 
@@ -8358,9 +8358,9 @@ ax.set_xlabel('Probabilidad Real (p)')
 ax.set_ylabel('Densidad de Probabilidad')
 ax.legend()
 
-## ====================================================================
-## 3. Flexibilidad de la Forma (Visualización de casos)
-## ====================================================================
+# ====================================================================
+# 3. Flexibilidad de la Forma (Visualización de casos)
+# ====================================================================
 params = [
     (1, 1, 'Uniforme (Beta(1, 1))', 'black'),     # Uniforme
     (0.5, 5, 'Sesgada a la derecha (Beta(0.5, 5))', 'red'), # Sesgada a la derecha
@@ -8378,12 +8378,12 @@ ax.set_ylabel('Densidad de Probabilidad')
 ax.legend()
 ax.set_ylim(0, 4) # Ajuste para mejor visualización de formas
 
-## Ajustar diseño y mostrar
+# Ajustar diseño y mostrar
 plt.tight_layout()
 plt.show()
 ```
 
-### ✨Distribución Weibull
+### 3.56 ✨Distribución Weibull
 
 * **Descripción**: Modelo utilizado para analizar el tiempo hasta el fallo de un sistema o un componente. Es especialmente útil en el análisis de fiabilidad y en estudios de vida.
 
@@ -8430,49 +8430,49 @@ $$
 
 **Comandos en R**:
 ```r
-## PDF
+### 3.57 PDF
 dweibull(x, shape = k, scale = lambda)
 
-## CDF
+### 3.58 CDF
 pweibull(x, shape = k, scale = lambda)
 
-## Simulación
+### 3.59 Simulación
 rweibull(n, shape = k, scale = lambda)
 
 ```python
 import numpy as np
 from scipy.stats import weibull_min
 
-## ----------------------------------------
-## Definición de parámetros
+# ----------------------------------------
+# Definición de parámetros
 k = 2.0     # Parámetro de forma (shape en R, c en Python)
 lambda_scale = 1.5 # Parámetro de escala (scale en R y Python)
 x = 3.0     # valor para PDF/CDF
 n = 10      # número de muestras para simulación
 
-## ----------------------------------------
-## PDF (Función de Densidad de Probabilidad)
-## dweibull(x, shape = k, scale = lambda_scale)
-## scipy.stats.weibull_min.pdf(x, c=k, scale=lambda_scale)
-## Nota: La función en scipy es weibull_min
+# ----------------------------------------
+# PDF (Función de Densidad de Probabilidad)
+# dweibull(x, shape = k, scale = lambda_scale)
+# scipy.stats.weibull_min.pdf(x, c=k, scale=lambda_scale)
+# Nota: La función en scipy es weibull_min
 pdf_value = weibull_min.pdf(x, c=k, scale=lambda_scale)
 print(f"PDF (weibull_min.pdf) para x={x}: {pdf_value}")
 
-## ----------------------------------------
-## CDF (Función de Distribución Acumulada)
-## pweibull(x, shape = k, scale = lambda_scale)
-## scipy.stats.weibull_min.cdf(x, c=k, scale=lambda_scale)
+# ----------------------------------------
+# CDF (Función de Distribución Acumulada)
+# pweibull(x, shape = k, scale = lambda_scale)
+# scipy.stats.weibull_min.cdf(x, c=k, scale=lambda_scale)
 cdf_value = weibull_min.cdf(x, c=k, scale=lambda_scale)
 print(f"CDF (weibull_min.cdf) para x={x}: {cdf_value}")
 
-## ----------------------------------------
-## Simulación/Muestreo
-## rweibull(n, shape = k, scale = lambda_scale)
-## np.random.weibull(a=k, size=n) * lambda_scale
-## NOTA: np.random.weibull solo toma 'a' (forma) y asume scale=1.
-## Se debe multiplicar por el parámetro de escala (lambda_scale).
-## (Esto es equivalente a usar rweibull(n, shape=k, scale=lambda_scale) en R)
-## Para coincidir con la parametrización de R:
+# ----------------------------------------
+# Simulación/Muestreo
+# rweibull(n, shape = k, scale = lambda_scale)
+# np.random.weibull(a=k, size=n) * lambda_scale
+# NOTA: np.random.weibull solo toma 'a' (forma) y asume scale=1.
+# Se debe multiplicar por el parámetro de escala (lambda_scale).
+# (Esto es equivalente a usar rweibull(n, shape=k, scale=lambda_scale) en R)
+# Para coincidir con la parametrización de R:
 samples_standard = np.random.weibull(a=k, size=n)
 samples = samples_standard * lambda_scale
 print(f"Muestras (np.random.weibull * scale) n={n}: {samples}")
@@ -8494,30 +8494,30 @@ La distribución Weibull es valiosa en diversas áreas, como la ingeniería y la
 ```python
 """
 
-## Cargar la librería necesaria
+# Cargar la librería necesaria
 library(ggplot2)
 
-## Definir los parámetros de la distribución Weibull
+# Definir los parámetros de la distribución Weibull
 k_values <- c(0.5, 1, 2)  # Parámetro de forma
 lambda_values <- c(1, 1, 1)  # Parámetro de escala
 
-## Crear un rango de valores para x
+# Crear un rango de valores para x
 x <- seq(0, 3, length.out = 100)
 
-## Crear un data frame vacío para almacenar los resultados
+# Crear un data frame vacío para almacenar los resultados
 data <- data.frame()
 
-## Calcular la PDF para cada combinación de k y lambda
+# Calcular la PDF para cada combinación de k y lambda
 for (i in 1:length(k_values)) {
   k <- k_values[i]
   lambda <- lambda_values[i]
   pdf_values <- dweibull(x, shape = k, scale = lambda)
 
-## Añadir los resultados al data frame
+# Añadir los resultados al data frame
   data <- rbind(data, data.frame(x = x, pdf = pdf_values, k = factor(k), lambda = lambda))
 }
 
-## Graficar las distribuciones
+# Graficar las distribuciones
 ggplot(data, aes(x = x, y = pdf, color = k)) +
   geom_line() +
   labs(title = "Funciones de Densidad de la Distribución Weibull",
@@ -8536,47 +8536,47 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from scipy.stats import weibull_min
 
-## ----------------------------------------
-## 1. Definir los parámetros de la distribución Weibull
+# ----------------------------------------
+# 1. Definir los parámetros de la distribución Weibull
 k_values = [0.5, 1, 2]     # Parámetro de forma (k, se mapea a 'c' en scipy)
 lambda_values = [1, 1, 1]  # Parámetro de escala (lambda, se mapea a 'scale' en scipy)
 
-## ----------------------------------------
-## 2. Crear un rango de valores para x (equivalente a seq() en R)
+# ----------------------------------------
+# 2. Crear un rango de valores para x (equivalente a seq() en R)
 x = np.linspace(0.01, 3, 100) # Se usa 0.01 como inicio para evitar problemas en el límite
 
-## ----------------------------------------
-## 3. Calcular la PDF y consolidar en un solo DataFrame
+# ----------------------------------------
+# 3. Calcular la PDF y consolidar en un solo DataFrame
 data_list = []
 
-## Iterar sobre las combinaciones de parámetros
+# Iterar sobre las combinaciones de parámetros
 for k, lambda_scale in zip(k_values, lambda_values):
-## Calcular la PDF (equivalente a dweibull() en R)
-## scipy.stats.weibull_min.pdf(x, c=k, scale=lambda_scale)
+# Calcular la PDF (equivalente a dweibull() en R)
+# scipy.stats.weibull_min.pdf(x, c=k, scale=lambda_scale)
     pdf_values = weibull_min.pdf(x, c=k, scale=lambda_scale)
 
-## Crear DataFrame temporal y almacenar
+# Crear DataFrame temporal y almacenar
     df_temp = pd.DataFrame({
         'x': x,
         'pdf': pdf_values,
-## Convertir 'k' a string para usarlo en la leyenda (similar a factor(k) en R)
+# Convertir 'k' a string para usarlo en la leyenda (similar a factor(k) en R)
         'k': str(k),
         'lambda': lambda_scale
     })
     data_list.append(df_temp)
 
-## Combinar todos los DataFrames
+# Combinar todos los DataFrames
 data = pd.concat(data_list, ignore_index=True)
 
-## ----------------------------------------
-## 4. Graficar las distribuciones (equivalente a ggplot2)
+# ----------------------------------------
+# 4. Graficar las distribuciones (equivalente a ggplot2)
 
-## Configurar el estilo (theme_minimal)
+# Configurar el estilo (theme_minimal)
 sns.set_style("whitegrid")
 plt.figure(figsize=(10, 6))
 
-## Crear la gráfica con Seaborn, usando 'k' para el color
-## 'hue' mapea los diferentes valores de k al color de la línea
+# Crear la gráfica con Seaborn, usando 'k' para el color
+# 'hue' mapea los diferentes valores de k al color de la línea
 sns.lineplot(
     data=data,
     x='x',
@@ -8585,15 +8585,15 @@ sns.lineplot(
     linewidth=2
 )
 
-## Añadir títulos y etiquetas (labs)
+# Añadir títulos y etiquetas (labs)
 plt.title("Funciones de Densidad de la Distribución Weibull", fontsize=16)
 plt.xlabel("x", fontsize=14)
 plt.ylabel("Densidad de Probabilidad (PDF)", fontsize=14)
 
-## Ajustar leyenda
+# Ajustar leyenda
 plt.legend(title="Parámetro k", loc='upper right', frameon=True)
 
-## Mostrar la gráfica
+# Mostrar la gráfica
 plt.show()
 ```
 
@@ -8610,7 +8610,7 @@ plt.show()
 
 Agrega ejemplos y los usos recomendados.
 
-### ⚙️ Usos Recomendados de la Distribución Weibull
+### 3.60 ⚙️ Usos Recomendados de la Distribución Weibull
 
 La **Distribución Weibull** es una distribución continua y positiva que se utiliza casi exclusivamente en el campo de la **fiabilidad y el análisis de vida útil**. Es una de las distribuciones más versátiles para modelar el tiempo hasta el fallo de un sistema o componente, ya que puede adaptarse a diferentes tasas de fallo (constante, creciente o decreciente) mediante su parámetro clave de **forma**.
 
@@ -8638,38 +8638,38 @@ La distribución Weibull se define por tres parámetros: **forma** ($\beta$ o $k
     * **Aplicación:** Modelar las **intensidades de inundaciones** o la **resistencia a la rotura** de materiales.
 
 ---
-### 🧪 Relación Clave
+### 3.61 🧪 Relación Clave
 
 * La **Distribución Weibull** es una generalización de la **Distribución Exponencial**.
 * Cuando el parámetro de **forma** es $\beta = 1$, la Distribución Weibull se simplifica a la **Distribución Exponencial**.
 
 $$\text{Weibull}(\beta=1, \eta) \equiv \text{Exponencial}(\lambda=1/\eta)$$
 
-### 💻Ejemplos en codigo
+### 3.62 💻Ejemplos en codigo
 
 ```python
 from scipy.stats import weibull_min
 
-## ====================================================================
-## 1. Ingeniería de Fallos (Rodamientos con Desgaste)
-## ====================================================================
+# ====================================================================
+# 1. Ingeniería de Fallos (Rodamientos con Desgaste)
+# ====================================================================
 print("--- 1. Ingeniería de Fallos (Rodamientos) ---")
 
-## Parámetros (ejemplo de desgaste, beta > 1)
+# Parámetros (ejemplo de desgaste, beta > 1)
 forma_beta = 2.5
 escala_eta = 8000  # Horas (vida característica)
 
 tiempo_mantenimiento = 5000  # Queremos P(X < 5000 horas)
 tiempo_garantia = 1000  # Queremos P(X < 1000 horas)
 
-## 1a. Calcular la probabilidad de fallo P(X < 5000)
-## Usamos .cdf() (Cumulative Distribution Function)
+# 1a. Calcular la probabilidad de fallo P(X < 5000)
+# Usamos .cdf() (Cumulative Distribution Function)
 prob_fallo_5k = weibull_min.cdf(tiempo_mantenimiento, c=forma_beta, scale=escala_eta)
 
-## 1b. Calcular la probabilidad de fallo durante la garantía P(X < 1000)
+# 1b. Calcular la probabilidad de fallo durante la garantía P(X < 1000)
 prob_fallo_1k = weibull_min.cdf(tiempo_garantia, c=forma_beta, scale=escala_eta)
 
-## 1c. Calcular la vida útil donde solo el 10% ha fallado (Percentil 10)
+# 1c. Calcular la vida útil donde solo el 10% ha fallado (Percentil 10)
 percentil_10 = weibull_min.ppf(0.10, c=forma_beta, scale=escala_eta)
 
 print(f"Parámetros: Forma (β) = {forma_beta}, Escala (η) = {escala_eta} h")
@@ -8677,40 +8677,40 @@ print(f"Probabilidad de fallo antes de 5000h: {prob_fallo_5k:.4f}")
 print(f"Probabilidad de fallo en garantía (antes de 1000h): {prob_fallo_1k:.4f}")
 print(f"El 10% de los rodamientos fallará antes de: {percentil_10:.0f} horas")
 
-## ====================================================================
-## 2. Modelado de la Tasa de Fallo (Comparación de Modos de Fallo)
-## ====================================================================
+# ====================================================================
+# 2. Modelado de la Tasa de Fallo (Comparación de Modos de Fallo)
+# ====================================================================
 print("\n--- 2. Tasa de Fallo (Modos de Fallo) ---")
 
-## Parámetros para un componente con fallos iniciales (infantiles, beta < 1)
+# Parámetros para un componente con fallos iniciales (infantiles, beta < 1)
 forma_infantil = 0.8
 escala_infantil = 200  # Días
 
-## Probabilidad de fallo en los primeros 50 días: P(X < 50)
+# Probabilidad de fallo en los primeros 50 días: P(X < 50)
 tiempo_corto = 50
 prob_fallo_infantil = weibull_min.cdf(tiempo_corto, c=forma_infantil, scale=escala_infantil)
 
-## Parámetros para un fallo aleatorio (Exponencial, beta = 1)
+# Parámetros para un fallo aleatorio (Exponencial, beta = 1)
 forma_aleatorio = 1.0
 escala_aleatorio = 200  # Mismo tiempo característico
 
-## Probabilidad de fallo en los primeros 50 días: P(X < 50)
+# Probabilidad de fallo en los primeros 50 días: P(X < 50)
 prob_fallo_aleatorio = weibull_min.cdf(tiempo_corto, c=forma_aleatorio, scale=escala_aleatorio)
 
 print(f"Fallo Infantil (β={forma_infantil}): P(X < 50 días) = {prob_fallo_infantil:.4f}")
 print(f"Fallo Aleatorio (β={forma_aleatorio}): P(X < 50 días) = {prob_fallo_aleatorio:.4f}")
 
-## ====================================================================
-## 3. Ciencias Ambientales (Velocidad del Viento)
-## ====================================================================
+# ====================================================================
+# 3. Ciencias Ambientales (Velocidad del Viento)
+# ====================================================================
 print("\n--- 3. Velocidad del Viento (Ciencias Ambientales) ---")
 
-## Parámetros de la velocidad del viento (ejemplo típico)
+# Parámetros de la velocidad del viento (ejemplo típico)
 forma_viento = 1.9
 escala_viento = 7.0  # m/s (velocidad promedio)
 
 velocidad_corte_turbina = 15  # Velocidad para generación óptima
-## Calcular la probabilidad de que la velocidad sea > 15 m/s
+# Calcular la probabilidad de que la velocidad sea > 15 m/s
 prob_viento_fuerte = weibull_min.sf(velocidad_corte_turbina, c=forma_viento, scale=escala_viento)
 
 print(f"Parámetros: Forma (β) = {forma_viento}, Escala (η) = {escala_viento} m/s")
@@ -8722,21 +8722,21 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.stats import weibull_min
 
-## Configuración de los gráficos
+# Configuración de los gráficos
 plt.style.use('seaborn-v0_8-whitegrid')
 fig, axes = plt.subplots(3, 1, figsize=(10, 15))
 fig.suptitle('Visualización de la Distribución Weibull (Fiabilidad y Tasa de Fallo)', fontsize=16, y=1.02)
 
-## ====================================================================
-## 1. Ingeniería de Fallos (Rodamientos con Desgaste)
-## ====================================================================
+# ====================================================================
+# 1. Ingeniería de Fallos (Rodamientos con Desgaste)
+# ====================================================================
 forma_beta = 2.5
 escala_eta = 8000
 tiempo_mantenimiento = 5000
 
-## Rango de X (tiempo en horas)
+# Rango de X (tiempo en horas)
 x_fallo = np.linspace(0, 25000, 500)
-## Calcular la PDF
+# Calcular la PDF
 y_pdf_fallo = weibull_min.pdf(x_fallo, c=forma_beta, scale=escala_eta)
 
 ax = axes[0]
@@ -8752,12 +8752,12 @@ ax.set_xlabel('Tiempo de Vida Útil (horas)')
 ax.set_ylabel('Densidad de Probabilidad')
 ax.legend()
 
-## ====================================================================
-## 2. Modelado de la Tasa de Fallo (Comparación de Modos)
-## ====================================================================
+# ====================================================================
+# 2. Modelado de la Tasa de Fallo (Comparación de Modos)
+# ====================================================================
 escala_comun = 100 # Días, simplificado para la gráfica
 
-## Diferentes formas (modos de fallo)
+# Diferentes formas (modos de fallo)
 formas = [
     (0.8, 'Fallos Iniciales (β < 1)', 'red'),
     (1.0, 'Fallos Aleatorios (β = 1, Exponencial)', 'green'),
@@ -8775,16 +8775,16 @@ ax.set_xlabel('Tiempo')
 ax.set_ylabel('Densidad de Probabilidad')
 ax.legend()
 
-## ====================================================================
-## 3. Ciencias Ambientales (Velocidad del Viento)
-## ====================================================================
+# ====================================================================
+# 3. Ciencias Ambientales (Velocidad del Viento)
+# ====================================================================
 forma_viento = 1.9
 escala_viento = 7.0
 velocidad_corte = 15
 
-## Rango de X (velocidad en m/s)
+# Rango de X (velocidad en m/s)
 x_viento = np.linspace(0, 25, 500)
-## Calcular la PDF
+# Calcular la PDF
 y_pdf_viento = weibull_min.pdf(x_viento, c=forma_viento, scale=escala_viento)
 
 ax = axes[2]
@@ -8800,12 +8800,12 @@ ax.set_xlabel('Velocidad del Viento (m/s)')
 ax.set_ylabel('Densidad de Probabilidad')
 ax.legend()
 
-## Ajustar diseño y mostrar
+# Ajustar diseño y mostrar
 plt.tight_layout()
 plt.show()
 ```
 
-### ✨Distribución de Dirichlet
+### 3.63 ✨Distribución de Dirichlet
 
 * **Descripción**: Modelo de distribuciones de probabilidad sobre un conjunto de variables aleatorias que suman uno. Se utiliza comúnmente en la teoría bayesiana y en el análisis de composiciones.
 
@@ -8845,27 +8845,27 @@ $$
 * **Comandos en R**:
 
 ```r
-## PDF
+### 3.64 PDF
 ddirichlet(x, alpha)
 
-## CDF
+### 3.65 CDF
 pdirichlet(x, alpha)
 
-## Simulación
+### 3.66 Simulación
 rdirichlet(n, alpha)
 
 ```python
 import numpy as np
 
-## ----------------------------------------
-## Definición de parámetros
+# ----------------------------------------
+# Definición de parámetros
 alpha = [0.5, 0.5, 0.5] # Vector de parámetros alpha (e.g., para K=3 dimensiones)
 n = 5                   # número de muestras para simulación
 
-## ----------------------------------------
-## Simulación/Muestreo
-## rdirichlet(n, alpha)
-## np.random.dirichlet(alpha=alpha, size=n)
+# ----------------------------------------
+# Simulación/Muestreo
+# rdirichlet(n, alpha)
+# np.random.dirichlet(alpha=alpha, size=n)
 samples = np.random.dirichlet(alpha=alpha, size=n)
 print(f"Muestras (np.random.dirichlet) n={n}:")
 print(samples)
@@ -8878,30 +8878,30 @@ import numpy as np
 def ddirichlet_py(x, alpha):
     """Calcula la PDF de la distribución de Dirichlet."""
 
-## x debe ser un array con K elementos (componentes)
+# x debe ser un array con K elementos (componentes)
     x = np.array(x)
     alpha = np.array(alpha)
     K = len(alpha)
 
-## 1. Calcular el denominador (Función Beta Multivariada, B(alpha))
-## B(alpha) = [Producto(Gamma(alpha_i))] / [Gamma(Suma(alpha_i))]
+# 1. Calcular el denominador (Función Beta Multivariada, B(alpha))
+# B(alpha) = [Producto(Gamma(alpha_i))] / [Gamma(Suma(alpha_i))]
     B_alpha = np.prod(gamma(alpha)) / gamma(np.sum(alpha))
 
-## 2. Calcular el numerador (Producto(x_i^(alpha_i - 1)))
-## Nota: np.prod y np.power manejan arrays de forma eficiente
+# 2. Calcular el numerador (Producto(x_i^(alpha_i - 1)))
+# Nota: np.prod y np.power manejan arrays de forma eficiente
     numerator = np.prod(np.power(x, alpha - 1))
 
-## 3. PDF
+# 3. PDF
     pdf_value = numerator / B_alpha
     return pdf_value
 
-## ----------------------------------------
-## Ejemplo de uso de la PDF
+# ----------------------------------------
+# Ejemplo de uso de la PDF
 alpha = [0.5, 0.5, 0.5] # Parámetros (alpha_1, alpha_2, alpha_3)
-## x debe ser un punto en el simplex (sum(x) = 1)
+# x debe ser un punto en el simplex (sum(x) = 1)
 x = [0.2, 0.5, 0.3]
 
-## Comprobación del simplex:
+# Comprobación del simplex:
 if np.isclose(sum(x), 1.0) and all(val > 0 for val in x):
     pdf_value = ddirichlet_py(x, alpha)
     print(f"\nPDF (ddirichlet_py) para x={x}: {pdf_value}")
@@ -8924,28 +8924,28 @@ La distribución de Dirichlet es valiosa en campos como el aprendizaje automáti
 ```python
 """
 
-## Cargar las librerías necesarias
+# Cargar las librerías necesarias
 library(ggplot2)
 library(dplyr)
 library(MCMCpack)  # Asegúrate de que MCMCpack esté instalado
 
-## Definir los parámetros de la distribución Dirichlet
+# Definir los parámetros de la distribución Dirichlet
 alpha_values <- list(c(1, 1, 1), c(2, 5, 3), c(5, 1, 1))  # Diferentes vectores de parámetros
 
-## Inicializar una lista para almacenar los gráficos
+# Inicializar una lista para almacenar los gráficos
 plots <- list()
 
-## Generar muestras para cada conjunto de parámetros
+# Generar muestras para cada conjunto de parámetros
 for (alpha in alpha_values) {
-## Generar muestras aleatorias de la distribución Dirichlet
+# Generar muestras aleatorias de la distribución Dirichlet
   n_points <- 1000  # Número de muestras
   samples <- rdirichlet(n_points, alpha)
 
-## Convertir las muestras en un data frame
+# Convertir las muestras en un data frame
   sample_data <- as.data.frame(samples)
   colnames(sample_data) <- c("x1", "x2", "x3")  # Nombrar columnas
 
-## Graficar para cada conjunto de parámetros
+# Graficar para cada conjunto de parámetros
   p <- ggplot(sample_data, aes(x = x1, y = x2)) +
     geom_point(alpha = 0.5) +
     labs(title = paste("Distribución Dirichlet (α = (", paste(alpha, collapse = ", "), "))", sep = ""),
@@ -8954,11 +8954,11 @@ for (alpha in alpha_values) {
     theme_minimal() +
     xlim(0, 1) + ylim(0, 1)  # Limitar ejes a [0,1]
 
-## Almacenar el gráfico en la lista
+# Almacenar el gráfico en la lista
   plots[[length(plots) + 1]] <- p
 }
 
-## Mostrar los gráficos
+# Mostrar los gráficos
 for (plot in plots) {
   print(plot)
 }
@@ -8972,35 +8972,35 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-## ----------------------------------------
-## 1. Definir los parámetros de la distribución Dirichlet
-## Diferentes vectores de parámetros alpha (equivalente a la list en R)
+# ----------------------------------------
+# 1. Definir los parámetros de la distribución Dirichlet
+# Diferentes vectores de parámetros alpha (equivalente a la list en R)
 alpha_values = [[1, 1, 1], [2, 5, 3], [5, 1, 1]]
 
-## ----------------------------------------
-## 2. Configuración de la simulación
+# ----------------------------------------
+# 2. Configuración de la simulación
 n_points = 1000  # Número de muestras (equivalente a n_points en R)
 all_data = [] # Lista para almacenar los DataFrames de las muestras
 
-## 3. Generar muestras para cada conjunto de parámetros (equivalente al bucle for en R)
+# 3. Generar muestras para cada conjunto de parámetros (equivalente al bucle for en R)
 for alpha in alpha_values:
-## Generar muestras aleatorias (equivalente a rdirichlet() en R)
+# Generar muestras aleatorias (equivalente a rdirichlet() en R)
     samples = np.random.dirichlet(alpha=alpha, size=n_points)
 
-## Convertir las muestras en un DataFrame
+# Convertir las muestras en un DataFrame
     sample_data = pd.DataFrame(samples, columns=["x1", "x2", "x3"])
 
-## Añadir una etiqueta para identificar el conjunto de parámetros
+# Añadir una etiqueta para identificar el conjunto de parámetros
     alpha_label = f"α = ({', '.join(map(str, alpha))})"
     sample_data['alpha_set'] = alpha_label
 
     all_data.append(sample_data)
 
-## 4. Combinar todos los data frames para la graficación (opcional, pero limpio)
-## En este caso, graficaremos de forma individual para replicar el 'print(plot)' de R.
+# 4. Combinar todos los data frames para la graficación (opcional, pero limpio)
+# En este caso, graficaremos de forma individual para replicar el 'print(plot)' de R.
 
-## ----------------------------------------
-## 5. Graficar las distribuciones (equivalente a ggplot2)
+# ----------------------------------------
+# 5. Graficar las distribuciones (equivalente a ggplot2)
 sns.set_style("whitegrid")
 plt.rcParams['figure.figsize'] = (15, 5) # Configurar tamaño de las figuras
 
@@ -9008,7 +9008,7 @@ fig, axes = plt.subplots(1, len(alpha_values), figsize=(18, 6))
 axes = axes.flatten() # Asegurar que es un array, incluso si es un solo gráfico
 
 for i, (alpha, data_df) in enumerate(zip(alpha_values, all_data)):
-## Crear el gráfico de dispersión (equivalente a geom_point())
+# Crear el gráfico de dispersión (equivalente a geom_point())
     sns.scatterplot(
         x='x1',
         y='x2',
@@ -9019,16 +9019,16 @@ for i, (alpha, data_df) in enumerate(zip(alpha_values, all_data)):
         s=10 # Tamaño del punto
     )
 
-## Añadir títulos y etiquetas (equivalente a labs())
+# Añadir títulos y etiquetas (equivalente a labs())
     axes[i].set_title(f"Distribución Dirichlet (α = ({', '.join(map(str, alpha))}))", fontsize=14)
     axes[i].set_xlabel(r'$x_1$', fontsize=12) # Uso de LaTeX para subíndices
     axes[i].set_ylabel(r'$x_2$', fontsize=12)
 
-## Limitar ejes a [0,1] (equivalente a xlim y ylim)
+# Limitar ejes a [0,1] (equivalente a xlim y ylim)
     axes[i].set_xlim(0, 1)
     axes[i].set_ylim(0, 1)
 
-## Opcional: Graficar el simplex 2D (x1 + x2 <= 1)
+# Opcional: Graficar el simplex 2D (x1 + x2 <= 1)
     axes[i].plot([0, 1], [1, 0], 'k--', alpha=0.5, linewidth=1)
     axes[i].plot([0, 0], [0, 1], 'k--', alpha=0.5, linewidth=1)
     axes[i].plot([0, 1], [0, 0], 'k--', alpha=0.5, linewidth=1)
@@ -9056,7 +9056,7 @@ plt.show()
 4. **Variabilidad**:
    - Las muestras generadas reflejan la variabilidad de las proporciones que se pueden obtener para un conjunto dado de parámetros $\alpha$. Por ejemplo, para valores de $\alpha$ muy diferentes entre sí, la variabilidad en las proporciones puede ser mayor, mientras que para valores más homogéneos, la variabilidad es menor.
 
-### Resumen
+### 3.67 Resumen
 Los diagramas de dispersión te permiten visualizar cómo la distribución Dirichlet modela combinaciones de proporciones en un contexto donde estas deben sumar 1. A medida que cambian los parámetros $\alpha$, la forma y la concentración de las muestras cambian, lo que refleja la influencia de esos parámetros en la distribución de probabilidad de las proporciones. Estos gráficos son útiles en campos como la estadística bayesiana, el aprendizaje automático y la teoría de juegos, donde entender la relación entre variables proporcionales es clave.
 
 #### 📜**Descripción del Código**
@@ -9078,14 +9078,14 @@ Los diagramas de dispersión te permiten visualizar cómo la distribución Diric
 
 * **Almacenar y mostrar los gráficos**: Cada gráfico generado se almacena en la lista `plots`, y posteriormente se imprimen todos los gráficos utilizando un bucle.
 
-### Resumen
+### 3.68 Resumen
 Este código ilustra cómo generar y visualizar muestras de la distribución Dirichlet para diferentes configuraciones de parámetros. Los gráficos resultantes permiten observar la distribución de las proporciones en un espacio de probabilidades, lo que es útil en contextos de modelado estadístico y análisis de datos.
 
 **EJERCICIO 15**
 
 Agrega ejemplos y los usos recomendados.
 
-### 🧬 Usos Recomendados de la Distribución Dirichlet
+### 3.69 🧬 Usos Recomendados de la Distribución Dirichlet
 
 La **Distribución Dirichlet** $\text{Dir}(\alpha_1, \alpha_2, \ldots, \alpha_K)$ es la generalización multivariante de la Distribución Beta. Modela la **distribución de probabilidades** sobre $K$ categorías, donde cada categoría es una proporción positiva y la suma de todas las proporciones es igual a 1. Se define sobre un **símplex estándar** de $K-1$ dimensiones.
 
@@ -9112,38 +9112,38 @@ La **Distribución Dirichlet** $\text{Dir}(\alpha_1, \alpha_2, \ldots, \alpha_K)
         * **A Posteriori:** La probabilidad actualizada de las $p_i$ se obtiene simplemente sumando las cuentas observadas al parámetro $\alpha$ inicial: $\text{Dir}(\alpha_1 + n_1, \alpha_2 + n_2, \ldots, \alpha_K + n_K)$. Esto simplifica enormemente el cálculo bayesiano.
 
 ---
-### 🔗 Relación Clave con otras Distribuciones
+### 3.70 🔗 Relación Clave con otras Distribuciones
 
 * **Generalización de la Beta:** Si $K=2$, la Distribución Dirichlet se reduce a la **Distribución Beta**.
     $$\text{Dir}(\alpha_1, \alpha_2) \equiv \text{Beta}(\alpha_1, \alpha_2)$$
 * **Generación de muestras:** Si generas $K$ variables aleatorias independientes $\text{Gamma}(\alpha_i, 1)$ y las normalizas dividiendo cada una por su suma, el vector resultante sigue una distribución Dirichlet.
 
-### 💻Ejemplos en codigo
+### 3.71 💻Ejemplos en codigo
 
 ```python
 import numpy as np
 
-## Función para calcular la media de un vector de Dirichlet
+# Función para calcular la media de un vector de Dirichlet
 def calcular_media_dirichlet(alpha):
     alpha_sum = np.sum(alpha)
     media = alpha / alpha_sum
     return media
 
-## ====================================================================
-## 1. Modelado de Proporciones (Nutrientes en la Dieta: Carbs, Grasas, Proteínas)
-## ====================================================================
+# ====================================================================
+# 1. Modelado de Proporciones (Nutrientes en la Dieta: Carbs, Grasas, Proteínas)
+# ====================================================================
 print("--- 1. Proporciones Categóricas (Nutrientes) ---")
 
-## Parámetros (ejemplo: dieta sesgada a Carbohidratos y Proteínas)
-## Alfa = (α_Carbs, α_Grasas, α_Proteínas)
+# Parámetros (ejemplo: dieta sesgada a Carbohidratos y Proteínas)
+# Alfa = (α_Carbs, α_Grasas, α_Proteínas)
 alpha_nutrientes = np.array([40, 15, 25])
 alpha_sum_nutrientes = np.sum(alpha_nutrientes)
 
-## 1a. Calcular la proporción media esperada de cada nutriente
+# 1a. Calcular la proporción media esperada de cada nutriente
 media_nutrientes = calcular_media_dirichlet(alpha_nutrientes)
 
-## 1b. Simular 5 muestras de la composición de la dieta
-## Usamos numpy.random.dirichlet
+# 1b. Simular 5 muestras de la composición de la dieta
+# Usamos numpy.random.dirichlet
 np.random.seed(42) # para resultados reproducibles
 muestras_nutrientes = np.random.dirichlet(alpha_nutrientes, size=5)
 
@@ -9154,22 +9154,22 @@ print(f"\n5 Composiciones de Dieta simuladas (suma debe ser ≈ 1):")
 for i, muestra in enumerate(muestras_nutrientes):
     print(f"  Muestra {i+1}: {muestra.round(3)} (Suma: {np.sum(muestra):.3f})")
 
-## ====================================================================
-## 2. Estadística Bayesiana (Dado de 6 Caras - Actualización Posterior)
-## ====================================================================
+# ====================================================================
+# 2. Estadística Bayesiana (Dado de 6 Caras - Actualización Posterior)
+# ====================================================================
 print("\n--- 2. Estadística Bayesiana (Dado de 6 Caras) ---")
 
-## A Priori: Dado justo no informativo (Uniforme)
+# A Priori: Dado justo no informativo (Uniforme)
 alpha_priori = np.array([1, 1, 1, 1, 1, 1])
 K = len(alpha_priori)
 
-## Datos Observados (Frecuencias de 60 lanzamientos)
+# Datos Observados (Frecuencias de 60 lanzamientos)
 observaciones = np.array([12, 11, 8, 9, 10, 10]) # n_i
 
-## 2a. Calcular el parámetro Alpha Posterior
+# 2a. Calcular el parámetro Alpha Posterior
 alpha_posterior = alpha_priori + observaciones
 
-## 2b. Calcular la media posterior de las probabilidades p_i
+# 2b. Calcular la media posterior de las probabilidades p_i
 media_posterior = calcular_media_dirichlet(alpha_posterior)
 
 print(f"Distribución A Priori: Dir({alpha_priori})")
@@ -9183,20 +9183,20 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.stats import dirichlet
 
-## NOTA: La librería Matplotlib NO tiene soporte nativo para gráficos de simplex.
-## Este código utiliza una función auxiliar basada en BarycentricCoordinates
-## para proyectar las coordenadas del simplex en un plano 2D.
+# NOTA: La librería Matplotlib NO tiene soporte nativo para gráficos de simplex.
+# Este código utiliza una función auxiliar basada en BarycentricCoordinates
+# para proyectar las coordenadas del simplex en un plano 2D.
 
 def plot_dirichlet_pdf(ax, alpha, title):
-## Definición de las esquinas del simplex 2D
+# Definición de las esquinas del simplex 2D
     corners = np.array([[0, 0], [1, 0], [0.5, np.sqrt(3)/2]])
-## Definición de la matriz de transformación
+# Definición de la matriz de transformación
     A = corners[:2,:].T - corners[2,:].reshape(2, 1)
 
-## Crea una malla de puntos en el simplex
+# Crea una malla de puntos en el simplex
     ref = np.array([[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]])
 
-## Número de puntos para la rejilla
+# Número de puntos para la rejilla
     n_points = 50
     x_val = np.linspace(0.001, 0.999, n_points)
     y_val = np.linspace(0.001, 0.999, n_points)
@@ -9205,29 +9205,29 @@ def plot_dirichlet_pdf(ax, alpha, title):
 
     Z = np.zeros_like(X)
 
-## Convertir coordenadas cartesianas a coordenadas de Dirichlet (proporciones p1, p2, p3)
+# Convertir coordenadas cartesianas a coordenadas de Dirichlet (proporciones p1, p2, p3)
     for i in range(n_points):
         for j in range(n_points):
-## Coordenadas Barycentric (conversión a p1, p2, p3)
+# Coordenadas Barycentric (conversión a p1, p2, p3)
             p1 = X[i, j]
             p2 = Y[i, j]
             if p1 + p2 < 1:
                 p3 = 1.0 - p1 - p2
                 probs = [p1, p2, p3]
-## Calcular la densidad de probabilidad (PDF)
+# Calcular la densidad de probabilidad (PDF)
                 Z[i, j] = dirichlet.pdf(probs, alpha)
             else:
                 Z[i, j] = 0
 
-## Proyectar las coordenadas del simplex
+# Proyectar las coordenadas del simplex
     ax.contourf(X, Y, Z, levels=20, cmap='viridis', zorder=-10)
 
-## Dibujar los límites del simplex
+# Dibujar los límites del simplex
     ax.plot([corners[0, 0], corners[1, 0], corners[2, 0], corners[0, 0]],
             [corners[0, 1], corners[1, 1], corners[2, 1], corners[0, 1]],
             color='black', linewidth=1)
 
-## Etiquetas de las esquinas (proporciones)
+# Etiquetas de las esquinas (proporciones)
     ax.text(corners[0, 0] - 0.05, corners[0, 1], '$p_1=1$', fontsize=12)
     ax.text(corners[1, 0] + 0.01, corners[1, 1], '$p_2=1$', fontsize=12)
     ax.text(corners[2, 0] - 0.02, corners[2, 1] + 0.01, '$p_3=1$', fontsize=12)
@@ -9239,18 +9239,18 @@ def plot_dirichlet_pdf(ax, alpha, title):
     ax.set_ylim(-0.05, 0.9)
     ax.set_aspect('equal')
 
-## ====================================================================
-## 1. Distribución de Temas (K=3, Simplex)
-## ====================================================================
+# ====================================================================
+# 1. Distribución de Temas (K=3, Simplex)
+# ====================================================================
 
 fig, axes = plt.subplots(1, 2, figsize=(12, 6))
 fig.suptitle('Visualización de la Distribución Dirichlet (K=3)', fontsize=16)
 
-## Ejemplo A: A Priori No Informativa (Uniforme)
+# Ejemplo A: A Priori No Informativa (Uniforme)
 alpha_uniforme = np.array([1, 1, 1])
 plot_dirichlet_pdf(axes[0], alpha_uniforme, f'Dirichlet Uniforme (α={alpha_uniforme})')
 
-## Ejemplo B: Concentrada (Inferencia Bayesiana o Proporciones)
+# Ejemplo B: Concentrada (Inferencia Bayesiana o Proporciones)
 alpha_concentrada = np.array([10, 5, 2])
 plot_dirichlet_pdf(axes[1], alpha_concentrada, f'Dirichlet Concentrada (α={alpha_concentrada})')
 
@@ -9258,7 +9258,7 @@ plt.tight_layout(rect=[0, 0, 1, 0.95])
 plt.show()
 ```
 
-### ✨Distribución de Chi-cuadrada $\chi^2$ o de Pearson
+### 3.72 ✨Distribución de Chi-cuadrada $\chi^2$ o de Pearson
 
 * **Descripción**: Modelo de distribuciones que se utiliza en pruebas de hipótesis y en la construcción de intervalos de confianza para varianzas. Se deriva de la suma de los cuadrados de variables aleatorias normales estándar.
 
@@ -9301,44 +9301,44 @@ $$
 * **Comandos en R**:
 
 ```r
-## PDF
+### 3.73 PDF
 dchisq(x, df = k)
 
-## CDF
+### 3.74 CDF
 pchisq(x, df = k)
 
-## Simulación
+### 3.75 Simulación
 rchisq(n, df = k)
 
 ```python
 import numpy as np
 from scipy.stats import chi2
 
-## ----------------------------------------
-## Definición de parámetros
+# ----------------------------------------
+# Definición de parámetros
 k = 5       # Grados de libertad (df en R y Python)
 x = 7.81    # valor para PDF/CDF (valor crítico al 97.5% para df=5)
 n = 10      # número de muestras para simulación
 
-## ----------------------------------------
-## PDF (Función de Densidad de Probabilidad)
-## dchisq(x, df = k)
-## scipy.stats.chi2.pdf(x, df=k)
+# ----------------------------------------
+# PDF (Función de Densidad de Probabilidad)
+# dchisq(x, df = k)
+# scipy.stats.chi2.pdf(x, df=k)
 pdf_value = chi2.pdf(x, df=k)
 print(f"PDF (chi2.pdf) para x={x}, df={k}: {pdf_value}")
 
-## ----------------------------------------
-## CDF (Función de Distribución Acumulada)
-## pchisq(x, df = k)
-## scipy.stats.chi2.cdf(x, df=k)
+# ----------------------------------------
+# CDF (Función de Distribución Acumulada)
+# pchisq(x, df = k)
+# scipy.stats.chi2.cdf(x, df=k)
 cdf_value = chi2.cdf(x, df=k)
 print(f"CDF (chi2.cdf) para x={x}, df={k}: {cdf_value}")
-## El valor debe ser ~0.975
+# El valor debe ser ~0.975
 
-## ----------------------------------------
-## Simulación/Muestreo
-## rchisq(n, df = k)
-## np.random.chisquare(df=k, size=n)
+# ----------------------------------------
+# Simulación/Muestreo
+# rchisq(n, df = k)
+# np.random.chisquare(df=k, size=n)
 samples = np.random.chisquare(df=k, size=n)
 print(f"Muestras (np.random.chisquare) n={n}, df={k}: {samples}")
 ```
@@ -9358,28 +9358,28 @@ La distribución Chi-cuadrada es valiosa en diversas áreas, como la teoría de 
 ```python
 """
 
-## Cargar las librerías necesarias
+# Cargar las librerías necesarias
 library(ggplot2)
 library(tidyr)
 
-## Definir los grados de libertad
+# Definir los grados de libertad
 k_values <- c(1, 2, 5, 10)  # Diferentes valores de k
 
-## Crear un rango de valores para x
+# Crear un rango de valores para x
 x <- seq(0, 30, length.out = 500)
 
-## Calcular la PDF para cada valor de k
+# Calcular la PDF para cada valor de k
 pdf_data <- data.frame(x = x)
 
 for (k in k_values) {
   pdf_data[[paste("PDF_k", k, sep = "_")]] <- dchisq(x, df = k)
 }
 
-## Convertir el data frame a formato largo para graficar
+# Convertir el data frame a formato largo para graficar
 pdf_long <- pivot_longer(pdf_data, cols = starts_with("PDF_k"),
                           names_to = "k", values_to = "density")
 
-## Graficar las distribuciones Chi-cuadrada
+# Graficar las distribuciones Chi-cuadrada
 ggplot(pdf_long, aes(x = x, y = density, color = k)) +
   geom_line(linewidth = 1) +  # Cambiado size por linewidth
   labs(title = "Distribución Chi-Cuadrada para Diferentes Valores de k",
@@ -9399,43 +9399,43 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from scipy.stats import chi2
 
-## ----------------------------------------
-## 1. Definir los grados de libertad
+# ----------------------------------------
+# 1. Definir los grados de libertad
 k_values = [1, 2, 5, 10]  # Diferentes valores de k
 
-## ----------------------------------------
-## 2. Crear un rango de valores para x (equivalente a seq() en R)
+# ----------------------------------------
+# 2. Crear un rango de valores para x (equivalente a seq() en R)
 x = np.linspace(0.001, 30, 500) # Iniciar en 0.001 para evitar el problema en x=0 para k=1
 
-## ----------------------------------------
-## 3. Calcular la PDF para cada valor de k y consolidar en un DataFrame
+# ----------------------------------------
+# 3. Calcular la PDF para cada valor de k y consolidar en un DataFrame
 data_list = []
 
 for k in k_values:
-## Calcular la PDF (equivalente a dchisq(x, df = k) en R)
+# Calcular la PDF (equivalente a dchisq(x, df = k) en R)
     pdf_values = chi2.pdf(x, df=k)
 
-## Crear un DataFrame temporal para el set actual de parámetros
+# Crear un DataFrame temporal para el set actual de parámetros
     df_temp = pd.DataFrame({
         'x': x,
         'Densidad': pdf_values,
-## Crear la columna de etiquetas (similar a paste/factor en R)
+# Crear la columna de etiquetas (similar a paste/factor en R)
         'Grados_Libertad': f"k = {k}"
     })
     data_list.append(df_temp)
 
-## Concatenar todos los DataFrames (similar a la etapa intermedia de R antes de pivot_longer)
-## Este paso ya crea el DataFrame en "formato largo" (tidy data)
+# Concatenar todos los DataFrames (similar a la etapa intermedia de R antes de pivot_longer)
+# Este paso ya crea el DataFrame en "formato largo" (tidy data)
 pdf_long = pd.concat(data_list, ignore_index=True)
 
-## ----------------------------------------
-## 4. Graficar las distribuciones Chi-cuadrada (equivalente a ggplot2)
+# ----------------------------------------
+# 4. Graficar las distribuciones Chi-cuadrada (equivalente a ggplot2)
 
-## Configurar el estilo (theme_minimal)
+# Configurar el estilo (theme_minimal)
 sns.set_style("whitegrid")
 plt.figure(figsize=(10, 6))
 
-## Crear la gráfica con Seaborn, usando 'Grados_Libertad' para el color
+# Crear la gráfica con Seaborn, usando 'Grados_Libertad' para el color
 sns.lineplot(
     data=pdf_long,
     x='x',
@@ -9444,15 +9444,15 @@ sns.lineplot(
     linewidth=2
 )
 
-## Añadir títulos y etiquetas (labs)
+# Añadir títulos y etiquetas (labs)
 plt.title("Distribución Chi-Cuadrada para Diferentes Valores de k", fontsize=16)
 plt.xlabel("$x$", fontsize=14)
 plt.ylabel("Densidad de Probabilidad (PDF)", fontsize=14)
 
-## Ajustar la leyenda (equivalente a scale_color_discrete y labs(color = ...))
+# Ajustar la leyenda (equivalente a scale_color_discrete y labs(color = ...))
 plt.legend(title="Grados de Libertad (k)", loc='upper right', frameon=True)
 
-## Mostrar la gráfica
+# Mostrar la gráfica
 plt.show()
 ```
 
@@ -9469,7 +9469,7 @@ plt.show()
 
 Agrega ejemplos y los usos recomendados.
 
-### 💡 Usos Recomendados de la Distribución Chi-Cuadrada ($\chi^2$)
+### 3.76 💡 Usos Recomendados de la Distribución Chi-Cuadrada ($\chi^2$)
 
 La **Distribución Chi-Cuadrada ($\chi^2$)** es una distribución continua y asimétrica que solo toma valores positivos. Es la distribución de la suma de los cuadrados de $v$ variables aleatorias Normales Estándar **independientes**. Su único parámetro es $v$, los **grados de libertad (gl)**, que determinan su forma.
 
@@ -9492,39 +9492,39 @@ La **Distribución Chi-Cuadrada ($\chi^2$)** es una distribución continua y asi
     * **Ejemplo (Prueba de Homogeneidad):** Comparar si la distribución de la opinión de los votantes (A favor, En contra, Indeciso) es la **misma** (homogénea) en dos ciudades diferentes.
 
 ---
-### 🔗 Relación Clave con otras Distribuciones
+### 3.77 🔗 Relación Clave con otras Distribuciones
 
 * **Derivada de la Normal:** La $\chi^2$ se deriva de la suma de variables Normales Estándar al cuadrado.
 * **Caso Especial de la Gamma:** La Distribución Chi-Cuadrada con $v$ grados de libertad es un caso especial de la Distribución Gamma con parámetros de forma $\alpha=v/2$ y escala $\beta=2$ (o $\lambda=1/2$ en la otra parametrización).
 
 $$\chi^2(v) \equiv \text{Gamma}(\alpha=v/2, \beta=2)$$
 
-### 💻Ejemplos en codigo
+### 3.78 💻Ejemplos en codigo
 
 ```python
 from scipy.stats import chi2
 import numpy as np
 
-## ====================================================================
-## 1. Inferencia sobre la Varianza Poblacional (Intervalo de Confianza)
-## ====================================================================
+# ====================================================================
+# 1. Inferencia sobre la Varianza Poblacional (Intervalo de Confianza)
+# ====================================================================
 print("--- 1. Intervalo de Confianza para la Varianza (σ²) ---")
 
-## Datos de muestra
+# Datos de muestra
 n = 25              # Tamaño de la muestra
 gl = n - 1          # Grados de libertad (v)
 s2 = 4.0            # Varianza muestral (s²)
 sigma2_hipotesis = 2.5 # Varianza poblacional conocida (σ₀²)
 
-## 1a. Construir Intervalo de Confianza del 95% para σ²
+# 1a. Construir Intervalo de Confianza del 95% para σ²
 alpha = 0.05
-## Cuantiles Chi-Cuadrada
+# Cuantiles Chi-Cuadrada
 chi2_izq = chi2.ppf(1 - alpha/2, df=gl)  # Cuantil superior (0.975)
 chi2_der = chi2.ppf(alpha/2, df=gl)      # Cuantil inferior (0.025)
 
-## Fórmulas del Intervalo de Confianza para σ²:
-## Limite Inferior = (n - 1) * s² / chi²_izq
-## Limite Superior = (n - 1) * s² / chi²_der
+# Fórmulas del Intervalo de Confianza para σ²:
+# Limite Inferior = (n - 1) * s² / chi²_izq
+# Limite Superior = (n - 1) * s² / chi²_der
 limite_inferior_var = (gl * s2) / chi2_izq
 limite_superior_var = (gl * s2) / chi2_der
 
@@ -9533,23 +9533,23 @@ print(f"Cuantil Superior (χ²₀.₉₇₅): {chi2_izq:.4f}")
 print(f"Cuantil Inferior (χ²₀.₀₂₅): {chi2_der:.4f}")
 print(f"Intervalo de Confianza del 95% para σ²: [{limite_inferior_var:.4f}, {limite_superior_var:.4f}]")
 
-## ====================================================================
-## 2. Pruebas de Bondad de Ajuste (Cálculo del Estadístico)
-## ====================================================================
+# ====================================================================
+# 2. Pruebas de Bondad de Ajuste (Cálculo del Estadístico)
+# ====================================================================
 print("\n--- 2. Cálculo del Estadístico Chi-Cuadrada (Bondad de Ajuste) ---")
 
-## Ejemplo: Venta de productos por día de la semana (Uniforme, K=5 categorías)
+# Ejemplo: Venta de productos por día de la semana (Uniforme, K=5 categorías)
 gl_ajuste = 5 - 1 # gl = K - 1
 ventas_observadas = np.array([55, 45, 60, 50, 40]) # O_i
 total_ventas = np.sum(ventas_observadas)
 
-## Frecuencias Esperadas (E_i = Total / K)
+# Frecuencias Esperadas (E_i = Total / K)
 ventas_esperadas = np.full_like(ventas_observadas, total_ventas / len(ventas_observadas))
 
-## Fórmula del Estadístico Chi-Cuadrada: Σ [(O_i - E_i)² / E_i]
+# Fórmula del Estadístico Chi-Cuadrada: Σ [(O_i - E_i)² / E_i]
 chi2_estadistico = np.sum((ventas_observadas - ventas_esperadas)**2 / ventas_esperadas)
 
-## Calcular el valor crítico (para α=0.05) y el p-valor
+# Calcular el valor crítico (para α=0.05) y el p-valor
 alpha_critico = 0.05
 valor_critico = chi2.ppf(1 - alpha_critico, df=gl_ajuste)
 p_valor = chi2.sf(chi2_estadistico, df=gl_ajuste) # sf = 1 - cdf
@@ -9564,12 +9564,12 @@ if p_valor < alpha_critico:
 else:
     print("Resultado: NO se rechaza H₀. La distribución es consistente con ser uniforme.")
 
-## ====================================================================
-## 3. Pruebas de Independencia (Cálculo de Grados de Libertad)
-## ====================================================================
+# ====================================================================
+# 3. Pruebas de Independencia (Cálculo de Grados de Libertad)
+# ====================================================================
 print("\n--- 3. Grados de Libertad para Prueba de Independencia ---")
 
-## Tabla de Contingencia 2x3 (Ejemplo: Género x Preferencia de Marca)
+# Tabla de Contingencia 2x3 (Ejemplo: Género x Preferencia de Marca)
 filas = 2 # Género (H, M)
 columnas = 3 # Marca (A, B, C)
 gl_independencia = (filas - 1) * (columnas - 1)
@@ -9583,14 +9583,14 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.stats import chi2
 
-## Configuración de los gráficos
+# Configuración de los gráficos
 plt.style.use('seaborn-v0_8-whitegrid')
 fig, axes = plt.subplots(3, 1, figsize=(10, 15))
 fig.suptitle('Visualización de la Distribución Chi-Cuadrada (χ²)', fontsize=16, y=1.02)
 
-## ====================================================================
-## 1. Influencia de los Grados de Libertad (gl)
-## ====================================================================
+# ====================================================================
+# 1. Influencia de los Grados de Libertad (gl)
+# ====================================================================
 gl_valores = [2, 5, 10]
 x_chi2_rango = np.linspace(0.01, 25, 500)
 
@@ -9604,9 +9604,9 @@ ax.set_xlabel('Valor χ²')
 ax.set_ylabel('Densidad de Probabilidad')
 ax.legend()
 
-## ====================================================================
-## 2. Intervalo de Confianza para σ² (gl=24)
-## ====================================================================
+# ====================================================================
+# 2. Intervalo de Confianza para σ² (gl=24)
+# ====================================================================
 gl_ic = 24
 chi2_izq_ic = chi2.ppf(0.975, df=gl_ic) # Cuantil superior (derecha)
 chi2_der_ic = chi2.ppf(0.025, df=gl_ic) # Cuantil inferior (izquierda)
@@ -9617,12 +9617,12 @@ y_pdf_ic = chi2.pdf(x_ic, df=gl_ic)
 ax = axes[1]
 ax.plot(x_ic, y_pdf_ic, color='blue')
 
-## Rellenar la zona de Aceptación (Intervalo Central 95%)
+# Rellenar la zona de Aceptación (Intervalo Central 95%)
 ax.fill_between(x_ic, y_pdf_ic, where=((x_ic >= chi2_der_ic) & (x_ic <= chi2_izq_ic)),
                 color='skyblue', alpha=0.6,
                 label='Zona de Aceptación 95%')
 
-## Rellenar la zona de Rechazo
+# Rellenar la zona de Rechazo
 ax.fill_between(x_ic, y_pdf_ic, where=(x_ic < chi2_der_ic), color='red', alpha=0.3)
 ax.fill_between(x_ic, y_pdf_ic, where=(x_ic > chi2_izq_ic), color='red', alpha=0.3, label='Zona de Rechazo')
 
@@ -9634,13 +9634,13 @@ ax.set_xlabel('Valor χ²')
 ax.set_ylabel('Densidad de Probabilidad')
 ax.legend()
 
-## ====================================================================
-## 3. Prueba de Bondad de Ajuste (gl=4)
-## ====================================================================
+# ====================================================================
+# 3. Prueba de Bondad de Ajuste (gl=4)
+# ====================================================================
 gl_test = 4
 chi2_estadistico_calc = 8.0 # Valor del ejemplo 2 para visualizar
 
-## Calcular el valor crítico para un test de una cola (α=0.05)
+# Calcular el valor crítico para un test de una cola (α=0.05)
 alpha_critico_test = 0.05
 valor_critico_test = chi2.ppf(1 - alpha_critico_test, df=gl_test)
 
@@ -9650,7 +9650,7 @@ y_pdf_test = chi2.pdf(x_test, df=gl_test)
 ax = axes[2]
 ax.plot(x_test, y_pdf_test, color='purple')
 
-## Rellenar la zona de rechazo (cola derecha)
+# Rellenar la zona de rechazo (cola derecha)
 ax.fill_between(x_test, y_pdf_test, where=(x_test > valor_critico_test),
                 color='orange', alpha=0.6,
                 label='Región de Rechazo (α=0.05)')
@@ -9663,12 +9663,12 @@ ax.set_xlabel('Valor χ²')
 ax.set_ylabel('Densidad de Probabilidad')
 ax.legend()
 
-## Ajustar diseño y mostrar
+# Ajustar diseño y mostrar
 plt.tight_layout()
 plt.show()
 ```
 
-### ✨Distribución t-Student
+### 3.79 ✨Distribución t-Student
 
 * **Descripción**: Modelo utilizado para estimar la media de una población cuando el tamaño de la muestra es pequeño y la varianza poblacional es desconocida. Es útil en pruebas de hipótesis y en intervalos de confianza.
 
@@ -9697,43 +9697,43 @@ $$
 
 **Comandos en R**:
 ```r
-## PDF
+### 3.80 PDF
 dt(x, df = nu)
 
-## CDF
+### 3.81 CDF
 pt(x, df = nu)
 
-## Simulación
+### 3.82 Simulación
 rt(n, df = nu)
 
 ```python
 import numpy as np
 from scipy.stats import t
 
-## ----------------------------------------
-## Definición de parámetros
+# ----------------------------------------
+# Definición de parámetros
 nu = 10      # Grados de libertad (df en R y Python)
 x = 1.812    # valor para PDF/CDF (valor crítico para nu=10, alfa=0.05 de dos colas)
 n = 10       # número de muestras para simulación
 
-## ----------------------------------------
-## PDF (Función de Densidad de Probabilidad)
-## dt(x, df = nu)
-## scipy.stats.t.pdf(x, df=nu)
+# ----------------------------------------
+# PDF (Función de Densidad de Probabilidad)
+# dt(x, df = nu)
+# scipy.stats.t.pdf(x, df=nu)
 pdf_value = t.pdf(x, df=nu)
 print(f"PDF (t.pdf) para x={x}, df={nu}: {pdf_value}")
 
-## ----------------------------------------
-## CDF (Función de Distribución Acumulada)
-## pt(x, df = nu)
-## scipy.stats.t.cdf(x, df=nu)
+# ----------------------------------------
+# CDF (Función de Distribución Acumulada)
+# pt(x, df = nu)
+# scipy.stats.t.cdf(x, df=nu)
 cdf_value = t.cdf(x, df=nu)
 print(f"CDF (t.cdf) para x={x}, df={nu}: {cdf_value}")
 
-## ----------------------------------------
-## Simulación/Muestreo
-## rt(n, df = nu)
-## np.random.standard_t(df=nu, size=n)
+# ----------------------------------------
+# Simulación/Muestreo
+# rt(n, df = nu)
+# np.random.standard_t(df=nu, size=n)
 samples = np.random.standard_t(df=nu, size=n)
 print(f"Muestras (np.random.standard_t) n={n}, df={nu}: {samples}")
 ```
@@ -9753,27 +9753,27 @@ La distribución t-Student es valiosa en campos como la estadística, la investi
 ```python
 """
 
-## Cargar la librería necesaria
+# Cargar la librería necesaria
 library(ggplot2)
 
-## Definir los grados de libertad
+# Definir los grados de libertad
 k_values <- c(1, 2, 5, 10)  # Diferentes valores de k
 
-## Crear un rango de valores para x
+# Crear un rango de valores para x
 x <- seq(-5, 5, length.out = 500)
 
-## Calcular la PDF para cada valor de k
+# Calcular la PDF para cada valor de k
 pdf_data <- data.frame(x = x)
 
 for (k in k_values) {
   pdf_data[[paste("PDF_k", k, sep = "_")]] <- dt(x, df = k)
 }
 
-## Convertir el data frame a formato largo para graficar
+# Convertir el data frame a formato largo para graficar
 pdf_long <- tidyr::pivot_longer(pdf_data, cols = starts_with("PDF_k"),
                                   names_to = "k", values_to = "density")
 
-## Graficar las distribuciones t-Student
+# Graficar las distribuciones t-Student
 ggplot(pdf_long, aes(x = x, y = density, color = k)) +
   geom_line(linewidth = 1) +
   labs(title = "Distribución t-Student para Diferentes Valores de k",
@@ -9793,42 +9793,42 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from scipy.stats import t
 
-## ----------------------------------------
-## 1. Definir los grados de libertad
+# ----------------------------------------
+# 1. Definir los grados de libertad
 k_values = [1, 2, 5, 10]  # Diferentes valores de k (df)
 
-## ----------------------------------------
-## 2. Crear un rango de valores para x (equivalente a seq() en R)
+# ----------------------------------------
+# 2. Crear un rango de valores para x (equivalente a seq() en R)
 x = np.linspace(-5, 5, 500)
 
-## ----------------------------------------
-## 3. Calcular la PDF para cada valor de k y consolidar en un DataFrame
+# ----------------------------------------
+# 3. Calcular la PDF para cada valor de k y consolidar en un DataFrame
 data_list = []
 
 for k in k_values:
-## Calcular la PDF (equivalente a dt(x, df = k) en R)
+# Calcular la PDF (equivalente a dt(x, df = k) en R)
     pdf_values = t.pdf(x, df=k)
 
-## Crear un DataFrame temporal para el set actual de parámetros
+# Crear un DataFrame temporal para el set actual de parámetros
     df_temp = pd.DataFrame({
         'x': x,
         'Densidad': pdf_values,
-## Crear la columna de etiquetas (similar a factor y paste en R)
+# Crear la columna de etiquetas (similar a factor y paste en R)
         'Grados_Libertad': f"k = {k}"
     })
     data_list.append(df_temp)
 
-## Concatenar todos los DataFrames. Esto crea el formato largo (equivalente a pivot_longer)
+# Concatenar todos los DataFrames. Esto crea el formato largo (equivalente a pivot_longer)
 pdf_long = pd.concat(data_list, ignore_index=True)
 
-## ----------------------------------------
-## 4. Graficar las distribuciones t-Student (equivalente a ggplot2)
+# ----------------------------------------
+# 4. Graficar las distribuciones t-Student (equivalente a ggplot2)
 
-## Configurar el estilo (theme_minimal)
+# Configurar el estilo (theme_minimal)
 sns.set_style("whitegrid")
 plt.figure(figsize=(10, 6))
 
-## Crear la gráfica con Seaborn, usando 'Grados_Libertad' para el color
+# Crear la gráfica con Seaborn, usando 'Grados_Libertad' para el color
 sns.lineplot(
     data=pdf_long,
     x='x',
@@ -9837,15 +9837,15 @@ sns.lineplot(
     linewidth=2
 )
 
-## Añadir títulos y etiquetas (labs)
+# Añadir títulos y etiquetas (labs)
 plt.title("Distribución t-Student para Diferentes Valores de k", fontsize=16)
 plt.xlabel("x", fontsize=14)
 plt.ylabel("Densidad de Probabilidad (PDF)", fontsize=14)
 
-## Ajustar leyenda (equivalente a scale_color_discrete y labs(color = ...))
+# Ajustar leyenda (equivalente a scale_color_discrete y labs(color = ...))
 plt.legend(title="Grados de Libertad (k)", loc='upper right', frameon=True)
 
-## Mostrar la gráfica
+# Mostrar la gráfica
 plt.show()
 ```
 
@@ -9858,7 +9858,7 @@ plt.show()
 * **Convertir a formato largo**: Se transforma el data frame a un formato largo utilizando `pivot_longer()` para facilitar la graficación.
 * **Graficar**: Se utiliza `ggplot` para crear un gráfico de líneas que representa la $ PDF $ de la distribución t-Student para los diferentes valores de $k$.
 
-### 📏 Usos Recomendados de la Distribución t-Student
+### 3.83 📏 Usos Recomendados de la Distribución t-Student
 
 La **Distribución t-Student** (o simplemente distribución $t$) es una distribución de probabilidad continua y simétrica, similar a la Normal Estándar, pero con **colas más pesadas** (más gruesas). Su forma se controla por un único parámetro: los **grados de libertad ($v$)**. Fue desarrollada por William Sealy Gosset (quien usó el seudónimo "Student").
 
@@ -9880,39 +9880,39 @@ La **Distribución t-Student** (o simplemente distribución $t$) es una distribu
     * **Ejemplo:** En un modelo de regresión que predice las ventas en función del gasto en publicidad, la distribución $t$ ayuda a determinar si el coeficiente de publicidad es **significativamente diferente de cero**, es decir, si el gasto en publicidad realmente tiene un efecto estadístico en las ventas.
 
 ---
-### 🔗 Relación Clave con la Distribución Normal
+### 3.84 🔗 Relación Clave con la Distribución Normal
 
 La Distribución t-Student es, en esencia, una corrección o versión robusta de la Normal Estándar ($\text{N}(0, 1)$).
 
 * **Convergencia:** A medida que el número de grados de libertad ($v$) **aumenta** ($v \to \infty$, o típicamente cuando $n > 30$), la distribución $t$-Student **converge y se vuelve idéntica** a la Distribución Normal Estándar.
 * **Incertidumbre:** Las colas más gruesas para valores bajos de $v$ reflejan la **mayor incertidumbre** que existe cuando se trabaja con muestras pequeñas, lo que hace que los valores extremos sean más probables que en una distribución Normal.
 
-### 💻Ejemplos en codigo
+### 3.85 💻Ejemplos en codigo
 
 ```python
 from scipy.stats import t
 import numpy as np
 
-## ====================================================================
-## 1. Inferencia Estadística (Prueba T para una Muestra - Consumo de Combustible)
-## ====================================================================
+# ====================================================================
+# 1. Inferencia Estadística (Prueba T para una Muestra - Consumo de Combustible)
+# ====================================================================
 print("--- 1. Prueba T para una Muestra (Consumo) ---")
 
-## Datos del ejemplo: 15 vehículos
+# Datos del ejemplo: 15 vehículos
 n = 15                 # Tamaño de la muestra
 gl = n - 1             # Grados de libertad (v)
 media_muestral = 15.2  # Consumo medio observado (km/L)
 desviacion_est = 1.8   # Desviación estándar muestral (s)
 mu_hipotesis = 16.0    # Media poblacional hipotética (μ₀)
 
-## 1a. Calcular el estadístico t (t = (x̄ - μ₀) / (s / √n))
+# 1a. Calcular el estadístico t (t = (x̄ - μ₀) / (s / √n))
 t_estadistico = (media_muestral - mu_hipotesis) / (desviacion_est / np.sqrt(n))
 
-## 1b. Calcular el p-valor para una prueba de dos colas
-## p-valor = 2 * P(T > |t_estadistico|) = 2 * sf(|t_estadistico|)
+# 1b. Calcular el p-valor para una prueba de dos colas
+# p-valor = 2 * P(T > |t_estadistico|) = 2 * sf(|t_estadistico|)
 p_valor_dos_colas = 2 * t.sf(np.abs(t_estadistico), df=gl)
 
-## 1c. Calcular el valor crítico para un Intervalo de Confianza del 95%
+# 1c. Calcular el valor crítico para un Intervalo de Confianza del 95%
 nivel_confianza = 0.95
 t_critico_ic = t.ppf(1 - (1 - nivel_confianza) / 2, df=gl)
 
@@ -9925,25 +9925,25 @@ if p_valor_dos_colas < 0.05:
 else:
     print("Resultado: NO hay evidencia de cambio significativo en el consumo.")
 
-## ====================================================================
-## 2. Comparación de Medias (Prueba T Pareada - Presión Arterial)
-## ====================================================================
+# ====================================================================
+# 2. Comparación de Medias (Prueba T Pareada - Presión Arterial)
+# ====================================================================
 print("\n--- 2. Intervalo de Confianza (t-Student) ---")
 
-## Datos de la diferencia (D = Después - Antes) para 20 pacientes
+# Datos de la diferencia (D = Después - Antes) para 20 pacientes
 n_pareada = 20
 gl_pareada = n_pareada - 1
 media_diferencia = -3.5  # Diferencia media observada (ej. reducción de 3.5 mmHg)
 desviacion_diferencia = 5.0 # Desviación estándar de las diferencias (s_D)
 
-## 2a. Calcular el Intervalo de Confianza del 99% para la diferencia media (μ_D)
+# 2a. Calcular el Intervalo de Confianza del 99% para la diferencia media (μ_D)
 nivel_confianza_ic = 0.99
 t_critico_ic_pareada = t.ppf(1 - (1 - nivel_confianza_ic) / 2, df=gl_pareada)
 
-## Margen de error (ME = t_critico * (s_D / √n))
+# Margen de error (ME = t_critico * (s_D / √n))
 margen_error = t_critico_ic_pareada * (desviacion_diferencia / np.sqrt(n_pareada))
 
-## Intervalo de Confianza: μ_D ± ME
+# Intervalo de Confianza: μ_D ± ME
 ic_inferior = media_diferencia - margen_error
 ic_superior = media_diferencia + margen_error
 
@@ -9958,18 +9958,18 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.stats import t, norm
 
-## Configuración de los gráficos
+# Configuración de los gráficos
 plt.style.use('seaborn-v0_8-whitegrid')
 fig, axes = plt.subplots(2, 1, figsize=(10, 10))
 fig.suptitle('Visualización de la Distribución t-Student', fontsize=16, y=1.02)
 
-## Rango de X (valores t)
+# Rango de X (valores t)
 x_t = np.linspace(-4.5, 4.5, 500)
 y_normal = norm.pdf(x_t, loc=0, scale=1)
 
-## ====================================================================
-## 1. Influencia de los Grados de Libertad y Convergencia
-## ====================================================================
+# ====================================================================
+# 1. Influencia de los Grados de Libertad y Convergencia
+# ====================================================================
 gl_valores = [2, 5, 10, 30]
 
 ax = axes[0]
@@ -9983,9 +9983,9 @@ ax.set_xlabel('Valor t')
 ax.set_ylabel('Densidad de Probabilidad')
 ax.legend()
 
-## ====================================================================
-## 2. Área de Rechazo para la Prueba T (gl=14, t_critico)
-## ====================================================================
+# ====================================================================
+# 2. Área de Rechazo para la Prueba T (gl=14, t_critico)
+# ====================================================================
 gl_prueba = 14
 t_critico_prueba = t.ppf(0.975, df=gl_prueba) # t_critico del 95%
 t_estadistico_calc = -2.1 # Ejemplo 1 (-2.1822 redondeado)
@@ -9995,13 +9995,13 @@ y_pdf_prueba = t.pdf(x_t, df=gl_prueba)
 ax = axes[1]
 ax.plot(x_t, y_pdf_prueba, color='blue')
 
-## Rellenar las colas de rechazo (prueba de dos colas, α=0.05)
+# Rellenar las colas de rechazo (prueba de dos colas, α=0.05)
 ax.fill_between(x_t, y_pdf_prueba, where=(x_t > t_critico_prueba),
                 color='red', alpha=0.3, label='Región de Rechazo (α/2)')
 ax.fill_between(x_t, y_pdf_prueba, where=(x_t < -t_critico_prueba),
                 color='red', alpha=0.3)
 
-## Marcar los valores críticos y el estadístico calculado
+# Marcar los valores críticos y el estadístico calculado
 ax.axvline(t_critico_prueba, color='red', linestyle=':', label=f't_crítico: ±{t_critico_prueba:.2f}')
 ax.axvline(-t_critico_prueba, color='red', linestyle=':')
 ax.axvline(t_estadistico_calc, color='black', linestyle='-',
@@ -10012,12 +10012,12 @@ ax.set_xlabel('Valor t')
 ax.set_ylabel('Densidad de Probabilidad')
 ax.legend()
 
-## Ajustar diseño y mostrar
+# Ajustar diseño y mostrar
 plt.tight_layout()
 plt.show()
 ```
 
-### ✨Distribución F (Fisher-Snedecor)
+### 3.86 ✨Distribución F (Fisher-Snedecor)
 
 * **Descripción**: Modelo utilizado para comparar dos varianzas a través de la relación entre dos variables aleatorias independientes que siguen distribuciones Chi-cuadrada. Se usa comúnmente en el análisis de varianza (ANOVA).
 
@@ -10057,44 +10057,44 @@ $$
 
 **Comandos en R**:
 ```r
-## PDF
+### 3.87 PDF
 df(x, df1 = d1, df2 = d2)
 
-## CDF
+### 3.88 CDF
 pf(x, df1 = d1, df2 = d2)
 
-## Simulación
+### 3.89 Simulación
 rf(n, df1 = d1, df2 = d2)
 
 ```python
 import numpy as np
 from scipy.stats import f
 
-## ----------------------------------------
-## Definición de parámetros
+# ----------------------------------------
+# Definición de parámetros
 d1 = 5      # Grados de libertad del numerador (df1 en R, dfn en Python)
 d2 = 10     # Grados de libertad del denominador (df2 en R, dfd en Python)
 x = 3.33    # valor para PDF/CDF (valor crítico al 97.5% para d1=5, d2=10)
 n = 10      # número de muestras para simulación
 
-## ----------------------------------------
-## PDF (Función de Densidad de Probabilidad)
-## df(x, df1 = d1, df2 = d2)
-## scipy.stats.f.pdf(x, dfn=d1, dfd=d2)
+# ----------------------------------------
+# PDF (Función de Densidad de Probabilidad)
+# df(x, df1 = d1, df2 = d2)
+# scipy.stats.f.pdf(x, dfn=d1, dfd=d2)
 pdf_value = f.pdf(x, dfn=d1, dfd=d2)
 print(f"PDF (f.pdf) para x={x}, df1={d1}, df2={d2}: {pdf_value}")
 
-## ----------------------------------------
-## CDF (Función de Distribución Acumulada)
-## pf(x, df1 = d1, df2 = d2)
-## scipy.stats.f.cdf(x, dfn=d1, dfd=d2)
+# ----------------------------------------
+# CDF (Función de Distribución Acumulada)
+# pf(x, df1 = d1, df2 = d2)
+# scipy.stats.f.cdf(x, dfn=d1, dfd=d2)
 cdf_value = f.cdf(x, dfn=d1, dfd=d2)
 print(f"CDF (f.cdf) para x={x}, df1={d1}, df2={d2}: {cdf_value}")
 
-## ----------------------------------------
-## Simulación/Muestreo
-## rf(n, df1 = d1, df2 = d2)
-## np.random.f(dfnum=d1, dfden=d2, size=n)
+# ----------------------------------------
+# Simulación/Muestreo
+# rf(n, df1 = d1, df2 = d2)
+# np.random.f(dfnum=d1, dfden=d2, size=n)
 samples = np.random.f(dfnum=d1, dfden=d2, size=n)
 print(f"Muestras (np.random.f) n={n}, df1={d1}, df2={d2}: {samples}")
 ```
@@ -10114,27 +10114,27 @@ La distribución F es valiosa en campos como la estadística, la ingeniería y l
 ```python
 """
 
-## Cargar la librería necesaria
+# Cargar la librería necesaria
 library(ggplot2)
 
-## Definir los grados de libertad
+# Definir los grados de libertad
 df_values <- list(c(2, 5), c(5, 2), c(5, 10), c(10, 5))  # Diferentes pares (d1, d2)
 
-## Crear un rango de valores para x
+# Crear un rango de valores para x
 x <- seq(0, 5, length.out = 500)
 
-## Calcular la PDF para cada par de grados de libertad
+# Calcular la PDF para cada par de grados de libertad
 pdf_data <- data.frame(x = x)
 
 for (df in df_values) {
   pdf_data[[paste("PDF_d1", df[1], "_d2", df[2], sep = "")]] <- df(x, df = df[1], df2 = df[2])
 }
 
-## Convertir el data frame a formato largo para graficar
+# Convertir el data frame a formato largo para graficar
 pdf_long <- tidyr::pivot_longer(pdf_data, cols = starts_with("PDF_d1"),
                                   names_to = "Degrees_of_Freedom", values_to = "density")
 
-## Graficar las distribuciones F
+# Graficar las distribuciones F
 ggplot(pdf_long, aes(x = x, y = density, color = Degrees_of_Freedom)) +
   geom_line(linewidth = 1) +
   labs(title = "Distribución F (Fisher-Snedecor) para Diferentes Pares de Grados de Libertad",
@@ -10154,45 +10154,45 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from scipy.stats import f
 
-## ----------------------------------------
-## 1. Definir los grados de libertad
-## Diferentes pares (dfn, dfd) - Equivalente a df_values en R
+# ----------------------------------------
+# 1. Definir los grados de libertad
+# Diferentes pares (dfn, dfd) - Equivalente a df_values en R
 df_values = [(2, 5), (5, 2), (5, 10), (10, 5)]
 
-## ----------------------------------------
-## 2. Crear un rango de valores para x (equivalente a seq() en R)
-## La distribución F está definida para x > 0
+# ----------------------------------------
+# 2. Crear un rango de valores para x (equivalente a seq() en R)
+# La distribución F está definida para x > 0
 x = np.linspace(0.01, 5, 500)
 
-## ----------------------------------------
-## 3. Calcular la PDF para cada par y consolidar en un DataFrame
+# ----------------------------------------
+# 3. Calcular la PDF para cada par y consolidar en un DataFrame
 data_list = []
 
 for d1, d2 in df_values:
-## Calcular la PDF (equivalente a df(x, df1 = d1, df2 = d2) en R)
-## dfn=d1 (numerador), dfd=d2 (denominador)
+# Calcular la PDF (equivalente a df(x, df1 = d1, df2 = d2) en R)
+# dfn=d1 (numerador), dfd=d2 (denominador)
     pdf_values = f.pdf(x, dfn=d1, dfd=d2)
 
-## Crear un DataFrame temporal
+# Crear un DataFrame temporal
     df_temp = pd.DataFrame({
         'x': x,
         'Densidad': pdf_values,
-## Crear la etiqueta de los parámetros para el color y la leyenda
+# Crear la etiqueta de los parámetros para el color y la leyenda
         'Grados_Libertad': f"({d1}, {d2})"
     })
     data_list.append(df_temp)
 
-## Concatenar todos los DataFrames. Esto crea el formato largo (equivalente a pivot_longer)
+# Concatenar todos los DataFrames. Esto crea el formato largo (equivalente a pivot_longer)
 pdf_long = pd.concat(data_list, ignore_index=True)
 
-## ----------------------------------------
-## 4. Graficar las distribuciones F (equivalente a ggplot2)
+# ----------------------------------------
+# 4. Graficar las distribuciones F (equivalente a ggplot2)
 
-## Configurar el estilo (theme_minimal)
+# Configurar el estilo (theme_minimal)
 sns.set_style("whitegrid")
 plt.figure(figsize=(10, 6))
 
-## Crear la gráfica con Seaborn, usando 'Grados_Libertad' para el color
+# Crear la gráfica con Seaborn, usando 'Grados_Libertad' para el color
 sns.lineplot(
     data=pdf_long,
     x='x',
@@ -10201,16 +10201,16 @@ sns.lineplot(
     linewidth=2
 )
 
-## Añadir títulos y etiquetas (labs)
+# Añadir títulos y etiquetas (labs)
 plt.title("Distribución F (Fisher-Snedecor) para Diferentes Pares de Grados de Libertad", fontsize=16)
 plt.xlabel("x", fontsize=14)
-## Usar notación LaTeX en la etiqueta del eje Y (opcional)
+# Usar notación LaTeX en la etiqueta del eje Y (opcional)
 plt.ylabel("Densidad de Probabilidad (PDF)", fontsize=14)
 
-## Ajustar leyenda (equivalente a scale_color_discrete y labs(color = ...))
+# Ajustar leyenda (equivalente a scale_color_discrete y labs(color = ...))
 plt.legend(title="Grados de Libertad $(d_1, d_2)$", loc='upper right', frameon=True)
 
-## Mostrar la gráfica
+# Mostrar la gráfica
 plt.show()
 ```
 
@@ -10227,7 +10227,7 @@ plt.show()
 
 Agrega ejemplos y los usos recomendados.
 
-### 🔬 Usos Recomendados de la Distribución F (Fisher-Snedecor)
+### 3.90 🔬 Usos Recomendados de la Distribución F (Fisher-Snedecor)
 
 La **Distribución F (Fisher-Snedecor)** es una distribución continua, positiva y asimétrica que surge del cociente de dos variables aleatorias $\chi^2$ independientes, cada una dividida por sus respectivos grados de libertad. Se caracteriza por dos parámetros de grados de libertad: $v_1$ (numerador) y $v_2$ (denominador).
 
@@ -10250,7 +10250,7 @@ La **Distribución F (Fisher-Snedecor)** es una distribución continua, positiva
     * **Aplicación:** Se utiliza para probar si un **modelo más complejo** (con más variables) es significativamente mejor para predecir la respuesta que un modelo más simple (con menos variables).
 
 ---
-### 🔗 Relación Clave con otras Distribuciones
+### 3.91 🔗 Relación Clave con otras Distribuciones
 
 La distribución F se define como el cociente de dos distribuciones $\chi^2$ normalizadas por sus grados de libertad:
 
@@ -10260,33 +10260,33 @@ Donde:
 * $v_1$ son los grados de libertad del numerador (p. ej., la varianza entre grupos en ANOVA).
 * $v_2$ son los grados de libertad del denominador (p. ej., la varianza dentro de los grupos en ANOVA).
 
-### 💻Ejemplos en codigo
+### 3.92 💻Ejemplos en codigo
 
 ```python
 from scipy.stats import f
 import numpy as np
 
-## ====================================================================
-## 1. Análisis de Varianza (ANOVA - Prueba de Medias de 3 Grupos)
-## ====================================================================
+# ====================================================================
+# 1. Análisis de Varianza (ANOVA - Prueba de Medias de 3 Grupos)
+# ====================================================================
 print("--- 1. Cálculo del Estadístico F (ANOVA) ---")
 
-## Parámetros del experimento (3 diseños de empaque, 10 ventas por diseño)
+# Parámetros del experimento (3 diseños de empaque, 10 ventas por diseño)
 K = 3     # Número de grupos (k)
 n_total = 30 # Número total de observaciones (N)
 
-## Grados de Libertad
+# Grados de Libertad
 v1 = K - 1          # GL del numerador (entre grupos)
 v2 = n_total - K    # GL del denominador (dentro de grupos)
 
-## Resultados del ANOVA (ejemplo de cálculo)
+# Resultados del ANOVA (ejemplo de cálculo)
 MS_Between = 450.0  # Varianza Media Entre Grupos (MSB)
 MS_Within = 150.0   # Varianza Media Dentro de Grupos (MSW)
 
-## 1a. Calcular el Estadístico F (F = MSB / MSW)
+# 1a. Calcular el Estadístico F (F = MSB / MSW)
 f_estadistico_anova = MS_Between / MS_Within
 
-## 1b. Calcular el Valor Crítico y el P-Valor (prueba de una cola derecha)
+# 1b. Calcular el Valor Crítico y el P-Valor (prueba de una cola derecha)
 alpha = 0.05
 f_critico = f.ppf(1 - alpha, dfn=v1, dfd=v2)
 p_valor = f.sf(f_estadistico_anova, dfn=v1, dfd=v2) # sf = 1 - cdf
@@ -10300,34 +10300,34 @@ if p_valor < alpha:
 else:
     print("Resultado: NO se rechaza H₀. No hay diferencia significativa en las medias.")
 
-## ====================================================================
-## 2. Comparación de Varianzas de Dos Poblaciones (Prueba F)
-## ====================================================================
+# ====================================================================
+# 2. Comparación de Varianzas de Dos Poblaciones (Prueba F)
+# ====================================================================
 print("\n--- 2. Prueba F para Comparación de Varianzas ---")
 
-## Datos de varianza (ejemplo: vida útil de baterías de dos proveedores)
+# Datos de varianza (ejemplo: vida útil de baterías de dos proveedores)
 n1 = 16   # Tamaño muestra Proveedor A
 n2 = 13   # Tamaño muestra Proveedor B
 s1_2 = 120.0 # Varianza muestral Proveedor A
 s2_2 = 50.0  # Varianza muestral Proveedor B
 
-## Grados de Libertad
+# Grados de Libertad
 v1_var = n1 - 1
 v2_var = n2 - 1
 
-## 2a. Calcular el Estadístico F (Se coloca la varianza mayor en el numerador)
+# 2a. Calcular el Estadístico F (Se coloca la varianza mayor en el numerador)
 f_estadistico_var = s1_2 / s2_2
 
-## 2b. Calcular el valor crítico para una prueba de dos colas (α=0.05)
+# 2b. Calcular el valor crítico para una prueba de dos colas (α=0.05)
 alpha_var = 0.05
-## Valor crítico superior (1 - α/2)
+# Valor crítico superior (1 - α/2)
 f_critico_var = f.ppf(1 - alpha_var/2, dfn=v1_var, dfd=v2_var)
 
 print(f"GL Numerador (v₁): {v1_var}, GL Denominador (v₂): {v2_var}")
 print(f"Estadístico F calculado (120/50): {f_estadistico_var:.4f}")
 print(f"Valor Crítico F (α/2=0.025): {f_critico_var:.4f}")
 
-## Nota: Para la prueba de dos colas, si F > F_critico o F < 1/F_critico, se rechaza H₀.
+# Nota: Para la prueba de dos colas, si F > F_critico o F < 1/F_critico, se rechaza H₀.
 if f_estadistico_var > f_critico_var:
      print("Resultado: Se rechaza H₀. Las varianzas SÍ son significativamente diferentes.")
 else:
@@ -10339,17 +10339,17 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.stats import f
 
-## Configuración de los gráficos
+# Configuración de los gráficos
 plt.style.use('seaborn-v0_8-whitegrid')
 fig, axes = plt.subplots(3, 1, figsize=(10, 15))
 fig.suptitle('Visualización de la Distribución F (Fisher-Snedecor)', fontsize=16, y=1.02)
 
-## Rango de X (valores F)
+# Rango de X (valores F)
 x_f = np.linspace(0.01, 5.0, 500)
 
-## ====================================================================
-## 1. Influencia de los Grados de Libertad
-## ====================================================================
+# ====================================================================
+# 1. Influencia de los Grados de Libertad
+# ====================================================================
 gl_pares = [
     (5, 10, 'v₁=5, v₂=10'),
     (10, 5, 'v₁=10, v₂=5'),
@@ -10366,9 +10366,9 @@ ax.set_xlabel('Valor F')
 ax.set_ylabel('Densidad de Probabilidad')
 ax.legend()
 
-## ====================================================================
-## 2. Prueba de ANOVA (Región de Rechazo, gl=2, 27)
-## ====================================================================
+# ====================================================================
+# 2. Prueba de ANOVA (Región de Rechazo, gl=2, 27)
+# ====================================================================
 v1_anova, v2_anova = 2, 27
 f_critico_anova = f.ppf(0.95, dfn=v1_anova, dfd=v2_anova)
 f_estadistico_calc = 3.0 # Valor del ejemplo 1 (450/150=3.0)
@@ -10378,7 +10378,7 @@ y_pdf_anova = f.pdf(x_f, dfn=v1_anova, dfd=v2_anova)
 ax = axes[1]
 ax.plot(x_f, y_pdf_anova, color='red')
 
-## Rellenar la zona de rechazo (cola derecha, α=0.05)
+# Rellenar la zona de rechazo (cola derecha, α=0.05)
 ax.fill_between(x_f, y_pdf_anova, where=(x_f > f_critico_anova),
                 color='salmon', alpha=0.6,
                 label='Región de Rechazo (α=0.05)')
@@ -10392,9 +10392,9 @@ ax.set_xlabel('Valor F')
 ax.set_ylabel('Densidad de Probabilidad')
 ax.legend()
 
-## ====================================================================
-## 3. Prueba de Varianzas (gl=15, 12)
-## ====================================================================
+# ====================================================================
+# 3. Prueba de Varianzas (gl=15, 12)
+# ====================================================================
 v1_var, v2_var = 15, 12
 f_critico_var_sup = f.ppf(0.975, dfn=v1_var, dfd=v2_var)
 f_critico_var_inf = f.ppf(0.025, dfn=v1_var, dfd=v2_var)
@@ -10405,7 +10405,7 @@ y_pdf_var = f.pdf(x_f, dfn=v1_var, dfd=v2_var)
 ax = axes[2]
 ax.plot(x_f, y_pdf_var, color='purple')
 
-## Rellenar las zonas de rechazo (prueba de dos colas, α=0.05)
+# Rellenar las zonas de rechazo (prueba de dos colas, α=0.05)
 ax.fill_between(x_f, y_pdf_var, where=(x_f > f_critico_var_sup), color='violet', alpha=0.6)
 ax.fill_between(x_f, y_pdf_var, where=(x_f < f_critico_var_inf), color='violet', alpha=0.6, label='Regiones de Rechazo (α=0.05)')
 
@@ -10419,14 +10419,14 @@ ax.set_xlabel('Valor F')
 ax.set_ylabel('Densidad de Probabilidad')
 ax.legend()
 
-## Ajustar diseño y mostrar
+# Ajustar diseño y mostrar
 plt.tight_layout()
 plt.show()
 ```
 
 ---
 
-## Resumen del Protocolo Maestro
+### 3.93 Resumen del Protocolo Maestro
 - **Solución Analítica Resaltada**: $\boxed{\text{Verificado con SymPy y SciPy stats}}$
 - **Verificación Simbólica (SymPy)**:
 
