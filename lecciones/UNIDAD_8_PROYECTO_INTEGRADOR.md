@@ -75,19 +75,19 @@ Puesto que $|t_{calc}| = 4.6212 > 2.0484$, **se rechaza la hipótesis nula $H_0$
 import sympy as sp
 from IPython.display import display, Math
 
-# 1. Definición de símbolos
+## 1. Definición de símbolos
 mean_a, mean_b = sp.symbols('\\bar{X}_A \\bar{X}_B', real=True)
 s_a, s_b = sp.symbols('S_A S_B', positive=True)
 n_a, n_b = sp.symbols('n_A n_B', positive=True, integer=True)
 
-# 2. Varianza agrupada simbólica Sp^2
+## 2. Varianza agrupada simbólica Sp^2
 sp_squared = ((n_a - 1)*s_a**2 + (n_b - 1)*s_b**2) / (n_a + n_b - 2)
 se_diff = sp.sqrt(sp_squared * (1/n_a + 1/n_b))
 t_stat = (mean_a - mean_b) / se_diff
 
 display(Math(fr"\text{{Estadístico t Simbólico Agrupado: }} t = {sp.latex(t_stat)}"))
 
-# 3. Sustitución de valores numéricos
+## 3. Sustitución de valores numéricos
 valores = {
     mean_a: 24.5,
     mean_b: 21.2,
@@ -112,16 +112,16 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
 
-# Configuración visual
+## Configuración visual
 sns.set_theme(style="whitegrid")
 plt.rcParams["figure.figsize"] = (12, 5)
 
-# --- PARTE A: Generación de Datos Experimentales ---
+## --- PARTE A: Generación de Datos Experimentales ---
 np.random.seed(101)
 lote_A = stats.norm.rvs(loc=24.5, scale=2.1, size=15)
 lote_B = stats.norm.rvs(loc=21.2, scale=1.8, size=15)
 
-# --- PARTE B: Verificación de Supuestos Estadísticos ---
+## --- PARTE B: Verificación de Supuestos Estadísticos ---
 p_norm_a = stats.shapiro(lote_A).pvalue
 p_norm_b = stats.shapiro(lote_B).pvalue
 p_homo = stats.levene(lote_A, lote_B).pvalue
@@ -131,16 +131,16 @@ print(f"Normalidad Shapiro-Wilk Lote A: p-valor = {p_norm_a:.4f} (OK si > 0.05)"
 print(f"Normalidad Shapiro-Wilk Lote B: p-valor = {p_norm_b:.4f} (OK si > 0.05)")
 print(f"Homocedasticidad Levene:        p-valor = {p_homo:.4f} (OK si > 0.05)")
 
-# --- PARTE C: Prueba t de Student de Dos Muestras ---
+## --- PARTE C: Prueba t de Student de Dos Muestras ---
 t_res = stats.ttest_ind(lote_A, lote_B, equal_var=True)
 print("\n--- RESULTADO DE LA PRUEBA T DE STUDENT ---")
 print(f"Estadístico t_calc: {t_res.statistic:.4f}")
 print(f"p-valor de dos colas: {t_res.pvalue:.6f}")
 
-# --- PARTE D: Visualización Profesional ---
+## --- PARTE D: Visualización Profesional ---
 fig, axes = plt.subplots(1, 2, figsize=(14, 5))
 
-# Gráfico 1: Boxplot comparativo de diámetros
+## Gráfico 1: Boxplot comparativo de diámetros
 df_exp = pd.DataFrame({
     'Diámetro (nm)': np.concatenate([lote_A, lote_B]),
     'Método Síntesis': ['Sol-Gel (A)']*15 + ['Microondas (B)']*15
@@ -150,7 +150,7 @@ sns.boxplot(data=df_exp, x='Método Síntesis', y='Diámetro (nm)', palette='Set
 sns.stripplot(data=df_exp, x='Método Síntesis', y='Diámetro (nm)', color='black', alpha=0.6, jitter=0.2, ax=axes[0])
 axes[0].set_title("Comparación Muestral de Diámetros TiO2 por Método", fontsize=12, fontweight="bold")
 
-# Gráfico 2: Simulación de Potencia de la Prueba mediante Monte Carlo
+## Gráfico 2: Simulación de Potencia de la Prueba mediante Monte Carlo
 efectos = np.linspace(0, 5, 50)
 potencias = []
 N_sim = 2000

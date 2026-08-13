@@ -89,22 +89,22 @@ $$\mathbb{E}[T] = \lambda \cdot \Gamma\left(1 + \frac{1}{k}\right) = 12.0 \cdot 
 import sympy as sp
 from IPython.display import display, Math
 
-# 1. Definición de variables simbólicas
+## 1. Definición de variables simbólicas
 u = sp.Symbol('U', positive=True)
 lam = sp.Symbol('lambda', positive=True)
 k = sp.Symbol('k', positive=True)
 t = sp.Symbol('t', positive=True)
 
-# 2. Ecuación de CDF de Weibull F(t) = U
+## 2. Ecuación de CDF de Weibull F(t) = U
 cdf_weibull = 1 - sp.exp(-(t/lam)**k)
 ecuacion = sp.Eq(cdf_weibull, u)
 
-# 3. Despeje simbólico de t (Transformada Inversa)
+## 3. Despeje simbólico de t (Transformada Inversa)
 solucion_t = sp.solve(sp.Eq(1 - u, sp.exp(-(t/lam)**k)), t)[0]
 
 display(Math(fr"\text{{Expresión Simbólica de la Transformada Inversa Weibull: }} T = {sp.latex(solucion_t)}"))
 
-# 4. Sustitución de valores numéricos de la nano-difusión (lambda=12.0, k=1.5, U=0.35)
+## 4. Sustitución de valores numéricos de la nano-difusión (lambda=12.0, k=1.5, U=0.35)
 valores = {lam: 12.0, k: 1.5, u: 0.35}
 t_numerico = float(solucion_t.subs(valores))
 
@@ -121,21 +121,21 @@ import scipy.stats as stats
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-# Configuración de estilo gráfico profesional
+## Configuración de estilo gráfico profesional
 sns.set_theme(style="whitegrid")
 plt.rcParams["figure.figsize"] = (12, 5)
 
-# --- PARTE A: Generador por Transformada Inversa vs SciPy ---
+## --- PARTE A: Generador por Transformada Inversa vs SciPy ---
 np.random.seed(42)
 N_muestras = 100_000
 lam_val = 12.0
 k_val = 1.5
 
-# Generación por Método de Transformada Inversa
+## Generación por Método de Transformada Inversa
 u_samples = np.random.uniform(0, 1, N_muestras)
 t_inversa = lam_val * (-np.log(u_samples)) ** (1.0 / k_val)
 
-# Generación nativa con SciPy (scipy.stats.weibull_min)
+## Generación nativa con SciPy (scipy.stats.weibull_min)
 t_scipy = stats.weibull_min.rvs(c=k_val, scale=lam_val, size=N_muestras)
 
 print("--- EVALUACIÓN ESTADÍSTICA DE LA SIMULACIÓN MONTE CARLO ---")
@@ -143,10 +143,10 @@ print(f"Media Transformada Inversa: {np.mean(t_inversa):.4f} s | Teórica: {lam_
 print(f"Media SciPy RVS:            {np.mean(t_scipy):.4f} s")
 print(f"Desviación Estándar Inversa:{np.std(t_inversa):.4f} s")
 
-# --- PARTE B: Visualización Profesional de la Simulación ---
+## --- PARTE B: Visualización Profesional de la Simulación ---
 fig, axes = plt.subplots(1, 2, figsize=(14, 5))
 
-# Gráfico 1: Histogramas comparativos de densidad empirical vs PDF teórica
+## Gráfico 1: Histogramas comparativos de densidad empirical vs PDF teórica
 sns.histplot(t_inversa, bins=60, stat="density", color="skyblue", label="Transformada Inversa (Monte Carlo)", ax=axes[0])
 x_grid = np.linspace(0, 45, 500)
 pdf_teorica = stats.weibull_min.pdf(x_grid, c=k_val, scale=lam_val)
@@ -156,7 +156,7 @@ axes[0].set_xlabel("Tiempo de Tránsito T (segundos)")
 axes[0].set_ylabel("Densidad de Probabilidad")
 axes[0].legend()
 
-# Gráfico 2: Q-Q Plot de validación de calidad de la simulación
+## Gráfico 2: Q-Q Plot de validación de calidad de la simulación
 stats.probplot(t_inversa, dist=stats.weibull_min, sparams=(k_val, 0, lam_val), plot=axes[1])
 axes[1].set_title("Q-Q Plot de Validación Estocástica (Weibull)", fontsize=12, fontweight="bold")
 axes[1].set_xlabel("Cuantiles Teóricos")
