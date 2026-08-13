@@ -38,3 +38,7 @@ tmp_inspect/
 
 # Archivos temporales de Office
 ~$*
+
+# Backups automaticos del pipeline de autofix editorial
+lecciones/.backup/
+
