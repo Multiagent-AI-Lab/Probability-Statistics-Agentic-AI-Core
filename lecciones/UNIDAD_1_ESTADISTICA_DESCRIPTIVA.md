@@ -71,21 +71,21 @@ La gran diferencia entre $\bar{x}=15.65$ y $\tilde{x}=12.95$ es la primera seña
 
 ### 2.3 Paso 2: Varianza y Desviación Estándar Muestral
 Con $\bar{x} = 15.65$:
-$$\sum_{i=1}^{10} (x_i - \bar{x})^2 = (12.1-15.65)^2 + \dots + (12.3-15.65)^2 \approx 792.53$$
-$$s^2 = \frac{792.53}{10-1} \approx \boxed{88.06\ \text{nm}^2}$$
-$$s = \sqrt{88.06} \approx \boxed{9.38\ \text{nm}}$$
+$$\sum_{i=1}^{10} (x_i - \bar{x})^2 = (12.1-15.65)^2 + \dots + (12.3-15.65)^2 \approx 691.27$$
+$$s^2 = \frac{691.27}{10-1} \approx \boxed{76.81\ \text{nm}^2}$$
+$$s = \sqrt{76.81} \approx \boxed{8.76\ \text{nm}}$$
 
-Una desviación estándar de $9.38\ \text{nm}$ es enorme frente a diámetros que en su mayoría rondan los $12$–$14\ \text{nm}$, lo que confirma la sospecha inicial.
+Una desviación estándar de $8.76\ \text{nm}$ es enorme frente a diámetros que en su mayoría rondan los $12$–$14\ \text{nm}$, lo que confirma la sospecha inicial.
 
 ### 2.4 Paso 3: Cuartiles, IQR y Detección de Outlier
-Con los datos ordenados, $Q_1$ (percentil 25, interpolación lineal) cae entre $12.1$ y $12.3$, y $Q_3$ (percentil 75) entre $13.4$ y $13.8$:
-$$Q_1 \approx 12.20\ \text{nm}, \qquad Q_3 \approx 13.65\ \text{nm}$$
-$$IQR = Q_3 - Q_1 = 13.65 - 12.20 = \boxed{1.45\ \text{nm}}$$
+Con los datos ordenados, $Q_1$ (percentil 25, interpolación lineal) cae entre $12.3$ y $12.5$, y $Q_3$ (percentil 75) entre $13.4$ y $13.8$:
+$$Q_1 \approx 12.35\ \text{nm}, \qquad Q_3 \approx 13.70\ \text{nm}$$
+$$IQR = Q_3 - Q_1 = 13.70 - 12.35 = \boxed{1.35\ \text{nm}}$$
 
 El límite superior para outliers es:
-$$Q_3 + 1.5 \cdot IQR = 13.65 + 1.5(1.45) = 13.65 + 2.175 = \boxed{15.825\ \text{nm}}$$
+$$Q_3 + 1.5 \cdot IQR = 13.70 + 1.5(1.35) = 13.70 + 2.025 = \boxed{15.725\ \text{nm}}$$
 
-Como $40.5\ \text{nm} > 15.825\ \text{nm}$, la observación se clasifica formalmente como **valor atípico** y debe excluirse antes de reportar el diámetro característico del lote de síntesis, o investigarse por separado como evidencia de agregación de nanopartículas.
+Como $40.5\ \text{nm} > 15.725\ \text{nm}$, la observación se clasifica formalmente como **valor atípico** y debe excluirse antes de reportar el diámetro característico del lote de síntesis, o investigarse por separado como evidencia de agregación de nanopartículas.
 
 ### 2.5 Paso 4: Estadísticas Recalculadas sin el Outlier
 Excluyendo $40.5\ \text{nm}$, con $n=9$:

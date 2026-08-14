@@ -213,7 +213,7 @@ plt.show()
 
 ---
 
-## 7. Módulo Complementario: Estimación MLE y Bootstrap No Paramétrico
+## 6. Módulo Complementario: Estimación MLE y Bootstrap No Paramétrico
 
 La inferencia moderna combina la **Estimación por Máxima Verosimilitud (MLE)** con el **remuestreo Bootstrap** para obtener intervalos de confianza empíricos sin asumir normalidad. El algoritmo de Bootstrap no paramétrico, dada una muestra $x_1,\dots,x_n$, consiste en:
 
@@ -221,7 +221,7 @@ La inferencia moderna combina la **Estimación por Máxima Verosimilitud (MLE)**
 2. Calcular el estimador $\hat{\theta}_b^*$ para cada réplica.
 3. Construir el intervalo de confianza del $(1-\alpha)\times 100\%$ mediante los percentiles $[\alpha/2,\ 1-\alpha/2]$ de las $B$ estimaciones.
 
-### 7.1 Inferencia Bootstrap en Python
+### 6.1 Inferencia Bootstrap en Python
 
 ```python
 import numpy as np
@@ -242,7 +242,7 @@ display(Math(fr"\text{{Media Muestral Original: }} \bar{{X}} = {np.mean(muestra_
 display(Math(fr"\text{{Intervalo de Confianza Bootstrap 95\%: }} [{ic_inf:.3f}, {ic_sup:.3f}]"))
 ```
 
-### 7.2 Verificación Simbólica del Estimador MLE de la Media Normal
+### 6.2 Verificación Simbólica del Estimador MLE de la Media Normal
 
 $$\boxed{\hat{\mu}_{MLE} = \bar{X} = \frac{1}{n}\sum_{i=1}^n X_i}$$
 
