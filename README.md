@@ -49,17 +49,11 @@ PROBABILIDAD Y ESTADÍSTICA/
 │   ├── UNIDAD_3_VARIABLES_ALEATORIAS_DISCRETAS.md
 │   ├── UNIDAD_4_DISTRIBUCIONES_CONJUNTAS.md
 │   ├── UNIDAD_5_VARIABLES_ALEATORIAS_CONTINUAS.md
-│   ├── UNIDAD_6_INFERENCIA_ESTIMACION.md
-│   └── UNIDAD_7_PROYECTO_INTEGRADOR.md
+│   ├── UNIDAD_6_MODELADO_SIMULACION.md
+│   ├── UNIDAD_7_INFERENCIA_ESTIMACION.md
+│   └── UNIDAD_8_PROYECTO_INTEGRADOR.md
 │
-├── notebooks/                          ← Notebooks compilados automáticamente
-│   ├── UNIDAD_1_ESTADISTICA_DESCRIPTIVA.ipynb
-│   ├── UNIDAD_2_PROBABILIDAD_COMBINATORIA.ipynb
-│   ├── UNIDAD_3_VARIABLES_ALEATORIAS_DISCRETAS.ipynb
-│   ├── UNIDAD_4_DISTRIBUCIONES_CONJUNTAS.ipynb
-│   ├── UNIDAD_5_VARIABLES_ALEATORIAS_CONTINUAS.ipynb
-│   ├── UNIDAD_6_INFERENCIA_ESTIMACION.ipynb
-│   └── UNIDAD_7_PROYECTO_INTEGRADOR.ipynb
+├── notebooks/                          ← Notebooks compilados automáticamente (8 unidades, mismo nombre que su .md)
 │
 ├── src/
 │   └── multiagent_core/                ← Arquitectura Agéntica (Auditoría + Consejo)
@@ -67,14 +61,16 @@ PROBABILIDAD Y ESTADÍSTICA/
 │       ├── code_auditor_agent.py
 │       ├── content_auditor_agent.py
 │       ├── evaluator_agent.py
-│       ├── orchestrator_agent.py
+│       ├── orchestrator_agent.py       ← Hard-gate de compilación (enforce_gate)
+│       ├── pedagogical_pipeline.py
 │       ├── stats_tutor_agent.py
 │       ├── pipeline.py
-│       └── council/                    ← El Consejo de 7 Expertos
+│       └── council/                    ← El Consejo de Expertos
 │           ├── architect_agent.py
 │           ├── scientist_agent.py
 │           ├── engineer_agent.py
-│           ├── safety_gate_agent.py
+│           ├── safety_gate_agent.py    ← Anacronismos curriculares + mismatch temático
+│           ├── layout_editorial_agent.py  ← Detección de bloques duplicados
 │           ├── analyst_agent.py
 │           ├── librarian_agent.py
 │           └── qa_agent.py
@@ -85,6 +81,7 @@ PROBABILIDAD Y ESTADÍSTICA/
 │   ├── orchestration/
 │   └── numerical/
 │
+├── scripts/legacy/                     ← Scripts de un solo uso del proceso de corrección de contenido
 ├── tests/                              ← Suite de pruebas automáticas (Pytest)
 ├── docs/                               ← Documentación y auditoría de notebooks
 ├── data/                               ← Datasets (Nanopartículas Meta-Analysis)
@@ -95,15 +92,16 @@ PROBABILIDAD Y ESTADÍSTICA/
 
 ## 🗺️ Mapa Curricular de Unidades
 
-| Unidad | Título | Temas Clave | Ecosistema Tecnológico | Status |
-|---|---|---|---|---|
-| **U1** | Estadística Descriptiva y EDA | Media, mediana, varianza, CV, kurtosis, polidispersidad | Pandas, Seaborn, SciPy | ✅ Compilado (97.5/100) |
-| **U2** | Probabilidad y Combinatoria | Axiomas de Kolmogorov, Bayes, permutaciones, combinatoria | SymPy, SciPy stats | ✅ Compilado (87.5/100) |
-| **U3** | Variables Aleatorias Discretas | PMF, CDF, Binomial, Poisson, valor esperado, varianza | SymPy.stats, SciPy | ✅ Compilado (82.5/100) |
-| **U4** | Distribuciones Conjuntas | Joint PDF/PMF, marginales, condicionales, covarianza | SymPy, Seaborn KDE 2D | ✅ Compilado (100.0/100) |
-| **U5** | Variables Aleatorias Continuas | PDF, CDF, Gaussiana/Normal, $Z$-score, percentiles | SciPy.stats, Matplotlib | ✅ Compilado (82.5/100) |
-| **U6** | Inferencia y Estimación | Teorema del Límite Central, Intervalos de Confianza $t$-Student | SciPy.stats, Statsmodels | ✅ Compilado (97.5/100) |
-| **U7** | Proyecto Integrador & IA | Validación multimodelo IA, K-S test, RMSE, $R^2$, paridad | Scikit-Learn, SciPy | ✅ Compilado (97.5/100) |
+| Unidad | Título | Temas Clave | Ecosistema Tecnológico |
+|---|---|---|---|
+| **U1** | Estadística Descriptiva y EDA | Media, mediana, varianza, IQR, asimetría, curtosis, KDE | Pandas, Seaborn, SciPy |
+| **U2** | Probabilidad y Combinatoria | Axiomas de Kolmogorov, conjuntos, combinatoria, Bayes | SymPy, SciPy stats |
+| **U3** | Variables Aleatorias Discretas | PMF, CDF, Binomial, Poisson, Geométrica, Hipergeométrica | SymPy, SciPy.stats |
+| **U4** | Distribuciones Conjuntas | PMF/PDF conjunta, marginal, condicional, covarianza, PCA | SymPy, Seaborn, NumPy |
+| **U5** | Variables Aleatorias Continuas | PDF, CDF, Normal, Exponencial, Gamma, Weibull | SciPy.stats, Matplotlib |
+| **U6** | Modelado y Simulación | Transformada inversa, aceptación-rechazo, Monte Carlo | NumPy, SciPy.stats |
+| **U7** | Inferencia y Prueba de Hipótesis | Error Tipo I/II, Neyman-Pearson, Z-test, t-test, $\chi^2$ | SciPy.stats, Statsmodels |
+| **U8** | Proyecto Integrador | Aplicación completa de pruebas de hipótesis | Scikit-Learn, SciPy |
 
 ---
 
@@ -115,10 +113,13 @@ El proyecto opera bajo la supervisión de un **Consejo de 7 Agentes** con 3 loop
 graph TD
     Arch["🏗️ @Architect<br/>Estructura + Memoria"] --> Sci["🔬 @Scientist<br/>Teoría Estadística + LaTeX"]
     Sci --> Eng["⚙️ @Engineer<br/>Código scipy/statsmodels"]
-    Eng --> Gate["🛡️ @Safety_Gate<br/>Validación Numérica + Pedagogía"]
+    Eng --> Gate["🛡️ @Safety_Gate<br/>Anacronismos + Mismatch Temático"]
+    Eng --> Editor["🎨 @Editor<br/>Bloques Duplicados (cross-unit / intra-file)"]
 
-    Gate -->|"❌ Error estadístico"| Eng
+    Gate -->|"❌ Bloqueo crítico"| Eng
+    Editor -->|"❌ Duplicado detectado"| Eng
     Gate -->|"✅ Válido"| Ana["📊 @Analyst<br/>Visualización + Interpretación"]
+    Editor -->|"✅ Sin duplicados"| Ana
 
     Ana --> Lib["📚 @Librarian<br/>Validación vs Literatura"]
 
@@ -126,7 +127,9 @@ graph TD
     Lib -->|"✅ Validado"| QA["✅ @QA<br/>Protocolo Maestro"]
 
     QA -->|"❌ Incompleto"| Eng
-    QA -->|"✅ Aprobado"| Done(("🏁 Notebook<br/>Maestro"))
+    QA -->|"✅ Aprobado"| Gatekeeper["🚪 OrchestratorAgent<br/>Hard-Gate (enforce_gate)"]
+    Gatekeeper -->|"❌ Bloqueado"| Skip(("⏸️ Notebook<br/>NO compilado"))
+    Gatekeeper -->|"✅ Compilar"| Done(("🏁 Notebook<br/>Maestro"))
 ```
 
 ---
@@ -135,8 +138,8 @@ graph TD
 
 ### 1. Clonar el repositorio y crear el entorno Conda
 ```bash
-git clone https://github.com/Multiagent-AI-Lab/Probabilidad-Estadistica-Inferencial-Agentic-Core.git
-cd Probabilidad-Estadistica-Inferencial-Agentic-Core
+git clone https://github.com/Multiagent-AI-Lab/Probability-Statistics-Agentic-AI-Core.git
+cd Probability-Statistics-Agentic-AI-Core
 
 conda env create -f environment.yml
 conda activate ia_stats
