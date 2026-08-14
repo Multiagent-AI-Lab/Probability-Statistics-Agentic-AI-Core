@@ -216,3 +216,109 @@ plt.show()
 * $\bar{x}$: diámetro promedio muestral de las nanopartículas de oro.
 * $s^2, s$: varianza y desviación estándar muestral del diámetro, indicadoras de la polidispersidad del lote sintetizado.
 * $Q_1, Q_3, IQR$: cuartiles y rango intercuartílico del diámetro, usados como criterio robusto de control de calidad para descartar artefactos de agregación en la síntesis de nanopartículas.
+
+---
+
+## 6. Módulo de Simulación: Estimación No Paramétrica de Densidad (KDE)
+
+En el análisis de datos de caracterización nanotecnológica, cuando no se presupone un modelo paramétrico estricto para el diámetro de las nanopartículas, se emplea la **Estimación No Paramétrica de Densidad por Kernel (KDE)**.
+
+### 6.1 Definición Matemática de KDE
+Dada una muestra independiente de tamaño $n$, el estimador de densidad por kernel $f_h(x)$ viene dado por:
+$$f_h(x) = \frac{1}{nh} \sum_{i=1}^n K\left(\frac{x - x_i}{h}\right)$$
+donde $K(u)$ es el kernel gaussiano $K(u) = \frac{1}{\sqrt{2\pi}} e^{-u^2/2}$ y $h > 0$ es el ancho de banda (bandwidth).
+
+### 6.2 Implementación Computacional en Python
+
+```python
+import numpy as np
+import scipy.stats as stats
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+## Generación de muestra sintética bimodal (diámetro de nanopartículas coloidales, dos poblaciones)
+np.random.seed(101)
+muestras_nano = np.concatenate([
+    stats.norm.rvs(loc=15, scale=2, size=300),
+    stats.norm.rvs(loc=35, scale=5, size=700)
+])
+
+## Estimación KDE con ancho de banda de Silverman
+kde = stats.gaussian_kde(muestras_nano, bw_method='silverman')
+x_grid = np.linspace(5, 55, 500)
+pdf_kde = kde.evaluate(x_grid)
+
+## Visualización
+plt.figure(figsize=(10, 5))
+sns.histplot(muestras_nano, bins=30, stat="density", color="skyblue", label="Histograma Muestral")
+plt.plot(x_grid, pdf_kde, color="darkblue", linewidth=2.5, label="Estimación KDE (Kernel Gaussiano)")
+plt.title("Estimación No Paramétrica de Densidad de Diámetro de Nanopartículas (KDE)", fontsize=12, fontweight="bold")
+plt.xlabel("Diámetro (nm)")
+plt.ylabel("Densidad de Probabilidad")
+plt.legend()
+plt.tight_layout()
+plt.show()
+
+print(f"Estimación KDE completada sobre n = {len(muestras_nano)} observaciones.")
+print(f"Ancho de banda (bandwidth) de Silverman: {kde.factor:.4f}")
+```
+
+---
+
+## 7. Módulo de Integración de Datos Reales: Materials Project API
+
+En la investigación moderna en IA y Nanotecnología, el análisis estadístico descriptivo se aplica directamente sobre repositorios masivos de materiales como **Materials Project**. A diferencia del ejercicio de control de calidad de nanopartículas de oro (Sección 2), aquí se ilustra el mismo tipo de análisis descriptivo sobre un dataset con múltiples materiales.
+
+### 7.1 Consulta y Análisis del Band Gap ($E_g$)
+Mediante la librería oficial `mp-api` es posible extraer propiedades fisicoquímicas reales de materiales, como el *Band Gap* $E_g$ (eV), la *Energía de Formación por Átomo* $\Delta E_f$ y el *Volumen de Celda* $V$. El siguiente ejemplo simula la estructura de datos que retornaría dicha consulta para tres óxidos semiconductores:
+
+```python
+import pandas as pd
+import numpy as np
+import scipy.stats as stats
+import matplotlib.pyplot as plt
+import seaborn as sns
+from IPython.display import display, Math
+
+## 1. Simulación de estructura de datos de Materials Project (mp-api)
+## Campos: material_id, formula, band_gap (eV), formation_energy_per_atom (eV/atom), volume (A^3)
+np.random.seed(2026)
+n_materiales = 150
+
+datos_materials_project = {
+    "material_id": [f"mp-{1000 + i}" for i in range(n_materiales)],
+    "formula": ["TiO2"]*50 + ["ZnO"]*50 + ["Fe2O3"]*50,
+    "band_gap": np.concatenate([
+        stats.norm.rvs(loc=3.2, scale=0.15, size=50),   # TiO2 (Anatasa)
+        stats.norm.rvs(loc=3.37, scale=0.20, size=50),  # ZnO
+        stats.norm.rvs(loc=2.1, scale=0.18, size=50)    # Fe2O3 (Hematita)
+    ]),
+}
+
+df_mp = pd.DataFrame(datos_materials_project)
+
+## 2. Análisis Estadístico Descriptivo de Band Gap (eV)
+band_gap_data = df_mp["band_gap"]
+
+media_bg = band_gap_data.mean()
+mediana_bg = band_gap_data.median()
+std_bg = band_gap_data.std()
+skewness_bg = band_gap_data.skew()
+
+display(Math(fr"\text{{Media: }} \bar{{X}} = {media_bg:.3f} \text{{ eV}}, \quad \text{{Mediana: }} \tilde{{X}} = {mediana_bg:.3f} \text{{ eV}}"))
+display(Math(fr"\text{{Desviación Estándar: }} s = {std_bg:.3f} \text{{ eV}}, \quad \text{{Asimetría (Skewness): }} {skewness_bg:.3f}"))
+
+## 3. Visualización Exploratoria: Histograma+KDE por material + Q-Q Plot
+fig, axes = plt.subplots(1, 2, figsize=(13, 5))
+
+sns.histplot(data=df_mp, x="band_gap", hue="formula", kde=True, element="step", ax=axes[0], palette="Set1")
+axes[0].set_title("Distribución de Band Gap por Material (Materials Project)", fontsize=11, fontweight="bold")
+axes[0].set_xlabel("Band Gap (eV)")
+axes[0].set_ylabel("Frecuencia")
+
+stats.probplot(band_gap_data, dist="norm", plot=axes[1])
+axes[1].set_title("Q-Q Plot de Band Gap vs Distribución Normal", fontsize=11, fontweight="bold")
+
+plt.tight_layout()
+plt.show()
+```
