@@ -1,7 +1,16 @@
 # UNIDAD 1: Estadística Descriptiva y Análisis Exploratorio de Datos
-> **Asignatura: Probabilidad y Estadística Inferencial**
-> **UCEMICH — Ingeniería en IA y Nanotecnología**
-> **Autor y Profesor: Mtro. Luis José Yudico Anaya**
+
+**Duración:** 1.5 semanas (9 horas)
+
+**Curso:** Probabilidad y Estadística Inferencial
+
+**Institución:** Universidad de la Ciénega del Estado de Michoacán de Ocampo (UCEMICH)
+
+**Profesor:** Luis José Yudico Anaya
+
+**Carrera:** Ingeniería en Nanotecnología
+
+**Nivel:** Tercer Semestre
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Multiagent-AI-Lab/Probability-Statistics-Agentic-AI-Core/blob/master/notebooks/UNIDAD_1_ESTADISTICA_DESCRIPTIVA.ipynb)
 
