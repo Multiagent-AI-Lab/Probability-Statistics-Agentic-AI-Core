@@ -3,6 +3,20 @@
 > **UCEMICH — Ingeniería en IA y Nanotecnología**
 > **Autor y Profesor: Mtro. Luis José Yudico Anaya**
 
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Multiagent-AI-Lab/Probability-Statistics-Agentic-AI-Core/blob/master/notebooks/UNIDAD_5_VARIABLES_ALEATORIAS_CONTINUAS.ipynb)
+
+```python
+import os
+import sys
+
+if 'google.colab' in sys.modules:
+    repo_dir = "Probability-Statistics-Agentic-AI-Core"
+    if not os.path.exists(repo_dir):
+        !git clone -q https://github.com/Multiagent-AI-Lab/{repo_dir}.git
+    os.chdir(repo_dir)
+    %pip install -q -r requirements.txt
+```
+
 ---
 
 ## 1. Fundamentación Teórica y Conceptos Clave
