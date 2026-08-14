@@ -3,7 +3,7 @@ ContentAuditorAgent: Audits lessons and notebooks against the 8 mandatory compon
 """
 
 import re
-from typing import Dict, Any, List
+from typing import Any, Dict
 
 
 class ContentAuditorAgent:
@@ -18,19 +18,24 @@ class ContentAuditorAgent:
             "Solución Analítica en \\boxed{}",
             "Solución Computacional (SciPy / statsmodels)",
             "Visualización Profesional (>=2 gráficos)",
-            "Interpretación Post-Gráfico & Diccionario de Variables"
+            "Interpretación Post-Gráfico & Diccionario de Variables",
         ]
 
     NANO_TERMS = [
-        "nanopartíc", "nanotub", "potencial zeta", "diámetro",
-        "síntesis", "toxicid", "nanomater",
+        "nanopartíc",
+        "nanotub",
+        "potencial zeta",
+        "diámetro",
+        "síntesis",
+        "toxicid",
+        "nanomater",
     ]
     NANO_MIN_WORDS = 150
 
     def _count_nano_context_words(self, markdown_text: str) -> int:
         """Cuenta las palabras de los parrafos que mencionan terminologia
         nanotecnologica (no el documento completo)."""
-        paragraphs = markdown_text.split("\n\n")
+        paragraphs = re.split(r"\n\s*\n", markdown_text)
         total = 0
         for paragraph in paragraphs:
             paragraph_lower = paragraph.lower()
@@ -42,22 +47,31 @@ class ContentAuditorAgent:
         words = len(markdown_text.split())
         latex_boxed = r"\boxed" in markdown_text or r"\boxed{" in markdown_text
         has_sympy = "sympy" in markdown_text.lower()
-        has_scipy = "scipy" in markdown_text.lower() or "statsmodels" in markdown_text.lower()
+        has_scipy = (
+            "scipy" in markdown_text.lower() or "statsmodels" in markdown_text.lower()
+        )
         nano_context_words = self._count_nano_context_words(markdown_text)
 
         # Count matplotlib/seaborn figures or plots
-        plot_count = markdown_text.lower().count("plt.") + markdown_text.lower().count("sns.") + markdown_text.lower().count("plotly")
+        plot_count = (
+            markdown_text.lower().count("plt.")
+            + markdown_text.lower().count("sns.")
+            + markdown_text.lower().count("plotly")
+        )
 
         # Check component checks
         component_checks = {
             "Teoría Completa": words >= 800,
-            "Ejemplo Analítico": "ejemplo" in markdown_text.lower() or "paso" in markdown_text.lower(),
+            "Ejemplo Analítico": "ejemplo" in markdown_text.lower()
+            or "paso" in markdown_text.lower(),
             "Verificación SymPy": has_sympy,
             "Contexto Nanotecnológico": nano_context_words >= self.NANO_MIN_WORDS,
             "Solución en \\boxed{}": latex_boxed,
             "Solución Computacional SciPy": has_scipy,
             "Visualización Profesional": plot_count >= 2,
-            "Interpretación & Diccionario": "interpret" in markdown_text.lower() or "diccionario" in markdown_text.lower() or "variables" in markdown_text.lower()
+            "Interpretación & Diccionario": "interpret" in markdown_text.lower()
+            or "diccionario" in markdown_text.lower()
+            or "variables" in markdown_text.lower(),
         }
 
         passed_components = [name for name, ok in component_checks.items() if ok]
@@ -72,5 +86,5 @@ class ContentAuditorAgent:
             "nano_context_words": nano_context_words,
             "component_checks": component_checks,
             "passed_components": passed_components,
-            "missing_components": missing_components
+            "missing_components": missing_components,
         }

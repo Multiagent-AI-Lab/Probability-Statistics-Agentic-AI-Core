@@ -3,8 +3,7 @@ SafetyGateAgent (@Safety_Gate): Agente Guardián de Supuestos Estadísticos,
 Secuencia Curricular y Pedagogía Socrática.
 """
 
-import re
-from typing import Dict, Any, List
+from typing import Any, Dict
 
 
 class SafetyGateAgent:
@@ -14,16 +13,27 @@ class SafetyGateAgent:
         self.assumptions_rules = {
             "t-test": ["shapiro", "normal", "normality"],
             "anova": ["levene", "bartlett", "homoscedasticity", "homocedasticidad"],
-            "regression": ["linearity", "homoscedasticidad", "independencia", "residuals"],
+            "regression": [
+                "linearity",
+                "homoscedasticidad",
+                "independencia",
+                "residuals",
+            ],
         }
 
         # Reglas de secuencia curricular estricta (Anacronismos prohibidos).
         # Terminos de Inferencia Avanzada (Pruebas de Hipotesis formales) estan
         # prohibidos hasta antes de UNIDAD 7 (Inferencia y Estimacion).
         hipotesis_terms = [
-            "Prueba UMP", "Error Tipo I", "Error Tipo II", "Rechazar H_0",
-            "Región Crítica", "Prueba de Hipótesis", "Likelihood Ratio",
-            "Prueba t de Student", "ANOVA",
+            "Prueba UMP",
+            "Error Tipo I",
+            "Error Tipo II",
+            "Rechazar H_0",
+            "Región Crítica",
+            "Prueba de Hipótesis",
+            "Likelihood Ratio",
+            "Prueba t de Student",
+            "ANOVA",
         ]
         self.unit_forbidden_terms = {
             "UNIDAD 1": hipotesis_terms,
@@ -39,12 +49,27 @@ class SafetyGateAgent:
         # Terminos requeridos por unidad: al menos uno debe aparecer para que
         # la unidad sea tematicamente coherente con su nombre curricular.
         self.unit_required_terms = {
-            "UNIDAD 2": ["combinatoria", "bayes", "axioma", "permutación", "permutacion", "combinación", "combinacion"],
+            "UNIDAD 2": [
+                "combinatoria",
+                "bayes",
+                "axioma",
+                "permutación",
+                "permutacion",
+                "combinación",
+                "combinacion",
+            ],
             "UNIDAD 4": ["conjunta", "marginal", "condicional", "covarianza"],
-            "UNIDAD 6": ["simulación", "simulacion", "monte carlo", "transformada inversa"],
+            "UNIDAD 6": [
+                "simulación",
+                "simulacion",
+                "monte carlo",
+                "transformada inversa",
+            ],
         }
 
-    def validate_assumptions(self, lesson_text: str, unit_name: str = "") -> Dict[str, Any]:
+    def validate_assumptions(
+        self, lesson_text: str, unit_name: str = ""
+    ) -> Dict[str, Any]:
         warnings = []
         critical_flags = []
         text_lower = lesson_text.lower()
@@ -61,7 +86,10 @@ class SafetyGateAgent:
 
         # 2. Validacion de Secuencia Curricular (CRITICO: anacronismo)
         for unit_key, forbidden_terms in self.unit_forbidden_terms.items():
-            if unit_key.lower() in unit_name.lower() or unit_key.lower() in lesson_text[:200].lower():
+            if (
+                unit_key.lower() in unit_name.lower()
+                or unit_key.lower() in lesson_text[:200].lower()
+            ):
                 for term in forbidden_terms:
                     if term.lower() in text_lower:
                         warnings.append(
@@ -71,8 +99,13 @@ class SafetyGateAgent:
 
         # 3. Validacion de Mismatch Tematico (CRITICO: contenido de otra unidad)
         for unit_key, required_terms in self.unit_required_terms.items():
-            if unit_key.lower() in unit_name.lower() or unit_key.lower() in lesson_text[:200].lower():
-                has_required = any(term.lower() in text_lower for term in required_terms)
+            if (
+                unit_key.lower() in unit_name.lower()
+                or unit_key.lower() in lesson_text[:200].lower()
+            ):
+                has_required = any(
+                    term.lower() in text_lower for term in required_terms
+                )
                 if not has_required:
                     warnings.append(
                         f"🚨 [Error de Mismatch Temático]: La '{unit_key}' no contiene ninguno de los términos esperados ({', '.join(required_terms)}); el contenido podría pertenecer a otra unidad."

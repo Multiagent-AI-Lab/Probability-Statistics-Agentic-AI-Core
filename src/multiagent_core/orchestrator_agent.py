@@ -3,21 +3,25 @@ OrchestratorAgent: Coordinates compilation, code auditing, content auditing, and
 """
 
 import os
-from typing import Dict, Any, List
+from typing import Any, Dict, List, Optional
 
 from .code_auditor_agent import CodeAuditorAgent
 from .content_auditor_agent import ContentAuditorAgent
+from .council.layout_editorial_agent import LayoutEditorialAgent
+from .council.safety_gate_agent import SafetyGateAgent
 from .evaluator_agent import EvaluatorAgent
 from .notebook_compiler_agent import NotebookCompilerAgent
-from .council.safety_gate_agent import SafetyGateAgent
-from .council.layout_editorial_agent import LayoutEditorialAgent
 
 
 class OrchestratorAgent:
     """Orchestrator for the multiagent auditing and compilation pipeline."""
 
-    def __init__(self, lecciones_dir: str = "lecciones", notebooks_dir: str = "notebooks"):
-        self.compiler = NotebookCompilerAgent(lecciones_dir=lecciones_dir, notebooks_dir=notebooks_dir)
+    def __init__(
+        self, lecciones_dir: str = "lecciones", notebooks_dir: str = "notebooks"
+    ):
+        self.compiler = NotebookCompilerAgent(
+            lecciones_dir=lecciones_dir, notebooks_dir=notebooks_dir
+        )
         self.code_auditor = CodeAuditorAgent()
         self.content_auditor = ContentAuditorAgent()
         self.evaluator = EvaluatorAgent()
@@ -30,7 +34,9 @@ class OrchestratorAgent:
             return f"UNIDAD {md_filename.split('_')[1]}"
         return md_filename
 
-    def _check_gate(self, md_filename: str, md_text: str, duplicate_unit_names: set) -> Dict[str, Any]:
+    def _check_gate(
+        self, md_filename: str, md_text: str, duplicate_unit_names: set
+    ) -> Dict[str, Any]:
         unit_name = self._unit_name_from_filename(md_filename)
 
         safety_result = self.safety_gate.validate_assumptions(md_text, unit_name)
@@ -39,12 +45,18 @@ class OrchestratorAgent:
             return {"blocked": True, "reason": reason}
 
         if unit_name in duplicate_unit_names:
-            return {"blocked": True, "reason": f"Bloque de texto duplicado detectado que involucra a {unit_name}."}
+            return {
+                "blocked": True,
+                "reason": f"Bloque de texto duplicado detectado que involucra a {unit_name}.",
+            }
 
         return {"blocked": False, "reason": ""}
 
-    def run_pipeline_on_file(self, md_filename: str, gate_decision: Dict[str, Any] = None) -> Dict[str, Any]:
-        gate_decision = gate_decision or {"blocked": False, "reason": ""}
+    def run_pipeline_on_file(
+        self, md_filename: str, gate_decision: Optional[Dict[str, Any]] = None
+    ) -> Dict[str, Any]:
+        if gate_decision is None:
+            gate_decision = {"blocked": False, "reason": ""}
 
         md_path = os.path.join(self.compiler.lecciones_dir, md_filename)
         with open(md_path, "r", encoding="utf-8") as f:
@@ -80,11 +92,15 @@ class OrchestratorAgent:
         if not os.path.exists(self.compiler.lecciones_dir):
             return results
 
-        md_filenames = sorted(f for f in os.listdir(self.compiler.lecciones_dir) if f.endswith(".md"))
+        md_filenames = sorted(
+            f for f in os.listdir(self.compiler.lecciones_dir) if f.endswith(".md")
+        )
 
         lessons_text: Dict[str, str] = {}
         for fname in md_filenames:
-            with open(os.path.join(self.compiler.lecciones_dir, fname), "r", encoding="utf-8") as f:
+            with open(
+                os.path.join(self.compiler.lecciones_dir, fname), "r", encoding="utf-8"
+            ) as f:
                 lessons_text[self._unit_name_from_filename(fname)] = f.read()
 
         duplicate_unit_names: set = set()
@@ -97,11 +113,14 @@ class OrchestratorAgent:
         for fname in md_filenames:
             if enforce_gate:
                 unit_name = self._unit_name_from_filename(fname)
-                gate_decision = self._check_gate(fname, lessons_text[unit_name], duplicate_unit_names)
+                gate_decision = self._check_gate(
+                    fname, lessons_text[unit_name], duplicate_unit_names
+                )
             else:
                 gate_decision = {"blocked": False, "reason": ""}
 
-            results.append(self.run_pipeline_on_file(fname, gate_decision=gate_decision))
+            results.append(
+                self.run_pipeline_on_file(fname, gate_decision=gate_decision)
+            )
 
         return results
-
