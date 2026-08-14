@@ -1,7 +1,16 @@
 # UNIDAD 3: Variables Aleatorias Discretas y Distribuciones de Probabilidad
-> **Asignatura: Probabilidad y Estadística Inferencial**
-> **UCEMICH — Ingeniería en IA y Nanotecnología**
-> **Autor y Profesor: Mtro. Luis José Yudico Anaya**
+
+**Duración:** 2 semanas (12 horas)
+
+**Curso:** Probabilidad y Estadística Inferencial
+
+**Institución:** Universidad de la Ciénega del Estado de Michoacán de Ocampo (UCEMICH)
+
+**Profesor:** Luis José Yudico Anaya
+
+**Carrera:** Ingeniería en Nanotecnología
+
+**Nivel:** Tercer Semestre
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Multiagent-AI-Lab/Probability-Statistics-Agentic-AI-Core/blob/master/notebooks/UNIDAD_3_VARIABLES_ALEATORIAS_DISCRETAS.ipynb)
 
