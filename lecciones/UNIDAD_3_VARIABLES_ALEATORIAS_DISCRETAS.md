@@ -93,6 +93,16 @@ Muestreo **sin reemplazo** de una población finita $N$ que contiene $K$ element
 * PMF:
   $$P(X = k) = \frac{\binom{K}{k} \binom{N-K}{n-k}}{\binom{N}{n}}$$
 
+### 2.7 Distribución Uniforme Discreta ($X \sim \text{Uniforme}\{1,\dots,k\}$)
+Modela un experimento donde cada uno de $k$ resultados posibles tiene exactamente la misma probabilidad de ocurrir.
+* PMF: $P(X = x_i) = \dfrac{1}{k}, \quad x_i \in \{1, 2, \dots, k\}$.
+* Esperanza: $\mathbb{E}[X] = \dfrac{k+1}{2}$, Varianza: $\text{Var}(X) = \dfrac{k^2-1}{12}$.
+
+### 2.8 Distribución Multinomial ($X_1,\dots,X_k \sim \text{Multinomial}(n, p_1,\dots,p_k)$)
+Generaliza la distribución Binomial a experimentos con más de dos resultados posibles por ensayo.
+* PMF: $P(X_1=k_1,\dots,X_k=k_k) = \dfrac{n!}{k_1!\,k_2!\cdots k_k!}\, p_1^{k_1} p_2^{k_2} \cdots p_k^{k_k}$, con $\sum_i k_i = n$.
+* Esperanza por componente: $\mathbb{E}[X_i] = np_i$, Desviación estándar: $\sigma_i = \sqrt{np_i(1-p_i)}$.
+
 ---
 
 ## 3. Ejemplo Analítico Paso a Paso: Inspección Nanotecnológica de Micro-sensores
