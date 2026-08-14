@@ -59,3 +59,10 @@ def test_sanitize_does_not_touch_matplotlib_alpha_kwarg():
     result = compiler._sanitize_text(code)
     assert result == code
 
+
+def test_sanitize_does_not_corrupt_spanish_words_ending_in_ar_before_brace():
+    compiler = NotebookCompilerAgent()
+    text = "La covar{Y} es una palabra valida, igual que similar{Z}."
+    result = compiler._sanitize_text(text)
+    assert result == text
+
