@@ -18,9 +18,20 @@ __pycache__/
 .ipynb_checkpoints/
 *-checkpoint.ipynb
 
-# Material crudo de alumnos (privacidad y tamaño)
+# Material crudo de alumnos y listas de asistencia (privacidad y tamaño)
 raw_student_notebooks/
 *.zip
+PdfViewer.pdf
+
+# Material administrativo/institucional (planeaciones didácticas, fichas
+# técnicas del programa oficial). Se conserva localmente en docs/legado/
+# pero no se publica en GitHub — mismo patrón que el repo hermano de
+# Lógica de Programación.
+docs/legado/
+
+# Artefactos internos del flujo de trabajo con Claude Code (specs, planes).
+# Se conservan localmente pero no se publican en el repo público.
+docs/superpowers/
 
 # ChromaDB & Memoria local de Agentes
 .chroma/
