@@ -213,6 +213,30 @@ plt.show()
 
 ---
 
+### 5.3 PARTE C: Distribución Multinomial — Clasificación de Nanopartículas Sintetizadas por Tamaño
+
+En aplicaciones de nanotecnología de síntesis de nanomateriales, es común clasificar nanopartículas en categorías de tamaño tras su síntesis química. En un proceso de síntesis sol-gel de nanopartículas de óxido metálico, se obtiene un lote de nanopartículas que se clasifican automáticamente en tres categorías de diámetro: pequeñas (<10 nm), medianas (10-30 nm) y grandes (>30 nm). Este tipo de clasificación multinomial es crítico para el control de calidad en nanotecnología y permite optimizar los parámetros de síntesis para obtener la distribución deseada de tamaños.
+
+```python
+## --- PARTE C: Distribución Multinomial — Clasificación de Nanopartículas por Tamaño ---
+from scipy.stats import multinomial
+
+## Un lote de n=20 nanopartículas se clasifica en 3 categorías de tamaño tras la síntesis:
+## pequeña (<10nm), mediana (10-30nm), grande (>30nm), con probabilidades conocidas del proceso
+n_lote = 20
+p_categorias = [0.2, 0.5, 0.3]  # P(pequeña), P(mediana), P(grande)
+
+## Probabilidad de obtener exactamente 4 pequeñas, 10 medianas, 6 grandes
+conteo_observado = [4, 10, 6]
+prob_conteo = multinomial.pmf(conteo_observado, n=n_lote, p=p_categorias)
+print(f"P(4 pequeñas, 10 medianas, 6 grandes) = {prob_conteo:.6f}")
+
+## Esperanza por categoría
+esperanza = [n_lote * p for p in p_categorias]
+print(f"Número esperado por categoría: {esperanza}")
+```
+
+
 ## 6. Interpretación Post-Gráfico & Diccionario de Variables
 
 ### 6.1 Interpretación de Resultados Computacionales
