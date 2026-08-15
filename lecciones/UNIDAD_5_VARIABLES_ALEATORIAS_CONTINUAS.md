@@ -86,6 +86,42 @@ Generalización de la distribución exponencial para el tiempo hasta observar $k
 Ampliamente utilizada en ingeniería de materiales y confiabilidad para describir el tiempo de falla y resistencia a la rotura.
 * PDF: $f(x) = \frac{k}{\lambda} \left(\frac{x}{\lambda}\right)^{k-1} \exp\left(-\left(\frac{x}{\lambda}\right)^k\right)$ para $x \ge 0$.
 
+### 2.6 Distribución Chi-cuadrada ($X \sim \chi^2_k$)
+Distribución de la suma de $k$ variables normales estándar independientes al cuadrado; fundamental en pruebas de hipótesis sobre varianzas.
+* PDF: $f(x) = \dfrac{1}{2^{k/2}\Gamma(k/2)} x^{(k/2)-1} e^{-x/2}$ para $x \ge 0$.
+* Esperanza: $\mathbb{E}[X] = k$, Desviación estándar: $\sigma = \sqrt{2k}$.
+* **Aplicación en nanotecnología**: al caracterizar el diámetro de nanopartículas producidas por síntesis coloidal (por ejemplo, nanopartículas de oro o puntos cuánticos de CdSe), la variabilidad del proceso de fabricación se evalúa comparando la varianza muestral del diámetro medido por microscopía electrónica contra una varianza de referencia del protocolo de síntesis; el estadístico resultante sigue una distribución Chi-cuadrada bajo el supuesto de normalidad del diámetro de las nanopartículas.
+
+### 2.7 Distribución t-Student ($X \sim t_\nu$)
+Modela la media de una muestra pequeña cuando la varianza poblacional es desconocida; base del t-test.
+* PDF: $f(x) = \dfrac{\Gamma\left(\frac{\nu+1}{2}\right)}{\sqrt{\nu\pi}\,\Gamma\left(\frac{\nu}{2}\right)} \left(1+\dfrac{x^2}{\nu}\right)^{-\frac{\nu+1}{2}}$.
+* Esperanza: $\mathbb{E}[X] = 0$ (para $\nu>1$), Desviación estándar: $\sigma = \sqrt{\nu/(\nu-2)}$ (para $\nu>2$).
+* **Aplicación en nanotecnología**: al estimar la conductividad térmica media de un lote pequeño (n < 30) de muestras de nanotubos de carbono sintetizados por deposición química de vapor, la varianza poblacional real es desconocida, por lo que la distribución t-Student modela la incertidumbre de la media muestral en lugar de la Normal estándar.
+
+### 2.8 Distribución F (Fisher-Snedecor) ($X \sim F_{d_1,d_2}$)
+Modela el cociente de dos varianzas muestrales independientes; base de la comparación de varianzas entre grupos y de la prueba de igualdad de varianzas, tema que se retoma formalmente en unidades posteriores de inferencia.
+* PDF: $f(x) = \dfrac{\left(d_1/d_2\right)^{d_1/2}\, x^{d_1/2-1}}{\left(1+\frac{d_1}{d_2}x\right)^{(d_1+d_2)/2}\, B(d_1/2,\,d_2/2)}$ para $x \ge 0$.
+* Esperanza: $\mathbb{E}[X] = \dfrac{d_1}{d_1-2}$ (para $d_1>2$).
+* **Aplicación en nanotecnología**: al comparar la dispersión del diámetro de nanopartículas obtenidas por dos rutas de síntesis distintas (por ejemplo, síntesis sol-gel frente a síntesis hidrotermal para nanomateriales cerámicos), el cociente de las varianzas muestrales del diámetro sigue una distribución F, lo que permite evaluar si un método de síntesis produce partículas más homogéneas que el otro.
+
+### 2.9 Distribución Log-Normal ($X \sim \text{LogNormal}(\mu, \sigma^2)$)
+Modela variables positivas cuyo logaritmo sigue una distribución normal; útil para tamaños de partícula y variables con sesgo a la derecha.
+* PDF: $f(x) = \dfrac{1}{x\sigma\sqrt{2\pi}} \exp\left(-\dfrac{(\ln x - \mu)^2}{2\sigma^2}\right)$ para $x > 0$.
+* Esperanza: $\mathbb{E}[X] = e^{\mu + \sigma^2/2}$.
+* **Aplicación en nanotecnología**: la distribución de tamaño de nanopartículas obtenidas por síntesis en fase líquida (nucleación y crecimiento) suele presentar un sesgo marcado a la derecha, con muchas partículas pequeñas y una cola de partículas de mayor diámetro; el diámetro de estas nanopartículas se modela con frecuencia como una variable Log-Normal en lugar de Normal.
+
+### 2.10 Distribución Beta ($X \sim \text{Beta}(\alpha, \beta)$)
+Modela variables continuas acotadas en $[0,1]$, como proporciones o probabilidades.
+* PDF: $f(x) = \dfrac{x^{\alpha-1}(1-x)^{\beta-1}}{B(\alpha,\beta)}$ para $0<x<1$.
+* Esperanza: $\mathbb{E}[X] = \dfrac{\alpha}{\alpha+\beta}$.
+* **Aplicación en nanotecnología**: la fracción de recubrimiento superficial de un nanomaterial funcionalizado (por ejemplo, el porcentaje de sitios activos de un nanotubo cubiertos por un ligando durante la síntesis) es una proporción acotada entre 0 y 1, y se modela naturalmente con una distribución Beta cuyos parámetros $\alpha$ y $\beta$ se ajustan a partir de mediciones experimentales del proceso de síntesis.
+
+### 2.11 Distribución de Dirichlet ($\mathbf{X} \sim \text{Dirichlet}(\boldsymbol{\alpha})$)
+Generalización multivariada de la distribución Beta: modela vectores de proporciones que suman 1 (un símplex), como las fracciones de composición de una aleación o mezcla de nanomateriales.
+* PDF: $f(x_1,\dots,x_k) = \dfrac{1}{B(\boldsymbol{\alpha})} \prod_{i=1}^k x_i^{\alpha_i - 1}$, con $\sum_i x_i = 1$.
+* Esperanza por componente: $\mathbb{E}[X_i] = \alpha_i / \sum_j \alpha_j$.
+* **Aplicación en nanotecnología**: en la síntesis de nanomateriales compuestos (por ejemplo, una aleación nanoparticulada de Au-Ag-Pt), las fracciones molares de cada elemento constituyente suman siempre 1; la distribución Dirichlet modela la incertidumbre conjunta de estas proporciones de composición generadas por variabilidad del proceso de síntesis, generalizando el caso univariado de la distribución Beta a $k$ componentes de la aleación de nanomateriales.
+
 ---
 
 ## 3. Ejemplo Analítico Paso a Paso: Espesor de Películas Delgadas en Litografía Nanométrica
@@ -200,6 +236,57 @@ axes[1].legend()
 
 plt.tight_layout()
 plt.show()
+
+## --- PARTE C: Distribuciones Muestrales (prerequisito de Inferencia — Chi-cuadrada, t-Student, F) ---
+from scipy.stats import chi2, t, f
+
+## Chi-cuadrada: valor critico para intervalo de confianza de varianza (df=5, alpha=0.025 cola superior)
+k_gl = 5
+x_chi2 = chi2.ppf(0.975, df=k_gl)
+print(f"Valor crítico Chi-cuadrada (df={k_gl}, 0.975): {x_chi2:.4f}")
+
+## t-Student: valor critico para IC de la media (nu=10, alpha=0.05 dos colas)
+nu = 10
+x_t = t.ppf(0.975, df=nu)
+print(f"Valor crítico t-Student (df={nu}, 0.975): {x_t:.4f}")
+
+## F: valor critico para prueba de igualdad de varianzas (d1=5, d2=10, alpha=0.025)
+d1, d2 = 5, 10
+x_f = f.ppf(0.975, dfn=d1, dfd=d2)
+print(f"Valor crítico F (d1={d1}, d2={d2}, 0.975): {x_f:.4f}")
+
+## Visualización de las 3 distribuciones
+fig, axes = plt.subplots(1, 3, figsize=(15, 4))
+x_range = np.linspace(0.01, 20, 300)
+axes[0].plot(x_range, chi2.pdf(x_range, df=k_gl))
+axes[0].set_title(f"Chi-cuadrada (df={k_gl})")
+x_range_t = np.linspace(-4, 4, 300)
+axes[1].plot(x_range_t, t.pdf(x_range_t, df=nu))
+axes[1].set_title(f"t-Student (df={nu})")
+axes[2].plot(x_range, f.pdf(x_range, dfn=d1, dfd=d2))
+axes[2].set_title(f"F (d1={d1}, d2={d2})")
+plt.tight_layout()
+plt.show()
+
+## --- PARTE D: Distribución de Dirichlet (composición de aleaciones de nanomateriales) ---
+from scipy.stats import dirichlet
+
+## Fracciones molares esperadas de una aleación nanoparticulada Au-Ag-Pt (k=3 componentes)
+alpha_composicion = [2.0, 5.0, 3.0]
+
+## PDF evaluada en un punto del simplex (las 3 fracciones deben sumar 1)
+x_composicion = np.array([0.2, 0.5, 0.3])
+pdf_dirichlet = dirichlet.pdf(x_composicion, alpha_composicion)
+print(f"PDF Dirichlet en x={x_composicion.tolist()}: {pdf_dirichlet:.4f}")
+
+## Media esperada por componente: alpha_i / suma(alpha)
+media_dirichlet = dirichlet.mean(alpha_composicion)
+print(f"Fracción molar media esperada (Au, Ag, Pt): {media_dirichlet}")
+
+## Simulación de 5 lotes de síntesis con variabilidad en la composición
+muestras_dirichlet = dirichlet.rvs(alpha_composicion, size=5, random_state=42)
+print("Composiciones simuladas de 5 lotes de síntesis:")
+print(muestras_dirichlet)
 ```
 
 ---
