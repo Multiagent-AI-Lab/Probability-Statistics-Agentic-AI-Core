@@ -58,6 +58,16 @@ El proyecto requiere desarrollar cinco fases metodológicas:
 4. **Fase 4: Solución Computacional en Python**: Ejecutar pruebas de hipótesis t de Student o ANOVA y simular la curva de potencia por Monte Carlo.
 5. **Fase 5: Conclusiones e Interpretación**: Traducir el resultado estadístico ($p < \alpha$) en una decisión técnica industrial.
 
+### 2.1 Rúbrica de Evaluación del Proyecto Integrador
+
+| Componente | Descripción | Ponderación |
+|---|---|---|
+| **1. Planteamiento e Hipótesis** | Formulación clara de $H_0$ y $H_1$ con marco nanotecnológico | 20% |
+| **2. Verificación de Supuestos** | Pruebas de Shapiro-Wilk y Levene explicadas y aplicadas | 20% |
+| **3. Rigor Estadístico y SymPy** | Cálculo del estadístico, $p$-valor y validación simbólica | 20% |
+| **4. Código Python (`scipy.stats`)** | Script ejecutable, limpio y con visualización de resultados | 20% |
+| **5. Visualización y Conclusión** | Gráfico de región crítica/comparación + interpretación final | 20% |
+
 ---
 
 ## 3. Ejemplo Demostrativo Paso a Paso: Comparación de Síntesis de Nanopartículas
@@ -212,6 +222,122 @@ plt.show()
 * $t_{calc}$: Estadístico $t$ de Student empírico.
 * $p$-valor: Probabilidad de obtener una diferencia igual o más extrema si $H_0$ fuera cierta.
 * $1-\beta$: Potencia probabilística para detectar diferencias efectivas en tamaño de partícula.
+
+---
+
+## 7. Regresión Lineal y Correlación
+
+### 7.1 Fundamentos: Coeficiente de Correlación y Mínimos Cuadrados
+El **coeficiente de correlación de Pearson** $\rho_{X,Y} = \text{Cov}(X,Y)/(\sigma_X\sigma_Y)$ mide la fuerza de la relación lineal entre dos variables. El **método de mínimos cuadrados** ajusta una recta $\hat y = mx + b$ minimizando la suma de residuos al cuadrado $\sum_i (y_i - \hat y_i)^2$; la calidad del ajuste se resume en el **coeficiente de determinación** $R^2$.
+
+### 7.2 Ejemplo Aplicado: Curva de Calibración UV-Vis de Nanopartículas de Oro
+La Ley de Beer-Lambert ($A = \epsilon \cdot b \cdot c$) relaciona la absorbancia $A$ medida por espectroscopía UV-Vis con la concentración $c$ de nanopartículas de oro coloidales en suspensión, a través de la absortividad molar $\epsilon$ y la longitud de paso óptico $b$.
+
+```python
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from scipy.stats import linregress
+
+## Simulación de datos de calibración (Ley de Beer-Lambert)
+np.random.seed(42)
+epsilon = 5000  # Absortividad molar (M^-1 cm^-1)
+b_optico = 1.0  # Longitud de paso óptico (cm)
+concentraciones = np.linspace(0.0001, 0.001, 10)  # Molar
+absorbancia_ideal = epsilon * b_optico * concentraciones
+ruido = np.random.normal(0, 0.02, size=len(concentraciones))
+absorbancia_medida = absorbancia_ideal + ruido
+
+## Regresión lineal
+resultado = linregress(concentraciones, absorbancia_medida)
+print(f"Pendiente (m = epsilon*b): {resultado.slope:.2f}")
+print(f"Intercepto: {resultado.intercept:.4f}")
+print(f"Coeficiente de correlación r: {resultado.rvalue:.4f}")
+print(f"R^2: {resultado.rvalue**2:.4f}")
+print(f"p-valor: {resultado.pvalue:.6f}")
+
+## Visualización
+plt.figure(figsize=(8, 5))
+plt.scatter(concentraciones, absorbancia_medida, label="Datos medidos")
+plt.plot(concentraciones, resultado.slope*concentraciones + resultado.intercept, color="red", label=f"Ajuste ($R^2$={resultado.rvalue**2:.3f})")
+plt.xlabel("Concentración (M)")
+plt.ylabel("Absorbancia")
+plt.title("Curva de Calibración UV-Vis: Nanopartículas de Oro")
+plt.legend()
+plt.tight_layout()
+plt.show()
+```
+
+---
+
+## 8. Módulo Integrador: Inferencia con Datos de Materials Project API
+
+En el Proyecto Integrador, el estudiante puede consultar la API de Materials Project para formular y contrastar hipótesis sobre propiedades semiconductoras reales.
+
+### 8.1 Comparación de Band Gap entre Óxidos Semiconductores (Prueba t de Dos Muestras)
+
+```python
+import pandas as pd
+import numpy as np
+import scipy.stats as stats
+import matplotlib.pyplot as plt
+import seaborn as sns
+from IPython.display import display, Math
+
+## 1. Extracción de sub-muestras por material desde Materials Project (simulado)
+np.random.seed(55)
+bg_tio2 = stats.norm.rvs(loc=3.20, scale=0.12, size=35)
+bg_zno = stats.norm.rvs(loc=3.37, scale=0.18, size=35)
+
+## 2. Verificación de Supuestos de Inferencia
+shapiro_tio2 = stats.shapiro(bg_tio2)
+shapiro_zno = stats.shapiro(bg_zno)
+levene_test = stats.levene(bg_tio2, bg_zno)
+
+display(Math(fr"\text{{Shapiro-Wilk TiO2: }} p = {shapiro_tio2.pvalue:.4f}"))
+display(Math(fr"\text{{Shapiro-Wilk ZnO: }} p = {shapiro_zno.pvalue:.4f}"))
+display(Math(fr"\text{{Homocedasticidad (Levene): }} p = {levene_test.pvalue:.4f}"))
+
+## 3. Prueba de Hipótesis de Dos Muestras: H0: mu_TiO2 = mu_ZnO vs H1: mu_TiO2 != mu_ZnO
+t_stat, p_val = stats.ttest_ind(bg_tio2, bg_zno, equal_var=True)
+
+display(Math(fr"\text{{Estadístico t calculado: }} t = {t_stat:.4f}"))
+display(Math(fr"\text{{p-valor exacto: }} p = {p_val:.6f}"))
+
+if p_val < 0.05:
+    display(Math(r"\text{Decisión: Rechazar } H_0 \implies \text{Existe diferencia estadísticamente significativa en } E_g"))
+else:
+    display(Math(r"\text{Decisión: No rechazar } H_0"))
+```
+
+---
+
+## 9. Aplicación Avanzada: Red Neuronal Probabilística para Control de Calidad
+
+A diferencia de una red neuronal estándar que predice un único valor puntual, una **red neuronal probabilística** predice los parámetros de una distribución (típicamente media $\mu$ y escala $\sigma$), permitiendo cuantificar la incertidumbre de la predicción — relevante cuando se requiere no solo estimar una propiedad de un lote de nanopartículas, sino también la confianza de esa estimación.
+
+### 9.1 Arquitectura Conceptual
+La red recibe como entrada variables de proceso (p. ej. temperatura de síntesis, concentración de precursor) y produce dos salidas: $\hat\mu(x)$ y $\hat\sigma(x)$, que parametrizan una distribución Normal $\mathcal{N}(\hat\mu(x), \hat\sigma(x)^2)$ sobre la propiedad objetivo (p. ej. diámetro de nanopartícula). El entrenamiento minimiza la log-verosimilitud negativa de los datos observados bajo esa distribución predicha, en vez del error cuadrático medio de una red estándar.
+
+### 9.2 Aplicación: Control de Calidad de Nanopartículas
+Una vez entrenado el modelo con datos históricos de producción, se usa para calcular probabilidades sobre nuevos lotes:
+
+```python
+import numpy as np
+from scipy.stats import norm
+
+## Ejemplo conceptual: el modelo entrenado predice mu y sigma para un lote
+## dado un vector de condiciones de proceso X_nuevo (simulado como si viniera del modelo)
+mu_predicho = 1.397   # nm, predicho por la red para las condiciones dadas
+sigma_predicho = 0.193  # nm, incertidumbre predicha para esas condiciones
+
+## Probabilidad de que el diámetro esté por encima del umbral mínimo de especificación (1.0 nm)
+prob_sobre_umbral = 1 - norm.cdf(1.0, loc=mu_predicho, scale=sigma_predicho)
+print(f"P(diámetro > 1.0 nm) = {prob_sobre_umbral:.4f} ({prob_sobre_umbral*100:.2f}%)")
+```
+
+### 9.3 Interpretación en el Contexto de Nanotecnología
+Si el criterio de control de calidad exige que el diámetro esté en un rango específico, no basta con mirar la media predicha: la desviación estándar predicha indica qué tan confiable es esa estimación para el lote en cuestión — una desviación alta sugiere que, aunque la media esté dentro de especificación, una porción significativa de las nanopartículas del lote podría estar fuera de rango debido a la variabilidad del proceso de síntesis.
 
 ---
 
