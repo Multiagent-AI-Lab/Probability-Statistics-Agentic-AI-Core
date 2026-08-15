@@ -246,7 +246,6 @@ esperanza = [n_lote * p for p in p_categorias]
 print(f"Número esperado por categoría: {esperanza}")
 ```
 
-
 ## 6. Interpretación Post-Gráfico & Diccionario de Variables
 
 ### 6.1 Interpretación de Resultados Computacionales
