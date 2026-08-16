@@ -34,7 +34,7 @@ La **fuente de verdad** reside en las lecciones escritas en Markdown estructurad
 ```
 PROBABILIDAD Y ESTADÍSTICA/
 ├── README.md                           ← Documento principal del repositorio
-├── GOVERNANCE.md                       ← Modelo de gobernanza del Consejo de 7 Expertos
+├── GOVERNANCE.md                       ← Modelo de gobernanza del Consejo de 8 Expertos
 ├── PROTOCOLO_MAESTRO.md                ← Estándar de calidad de 8 componentes obligatorios
 ├── CLAUDE.md                           ← Instrucciones de desarrollo para AI Assistants
 ├── RUBRICA_GENERAL.md                  ← Rúbrica cuantitativa de prácticas y laboratorios
@@ -107,7 +107,7 @@ PROBABILIDAD Y ESTADÍSTICA/
 
 ## 🏛️ Sistema de Agentes y Gobernanza (El Consejo de Expertos)
 
-El proyecto opera bajo la supervisión de un **Consejo de 7 Agentes** con 3 loops de retroalimentación (**L1, L2, L3**):
+El proyecto opera bajo la supervisión de un **Consejo de 8 Agentes** con 3 loops de retroalimentación (**L1, L2, L3**):
 
 ```mermaid
 graph TD

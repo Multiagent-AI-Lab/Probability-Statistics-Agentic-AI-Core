@@ -11,7 +11,7 @@ El objetivo primordial de este proyecto es el desarrollo de materiales pedagógi
 
 ---
 
-## 2. El Consejo de Expertos (7 Agentes)
+## 2. El Consejo de Expertos (8 Agentes)
 
 ### 🏗️ Lead Architect (@Architect)
 * **Responsabilidad**: Guardián de la estructura del proyecto, la jerarquía curricular y las dependencias.
@@ -33,6 +33,9 @@ El objetivo primordial de este proyecto es el desarrollo de materiales pedagógi
 
 ### ✅ Quality Auditor (@QA)
 * **Responsabilidad**: **Auditor Supremo**. Verificación estricta de los 8 Componentes del Protocolo Maestro.
+
+### 🎨 Layout Editor (@Editor)
+* **Responsabilidad**: **Maquetación y Diseño Editorial**. Limpieza de títulos descontextualizados, jerarquía de encabezados (H1/H2/H3), detección de bloques de texto duplicados entre unidades.
 
 ---
 
