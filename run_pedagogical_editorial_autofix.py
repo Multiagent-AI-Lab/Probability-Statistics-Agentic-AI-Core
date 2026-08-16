@@ -42,11 +42,8 @@ for filepath in sorted(glob.glob(os.path.join(lecciones_dir, '*.md'))):
     print(f"[EDITADO Y CORREGIDO {status}] {unit_name} | Coherencia Editorial: {score}/100.0")
 
 print("\n=== RE-COMPILANDO NOTEBOOKS JUPYTER (notebooks/*.ipynb) ===")
-# enforce_gate=False mientras dura la Fase 1 de reescritura de contenido
-# (U2 reescrita desde cero, U5 dividida en U5/U6). Cambiar a enforce_gate=True
-# (o quitar el argumento, ya que True es el default) cuando esa fase termine.
 orchestrator = OrchestratorAgent(lecciones_dir='lecciones', notebooks_dir='notebooks')
-results = orchestrator.run_full_pipeline(enforce_gate=False)
+results = orchestrator.run_full_pipeline(enforce_gate=True)
 
 for r in results:
     if r["gate_blocked"]:
