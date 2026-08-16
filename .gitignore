@@ -29,6 +29,13 @@ PdfViewer.pdf
 # Lógica de Programación.
 docs/legado/
 
+# PDFs de bibliografía académica (libros de texto con copyright) para
+# referencia del curso y futuro indexado por StatsTutorAgent. Se conservan
+# localmente, nunca se publican — mismo criterio que raw_student_notebooks/
+# y docs/legado/. El README.md de la carpeta sí se versiona.
+bibliografia/*.pdf
+bibliografia/*.epub
+
 # Artefactos internos del flujo de trabajo con Claude Code (specs, planes).
 # Se conservan localmente pero no se publican en el repo público.
 docs/superpowers/
