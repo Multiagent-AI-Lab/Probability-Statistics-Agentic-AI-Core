@@ -109,3 +109,11 @@ Interpretación post-gráfico y diccionario de variables nanotecnológicas.
 
     assert report["critical_block"] is False
 
+
+def test_pedagogical_pipeline_uses_council_internally():
+    from src.multiagent_core.pipeline import CouncilPipeline
+
+    pipeline = PedagogicalReviewPipeline()
+    assert hasattr(pipeline, "council")
+    assert isinstance(pipeline.council, CouncilPipeline)
+
