@@ -7,10 +7,9 @@ from typing import Any, Dict, List, Optional
 
 from .code_auditor_agent import CodeAuditorAgent
 from .content_auditor_agent import ContentAuditorAgent
-from .council.layout_editorial_agent import LayoutEditorialAgent
-from .council.safety_gate_agent import SafetyGateAgent
 from .evaluator_agent import EvaluatorAgent
 from .notebook_compiler_agent import NotebookCompilerAgent
+from .pipeline import CouncilPipeline
 
 
 class OrchestratorAgent:
@@ -25,8 +24,7 @@ class OrchestratorAgent:
         self.code_auditor = CodeAuditorAgent()
         self.content_auditor = ContentAuditorAgent()
         self.evaluator = EvaluatorAgent()
-        self.safety_gate = SafetyGateAgent()
-        self.layout_editor = LayoutEditorialAgent()
+        self.council = CouncilPipeline()
 
     @staticmethod
     def _unit_name_from_filename(md_filename: str) -> str:
@@ -39,7 +37,8 @@ class OrchestratorAgent:
     ) -> Dict[str, Any]:
         unit_name = self._unit_name_from_filename(md_filename)
 
-        safety_result = self.safety_gate.validate_assumptions(md_text, unit_name)
+        council_result = self.council.process_content(md_text, unit_name=unit_name)
+        safety_result = council_result["reports"]["safety_gate"]
         if safety_result["critical"]:
             reason = "; ".join(w for w in safety_result["warnings"] if "🚨" in w)
             return {"blocked": True, "reason": reason}
@@ -105,7 +104,7 @@ class OrchestratorAgent:
 
         duplicate_unit_names: set = set()
         if enforce_gate:
-            duplicates = self.layout_editor.detect_duplicate_blocks(lessons_text)
+            duplicates = self.council.editor.detect_duplicate_blocks(lessons_text)
             for dup in duplicates:
                 for unit_name, _block_index in dup["locations"]:
                     duplicate_unit_names.add(unit_name)
