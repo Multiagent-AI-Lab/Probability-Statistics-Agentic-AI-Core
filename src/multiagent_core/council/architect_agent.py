@@ -15,8 +15,9 @@ class ArchitectAgent:
             "UNIDAD_3_VARIABLES_ALEATORIAS_DISCRETAS",
             "UNIDAD_4_DISTRIBUCIONES_CONJUNTAS",
             "UNIDAD_5_VARIABLES_ALEATORIAS_CONTINUAS",
-            "UNIDAD_6_INFERENCIA_ESTIMACION",
-            "UNIDAD_7_PROYECTO_INTEGRADOR"
+            "UNIDAD_6_MODELADO_SIMULACION",
+            "UNIDAD_7_INFERENCIA_ESTIMACION",
+            "UNIDAD_8_PROYECTO_INTEGRADOR",
         ]
 
     def validate_structure(self, file_tree: List[str]) -> Dict[str, Any]:
