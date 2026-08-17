@@ -8,9 +8,13 @@ import os
 import re
 from typing import Any, Dict, List
 
+from .flowchart_agent import FlowchartAgent
+
 
 class NotebookCompilerAgent:
     """Agent that compiles Markdown lessons into clean, executable Jupyter Notebooks."""
+
+    FLOWCHART_ENABLED_UNITS = {"UNIDAD_6_MODELADO_SIMULACION.md"}
 
     def __init__(
         self, lecciones_dir: str = "lecciones", notebooks_dir: str = "notebooks"
@@ -18,6 +22,7 @@ class NotebookCompilerAgent:
         self.lecciones_dir = lecciones_dir
         self.notebooks_dir = notebooks_dir
         os.makedirs(notebooks_dir, exist_ok=True)
+        self.flowchart_agent = FlowchartAgent()
 
     def _sanitize_text(self, text: str) -> str:
         # Sanitizar secuencias de escape ASCII sin dejar artefactos \f o \r
@@ -67,7 +72,9 @@ class NotebookCompilerAgent:
 
         return cells
 
-    def parse_markdown_to_cells(self, md_content: str) -> List[Dict[str, Any]]:
+    def parse_markdown_to_cells(
+        self, md_content: str, md_filename: str = ""
+    ) -> List[Dict[str, Any]]:
         cells = []
         pattern = r"```(python|r|mermaid|bash|sh)?\n(.*?)```"
         pos = 0
@@ -93,6 +100,27 @@ class NotebookCompilerAgent:
                         "source": code_clean.splitlines(keepends=True),
                     }
                 )
+                if (
+                    md_filename in self.FLOWCHART_ENABLED_UNITS
+                    and lang.lower() == "python"
+                    and "def " in code_clean
+                    and len(code_clean.strip().splitlines()) > 5
+                ):
+                    mermaid_diagram = self.flowchart_agent.build_mermaid_flowchart(
+                        code_clean
+                    )
+                    if not mermaid_diagram.startswith("%%"):
+                        cells.append(
+                            {
+                                "cell_type": "markdown",
+                                "metadata": {},
+                                "source": [
+                                    "<details><summary>📊 Diagrama de flujo (auto-generado)</summary>\n\n",
+                                    f"```mermaid\n{mermaid_diagram}\n```\n\n",
+                                    "</details>\n",
+                                ],
+                            }
+                        )
             else:
                 cells.append(
                     {
@@ -121,7 +149,7 @@ class NotebookCompilerAgent:
         with open(md_path, "r", encoding="utf-8", errors="ignore") as f:
             md_content = f.read()
 
-        cells = self.parse_markdown_to_cells(md_content)
+        cells = self.parse_markdown_to_cells(md_content, md_filename=md_filename)
 
         nb_data = {
             "cells": cells,
