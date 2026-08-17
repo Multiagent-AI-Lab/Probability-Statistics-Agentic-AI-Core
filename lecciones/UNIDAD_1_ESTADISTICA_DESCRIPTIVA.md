@@ -73,6 +73,22 @@ Las medidas de dispersión cuantifican qué tan esparcidos están los datos resp
 * **Diagrama de Caja (Boxplot)**: representa gráficamente $Q_1$, la mediana, $Q_3$, los bigotes (hasta $1.5 \cdot IQR$) y los outliers como puntos individuales; es ideal para comparar la dispersión entre varios grupos.
 * **Estimación de Densidad de Kernel (KDE)**: una versión suavizada del histograma que estima la función de densidad de probabilidad subyacente sin asumir una forma paramétrica, sumando "kernels" (típicamente gaussianos) centrados en cada observación.
 
+### 1.5 Los Cinco Grandes Problemas de la Estadística
+
+La Estadística, como disciplina, no se agota en resumir un conjunto de datos: el análisis descriptivo de esta Unidad 1 es solo la primera de cinco direcciones que estructuran todo el curso. Antes de continuar, conviene ubicar dónde encaja cada herramienta futura dentro de un mapa conceptual completo — sin resolver todavía ninguno de los problemas 2 a 5, para los cuales aún no se cuenta con las herramientas necesarias:
+
+1. **Problema de Representación de Datos**: ¿cómo resumir y visualizar un conjunto de observaciones de forma que revele su estructura (centro, dispersión, forma, valores atípicos)? Es exactamente el problema que resuelve **esta misma Unidad 1**, mediante las medidas descriptivas y la visualización exploratoria de las secciones 1.1-1.4 y 6.
+
+2. **Problema de Ajuste de la Distribución a los Datos**: dado que los datos son una muestra de un proceso aleatorio subyacente, ¿qué modelo probabilístico (Binomial, Poisson, Normal, Exponencial, Gamma, ...) describe mejor ese proceso? Se aborda en las **Unidades 2 a 5**, que desarrollan las familias de distribuciones discretas y continuas y sus criterios de ajuste.
+
+3. **Problema de Estimación de Parámetros**: una vez elegida una familia de distribuciones, ¿cuál es el mejor valor puntual (o el mejor intervalo) para sus parámetros desconocidos a partir de la muestra? Se aborda en la **Unidad 7** (Inferencia y Estimación), con el Método de los Momentos (§1.9) y la Estimación de Máxima Verosimilitud — MLE (§6.2-6.3).
+
+4. **Problema de Contraste de Afirmaciones sobre la Población**: ¿los datos observados son consistentes con una afirmación específica sobre la población (una media, una proporción, la igualdad entre dos grupos), o la evidencia es suficiente para rechazarla? Se aborda también en la **Unidad 7**, con el marco completo de contrastes paramétricos (Z-test, t-test, §1.1-1.8) y no paramétricos (Kolmogorov-Smirnov, Mann-Whitney-Wilcoxon, Kruskal-Wallis, Signos y Mediana, §1.10-1.11).
+
+5. **Problema de Correlación y Regresión**: ¿existe una relación estadística entre dos o más variables, y puede esa relación usarse para predecir una a partir de la otra? Se aborda en la **Unidad 8** (Proyecto Integrador), sección "Regresión Lineal y Correlación" (§7), que cubre desde el coeficiente de correlación de Pearson y la regresión por mínimos cuadrados (§7.1-7.2) hasta la correlación de rango, la correlación múltiple/parcial y los diagnósticos de regresión (§7.3-7.7).
+
+Este mapa no es una curiosidad académica: cada vez que se enfrente un conjunto de datos nuevo, identificar primero *cuál* de estos cinco problemas se está resolviendo evita aplicar la herramienta equivocada (por ejemplo, calcular solo estadística descriptiva cuando la pregunta real exige contrastar una afirmación sobre la población).
+
 ---
 
 ## 2. Ejemplo Analítico Paso a Paso: Caracterización de Nanopartículas de Oro Sintetizadas
@@ -181,6 +197,34 @@ print(f"Límite superior outliers: {limite_superior:.4f} nm")
 diametros_limpios = diametros_aunp[diametros_aunp <= limite_superior]
 print(f"\nMedia sin outlier:        {diametros_limpios.mean():.4f} nm")
 
+## --- PARTE A-bis: Max, Min, Coeficiente de Variación y Media Geométrica ---
+## scipy.stats.describe (arriba) ya reporta media/varianza/skewness/kurtosis,
+## pero no expone max/min explícitos ni CV/media geométrica -- se calculan aquí.
+from scipy.stats import gmean
+
+max_val = diametros_limpios.max()
+min_val = diametros_limpios.min()
+rango_limpio = max_val - min_val
+media_limpia = diametros_limpios.mean()
+std_limpia = diametros_limpios.std(ddof=1)
+cv_limpia = std_limpia / media_limpia
+gm_limpia = gmean(diametros_limpios)
+
+print("\n--- ESTADÍSTICAS ADICIONALES (muestra sin outlier, n=9) ---")
+print(f"Máximo:                       {max_val:.4f} nm")
+print(f"Mínimo:                       {min_val:.4f} nm")
+print(f"Rango:                        {rango_limpio:.4f} nm")
+print(f"Coeficiente de Variación:     {cv_limpia:.4f}  ({cv_limpia*100:.2f}%)")
+print(f"Media Geométrica:             {gm_limpia:.4f} nm")
+```
+
+**Verificación numérica** (ejecutado sobre `diametros_limpios`, la muestra de $n=9$ tras excluir el outlier de agregación de la Sección 2.4):
+
+$$\boxed{\text{Max} = 14.20\ \text{nm}, \quad \text{Min} = 11.80\ \text{nm}, \quad \text{CV} = 6.21\%, \quad \text{Media Geométrica} = 12.8670\ \text{nm}}$$
+
+**Interpretación**: el Coeficiente de Variación ($CV = s/\bar{x}$) expresa la dispersión relativa a la escala de la media — a diferencia de $s$ (en nm), el CV es adimensional, lo que permite comparar la variabilidad de lotes de nanopartículas con diámetros promedio muy distintos (ver gráfico dedicado en la Sección 6.7). La Media Geométrica ($12.8670$ nm) es ligeramente menor que la Media Aritmética ($12.8889$ nm) — una relación que se cumple siempre para datos positivos no idénticos (desigualdad AM-GM), y que se vuelve más pronunciada cuanto mayor es la dispersión relativa de los datos (ver comparación explícita en la Sección 6.10 con un dataset de tasas de rendimiento).
+
+```python
 ## --- PARTE B: Visualización Exploratoria (Boxplot + Histograma con KDE) ---
 fig, axes = plt.subplots(1, 2, figsize=(14, 5))
 
@@ -219,16 +263,271 @@ plt.show()
 
 ---
 
-## 6. Módulo de Simulación: Estimación No Paramétrica de Densidad (KDE)
+## 6. Visualización Individual de Conceptos Descriptivos
+
+Las secciones anteriores presentaron los 12 conceptos descriptivos de esta unidad (Máximo, Mínimo, Rango, Media, Varianza, Desviación Estándar, Coeficiente de Variación, Moda, Mediana, Media Geométrica, Asimetría y Curtosis) agrupados en tablas numéricas y gráficos combinados. Esta sección dedica **un gráfico individual a cada concepto**, aislando visualmente qué mide cada uno y sobre qué parte de la distribución actúa — un refuerzo pedagógico distinto de (y complementario a) los gráficos combinados de las Secciones 4 y 5.
+
+Salvo donde se indique lo contrario, todos los gráficos reutilizan `diametros_aunp` (con outlier, $n=10$) o `diametros_limpios` (sin outlier, $n=9$), ya definidos en la Sección 4, para mantener continuidad narrativa con el resto de la unidad. Los tres conceptos que requieren comparar contra un segundo dataset (CV, Media Geométrica, Skewness, Kurtosis) generan esos datasets sintéticos con `np.random.seed()` fijo.
+
+```python
+import numpy as np
+import scipy.stats as stats
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+sns.set_theme(style="whitegrid")
+```
+
+### 6.1 Máximo
+
+```python
+plt.figure(figsize=(9, 3))
+sns.stripplot(x=diametros_limpios, color="steelblue", size=10, alpha=0.7)
+idx_max = np.argmax(diametros_limpios)
+plt.scatter(diametros_limpios[idx_max], 0, color="crimson", s=200, zorder=5, label=f"Máximo = {diametros_limpios[idx_max]:.2f} nm")
+plt.axvline(diametros_limpios[idx_max], color="crimson", linestyle="--", alpha=0.6)
+plt.title(f"Máximo del Diámetro de AuNPs (sin outlier): {diametros_limpios.max():.2f} nm", fontweight="bold")
+plt.xlabel("Diámetro (nm)")
+plt.legend()
+plt.tight_layout()
+plt.show()
+```
+
+$$\boxed{\text{Max} = 14.20\ \text{nm}}$$
+
+### 6.2 Mínimo
+
+```python
+plt.figure(figsize=(9, 3))
+sns.stripplot(x=diametros_limpios, color="steelblue", size=10, alpha=0.7)
+idx_min = np.argmin(diametros_limpios)
+plt.scatter(diametros_limpios[idx_min], 0, color="darkgreen", s=200, zorder=5, label=f"Mínimo = {diametros_limpios[idx_min]:.2f} nm")
+plt.axvline(diametros_limpios[idx_min], color="darkgreen", linestyle="--", alpha=0.6)
+plt.title(f"Mínimo del Diámetro de AuNPs (sin outlier): {diametros_limpios.min():.2f} nm", fontweight="bold")
+plt.xlabel("Diámetro (nm)")
+plt.legend()
+plt.tight_layout()
+plt.show()
+```
+
+$$\boxed{\text{Min} = 11.80\ \text{nm}}$$
+
+### 6.3 Rango
+
+```python
+plt.figure(figsize=(9, 3))
+sns.stripplot(x=diametros_limpios, color="steelblue", size=10, alpha=0.7)
+r_min, r_max = diametros_limpios.min(), diametros_limpios.max()
+plt.annotate("", xy=(r_max, 0.15), xytext=(r_min, 0.15),
+             arrowprops=dict(arrowstyle="<->", color="darkorange", lw=2))
+plt.text((r_min + r_max) / 2, 0.22, f"R = {r_max - r_min:.2f} nm", ha="center", color="darkorange", fontweight="bold")
+plt.title(f"Rango del Diámetro de AuNPs (sin outlier): {r_max - r_min:.2f} nm", fontweight="bold")
+plt.xlabel("Diámetro (nm)")
+plt.ylim(-0.3, 0.4)
+plt.tight_layout()
+plt.show()
+```
+
+$$\boxed{R = 2.40\ \text{nm}}$$
+
+### 6.4 Media
+
+```python
+plt.figure(figsize=(9, 4))
+sns.histplot(diametros_limpios, bins=5, color="skyblue", edgecolor="black")
+plt.axvline(diametros_limpios.mean(), color="red", linestyle="--", linewidth=2.5, label=f"Media = {diametros_limpios.mean():.2f} nm")
+plt.title(f"Media del Diámetro de AuNPs (sin outlier): {diametros_limpios.mean():.2f} nm", fontweight="bold")
+plt.xlabel("Diámetro (nm)")
+plt.ylabel("Frecuencia")
+plt.legend()
+plt.tight_layout()
+plt.show()
+```
+
+$$\boxed{\bar{x} = 12.8889\ \text{nm}}$$
+
+### 6.5 Varianza
+
+```python
+media_l, std_l = diametros_limpios.mean(), diametros_limpios.std(ddof=1)
+plt.figure(figsize=(9, 4))
+sns.histplot(diametros_limpios, bins=5, color="skyblue", edgecolor="black")
+plt.axvspan(media_l - std_l, media_l + std_l, color="orange", alpha=0.25, label=f"$[\\bar{{x}}-s,\\ \\bar{{x}}+s]$, $s^2$ = {std_l**2:.4f} nm²")
+plt.axvline(media_l, color="red", linestyle="--", linewidth=2)
+plt.title(f"Varianza del Diámetro de AuNPs: s² = {std_l**2:.4f} nm²", fontweight="bold")
+plt.xlabel("Diámetro (nm)")
+plt.ylabel("Frecuencia")
+plt.legend()
+plt.tight_layout()
+plt.show()
+```
+
+$$\boxed{s^2 = 0.6411\ \text{nm}^2}$$
+
+**Nota**: la varianza se ilustra vía la banda de una desviación estándar porque $s^2$ está en unidades al cuadrado ($\text{nm}^2$) y no puede representarse directamente sobre el eje de diámetro; ver Sección 6.6 para la distinción con $s$.
+
+### 6.6 Desviación Estándar
+
+```python
+plt.figure(figsize=(9, 4))
+sns.histplot(diametros_limpios, bins=5, color="skyblue", edgecolor="black")
+plt.axvspan(media_l - std_l, media_l + std_l, color="teal", alpha=0.25, label=f"$[\\bar{{x}}-s,\\ \\bar{{x}}+s]$, $s$ = {std_l:.4f} nm")
+plt.axvline(media_l, color="red", linestyle="--", linewidth=2, label=f"Media = {media_l:.2f} nm")
+plt.title(f"Desviación Estándar del Diámetro de AuNPs: s = {std_l:.4f} nm", fontweight="bold")
+plt.xlabel("Diámetro (nm)")
+plt.ylabel("Frecuencia")
+plt.legend()
+plt.tight_layout()
+plt.show()
+```
+
+$$\boxed{s = 0.8007\ \text{nm}}$$
+
+**Distinción Varianza vs. Desviación Estándar** (refuerza el misconception documentado en Errores Comunes): la banda sombreada es geométricamente idéntica en 6.5 y 6.6 — lo que cambia es la magnitud que se reporta junto a ella. $s = 0.8007\ \text{nm}$ está en las mismas unidades que el diámetro y es directamente interpretable sobre el eje; $s^2 = 0.6411\ \text{nm}^2$ no lo está.
+
+### 6.7 Coeficiente de Variación
+
+```python
+np.random.seed(42)
+lote_A = stats.norm.rvs(loc=13.0, scale=0.5, size=200)   # baja dispersión relativa
+lote_B = stats.norm.rvs(loc=13.0, scale=1.5, size=200)   # dispersión media
+lote_C = stats.norm.rvs(loc=13.0, scale=3.0, size=200)   # alta dispersión relativa
+
+lotes = {"Lote A (σ=0.5)": lote_A, "Lote B (σ=1.5)": lote_B, "Lote C (σ=3.0)": lote_C}
+cvs = {nombre: (lote.std(ddof=1) / lote.mean()) * 100 for nombre, lote in lotes.items()}
+
+plt.figure(figsize=(8, 4.5))
+barras = plt.bar(cvs.keys(), cvs.values(), color=["#4C72B0", "#DD8452", "#C44E52"])
+for barra, v in zip(barras, cvs.values()):
+    plt.text(barra.get_x() + barra.get_width() / 2, v, f"{v:.2f}%", ha="center", va="bottom", fontweight="bold")
+plt.title("Coeficiente de Variación: 3 Lotes de AuNPs con Media ≈ 13 nm, Distinta Dispersión", fontweight="bold")
+plt.ylabel("CV (%)")
+plt.tight_layout()
+plt.show()
+```
+
+$$\boxed{CV_A = 3.59\%, \quad CV_B = 11.28\%, \quad CV_C = 23.40\%}$$
+
+**Interpretación**: los tres lotes comparten prácticamente la misma media ($\approx 13\ \text{nm}$), por lo que $s$ por sí sola bastaría para compararlos. El CV se vuelve indispensable cuando se comparan datasets de **distinta escala** (por ejemplo, diámetro en nm vs. band gap en eV): al ser adimensional, permite decir "el Lote C es relativamente 6.5 veces más disperso que el Lote A" sin que las unidades interfieran.
+
+### 6.8 Moda
+
+```python
+plt.figure(figsize=(9, 4))
+counts, bin_edges, patches = plt.hist(diametros_limpios, bins=4, color="lightgray", edgecolor="black")
+idx_modal = np.argmax(counts)
+patches[idx_modal].set_facecolor("purple")
+plt.title(f"Clase Modal del Diámetro de AuNPs: [{bin_edges[idx_modal]:.2f}, {bin_edges[idx_modal+1]:.2f}) nm, frecuencia={int(counts[idx_modal])}", fontweight="bold")
+plt.xlabel("Diámetro (nm)")
+plt.ylabel("Frecuencia")
+plt.tight_layout()
+plt.show()
+```
+
+$$\boxed{\text{Clase modal} = [11.80,\ 12.40)\ \text{nm}, \quad \text{frecuencia} = 3}$$
+
+### 6.9 Mediana
+
+```python
+plt.figure(figsize=(9, 3.5))
+sns.boxplot(x=diametros_aunp, color="goldenrod")
+mediana_out = np.median(diametros_aunp)
+media_out = diametros_aunp.mean()
+plt.axvline(mediana_out, color="green", linewidth=2.5, label=f"Mediana = {mediana_out:.2f} nm")
+plt.axvline(media_out, color="red", linestyle="--", linewidth=2.5, label=f"Media = {media_out:.2f} nm")
+plt.title("Mediana vs. Media del Diámetro de AuNPs (con outlier de agregación)", fontweight="bold")
+plt.xlabel("Diámetro (nm)")
+plt.legend()
+plt.tight_layout()
+plt.show()
+```
+
+$$\boxed{\tilde{x} = 12.95\ \text{nm} \ll \bar{x} = 15.65\ \text{nm}}$$
+
+**Interpretación**: con el outlier de agregación incluido, la mediana ($12.95\ \text{nm}$) permanece casi idéntica a la media sin outlier de la Sección 2.5 ($12.89\ \text{nm}$), mientras que la media con outlier se dispara a $15.65\ \text{nm}$ — evidencia visual directa de la robustez de la mediana frente a valores extremos.
+
+### 6.10 Media Geométrica
+
+```python
+np.random.seed(7)
+## Tasas de rendimiento de síntesis por lote (factores multiplicativos, siempre positivos)
+tasas_rendimiento = np.random.uniform(0.85, 1.35, size=12)
+
+media_aritmetica_t = tasas_rendimiento.mean()
+media_geometrica_t = stats.gmean(tasas_rendimiento)
+
+plt.figure(figsize=(7, 4.5))
+barras = plt.bar(["Media Aritmética", "Media Geométrica"], [media_aritmetica_t, media_geometrica_t],
+                  color=["#4C72B0", "#55A868"])
+for barra, v in zip(barras, [media_aritmetica_t, media_geometrica_t]):
+    plt.text(barra.get_x() + barra.get_width() / 2, v, f"{v:.4f}", ha="center", va="bottom", fontweight="bold")
+plt.title("Media Aritmética vs. Media Geométrica: Tasas de Rendimiento de Síntesis (12 lotes)", fontweight="bold")
+plt.ylabel("Factor de rendimiento")
+plt.ylim(0, max(media_aritmetica_t, media_geometrica_t) * 1.25)
+plt.tight_layout()
+plt.show()
+```
+
+$$\boxed{\bar{x}_{\text{aritmética}} = 1.1150, \quad \bar{x}_{\text{geométrica}} = 1.1063}$$
+
+**Interpretación**: a diferencia del diámetro de AuNPs (Sección 6.4), las tasas de rendimiento son factores multiplicativos, no medidas aditivas — la Media Geométrica es la medida correcta para "tasa de crecimiento promedio compuesto" (idéntica lógica que una tasa de interés compuesto), y siempre es $\le$ la Media Aritmética para datos positivos no idénticos (desigualdad AM-GM), como se observa aquí.
+
+### 6.11 Asimetría (Skewness)
+
+```python
+np.random.seed(11)
+muestra_simetrica = stats.norm.rvs(loc=13, scale=1, size=10)
+
+fig, axes = plt.subplots(1, 2, figsize=(11, 4))
+sns.histplot(diametros_aunp, bins=6, color="darkorange", ax=axes[0])
+axes[0].set_title(f"AuNPs reales (con outlier)\nSkewness = {stats.skew(diametros_aunp):.4f}", fontweight="bold")
+axes[0].set_xlabel("Diámetro (nm)")
+
+sns.histplot(muestra_simetrica, bins=6, color="mediumseagreen", ax=axes[1])
+axes[1].set_title(f"Muestra sintética simétrica\nSkewness = {stats.skew(muestra_simetrica):.4f}", fontweight="bold")
+axes[1].set_xlabel("Valor")
+
+plt.tight_layout()
+plt.show()
+```
+
+$$\boxed{g_{1,\text{AuNPs}} = 2.6298 \ (\text{asimetría positiva fuerte}), \quad g_{1,\text{sintética}} = -0.3872 \ (\text{aprox. simétrica})}$$
+
+### 6.12 Curtosis (Kurtosis)
+
+```python
+np.random.seed(12)
+leptocurtica = stats.t.rvs(df=3, size=2000)      # colas pesadas
+platicurtica = stats.uniform.rvs(loc=-3, scale=6, size=2000)  # colas ligeras
+
+fig, axes = plt.subplots(1, 2, figsize=(11, 4))
+sns.histplot(leptocurtica, bins=50, stat="density", color="indianred", kde=True, ax=axes[0])
+axes[0].set_title(f"t-Student (df=3): Leptocúrtica\nKurtosis (exceso) = {stats.kurtosis(leptocurtica):.4f}", fontweight="bold")
+axes[0].set_xlim(-10, 10)
+
+sns.histplot(platicurtica, bins=50, stat="density", color="cornflowerblue", kde=True, ax=axes[1])
+axes[1].set_title(f"Uniforme: Platicúrtica\nKurtosis (exceso) = {stats.kurtosis(platicurtica):.4f}", fontweight="bold")
+
+plt.tight_layout()
+plt.show()
+```
+
+$$\boxed{g_{2,\text{t(3)}} = 36.6526 \ (\text{leptocúrtica}), \quad g_{2,\text{uniforme}} = -1.2285 \ (\text{platicúrtica})}$$
+
+**Interpretación**: la t-Student con 3 grados de libertad tiene colas extremadamente pesadas (exceso de curtosis muy alto, valores atípicos mucho más probables que en una Normal), mientras que la Uniforme tiene colas inexistentes por definición (soporte acotado, exceso de curtosis negativo cercano al mínimo teórico de $-1.2$) — los dos extremos del espectro de curtosis, frente al valor de referencia $g_2=0$ de la distribución Normal.
+
+---
+
+## 7. Módulo de Simulación: Estimación No Paramétrica de Densidad (KDE)
 
 En el análisis de datos de caracterización nanotecnológica, cuando no se presupone un modelo paramétrico estricto para el diámetro de las nanopartículas, se emplea la **Estimación No Paramétrica de Densidad por Kernel (KDE)**.
 
-### 6.1 Definición Matemática de KDE
+### 7.1 Definición Matemática de KDE
 Dada una muestra independiente de tamaño $n$, el estimador de densidad por kernel $f_h(x)$ viene dado por:
 $$f_h(x) = \frac{1}{nh} \sum_{i=1}^n K\left(\frac{x - x_i}{h}\right)$$
 donde $K(u)$ es el kernel gaussiano $K(u) = \frac{1}{\sqrt{2\pi}} e^{-u^2/2}$ y $h > 0$ es el ancho de banda (bandwidth).
 
-### 6.2 Implementación Computacional en Python
+### 7.2 Implementación Computacional en Python
 
 ```python
 import numpy as np
@@ -263,13 +562,65 @@ print(f"Estimación KDE completada sobre n = {len(muestras_nano)} observaciones.
 print(f"Ancho de banda (bandwidth) de Silverman: {kde.factor:.4f}")
 ```
 
+### 7.3 Selección de Kernel y Optimización del Ancho de Banda con `GridSearchCV`
+
+El KDE de la Sección 7.2 usa la regla de Silverman para fijar el ancho de banda $h$ — una heurística rápida, pero no necesariamente óptima para una muestra específica. La elección de $h$ es el parámetro más determinante del KDE: un $h$ demasiado pequeño produce sobreajuste (una curva con un pico por cada observación, alta varianza); un $h$ demasiado grande produce subajuste (pierde la multimodalidad real, alto sesgo). `scikit-learn` permite optimizar $h$ formalmente mediante **validación cruzada** (`GridSearchCV`), maximizando la log-verosimilitud promedio de los datos dejados fuera en cada partición — un criterio objetivo en vez de una regla heurística fija.
+
+La elección del **kernel** en sí (Gaussiano, Epanechnikov, Tophat, ...) es secundaria frente al ancho de banda: el kernel Gaussiano es una elección por defecto adecuada en la mayoría de los casos, mientras que kernels de soporte finito (Epanechnikov, Tophat) solo aportan una ventaja clara cuando se sabe *a priori* que la densidad real es exactamente cero fuera de un rango (por ejemplo, un diámetro de nanopartícula, que nunca es negativo).
+
+```python
+import numpy as np
+from sklearn.neighbors import KernelDensity
+from sklearn.model_selection import GridSearchCV
+import matplotlib.pyplot as plt
+
+## Reutiliza la muestra bimodal ya generada en 7.2 (seed=101, n=1000)
+X = muestras_nano.reshape(-1, 1)
+
+## Rango de anchos de banda candidatos (escala logarítmica)
+bandwidths = 10 ** np.linspace(-1, 1, 30)
+
+## GridSearchCV con validación cruzada de 5 particiones, kernel Gaussiano fijo
+grid = GridSearchCV(
+    KernelDensity(kernel="gaussian"),
+    {"bandwidth": bandwidths},
+    cv=5,
+)
+grid.fit(X)
+
+bandwidth_optimo = grid.best_params_["bandwidth"]
+print(f"Ancho de banda óptimo (GridSearchCV, cv=5): {bandwidth_optimo:.4f}")
+print(f"Ancho de banda de Silverman (Sección 7.2, referencia): {kde.factor * muestras_nano.std(ddof=1):.4f}")
+
+## KDE final con el ancho de banda optimizado
+kde_optimo = KernelDensity(kernel="gaussian", bandwidth=bandwidth_optimo).fit(X)
+x_grid_opt = np.linspace(5, 55, 500).reshape(-1, 1)
+pdf_optima = np.exp(kde_optimo.score_samples(x_grid_opt))
+
+plt.figure(figsize=(10, 5))
+plt.plot(x_grid, pdf_kde, color="darkblue", linewidth=2, linestyle="--", label=f"KDE Silverman (h={kde.factor * muestras_nano.std(ddof=1):.2f})")
+plt.plot(x_grid_opt.ravel(), pdf_optima, color="crimson", linewidth=2.5, label=f"KDE Óptimo GridSearchCV (h={bandwidth_optimo:.2f})")
+plt.title("Comparación: KDE con Bandwidth de Silverman vs. Optimizado por Validación Cruzada", fontsize=11, fontweight="bold")
+plt.xlabel("Diámetro (nm)")
+plt.ylabel("Densidad de Probabilidad")
+plt.legend()
+plt.tight_layout()
+plt.show()
+```
+
+**Resultado verificado** (seed=101, `bandwidths = 10**np.linspace(-1, 1, 30)`, `cv=5`):
+
+$$\boxed{h_{\text{óptimo (GridSearchCV)}} \approx 0.9237}$$
+
+**Interpretación**: el ancho de banda óptimo por validación cruzada difiere del de Silverman porque este último es una fórmula cerrada que asume implícitamente unimodalidad aproximada, mientras que la muestra de esta sección es explícitamente bimodal (dos poblaciones de nanopartículas coloidales superpuestas). `GridSearchCV` no hace ese supuesto: encuentra el $h$ que mejor predice datos no vistos dentro de la misma muestra, lo que en distribuciones multimodales típicamente favorece un ancho de banda más fino que el de Silverman, capaz de resolver ambos modos sin fragmentar la curva en picos espurios.
+
 ---
 
-## 7. Módulo de Integración de Datos Reales: Materials Project API
+## 8. Módulo de Integración de Datos Reales: Materials Project API
 
 En la investigación moderna en IA y Nanotecnología, el análisis estadístico descriptivo se aplica directamente sobre repositorios masivos de materiales como **Materials Project**. A diferencia del ejercicio de control de calidad de nanopartículas de oro (Sección 2), aquí se ilustra el mismo tipo de análisis descriptivo sobre un dataset con múltiples materiales.
 
-### 7.1 Consulta y Análisis del Band Gap ($E_g$)
+### 8.1 Consulta y Análisis del Band Gap ($E_g$)
 Mediante la librería oficial `mp-api` es posible extraer propiedades fisicoquímicas reales de materiales, como el *Band Gap* $E_g$ (eV), la *Energía de Formación por Átomo* $\Delta E_f$ y el *Volumen de Celda* $V$. El siguiente ejemplo simula la estructura de datos que retornaría dicha consulta para tres óxidos semiconductores:
 
 ```python
@@ -322,6 +673,42 @@ axes[1].set_title("Q-Q Plot de Band Gap vs Distribución Normal", fontsize=11, f
 plt.tight_layout()
 plt.show()
 ```
+
+### 8.2 Selección Automática de Distribución con `distfit`
+
+El ajuste manual de distribuciones (comparar histograma, KDE y Q-Q plot "a ojo" contra candidatas teóricas, como en §8.1) no escala cuando se necesita evaluar sistemáticamente decenas de familias de distribuciones candidatas. La librería `distfit` automatiza ese proceso: ajusta un conjunto de distribuciones candidatas por máxima verosimilitud, calcula una métrica de bondad de ajuste (suma de residuos cuadrados, RSS, entre la densidad empírica y la teórica) para cada una, y devuelve la de mejor ajuste ordenadas por score.
+
+```python
+## pip install distfit
+from distfit import distfit
+import numpy as np
+import scipy.stats as stats
+
+## Reutiliza el Band Gap de TiO2 ya generado en la PARTE 1 de esta sección (n=50, seed=2026)
+np.random.seed(2026)
+banda_tio2 = stats.norm.rvs(loc=3.2, scale=0.15, size=50)
+
+## Instanciar sobre el catálogo de distribuciones "populares" (evita explorar ~90 familias poco relevantes)
+dfit = distfit(distr='popular')
+dfit.fit_transform(banda_tio2, verbose=0)
+
+mejor_dist = dfit.model['name']
+mejores_parametros = dfit.model['params']
+mejor_score = dfit.model['score']
+
+print(f"Mejor distribución encontrada: {mejor_dist}")
+print(f"Parámetros ajustados: {mejores_parametros}")
+print(f"Score (RSS, menor es mejor ajuste): {mejor_score:.6f}")
+
+## Visualización del ajuste (histograma empírico + PDF de la distribución ganadora)
+dfit.plot()
+```
+
+**Resultado verificado** (seed=2026, $n=50$): la distribución de mejor ajuste según `distfit` sobre esta muestra es **`dweibull`** (Weibull doble/simétrica), con score $RSS \approx 0.198$, no la Normal usada para generar los datos.
+
+$$\boxed{\text{Mejor ajuste (distfit)} = \texttt{dweibull}, \quad RSS \approx 0.1980}$$
+
+**Interpretación**: este resultado no es un error — con $n=50$ observaciones, varias familias de distribuciones (Normal, Weibull doble, t-Student con muchos grados de libertad) producen densidades casi indistinguibles, y el criterio puramente numérico de `distfit` puede preferir una familia con un parámetro de forma adicional que absorbe el ruido muestral, aunque el proceso generador real sea Normal. Esto ilustra una limitación importante de la selección automática: `distfit` optimiza bondad de ajuste sobre la muestra observada, no verifica el proceso físico subyacente — su salida debe contrastarse siempre con el conocimiento del dominio (aquí, la física de bandas prohibidas de óxidos semiconductores no tiene ninguna razón teórica para seguir una Weibull doble) y, cuando sea posible, con una muestra de mayor tamaño.
 
 ## Errores Comunes / Misconceptions
 
