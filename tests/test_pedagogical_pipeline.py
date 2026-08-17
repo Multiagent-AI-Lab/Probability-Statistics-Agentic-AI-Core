@@ -7,7 +7,12 @@ from src.multiagent_core.pedagogical_pipeline import PedagogicalReviewPipeline
 
 def test_pedagogical_review_pipeline():
     pipeline = PedagogicalReviewPipeline()
-    sample_lesson = """# UNIDAD DE PRUEBA GENERICA
+    nano_paragraph = (
+        "En este problema aplicado a nanotecnología estudiamos el comportamiento "
+        "de nanopartículas de oro dispersas en una solución coloidal. " * 15
+    )
+    sample_lesson = (
+        """# UNIDAD DE PRUEBA GENERICA
 ## Asignatura: Probabilidad y Estadística Inferencial
 ### UCEMICH — Ingeniería en IA y Nanotecnología
 ### Autor y Profesor: Mtro. Luis José Yudico Anaya
@@ -15,9 +20,15 @@ def test_pedagogical_review_pipeline():
 ---
 
 ## 1. Fundamentación Teórica y Conceptos Clave
-""" + "teoría estadística " * 900 + """
+"""
+        + "teoría estadística " * 900
+        + f"""
 
-$$\\boxed{\\bar{x} = 10.0}$$
+## Ejemplo Analítico Paso a Paso
+El paso 1 consiste en calcular el potencial zeta de nanopartículas de oro.
+{nano_paragraph}
+
+$$\\boxed{{\\bar{{x}} = 10.0}}$$
 
 ```python
 import scipy.stats as stats
@@ -34,7 +45,11 @@ sns.histplot(data)
 ```
 
 Interpretación post-gráfico y diccionario de variables nanotecnológicas.
+
+* $\\bar{{x}}$: media muestral del diámetro de las nanopartículas de oro.
+* $n$: tamaño de la muestra medida.
 """
+    )
     report = pipeline.review_and_auto_fix_lesson(sample_lesson, "Unidad Genérica Test")
 
     assert "synthesis" in report
@@ -44,7 +59,8 @@ Interpretación post-gráfico y diccionario de variables nanotecnológicas.
 
 def test_critical_block_true_when_safety_gate_critical():
     pipeline = PedagogicalReviewPipeline()
-    sample_lesson = """# UNIDAD 2 PROBABILIDAD Y COMBINATORIA
+    sample_lesson = (
+        """# UNIDAD 2 PROBABILIDAD Y COMBINATORIA
 ## Asignatura: Probabilidad y Estadística Inferencial
 ### UCEMICH — Ingeniería en IA y Nanotecnología
 ### Autor y Profesor: Mtro. Luis José Yudico Anaya
@@ -52,7 +68,9 @@ def test_critical_block_true_when_safety_gate_critical():
 ---
 
 ## 1. Fundamentación Teórica y Conceptos Clave
-""" + "teoría estadística " * 900 + """
+"""
+        + "teoría estadística " * 900
+        + """
 
 $$\\boxed{\\bar{x} = 10.0}$$
 
@@ -72,6 +90,7 @@ sns.histplot(data)
 
 Interpretación post-gráfico y diccionario de variables nanotecnológicas.
 """
+    )
     report = pipeline.review_and_auto_fix_lesson(sample_lesson, "UNIDAD 2")
 
     assert "critical_block" in report
@@ -80,7 +99,8 @@ Interpretación post-gráfico y diccionario de variables nanotecnológicas.
 
 def test_critical_block_false_when_no_safety_issues():
     pipeline = PedagogicalReviewPipeline()
-    sample_lesson = """# UNIDAD DE PRUEBA GENERICA
+    sample_lesson = (
+        """# UNIDAD DE PRUEBA GENERICA
 ## Asignatura: Probabilidad y Estadística Inferencial
 ### UCEMICH — Ingeniería en IA y Nanotecnología
 ### Autor y Profesor: Mtro. Luis José Yudico Anaya
@@ -88,7 +108,9 @@ def test_critical_block_false_when_no_safety_issues():
 ---
 
 ## 1. Fundamentación Teórica y Conceptos Clave
-""" + "teoría estadística " * 900 + """
+"""
+        + "teoría estadística " * 900
+        + """
 
 $$\\boxed{\\bar{x} = 10.0}$$
 
@@ -105,6 +127,7 @@ sns.histplot(data)
 
 Interpretación post-gráfico y diccionario de variables nanotecnológicas.
 """
+    )
     report = pipeline.review_and_auto_fix_lesson(sample_lesson, "Unidad Genérica Test")
 
     assert report["critical_block"] is False
@@ -116,4 +139,3 @@ def test_pedagogical_pipeline_uses_council_internally():
     pipeline = PedagogicalReviewPipeline()
     assert hasattr(pipeline, "council")
     assert isinstance(pipeline.council, CouncilPipeline)
-

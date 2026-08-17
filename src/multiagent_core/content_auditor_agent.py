@@ -1,5 +1,5 @@
 """
-ContentAuditorAgent: Audits lessons and notebooks against the 8 mandatory components of the Protocolo Maestro.
+ContentAuditorAgent: Audits lessons and notebooks against the 9 mandatory components of the Protocolo Maestro.
 """
 
 import re
@@ -7,7 +7,7 @@ from typing import Any, Dict
 
 
 class ContentAuditorAgent:
-    """Auditor for content completeness according to the 8 Protocolo Maestro components."""
+    """Auditor for content completeness according to the 9 Protocolo Maestro components."""
 
     def __init__(self):
         self.mandatory_components = [
@@ -18,7 +18,8 @@ class ContentAuditorAgent:
             "Solución Analítica en \\boxed{}",
             "Solución Computacional (SciPy / statsmodels)",
             "Visualización Profesional (>=2 gráficos)",
-            "Interpretación Post-Gráfico & Diccionario de Variables",
+            "Interpretación Post-Gráfico",
+            "Diccionario de Variables",
         ]
 
     NANO_TERMS = [
@@ -31,6 +32,8 @@ class ContentAuditorAgent:
         "nanomater",
     ]
     NANO_MIN_WORDS = 150
+    DICCIONARIO_MIN_ENTRADAS = 2
+    _DICCIONARIO_ENTRADA_PATTERN = re.compile(r"^\s*\*\s*\$[^$]+\$\s*:", re.MULTILINE)
 
     def _count_nano_context_words(self, markdown_text: str) -> int:
         """Cuenta las palabras de los parrafos que mencionan terminologia
@@ -42,6 +45,13 @@ class ContentAuditorAgent:
             if any(term in paragraph_lower for term in self.NANO_TERMS):
                 total += len(paragraph.split())
         return total
+
+    def _has_diccionario_variables(self, markdown_text: str) -> bool:
+        """Detecta una lista de al menos DICCIONARIO_MIN_ENTRADAS items con
+        formato '* $simbolo$: descripcion' (el patron ya usado en las
+        lecciones actuales para el diccionario de variables de cierre)."""
+        matches = self._DICCIONARIO_ENTRADA_PATTERN.findall(markdown_text)
+        return len(matches) >= self.DICCIONARIO_MIN_ENTRADAS
 
     def audit_content(self, markdown_text: str) -> Dict[str, Any]:
         words = len(markdown_text.split())
@@ -69,9 +79,8 @@ class ContentAuditorAgent:
             "Solución en \\boxed{}": latex_boxed,
             "Solución Computacional SciPy": has_scipy,
             "Visualización Profesional": plot_count >= 2,
-            "Interpretación & Diccionario": "interpret" in markdown_text.lower()
-            or "diccionario" in markdown_text.lower()
-            or "variables" in markdown_text.lower(),
+            "Interpretación Post-Gráfico": "interpret" in markdown_text.lower(),
+            "Diccionario de Variables": self._has_diccionario_variables(markdown_text),
         }
 
         passed_components = [name for name, ok in component_checks.items() if ok]
