@@ -607,3 +607,8 @@ display(Math(fr"\text{{Covarianza Simulada: }} \text{{Cov}}(X, Y) = {cov_sim[0, 
 * $\mu, \Sigma$: vector de medias y matriz de covarianza del vector aleatorio bivariado $(X,Y)$ del lote de síntesis.
 * $\rho_{X,Y}$: coeficiente de correlación entre diámetro y potencial zeta ($-0.75$ en el ejemplo), indicador de la fuerza de la relación inversa tamaño–carga superficial.
 * $L$: factor de Cholesky de $\Sigma$, usado para simular pares $(X,Y)$ correlacionados a partir de ruido gaussiano independiente.
+
+## Referencias
+
+* Agresti, A. & Kateri, M. (2022). *Foundations of Statistics for Data Scientists: With R and Python*. Chapman & Hall/CRC (Texts in Statistical Science). Capítulos sobre distribuciones multivariadas y dependencia entre variables aleatorias.
+* Virtanen, P. et al. (2020). SciPy 1.0: Fundamental Algorithms for Scientific Computing in Python. *Nature Methods*, 17, 261-272. Documentación: [docs.scipy.org/doc/scipy/reference/stats.html](https://docs.scipy.org/doc/scipy/reference/stats.html)
