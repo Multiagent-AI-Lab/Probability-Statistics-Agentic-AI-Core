@@ -297,6 +297,17 @@ plt.show()
 * $P(D|R_i)$: Verosimilitud de falla por imperfección térmica en el reactor $i$.
 * $P(R_i|D)$: Probabilidad a posteriori inferida mediante diagnóstico microscópico TEM.
 
+## Errores Comunes / Misconceptions
+
+* **Error**: Calcular $P(A \cap B) = P(A) \times P(B)$ sin verificar que $A$ y $B$ sean independientes.
+  **Correcto**: la regla del producto simple solo aplica bajo independencia; en general $P(A \cap B) = P(A) \times P(B|A)$. Confundirlas subestima o sobrestima sistemáticamente la probabilidad conjunta cuando existe dependencia real entre eventos.
+
+* **Error**: Al aplicar el Teorema de Bayes, invertir $P(A|B)$ con $P(B|A)$ asumiendo que son iguales o intercambiables.
+  **Correcto**: $P(A|B) = \dfrac{P(B|A)\,P(A)}{P(B)}$ — ambas cantidades solo coinciden cuando $P(A) = P(B)$. Ignorar la probabilidad a priori $P(A)$ (el "prior") es el error clásico de razonamiento bayesiano conocido como *base rate fallacy*.
+
+* **Error**: Tratar "eventos mutuamente excluyentes" y "eventos independientes" como sinónimos o como conceptos compatibles en el caso general.
+  **Correcto**: si $A$ y $B$ son mutuamente excluyentes ($A \cap B = \emptyset$) y ambos tienen probabilidad positiva, entonces necesariamente son dependientes, porque $P(A \cap B) = 0 \neq P(A)\,P(B)$. Son propiedades distintas que rara vez coexisten.
+
 ## Referencias
 
 * Chan, S. H. (2021). *Introduction to Probability for Data Science*. Michigan Publishing. Capítulos sobre fundamentos de probabilidad, combinatoria y Teorema de Bayes.

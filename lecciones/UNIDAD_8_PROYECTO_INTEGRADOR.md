@@ -361,6 +361,17 @@ potencia_est = np.mean(np.array(p_vals) < 0.05)
 print(f"Potencia Empírica Simulada de la Prueba: {potencia_est * 100:.2f}%")
 ```
 
+## Errores Comunes / Misconceptions
+
+* **Error**: Interpretar un $R^2$ alto en una regresión lineal como evidencia de relación causal entre las variables.
+  **Correcto**: $R^2$ mide qué proporción de la varianza de $Y$ es explicada linealmente por $X$ — es una medida de asociación estadística, no de causalidad. Una correlación fuerte puede deberse a una causa común (variable confusora), causalidad inversa, o coincidencia; establecer causalidad requiere diseño experimental (aleatorización) o métodos causales explícitos, no solo el ajuste del modelo.
+
+* **Error**: Aplicar una prueba t o ANOVA sin verificar previamente los supuestos de normalidad y homocedasticidad (varianzas iguales entre grupos).
+  **Correcto**: la validez de las pruebas paramétricas depende de esos supuestos — deben verificarse con pruebas formales (Shapiro-Wilk, Levene) o inspección gráfica (Q-Q plot) antes de interpretar el p-valor. Si los supuestos fallan de forma severa, corresponde usar una alternativa robusta o no paramétrica (p. ej. Welch's t-test o Mann-Whitney U).
+
+* **Error**: Concluir, a partir de una prueba de hipótesis no significativa, que "se demostró que no hay efecto" o "los dos grupos son iguales".
+  **Correcto**: una prueba no significativa (p. ej. $p > 0.05$) indica falta de evidencia suficiente para rechazar $H_0$, que puede deberse a un efecto real ausente o a potencia insuficiente (muestra pequeña). Para argumentar ausencia de efecto con rigor se requiere un análisis de potencia post-hoc o pruebas de equivalencia diseñadas para ese propósito.
+
 ## Referencias
 
 * García, J., Molina, J. M., Berlanga, A., Patricio, M. Á., Bustamante, Á. L. & Padilla, W. R. (2018). *Ciencia de Datos: Técnicas Analíticas y Aprendizaje Estadístico en un Enfoque Práctico*. Alfaomega/Publicaciones Altaria. Capítulos sobre inferencia estadística aplicada y aprendizaje estadístico como cierre integrador del curso.

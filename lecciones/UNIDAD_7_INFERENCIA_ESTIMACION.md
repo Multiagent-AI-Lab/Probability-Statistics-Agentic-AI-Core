@@ -317,6 +317,17 @@ print(f"Kolmogorov-Smirnov: estadístico={ks_stat:.4f}, p-valor={ks_pvalue:.4f}"
 print("Buen ajuste (p > 0.05)" if ks_pvalue > 0.05 else "Ajuste cuestionable (p <= 0.05)")
 ```
 
+## Errores Comunes / Misconceptions
+
+* **Error**: Interpretar el p-valor como "la probabilidad de que $H_0$ sea verdadera".
+  **Correcto**: el p-valor es $P(\text{observar un estadístico igual o más extremo que el obtenido} \mid H_0 \text{ es verdadera})$ — una probabilidad condicional sobre los datos, no sobre la hipótesis. No dice nada directo sobre $P(H_0 \mid \text{datos})$.
+
+* **Error**: Interpretar "no rechazar $H_0$" como "aceptar $H_0$ como verdadera" o como evidencia de que $H_0$ es correcta.
+  **Correcto**: no rechazar $H_0$ solo significa que la evidencia muestral no fue suficiente para descartarla al nivel de significancia elegido — puede deberse a que $H_0$ es cierta, o a que la prueba tuvo poca potencia (muestra pequeña, efecto real pequeño). La ausencia de evidencia no es evidencia de ausencia.
+
+* **Error**: Igualar significancia estadística ($p < \alpha$) con relevancia práctica o magnitud del efecto.
+  **Correcto**: con un tamaño de muestra $n$ suficientemente grande, incluso diferencias triviales (sin importancia práctica) resultan estadísticamente significativas. El p-valor no mide el tamaño del efecto — para eso se reporta el tamaño de efecto (p. ej. $d$ de Cohen) y el intervalo de confianza correspondiente.
+
 ## Referencias
 
 * Agresti, A. & Kateri, M. (2022). *Foundations of Statistics for Data Scientists: With R and Python*. Chapman & Hall/CRC (Texts in Statistical Science). Capítulos sobre estimación puntual, máxima verosimilitud, intervalos de confianza y pruebas de hipótesis.

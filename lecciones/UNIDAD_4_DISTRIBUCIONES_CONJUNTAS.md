@@ -608,6 +608,17 @@ display(Math(fr"\text{{Covarianza Simulada: }} \text{{Cov}}(X, Y) = {cov_sim[0, 
 * $\rho_{X,Y}$: coeficiente de correlación entre diámetro y potencial zeta ($-0.75$ en el ejemplo), indicador de la fuerza de la relación inversa tamaño–carga superficial.
 * $L$: factor de Cholesky de $\Sigma$, usado para simular pares $(X,Y)$ correlacionados a partir de ruido gaussiano independiente.
 
+## Errores Comunes / Misconceptions
+
+* **Error**: Concluir que dos variables aleatorias son independientes porque su covarianza (o correlación) es cero.
+  **Correcto**: $\text{Cov}(X,Y) = 0$ es condición necesaria pero no suficiente para independencia en el caso general — solo mide dependencia *lineal*. Existen variables con dependencia fuerte (p. ej. $Y = X^2$ con $X$ simétrica alrededor de 0) y covarianza cero. La equivalencia covarianza-cero-implica-independencia solo se sostiene en el caso particular de la Normal bivariada.
+
+* **Error**: Confundir la distribución marginal $f_X(x)$ con la distribución condicional $f_{X|Y}(x|y)$.
+  **Correcto**: la marginal describe el comportamiento de $X$ ignorando (integrando/sumando sobre) $Y$; la condicional describe el comportamiento de $X$ una vez fijado un valor específico de $Y$. Ambas coinciden solo si $X$ y $Y$ son independientes.
+
+* **Error**: Calcular la varianza de la suma $X+Y$ como $\text{Var}(X) + \text{Var}(Y)$ sin verificar independencia (o covarianza nula).
+  **Correcto**: en general $\text{Var}(X+Y) = \text{Var}(X) + \text{Var}(Y) + 2\,\text{Cov}(X,Y)$. Omitir el término de covarianza subestima la varianza real cuando las variables están correlacionadas positivamente (y la sobrestima si la correlación es negativa).
+
 ## Referencias
 
 * Agresti, A. & Kateri, M. (2022). *Foundations of Statistics for Data Scientists: With R and Python*. Chapman & Hall/CRC (Texts in Statistical Science). Capítulos sobre distribuciones multivariadas y dependencia entre variables aleatorias.

@@ -284,6 +284,17 @@ print(f"Varianza Muestral Simulada:             {np.var(muestras_poisson):.4f} |
 
 Este curso (tercer semestre) trata a las variables aleatorias discretas con herramientas de cálculo elemental. Para quien desee profundizar hacia un tratamiento formal medida-teórico (variables aleatorias como funciones medibles, espacios de probabilidad abstractos), el curso de posgrado **MIT 6.436J — Fundamentals of Probability** (Prof. Yury Polyanskiy) cubre este mismo tema en sus *Lecture Notes* 4–6, con los prerrequisitos de análisis real y teoría de la medida que ese enfoque exige: [ocw.mit.edu/courses/6-436j-fundamentals-of-probability-fall-2018/pages/lecture-notes](https://ocw.mit.edu/courses/6-436j-fundamentals-of-probability-fall-2018/pages/lecture-notes/).
 
+## Errores Comunes / Misconceptions
+
+* **Error**: Confundir la PMF con la CDF — evaluar $P(X = k)$ cuando el problema pedía $P(X \le k)$ (o viceversa).
+  **Correcto**: la PMF $p(k) = P(X=k)$ da la probabilidad de un valor puntual; la CDF $F(k) = P(X \le k) = \sum_{i \le k} p(i)$ acumula todas las probabilidades hasta $k$. Para "al menos" o "a lo más" siempre se necesita la CDF (o su complemento), no la PMF evaluada en un solo punto.
+
+* **Error**: Asumir que la esperanza $\mathbb{E}[X]$ de una variable discreta debe coincidir con alguno de sus valores posibles.
+  **Correcto**: $\mathbb{E}[X]$ es un promedio ponderado por probabilidades y puede caer entre valores posibles (p. ej. $\mathbb{E}[X] = 3.5$ para un dado justo, aunque 3.5 nunca es un resultado del lanzamiento).
+
+* **Error**: Usar la aproximación Poisson de la Binomial ($\lambda = np$) en cualquier caso, sin verificar las condiciones de validez.
+  **Correcto**: la aproximación solo es razonable cuando $n$ es grande, $p$ es pequeño y $np$ es moderado (regla práctica: $n \ge 20$ y $p \le 0.05$, o $np < 10$); fuera de ese régimen la Binomial y la Poisson difieren de forma apreciable, especialmente en las colas.
+
 ## Referencias
 
 * Unpingco, J. (2019). *Python for Probability, Statistics, and Machine Learning* (2nd ed.). Springer. Capítulos sobre variables aleatorias discretas y su implementación computacional.

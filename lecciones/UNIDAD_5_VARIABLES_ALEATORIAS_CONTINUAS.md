@@ -310,6 +310,17 @@ print(muestras_dirichlet)
 
 Este curso (tercer semestre) trata a las variables aleatorias continuas con herramientas de cálculo elemental. Para quien desee profundizar hacia un tratamiento formal medida-teórico (integración abstracta, funciones características, distribuciones normales multivariadas), el curso de posgrado **MIT 6.436J — Fundamentals of Probability** (Prof. Yury Polyanskiy) cubre este mismo tema en sus *Lecture Notes* 10–15, con los prerrequisitos de análisis real y teoría de la medida que ese enfoque exige: [ocw.mit.edu/courses/6-436j-fundamentals-of-probability-fall-2018/pages/lecture-notes](https://ocw.mit.edu/courses/6-436j-fundamentals-of-probability-fall-2018/pages/lecture-notes/).
 
+## Errores Comunes / Misconceptions
+
+* **Error**: Interpretar la densidad $f(x)$ como si fuera directamente una probabilidad, o calcular $P(X = x)$ para una variable continua como si fuera distinto de cero.
+  **Correcto**: en variables continuas, $P(X = x) = 0$ para cualquier valor puntual $x$ — la probabilidad se obtiene integrando la densidad sobre un intervalo: $P(a \le X \le b) = \int_a^b f(x)\,dx$. $f(x)$ puede incluso superar 1 (no es una probabilidad, es una densidad).
+
+* **Error**: Aplicar la propiedad de "falta de memoria" ($P(X > s+t \mid X > s) = P(X > t)$) a distribuciones continuas en general.
+  **Correcto**: entre las distribuciones continuas, esa propiedad es exclusiva de la Exponencial (y, en el caso discreto, de la Geométrica). Aplicarla a una Normal, Gamma o Weibull con forma $k \ne 1$ produce resultados incorrectos.
+
+* **Error**: Confundir el parámetro de tasa $\lambda$ de la distribución Exponencial con su media.
+  **Correcto**: si $X \sim \text{Exponencial}(\lambda)$, entonces $\mathbb{E}[X] = 1/\lambda$, no $\lambda$. Un $\lambda$ grande (tasa alta de ocurrencia) corresponde a una media *pequeña* (tiempos de espera cortos), relación inversa que se olvida con frecuencia.
+
 ## Referencias
 
 * Unpingco, J. (2019). *Python for Probability, Statistics, and Machine Learning* (2nd ed.). Springer. Capítulos sobre variables aleatorias continuas, distribuciones y su implementación con SciPy.
