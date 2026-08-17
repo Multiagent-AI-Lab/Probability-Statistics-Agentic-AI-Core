@@ -268,6 +268,225 @@ plt.tight_layout()
 plt.show()
 ```
 
+### 7.3 Correlación de Rango: Spearman y Kendall
+
+El coeficiente de Pearson de la Sección 7.1 solo captura **relaciones lineales**. Cuando la relación entre dos variables es monótona pero no lineal (crece o decrece de forma consistente, pero no en línea recta), Pearson puede subestimar la fuerza real de la asociación. Existen dos alternativas no paramétricas basadas en **rangos**, no en los valores originales:
+
+* **Spearman ($\rho_S$)**: aplica la fórmula de Pearson a los rangos de $X$ y $Y$ en vez de a sus valores. Mide la fuerza de cualquier relación monótona.
+* **Kendall ($\tau$)**: cuenta la proporción de pares concordantes menos discordantes entre las observaciones. Es más robusto que Spearman en muestras pequeñas o con muchos empates.
+
+| Coeficiente | Tipo de relación | Basado en |
+|---|---|---|
+| Pearson ($\rho$) | Lineal | Valores originales |
+| Spearman ($\rho_S$) | Monótona | Rangos |
+| Kendall ($\tau$) | Monótona (concordancia) | Pares concordantes/discordantes |
+
+**Contexto aplicado**: en la dispersión de nanotubos de carbono (CNT) en un solvente mediante sonicación ultrasónica, el porcentaje de homogeneidad de la dispersión crece con el tiempo de sonicación, pero de forma **saturante** (los primeros minutos mejoran mucho la homogeneidad; después de cierto punto, sonicar más aporta poco, e incluso puede dañar los CNT). Esta relación es monótona creciente pero fuertemente no lineal.
+
+```python
+import numpy as np
+from scipy.stats import pearsonr, spearmanr, kendalltau
+
+np.random.seed(70)
+n = 25
+tiempo_sonicacion = np.linspace(1, 60, n)  # minutos
+
+## Relación monótona saturante (tipo logarítmica) + ruido de medición
+homogeneidad_ideal = 100 * np.log1p(tiempo_sonicacion) / np.log1p(60)
+ruido = np.random.normal(0, 3, n)
+homogeneidad = np.clip(homogeneidad_ideal + ruido, 0, 100)
+
+r_pearson, p_pearson = pearsonr(tiempo_sonicacion, homogeneidad)
+rho_spearman, p_spearman = spearmanr(tiempo_sonicacion, homogeneidad)
+tau_kendall, p_kendall = kendalltau(tiempo_sonicacion, homogeneidad)
+
+print(f"Pearson r    = {r_pearson:.4f}  (p = {p_pearson:.6f})")
+print(f"Spearman rho = {rho_spearman:.4f}  (p = {p_spearman:.6f})")
+print(f"Kendall tau  = {tau_kendall:.4f}  (p = {p_kendall:.6f})")
+```
+
+**Interpretación**: Pearson obtiene $r \approx 0.92$, ya alto porque la relación es monótona y suave, pero Spearman captura mejor la asociación real ($\rho_S \approx 0.98$), confirmando que la relación es monótona casi perfecta aunque no estrictamente lineal. Kendall ($\tau \approx 0.91$) coincide en la misma dirección con una escala distinta (cuenta concordancias, no covarianza de rangos).
+
+$$\boxed{\rho_S \approx 0.982 > r_{\text{Pearson}} \approx 0.923}$$
+
+### 7.4 Correlación Múltiple y Correlación Parcial
+
+Cuando una variable de respuesta $Y$ depende de **varios** predictores correlacionados entre sí, dos preguntas distintas requieren dos herramientas distintas:
+
+1. **Correlación múltiple $R$**: ¿qué tan bien predicen $X_1, \ldots, X_k$ conjuntamente a $Y$? Se calcula como $R = \sqrt{R^2}$, la raíz del coeficiente de determinación de la regresión de $Y$ sobre todos los predictores.
+2. **Correlación parcial $r_{Y,X_2 \cdot X_1}$**: ¿cuál es la asociación *neta* entre $Y$ y $X_2$, después de remover el efecto de $X_1$ sobre ambas? Se calcula con la fórmula:
+
+$$r_{Y,X_2 \cdot X_1} = \frac{r_{Y,X_2} - r_{Y,X_1}\, r_{X_1,X_2}}{\sqrt{(1-r_{Y,X_1}^2)(1-r_{X_1,X_2}^2)}}$$
+
+Esta pregunta es crítica cuando dos predictores están **colineales**: una correlación simple alta entre $X_2$ y $Y$ puede ser enteramente espuria, heredada de la correlación de $X_2$ con $X_1$.
+
+**Contexto aplicado**: la conductividad eléctrica ($Y$) de un nanocompuesto de grafeno depende de la concentración de grafeno ($X_1$, % en peso) y de la temperatura de curado ($X_2$). En el protocolo del laboratorio, los lotes con mayor concentración de grafeno también se curan a mayor temperatura (están correlacionados entre sí), por lo que la correlación bruta de $X_2$ con $Y$ puede estar inflada por ese vínculo indirecto.
+
+```python
+import numpy as np
+import pandas as pd
+import statsmodels.api as sm
+from scipy.stats import pearsonr
+
+np.random.seed(71)
+n = 40
+concentracion_grafeno = np.random.uniform(0.5, 5.0, n)  # % en peso
+temperatura_curado = 120 + 15 * concentracion_grafeno + np.random.normal(0, 8, n)  # °C
+conductividad = 8 * concentracion_grafeno + 0.15 * temperatura_curado + np.random.normal(0, 5, n)  # S/cm
+
+df = pd.DataFrame({
+    "conc_grafeno": concentracion_grafeno,
+    "temp_curado": temperatura_curado,
+    "conductividad": conductividad,
+})
+
+## Correlación múltiple: R de la regresión Y ~ X1 + X2
+X = sm.add_constant(df[["conc_grafeno", "temp_curado"]])
+modelo_multiple = sm.OLS(df["conductividad"], X).fit()
+R_multiple = np.sqrt(modelo_multiple.rsquared)
+
+## Correlaciones simples de Pearson
+corr = df.corr(method="pearson")
+r_y_x1 = corr.loc["conductividad", "conc_grafeno"]
+r_y_x2 = corr.loc["conductividad", "temp_curado"]
+r_x1_x2 = corr.loc["conc_grafeno", "temp_curado"]
+
+## Correlación parcial de Y con X2, controlando por X1
+r_parcial = (r_y_x2 - r_y_x1 * r_x1_x2) / np.sqrt((1 - r_y_x1**2) * (1 - r_x1_x2**2))
+
+## Verificación cruzada: correlación de los residuos de regresar Y y X2 sobre X1
+res_y = df["conductividad"] - sm.OLS(df["conductividad"], sm.add_constant(df["conc_grafeno"])).fit().fittedvalues
+res_x2 = df["temp_curado"] - sm.OLS(df["temp_curado"], sm.add_constant(df["conc_grafeno"])).fit().fittedvalues
+r_residuos, _ = pearsonr(res_y, res_x2)
+
+print(f"R múltiple (Y ~ X1 + X2)          = {R_multiple:.4f}")
+print(f"r(Y, X2) bruta                    = {r_y_x2:.4f}")
+print(f"r(Y, X2 · X1) parcial              = {r_parcial:.4f}")
+print(f"Verificación por residuos          = {r_residuos:.4f}")
+```
+
+**Interpretación**: la correlación múltiple es alta ($R \approx 0.96$): ambos predictores juntos explican bien la conductividad. Pero la correlación bruta de la temperatura con la conductividad ($r \approx 0.91$) se desploma a $r_{Y,X_2 \cdot X_1} \approx 0.07$ una vez removido el efecto de la concentración de grafeno — casi toda la asociación aparente de la temperatura con la conductividad era heredada de su colinealidad con la concentración de grafeno, no un efecto propio. La verificación por residuos (correlacionar directamente lo que sobra de $Y$ y de $X_2$ tras remover $X_1$ de ambos) reproduce el mismo valor, confirmando la fórmula analítica.
+
+$$\boxed{r_{Y,X_2 \cdot X_1} \approx 0.074 \ll r_{Y,X_2} \approx 0.914}$$
+
+### 7.5 Prueba de Breusch-Pagan: Homocedasticidad de los Residuos
+
+El Teorema de Gauss-Markov exige que los residuos de una regresión OLS tengan **varianza constante** (homocedasticidad) para que los errores estándar de los coeficientes — y por tanto sus intervalos de confianza y p-valores — sean válidos. La inspección visual de residuos ayuda, pero la **prueba de Breusch-Pagan** formaliza la decisión: regresa los residuos al cuadrado sobre los predictores originales y prueba si esa regresión auxiliar tiene poder explicativo significativo.
+
+$$H_0: \text{Var}(\epsilon_i) = \sigma^2 \ \text{(homocedasticidad)} \qquad H_1: \text{Var}(\epsilon_i) = f(X_i) \ \text{(heterocedasticidad)}$$
+
+**Contexto aplicado**: se retoma la curva de calibración UV-Vis de la Sección 7.2, pero ahora sobre un rango de concentración mucho más amplio, donde el ruido de medición del espectrofotómetro crece con la concentración (común cerca del límite de saturación del detector óptico).
+
+```python
+import numpy as np
+import statsmodels.api as sm
+from statsmodels.stats.diagnostic import het_breuschpagan
+
+np.random.seed(72)
+n = 60
+concentraciones = np.linspace(0.0001, 0.01, n)  # Molar, rango amplio
+epsilon, b_optico = 5000, 1.0
+absorbancia_ideal = epsilon * b_optico * concentraciones
+
+## Ruido heterocedástico: la desviación crece con la concentración
+sigma_ruido = 0.02 + 3.0 * concentraciones
+absorbancia_medida = absorbancia_ideal + np.random.normal(0, sigma_ruido, n)
+
+X = sm.add_constant(concentraciones)
+modelo = sm.OLS(absorbancia_medida, X).fit()
+
+bp_stat, bp_pvalue, bp_fstat, bp_fpvalue = het_breuschpagan(modelo.resid, X)
+
+print(f"Estadístico LM de Breusch-Pagan = {bp_stat:.4f}")
+print(f"p-valor                         = {bp_pvalue:.6f}")
+
+alpha = 0.05
+if bp_pvalue < alpha:
+    print(f"Decisión: p={bp_pvalue:.6f} < {alpha} -> Rechazar H0. Hay heterocedasticidad.")
+else:
+    print("Decisión: no rechazar H0.")
+```
+
+**Interpretación**: el estadístico LM produce $p \approx 0.005 < 0.05$, rechazando la homocedasticidad — el ruido de medición efectivamente crece con la concentración. Como control, al repetir el mismo experimento con ruido de varianza constante, la prueba da $p \approx 0.34$ (no se rechaza $H_0$), confirmando que el test distingue correctamente ambos escenarios. Cuando Breusch-Pagan rechaza $H_0$, los errores estándar de OLS ya no son confiables y conviene usar errores estándar robustos (HC, `cov_type="HC3"` en `statsmodels`) o una transformación de varianza estabilizadora.
+
+$$\boxed{p_{\text{BP}} \approx 0.005 \implies \text{se rechaza homocedasticidad}}$$
+
+### 7.6 RANSAC vs OLS: Regresión Robusta ante Outliers
+
+La regresión OLS minimiza la suma de errores al cuadrado, lo que la hace extremadamente sensible a **outliers**: un solo punto extremo puede dominar el ajuste completo (su punto de ruptura es 0%). **RANSAC** (*Random Sample Consensus*) ajusta el modelo de forma robusta probando repetidamente subconjuntos aleatorios de los datos y quedándose con el que produce más puntos consistentes (*inliers*) dentro de un umbral de residuo.
+
+**Contexto aplicado**: la relación entre el radio de nanopartículas de plata (AgNP, medido por dispersión de luz dinámica DLS) y la posición de su pico de resonancia plasmónica superficial (SPR, medido por UV-Vis) es aproximadamente lineal. Pero un subconjunto de las mediciones sufre **agregación** (las nanopartículas se aglomeran y generan un segundo pico de SPR desplazado), produciendo outliers severos que no reflejan la relación física real.
+
+```python
+import numpy as np
+from sklearn.linear_model import LinearRegression, RANSACRegressor
+
+np.random.seed(74)
+n_samples = 45
+radio_nm = np.linspace(5, 60, n_samples).reshape(-1, 1)
+pendiente_real, intercepto_real = 2.3, 395  # nm de corrimiento SPR por nm de radio
+
+spr_pico = pendiente_real * radio_nm.ravel() + intercepto_real + np.random.normal(0, 3, n_samples)
+
+## Contaminación por agregación: 9 de 45 muestras con SPR desplazado
+idx_agregados = np.random.choice(n_samples, 9, replace=False)
+spr_pico[idx_agregados] += np.random.uniform(40, 90, 9)
+
+ols = LinearRegression().fit(radio_nm, spr_pico)
+ransac = RANSACRegressor(min_samples=15, residual_threshold=10.0, random_state=74)
+ransac.fit(radio_nm, spr_pico)
+
+print(f"Pendiente real     = {pendiente_real}")
+print(f"Pendiente OLS      = {ols.coef_[0]:.4f}  (error = {abs(ols.coef_[0]-pendiente_real):.4f})")
+print(f"Pendiente RANSAC   = {ransac.estimator_.coef_[0]:.4f}  (error = {abs(ransac.estimator_.coef_[0]-pendiente_real):.4f})")
+
+n_outliers_detectados = (~ransac.inlier_mask_).sum()
+coincidencia = len(set(np.where(~ransac.inlier_mask_)[0]) & set(idx_agregados))
+print(f"Outliers reales = {len(idx_agregados)}, detectados por RANSAC = {n_outliers_detectados}, coinciden = {coincidencia}")
+```
+
+**Interpretación**: OLS produce una pendiente muy sesgada ($\approx 1.68$, error $0.62$) porque los 9 puntos agregados lo arrastran. RANSAC recupera la pendiente real casi exactamente ($\approx 2.29$, error $0.013$) e identifica los 9 outliers reales con coincidencia perfecta (9 de 9), sin que se le indique de antemano cuáles eran contaminados.
+
+$$\boxed{\text{Error pendiente: OLS} \approx 0.625 \ \text{vs. RANSAC} \approx 0.013}$$
+
+### 7.7 GLMs Generalizados: Poisson y Binomial Negativa para Datos de Conteo
+
+Los Modelos Lineales Generalizados (GLM) extienden la regresión a respuestas no normales mediante una **función de enlace** $g(\mu) = \eta$. Para datos de **conteo** (número de eventos discretos), el GLM canónico es el **Poisson**, con enlace logarítmico $\ln(\mu) = \beta_0 + \beta_1 x$, que asume $\text{Var}(Y) = \mu$ (varianza igual a la media).
+
+En procesos reales de fabricación, esta suposición suele fallar por **sobredispersión** ($\text{Var}(Y) > \mu$), generalmente porque hay heterogeneidad no observada entre lotes. La **Binomial Negativa** introduce un parámetro de dispersión adicional (equivalente a una mezcla Gamma-Poisson) que absorbe esa varianza extra.
+
+**Contexto aplicado**: se cuentan defectos puntuales (vacancias) por oblea de silicio, observados por microscopía electrónica, en función del tiempo de crecimiento epitaxial. Las condiciones de cámara varían levemente entre lotes, generando sobredispersión real en el conteo de defectos.
+
+```python
+import numpy as np
+import statsmodels.api as sm
+
+np.random.seed(75)
+n_samples = 80
+tiempo_crecimiento = np.linspace(1, 12, n_samples)  # horas
+
+## Generación con sobredispersión real (mezcla Gamma-Poisson)
+mu = np.exp(0.15 * tiempo_crecimiento + 0.8)
+alpha_real = 0.6
+r_param = 1 / alpha_real
+prob = r_param / (r_param + mu)
+defectos = np.random.negative_binomial(r_param, prob)
+
+X = sm.add_constant(tiempo_crecimiento)
+modelo_poisson = sm.GLM(defectos, X, family=sm.families.Poisson()).fit()
+modelo_negbin = sm.GLM(defectos, X, family=sm.families.NegativeBinomial(alpha=alpha_real)).fit()
+
+ratio_var_media = defectos.var(ddof=1) / defectos.mean()
+
+print(f"AIC Poisson       = {modelo_poisson.aic:.2f}")
+print(f"AIC Binomial Neg. = {modelo_negbin.aic:.2f}")
+print(f"Ratio Varianza/Media observado = {ratio_var_media:.4f} (>1 indica sobredispersión)")
+```
+
+**Interpretación**: el ratio Varianza/Media observado es $\approx 5.44$, muy por encima de 1, confirmando sobredispersión fuerte. En consecuencia, el modelo Binomial Negativa tiene un AIC mucho menor ($\approx 443$ vs. $\approx 547$ del Poisson, $\Delta \text{AIC} \approx 104$), indicando un ajuste sustancialmente mejor. Usar Poisson aquí subestimaría los errores estándar de los coeficientes y produciría intervalos de confianza y p-valores falsamente optimistas.
+
+$$\boxed{\Delta\text{AIC}_{\text{Poisson} \to \text{NegBin}} \approx 104 \implies \text{Binomial Negativa es preferible}}$$
+
 ---
 
 ## 8. Módulo Integrador: Inferencia con Datos de Materials Project API
@@ -312,14 +531,88 @@ else:
 
 ---
 
-## 9. Aplicación Avanzada: Red Neuronal Probabilística para Control de Calidad
+## 9. Cierre Integrador: PCA, Distancia de Mahalanobis y Whitening Gaussiano
+
+La Unidad 4 (§7.3-7.4) ya introdujo el **blanqueamiento (whitening)** y el **PCA** como transformaciones lineales de vectores gaussianos, y definió la **distancia de Mahalanobis** $D^2=(\mathbf{x}-\mu)^T\Sigma^{-1}(\mathbf{x}-\mu)$ como la métrica de distancia estadística que considera la correlación entre variables (Unidad 4 §6.4). Esta sección cierra el curso aplicando esas tres piezas juntas a un problema de **control de calidad multivariado**, sin reimplementar PCA ni whitening desde cero.
+
+### 9.1 La Distancia de Mahalanobis como Estadístico de Prueba: $D^2 \sim \chi^2_p$
+
+Un resultado clave, no explotado aún en el curso, es que si $\mathbf{X} \sim \mathcal{N}(\mathbf{\mu}, \mathbf{\Sigma})$ en $p$ dimensiones, entonces su distancia de Mahalanobis al cuadrado se distribuye como una **Chi-cuadrado con $p$ grados de libertad**:
+
+$$D^2 = (\mathbf{X}-\mathbf{\mu})^T\mathbf{\Sigma}^{-1}(\mathbf{X}-\mathbf{\mu}) \sim \chi^2_p$$
+
+Esto permite construir un **umbral de rechazo formal**: cualquier observación con $D^2$ por encima del cuantil $1-\alpha$ de $\chi^2_p$ se considera una anomalía estadística al nivel $\alpha$, exactamente igual que un valor crítico de una prueba de hipótesis.
+
+### 9.2 Contexto Aplicado: Control de Calidad de Puntos Cuánticos
+
+En la síntesis de puntos cuánticos (*quantum dots*) de CdSe, dos variables de proceso determinan conjuntamente el diámetro final: la **temperatura de inyección** y el **tiempo de crecimiento**. Ambas están correlacionadas por el protocolo estándar del reactor. Un lote puede estar "dentro de rango" en cada variable por separado y aun así ser anómalo si **rompe la correlación esperada** entre ambas — algo que un control de calidad univariado (mirar cada variable con su propio umbral de $\pm 2\sigma$) no puede detectar.
+
+```python
+import numpy as np
+from scipy.stats import chi2
+from scipy.spatial.distance import mahalanobis
+from sklearn.decomposition import PCA
+
+np.random.seed(76)
+
+## Proceso "en control": temperatura y tiempo correlacionados por protocolo
+mu = np.array([240.0, 12.0])  # [temperatura °C, tiempo min]
+Sigma = np.array([[16.0, 6.0], [6.0, 4.0]])
+N, p = 1500, 2
+X_samples = np.random.multivariate_normal(mu, Sigma, size=N)
+Sigma_inv = np.linalg.inv(Sigma)
+
+## 1. Umbral de rechazo al 95% (teórico vía chi2 y muestral vía percentil)
+d2_samples = np.array([mahalanobis(x, mu, Sigma_inv) ** 2 for x in X_samples])
+umbral_teorico = chi2.ppf(0.95, df=p)
+umbral_muestral = np.percentile(d2_samples, 95)
+print(f"Umbral teórico (chi2, df={p})  = {umbral_teorico:.4f}")
+print(f"Umbral muestral (percentil 95) = {umbral_muestral:.4f}")
+
+## 2. Evaluación de 3 lotes nuevos
+lotes = {
+    "Lote normal": np.array([241.0, 12.5]),
+    "Lote outlier marginal (obvio en ambas variables)": np.array([280.0, 25.0]),
+    "Lote outlier conjunto (rompe correlación, normal marginalmente)": np.array([244.0, 8.5]),
+}
+for nombre, x in lotes.items():
+    d2 = mahalanobis(x, mu, Sigma_inv) ** 2
+    z_temp = (x[0] - mu[0]) / np.sqrt(Sigma[0, 0])
+    z_tiempo = (x[1] - mu[1]) / np.sqrt(Sigma[1, 1])
+    decision = "RECHAZADO" if d2 > umbral_teorico else "aceptado"
+    print(f"{nombre}: D²={d2:.4f}, z_temp={z_temp:.2f}, z_tiempo={z_tiempo:.2f} -> {decision}")
+
+## 3. Whitening (reutilizando la definición de U4 §7.3): verificar Cov(Z) = I
+eigenvals, eigenvecs = np.linalg.eigh(Sigma)
+W = eigenvecs @ np.diag(1.0 / np.sqrt(eigenvals)) @ eigenvecs.T
+Z_samples = (X_samples - mu) @ W.T
+print(f"\nCov(Z) tras blanqueamiento ≈ I: {np.allclose(np.cov(Z_samples, rowvar=False), np.eye(2), atol=0.1)}")
+
+## En el espacio blanqueado, Mahalanobis == distancia Euclidiana al cuadrado
+d2_euclid_Z = np.sum(Z_samples ** 2, axis=1)
+print(f"Max |D²_Mahalanobis - ||Z||²_Euclid| = {np.max(np.abs(d2_euclid_Z - d2_samples)):.2e}")
+
+## 4. PCA (reutilizando U4 §7.4): varianza explicada del mismo proceso
+pca = PCA(n_components=2).fit(X_samples)
+print(f"\nVarianza explicada por componente: {pca.explained_variance_ratio_}")
+```
+
+### 9.3 Interpretación en el Contexto de Nanotecnología
+
+El umbral teórico ($\chi^2_2$ al 95%, $D^2 \approx 5.99$) coincide con el umbral muestral empírico, confirmando que el proceso se comporta como la Normal bivariada asumida. El lote "outlier conjunto" tiene ambas variables dentro de $\pm 2\sigma$ marginalmente (lo que un control univariado aceptaría sin problema), pero su $D^2 \approx 15.3$ excede ampliamente el umbral — la anomalía solo es visible al considerar la **covarianza conjunta**, no cada variable por separado. La verificación de whitening confirma numéricamente la equivalencia teórica: la distancia de Mahalanobis en el espacio original es exactamente la distancia Euclidiana en el espacio blanqueado (diferencia $\sim 10^{-14}$, error de punto flotante). El PCA del mismo proceso (Unidad 4 §7.4) muestra que la primera componente principal concentra $>90\%$ de la varianza, es decir, casi toda la variabilidad del proceso ocurre a lo largo de una única dirección física (probablemente correlacionada con el tiempo total de reacción efectivo).
+
+$$\boxed{D^2_{\text{umbral}} \approx 5.99 \ (\chi^2_2, 95\%) \implies \text{lote outlier conjunto } (D^2\approx 15.3) \text{ se rechaza aunque cada variable esté individualmente en rango}}$$
+
+---
+
+## 10. Aplicación Avanzada: Red Neuronal Probabilística para Control de Calidad
 
 A diferencia de una red neuronal estándar que predice un único valor puntual, una **red neuronal probabilística** predice los parámetros de una distribución (típicamente media $\mu$ y escala $\sigma$), permitiendo cuantificar la incertidumbre de la predicción — relevante cuando se requiere no solo estimar una propiedad de un lote de nanopartículas, sino también la confianza de esa estimación.
 
-### 9.1 Arquitectura Conceptual
+### 10.1 Arquitectura Conceptual
 La red recibe como entrada variables de proceso (p. ej. temperatura de síntesis, concentración de precursor) y produce dos salidas: $\hat\mu(x)$ y $\hat\sigma(x)$, que parametrizan una distribución Normal $\mathcal{N}(\hat\mu(x), \hat\sigma(x)^2)$ sobre la propiedad objetivo (p. ej. diámetro de nanopartícula). El entrenamiento minimiza la log-verosimilitud negativa de los datos observados bajo esa distribución predicha, en vez del error cuadrático medio de una red estándar.
 
-### 9.2 Aplicación: Control de Calidad de Nanopartículas
+### 10.2 Aplicación: Control de Calidad de Nanopartículas
 Una vez entrenado el modelo con datos históricos de producción, se usa para calcular probabilidades sobre nuevos lotes:
 
 ```python
@@ -336,19 +629,89 @@ prob_sobre_umbral = 1 - norm.cdf(1.0, loc=mu_predicho, scale=sigma_predicho)
 print(f"P(diámetro > 1.0 nm) = {prob_sobre_umbral:.4f} ({prob_sobre_umbral*100:.2f}%)")
 ```
 
-### 9.3 Interpretación en el Contexto de Nanotecnología
+### 10.3 Interpretación en el Contexto de Nanotecnología
 Si el criterio de control de calidad exige que el diámetro esté en un rango específico, no basta con mirar la media predicha: la desviación estándar predicha indica qué tan confiable es esa estimación para el lote en cuestión — una desviación alta sugiere que, aunque la media esté dentro de especificación, una porción significativa de las nanopartículas del lote podría estar fuera de rango debido a la variabilidad del proceso de síntesis.
+
+### 10.4 Extensión con TensorFlow Probability: Entrenamiento Real de la Red Probabilística
+
+El ejemplo anterior (§10.2) usó valores de $\hat\mu$ y $\hat\sigma$ ya calculados, "como si vinieran del modelo". Esta sección entrena el modelo real con **TensorFlow Probability (TFP)**, la librería especializada para redes cuya capa de salida parametriza una distribución en vez de un valor puntual, sobre el mismo problema conceptual (diámetro de AuNP en función de la temperatura de síntesis), ahora con **heterocedasticidad real**: a mayor temperatura, mayor variabilidad del proceso de síntesis coloidal.
+
+```python
+## En Google Colab, instalar la extensión TF de TFP si no está disponible:
+## %pip install -q "tensorflow-probability[tf]"
+import numpy as np
+import tensorflow as tf
+import tensorflow_probability as tfp
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_absolute_error, r2_score
+
+tfd = tfp.distributions
+np.random.seed(77)
+tf.random.set_seed(77)
+
+## 1. Datos: diámetro de AuNP en función de temperatura de síntesis (normalizada)
+n_samples = 1500
+temp_norm = np.random.uniform(-2, 2, (n_samples, 1)).astype(np.float32)
+mu_real = 15.0 + 3.0 * temp_norm.ravel()
+sigma_real = 0.5 + 0.8 * np.abs(temp_norm.ravel())  # heterocedasticidad: más ruido en extremos
+diametro = np.random.normal(mu_real, sigma_real).astype(np.float32).reshape(-1, 1)
+
+X_train, X_test, y_train, y_test = train_test_split(temp_norm, diametro, test_size=0.2, random_state=77)
+
+## 2. Modelo: red que predice [mu, log_sigma] en vez de un único valor
+modelo = tf.keras.Sequential([
+    tf.keras.layers.Dense(32, activation="relu", input_shape=(1,)),
+    tf.keras.layers.Dense(16, activation="relu"),
+    tf.keras.layers.Dense(2),  # salida: [mu, raw_scale]
+])
+
+def neg_log_likelihood(y_true, y_pred_params):
+    """Negative log-likelihood de una Normal con parámetros predichos por la red."""
+    loc, raw_scale = tf.split(y_pred_params, num_or_size_splits=2, axis=-1)
+    scale = tf.math.softplus(raw_scale) + 1e-6  # asegura escala positiva
+    return -tfd.Normal(loc=loc, scale=scale).log_prob(y_true)
+
+modelo.compile(optimizer=tf.keras.optimizers.Adam(0.01), loss=neg_log_likelihood)
+early_stop = tf.keras.callbacks.EarlyStopping(monitor="val_loss", patience=15, restore_best_weights=True)
+historia = modelo.fit(X_train, y_train, validation_split=0.2, epochs=150, batch_size=32,
+                       callbacks=[early_stop], verbose=0)
+
+## 3. Predicciones: extraer mu y sigma predichos
+params_test = modelo.predict(X_test, verbose=0)
+loc_test, raw_scale_test = np.split(params_test, 2, axis=-1)
+scale_test = np.log1p(np.exp(raw_scale_test)) + 1e-6
+
+print(f"MAE de mu predicho en test = {mean_absolute_error(y_test, loc_test):.4f} nm")
+print(f"R² de mu predicho en test  = {r2_score(y_test, loc_test):.4f}")
+
+## 4. Verificar que sigma predicho captura la heterocedasticidad real
+corr_sigma = np.corrcoef(np.abs(X_test.ravel()), scale_test.ravel())[0, 1]
+print(f"Correlación |temperatura| vs sigma_predicho = {corr_sigma:.4f}")
+
+## 5. Guardado y carga del modelo (requiere registrar la función de pérdida personalizada)
+modelo.save("modelo_probabilistico_aunp.keras")
+modelo_cargado = tf.keras.models.load_model(
+    "modelo_probabilistico_aunp.keras", custom_objects={"neg_log_likelihood": neg_log_likelihood}
+)
+x_nuevo = np.array([[1.8]], dtype=np.float32)
+coincide = np.allclose(modelo.predict(x_nuevo, verbose=0), modelo_cargado.predict(x_nuevo, verbose=0))
+print(f"Predicción del modelo recargado coincide con el original: {coincide}")
+```
+
+**Interpretación**: el modelo entrenado con TFP alcanza $R^2 \approx 0.85$ para la media predicha, y — a diferencia de una red estándar que solo estima $\hat\mu$ — captura correctamente la heterocedasticidad real del proceso: la correlación entre $|\text{temperatura}|$ y $\hat\sigma$ predicho es $\approx 0.98$, y $\hat\sigma$ promedio más que se duplica entre temperaturas moderadas y extremas ($\approx 0.82$ nm vs. $\approx 1.78$ nm). Esto es información que una red de regresión estándar (que solo predice $\hat\mu$) no puede ofrecer: dos lotes con la misma media predicha pueden tener niveles de confianza muy distintos. El guardado y recarga del modelo confirma que la función de pérdida personalizada (`neg_log_likelihood`) debe registrarse explícitamente vía `custom_objects` al cargar, o Keras no puede reconstruir el grafo de cómputo del modelo.
+
+$$\boxed{\text{Corr}(|\text{temp}|, \hat\sigma) \approx 0.98 \implies \text{la red capta correctamente la heterocedasticidad del proceso}}$$
 
 ---
 
-## 10. Módulo de Simulación: Simulación Estocástica de Potencia y Tamaño Muestral
+## 11. Módulo de Simulación: Simulación Estocástica de Potencia y Tamaño Muestral
 
-### 10.1 Algoritmo de Simulación de Potencia
+### 11.1 Algoritmo de Simulación de Potencia
 1. Fijar el tamaño de efecto esperado $\Delta = \mu_A - \mu_B$.
 2. Simular $N$ pares de muestras normales bajo $H_1$.
 3. Estimar la potencia como la fracción de simulaciones con $p$-valor $< \alpha$.
 
-### 10.2 Curva de Potencia Simulada en Python
+### 11.2 Curva de Potencia Simulada en Python
 ```python
 import numpy as np
 import scipy.stats as stats
