@@ -3,6 +3,7 @@ Tests for NotebookCompilerAgent.
 """
 
 import os
+
 from src.multiagent_core.notebook_compiler_agent import NotebookCompilerAgent
 
 
@@ -66,3 +67,58 @@ def test_sanitize_does_not_corrupt_spanish_words_ending_in_ar_before_brace():
     result = compiler._sanitize_text(text)
     assert result == text
 
+
+def test_flowchart_agent_se_activa_solo_en_unidad_6(tmp_path):
+    from src.multiagent_core.notebook_compiler_agent import NotebookCompilerAgent
+
+    lecciones_dir = tmp_path / "lecciones"
+    lecciones_dir.mkdir()
+    notebooks_dir = tmp_path / "notebooks"
+
+    contenido_con_funcion = """# UNIDAD 6 MODELADO Y SIMULACION
+
+## 1. Simulación Monte Carlo
+
+```python
+def estimar_pi_monte_carlo(n_muestras):
+    dentro = 0
+    for i in range(n_muestras):
+        if i % 2 == 0:
+            dentro = dentro + 1
+    return dentro / n_muestras
+```
+"""
+    (lecciones_dir / "UNIDAD_6_MODELADO_SIMULACION.md").write_text(
+        contenido_con_funcion, encoding="utf-8"
+    )
+    (lecciones_dir / "UNIDAD_1_ESTADISTICA_DESCRIPTIVA.md").write_text(
+        contenido_con_funcion.replace("UNIDAD 6 MODELADO Y SIMULACION", "UNIDAD 1"),
+        encoding="utf-8",
+    )
+
+    compiler = NotebookCompilerAgent(
+        lecciones_dir=str(lecciones_dir), notebooks_dir=str(notebooks_dir)
+    )
+    nb_path_u6 = compiler.compile_file("UNIDAD_6_MODELADO_SIMULACION.md")
+    nb_path_u1 = compiler.compile_file("UNIDAD_1_ESTADISTICA_DESCRIPTIVA.md")
+
+    import json
+
+    with open(nb_path_u6, encoding="utf-8") as f:
+        nb_u6 = json.load(f)
+    with open(nb_path_u1, encoding="utf-8") as f:
+        nb_u1 = json.load(f)
+
+    u6_has_mermaid = any(
+        "graph TD" in "".join(cell.get("source", []))
+        for cell in nb_u6["cells"]
+        if cell["cell_type"] == "markdown"
+    )
+    u1_has_mermaid = any(
+        "graph TD" in "".join(cell.get("source", []))
+        for cell in nb_u1["cells"]
+        if cell["cell_type"] == "markdown"
+    )
+
+    assert u6_has_mermaid is True
+    assert u1_has_mermaid is False
