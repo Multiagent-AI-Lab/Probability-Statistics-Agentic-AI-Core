@@ -321,6 +321,16 @@ Este curso (tercer semestre) trata a las variables aleatorias continuas con herr
 * **Error**: Confundir el parámetro de tasa $\lambda$ de la distribución Exponencial con su media.
   **Correcto**: si $X \sim \text{Exponencial}(\lambda)$, entonces $\mathbb{E}[X] = 1/\lambda$, no $\lambda$. Un $\lambda$ grande (tasa alta de ocurrencia) corresponde a una media *pequeña* (tiempos de espera cortos), relación inversa que se olvida con frecuencia.
 
+## Ejercicio Propuesto
+
+Un proceso de recubrimiento por deposición de capas atómicas (ALD) produce películas de $\text{Al}_2\text{O}_3$ cuyo espesor $X$ (en nm) sigue $X \sim \mathcal{N}(\mu=15.0,\ \sigma=0.8)$.
+
+1. Calcula $P(14.0 \le X \le 16.0)$, la probabilidad de que el espesor esté dentro de la ventana de tolerancia del proceso.
+2. Calcula el percentil 90 del espesor (el valor $x$ tal que $P(X \le x) = 0.90$).
+3. Calcula $P(X > 17.0)$, la probabilidad de un espesor excesivo. Explica por qué esta probabilidad puntual de la PDF evaluada en $x=17$ (es decir, $f(17)$) no sería la respuesta correcta a esta pregunta.
+
+Escribe tu solución en una celda de código nueva en tu notebook. La celda de autoevaluación de la siguiente sección verificará tu resultado.
+
 ## Referencias
 
 * Unpingco, J. (2019). *Python for Probability, Statistics, and Machine Learning* (2nd ed.). Springer. Capítulos sobre variables aleatorias continuas, distribuciones y su implementación con SciPy.

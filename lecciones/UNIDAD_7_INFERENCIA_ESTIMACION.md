@@ -328,6 +328,16 @@ print("Buen ajuste (p > 0.05)" if ks_pvalue > 0.05 else "Ajuste cuestionable (p 
 * **Error**: Igualar significancia estadística ($p < \alpha$) con relevancia práctica o magnitud del efecto.
   **Correcto**: con un tamaño de muestra $n$ suficientemente grande, incluso diferencias triviales (sin importancia práctica) resultan estadísticamente significativas. El p-valor no mide el tamaño del efecto — para eso se reporta el tamaño de efecto (p. ej. $d$ de Cohen) y el intervalo de confianza correspondiente.
 
+## Ejercicio Propuesto
+
+Un nuevo protocolo de síntesis de AgNPs afirma producir un diámetro medio de $\mu_0 = 25.0\text{ nm}$, con desviación estándar poblacional conocida $\sigma = 3.0\text{ nm}$ (a partir de control histórico del proceso). Se toma una muestra de $n=36$ nanopartículas y se mide un diámetro medio muestral $\bar{x} = 26.2\text{ nm}$. Se plantea $H_0: \mu = 25.0$ contra $H_1: \mu \ne 25.0$, con $\alpha = 0.05$.
+
+1. Calcula el estadístico $Z$ de la prueba.
+2. Calcula el p-valor (prueba de dos colas) y compáralo contra $\alpha$ para decidir si se rechaza $H_0$.
+3. Enuncia la conclusión en términos correctos: ¿qué significa exactamente el p-valor obtenido en este contexto (no lo confundas con $P(H_0 \text{ verdadera})$)? Si la decisión hubiera sido "no rechazar $H_0$", ¿sería válido concluir que el nuevo protocolo produce exactamente $\mu=25.0\text{ nm}$?
+
+Escribe tu solución en una celda de código nueva en tu notebook. La celda de autoevaluación de la siguiente sección verificará tu resultado.
+
 ## Referencias
 
 * Agresti, A. & Kateri, M. (2022). *Foundations of Statistics for Data Scientists: With R and Python*. Chapman & Hall/CRC (Texts in Statistical Science). Capítulos sobre estimación puntual, máxima verosimilitud, intervalos de confianza y pruebas de hipótesis.

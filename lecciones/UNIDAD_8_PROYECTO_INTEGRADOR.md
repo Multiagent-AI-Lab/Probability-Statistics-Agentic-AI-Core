@@ -372,6 +372,21 @@ print(f"Potencia Empírica Simulada de la Prueba: {potencia_est * 100:.2f}%")
 * **Error**: Concluir, a partir de una prueba de hipótesis no significativa, que "se demostró que no hay efecto" o "los dos grupos son iguales".
   **Correcto**: una prueba no significativa (p. ej. $p > 0.05$) indica falta de evidencia suficiente para rechazar $H_0$, que puede deberse a un efecto real ausente o a potencia insuficiente (muestra pequeña). Para argumentar ausencia de efecto con rigor se requiere un análisis de potencia post-hoc o pruebas de equivalencia diseñadas para ese propósito.
 
+## Ejercicio Propuesto
+
+Se midió el band gap $E_g$ (en eV) de dos óxidos semiconductores nanoestructurados sintetizados por dos rutas distintas, con $n=8$ mediciones independientes por grupo:
+
+$$\text{SnO}_2 = \{3.58,\ 3.62,\ 3.55,\ 3.60,\ 3.57,\ 3.63,\ 3.59,\ 3.56\}$$
+$$\text{In}_2\text{O}_3 = \{3.71,\ 3.68,\ 3.75,\ 3.70,\ 3.73,\ 3.69,\ 3.72,\ 3.74\}$$
+
+Se quiere probar $H_0: \mu_{\text{SnO}_2} = \mu_{\text{In}_2\text{O}_3}$ contra $H_1: \mu_{\text{SnO}_2} \ne \mu_{\text{In}_2\text{O}_3}$, con $\alpha=0.05$.
+
+1. Calcula la media y desviación estándar muestral de cada grupo.
+2. Verifica el supuesto de homocedasticidad con la prueba de Levene (`scipy.stats.levene`) antes de elegir la variante de la prueba t.
+3. Ejecuta una prueba t de dos muestras independientes con `scipy.stats.ttest_ind(..., equal_var=False)` (Welch, robusta ante posible heterocedasticidad) y decide si se rechaza $H_0$. Interpreta el resultado en términos de diferencia de band gap entre las dos rutas de síntesis, sin usar la palabra "causa" ni implicar causalidad.
+
+Escribe tu solución en una celda de código nueva en tu notebook. La celda de autoevaluación de la siguiente sección verificará tu resultado.
+
 ## Referencias
 
 * García, J., Molina, J. M., Berlanga, A., Patricio, M. Á., Bustamante, Á. L. & Padilla, W. R. (2018). *Ciencia de Datos: Técnicas Analíticas y Aprendizaje Estadístico en un Enfoque Práctico*. Alfaomega/Publicaciones Altaria. Capítulos sobre inferencia estadística aplicada y aprendizaje estadístico como cierre integrador del curso.

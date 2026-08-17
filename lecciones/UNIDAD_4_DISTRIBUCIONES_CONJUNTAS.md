@@ -619,6 +619,18 @@ display(Math(fr"\text{{Covarianza Simulada: }} \text{{Cov}}(X, Y) = {cov_sim[0, 
 * **Error**: Calcular la varianza de la suma $X+Y$ como $\text{Var}(X) + \text{Var}(Y)$ sin verificar independencia (o covarianza nula).
   **Correcto**: en general $\text{Var}(X+Y) = \text{Var}(X) + \text{Var}(Y) + 2\,\text{Cov}(X,Y)$. Omitir el término de covarianza subestima la varianza real cuando las variables están correlacionadas positivamente (y la sobrestima si la correlación es negativa).
 
+## Ejercicio Propuesto
+
+Un nanocompuesto polimérico reforzado con nanopartículas cerámicas tiene dos propiedades correlacionadas: el diámetro de partícula $X$ (nm) y la conductividad térmica del compuesto $Y$ (W/m·K), con vector de medias $\mu = (30.0,\ 5.0)$ y matriz de covarianza:
+
+$$\Sigma = \begin{pmatrix} 9.0 & 6.0 \\ 6.0 & 16.0 \end{pmatrix}$$
+
+1. Calcula el coeficiente de correlación $\rho_{X,Y}$ a partir de $\Sigma$.
+2. Calcula $\text{Var}(X+Y)$ usando la fórmula completa (incluyendo el término de covarianza) y compárala con el resultado que se obtendría omitiendo por error dicho término.
+3. Verifica que $\Sigma$ es una matriz de covarianza válida obteniendo su descomposición de Cholesky $L$ (si `numpy.linalg.cholesky` no lanza error, $\Sigma$ es semidefinida positiva).
+
+Escribe tu solución en una celda de código nueva en tu notebook. La celda de autoevaluación de la siguiente sección verificará tu resultado.
+
 ## Referencias
 
 * Agresti, A. & Kateri, M. (2022). *Foundations of Statistics for Data Scientists: With R and Python*. Chapman & Hall/CRC (Texts in Statistical Science). Capítulos sobre distribuciones multivariadas y dependencia entre variables aleatorias.

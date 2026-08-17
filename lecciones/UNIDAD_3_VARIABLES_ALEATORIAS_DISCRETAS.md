@@ -295,6 +295,16 @@ Este curso (tercer semestre) trata a las variables aleatorias discretas con herr
 * **Error**: Usar la aproximación Poisson de la Binomial ($\lambda = np$) en cualquier caso, sin verificar las condiciones de validez.
   **Correcto**: la aproximación solo es razonable cuando $n$ es grande, $p$ es pequeño y $np$ es moderado (regla práctica: $n \ge 20$ y $p \le 0.05$, o $np < 10$); fuera de ese régimen la Binomial y la Poisson difieren de forma apreciable, especialmente en las colas.
 
+## Ejercicio Propuesto
+
+Un lote de $n=25$ nanotubos de carbono de pared simple (SWCNT) se inspecciona por espectroscopía Raman; cada nanotubo tiene una probabilidad $p=0.08$ de presentar un defecto estructural (vacancia en la red), de forma independiente entre nanotubos: $X \sim \text{Binomial}(n=25,\ p=0.08)$.
+
+1. Calcula, usando la fórmula exacta de la PMF binomial, $P(X = 3)$ (exactamente 3 nanotubos defectuosos).
+2. Calcula $P(X \le 3)$ y $P(X \ge 1)$ (usando la CDF, no la PMF).
+3. Calcula $\mathbb{E}[X]$ y $\text{Var}(X)$. Dado que $n \cdot p = 2.0$ pero $p = 0.08$ no cumple estrictamente $p \le 0.05$, calcula también la aproximación Poisson de $P(X=3)$ y compárala numéricamente con el valor exacto del punto 1 para verificar si la aproximación sigue siendo razonable en este caso límite.
+
+Escribe tu solución en una celda de código nueva en tu notebook. La celda de autoevaluación de la siguiente sección verificará tu resultado.
+
 ## Referencias
 
 * Unpingco, J. (2019). *Python for Probability, Statistics, and Machine Learning* (2nd ed.). Springer. Capítulos sobre variables aleatorias discretas y su implementación computacional.
