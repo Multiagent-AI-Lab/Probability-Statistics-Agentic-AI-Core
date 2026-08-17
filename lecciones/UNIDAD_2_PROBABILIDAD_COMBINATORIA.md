@@ -296,3 +296,8 @@ plt.show()
 * $P(R_i)$: Probabilidad a priori de selección de una nanopartícula del reactor $i$.
 * $P(D|R_i)$: Verosimilitud de falla por imperfección térmica en el reactor $i$.
 * $P(R_i|D)$: Probabilidad a posteriori inferida mediante diagnóstico microscópico TEM.
+
+## Referencias
+
+* Chan, S. H. (2021). *Introduction to Probability for Data Science*. Michigan Publishing. Capítulos sobre fundamentos de probabilidad, combinatoria y Teorema de Bayes.
+* Virtanen, P. et al. (2020). SciPy 1.0: Fundamental Algorithms for Scientific Computing in Python. *Nature Methods*, 17, 261-272. Documentación: [docs.scipy.org/doc/scipy/reference/stats.html](https://docs.scipy.org/doc/scipy/reference/stats.html)
