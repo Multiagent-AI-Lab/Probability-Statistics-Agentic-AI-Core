@@ -350,3 +350,41 @@ Escribe tu solución en una celda de código nueva en tu notebook. La celda de a
 
 * Bruce, P., Bruce, A. & Gedeck, P. (2020). *Practical Statistics for Data Scientists: 50+ Essential Concepts Using R and Python* (2nd ed.). O'Reilly Media. Capítulos sobre estadística descriptiva y exploración de datos.
 * Virtanen, P. et al. (2020). SciPy 1.0: Fundamental Algorithms for Scientific Computing in Python. *Nature Methods*, 17, 261-272. Documentación: [docs.scipy.org/doc/scipy/reference/stats.html](https://docs.scipy.org/doc/scipy/reference/stats.html)
+
+## Autoevaluación
+
+Guarda tu solución al Ejercicio Propuesto en un archivo separado y evalúala contra el pipeline de auditoría del curso:
+
+```python
+%%writefile solucion_ejercicio_u1.py
+# Completa aquí tu solución al Ejercicio Propuesto de esta unidad.
+import numpy as np
+
+datos = np.array([21.4, 22.1, 20.8, 23.3, 21.9, 22.5, 52.7, 21.2, 22.8, 21.1, 22.2, 21.6, 53.9, 22.0])
+
+# TODO: calcula media, mediana y desviación estándar muestral del lote de AgNPs
+# TODO: aplica el criterio del IQR para detectar todos los valores atípicos (pueden ser más de uno)
+# TODO: recalcula la media excluyendo los atípicos detectados y compárala con la mediana del conjunto completo
+```
+
+```python
+from src.multiagent_core.code_auditor_agent import CodeAuditorAgent
+from external_skills.pedagogy.socratic_debugger import SocraticDebugger
+
+with open("solucion_ejercicio_u1.py", encoding="utf-8") as f:
+    codigo_alumno = f.read()
+
+auditor = CodeAuditorAgent()
+resultado = auditor.audit_code(codigo_alumno)
+
+if resultado["issues"] or resultado["metrics"]["has_security_risk"]:
+    debugger = SocraticDebugger()
+    for issue in resultado["issues"]:
+        tipo_error = "syntax_error" if "SyntaxError" in issue else "generic"
+        print("💡", debugger.generate_socratic_question(tipo_error, "Unidad 1"))
+    print("\n--- Detalle técnico ---")
+    print(resultado)
+else:
+    print("✅ Tu código pasa las verificaciones automáticas de estilo y seguridad.")
+    print(resultado)
+```

@@ -328,3 +328,42 @@ Escribe tu solución en una celda de código nueva en tu notebook. La celda de a
 
 * Chan, S. H. (2021). *Introduction to Probability for Data Science*. Michigan Publishing. Capítulos sobre fundamentos de probabilidad, combinatoria y Teorema de Bayes.
 * Virtanen, P. et al. (2020). SciPy 1.0: Fundamental Algorithms for Scientific Computing in Python. *Nature Methods*, 17, 261-272. Documentación: [docs.scipy.org/doc/scipy/reference/stats.html](https://docs.scipy.org/doc/scipy/reference/stats.html)
+
+## Autoevaluación
+
+Guarda tu solución al Ejercicio Propuesto en un archivo separado y evalúala contra el pipeline de auditoría del curso:
+
+```python
+%%writefile solucion_ejercicio_u2.py
+# Completa aquí tu solución al Ejercicio Propuesto de esta unidad.
+from math import comb
+
+p_linea = {"L1": 0.50, "L2": 0.30, "L3": 0.20}
+p_defecto_dado_linea = {"L1": 0.03, "L2": 0.06, "L3": 0.10}
+
+# TODO: calcula la probabilidad total P(D) de que un QD elegido al azar sea defectuoso
+# TODO: aplica el Teorema de Bayes para calcular P(L2 | D) y P(L3 | D)
+# TODO: calcula C(15, 4), el número de combinaciones de 4 QDs de un lote de 15 para control de calidad
+```
+
+```python
+from src.multiagent_core.code_auditor_agent import CodeAuditorAgent
+from external_skills.pedagogy.socratic_debugger import SocraticDebugger
+
+with open("solucion_ejercicio_u2.py", encoding="utf-8") as f:
+    codigo_alumno = f.read()
+
+auditor = CodeAuditorAgent()
+resultado = auditor.audit_code(codigo_alumno)
+
+if resultado["issues"] or resultado["metrics"]["has_security_risk"]:
+    debugger = SocraticDebugger()
+    for issue in resultado["issues"]:
+        tipo_error = "syntax_error" if "SyntaxError" in issue else "generic"
+        print("💡", debugger.generate_socratic_question(tipo_error, "Unidad 2"))
+    print("\n--- Detalle técnico ---")
+    print(resultado)
+else:
+    print("✅ Tu código pasa las verificaciones automáticas de estilo y seguridad.")
+    print(resultado)
+```

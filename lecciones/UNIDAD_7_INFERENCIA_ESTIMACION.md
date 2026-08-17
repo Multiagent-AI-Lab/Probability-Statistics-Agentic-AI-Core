@@ -342,3 +342,47 @@ Escribe tu solución en una celda de código nueva en tu notebook. La celda de a
 
 * Agresti, A. & Kateri, M. (2022). *Foundations of Statistics for Data Scientists: With R and Python*. Chapman & Hall/CRC (Texts in Statistical Science). Capítulos sobre estimación puntual, máxima verosimilitud, intervalos de confianza y pruebas de hipótesis.
 * Virtanen, P. et al. (2020). SciPy 1.0: Fundamental Algorithms for Scientific Computing in Python. *Nature Methods*, 17, 261-272. Documentación: [docs.scipy.org/doc/scipy/reference/stats.html](https://docs.scipy.org/doc/scipy/reference/stats.html)
+
+## Autoevaluación
+
+Guarda tu solución al Ejercicio Propuesto en un archivo separado y evalúala contra el pipeline de auditoría del curso:
+
+```python
+%%writefile solucion_ejercicio_u7.py
+# Completa aquí tu solución al Ejercicio Propuesto de esta unidad.
+import numpy as np
+import scipy.stats as stats
+
+n = 36
+sigma = 3.0
+mu_0 = 25.0
+x_bar = 26.2
+alpha = 0.05
+
+# TODO: calcula el estadístico Z de la prueba: Z = (x_bar - mu_0) / (sigma / sqrt(n))
+# TODO: calcula el p-valor de dos colas y compáralo contra alpha para decidir si se rechaza H0
+# TODO: en un comentario, enuncia la conclusión correcta: qué significa el p-valor obtenido
+#       (no lo confundas con P(H0 verdadera)), y si "no rechazar H0" implicaría que mu=25.0 exactamente
+```
+
+```python
+from src.multiagent_core.code_auditor_agent import CodeAuditorAgent
+from external_skills.pedagogy.socratic_debugger import SocraticDebugger
+
+with open("solucion_ejercicio_u7.py", encoding="utf-8") as f:
+    codigo_alumno = f.read()
+
+auditor = CodeAuditorAgent()
+resultado = auditor.audit_code(codigo_alumno)
+
+if resultado["issues"] or resultado["metrics"]["has_security_risk"]:
+    debugger = SocraticDebugger()
+    for issue in resultado["issues"]:
+        tipo_error = "syntax_error" if "SyntaxError" in issue else "generic"
+        print("💡", debugger.generate_socratic_question(tipo_error, "Unidad 7"))
+    print("\n--- Detalle técnico ---")
+    print(resultado)
+else:
+    print("✅ Tu código pasa las verificaciones automáticas de estilo y seguridad.")
+    print(resultado)
+```
