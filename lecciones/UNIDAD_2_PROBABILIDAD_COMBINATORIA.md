@@ -308,6 +308,22 @@ plt.show()
 * **Error**: Tratar "eventos mutuamente excluyentes" y "eventos independientes" como sinónimos o como conceptos compatibles en el caso general.
   **Correcto**: si $A$ y $B$ son mutuamente excluyentes ($A \cap B = \emptyset$) y ambos tienen probabilidad positiva, entonces necesariamente son dependientes, porque $P(A \cap B) = 0 \neq P(A)\,P(B)$. Son propiedades distintas que rara vez coexisten.
 
+## Ejercicio Propuesto
+
+Una planta de síntesis de puntos cuánticos (Quantum Dots, QDs) de CdSe produce su lote diario en tres líneas de reacción, $L_1$, $L_2$ y $L_3$, con las siguientes proporciones de producción y tasas de defecto (fuera de especificación de emisión fotoluminiscente):
+
+| Línea | Proporción de producción $P(L_i)$ | Tasa de defecto $P(D\mid L_i)$ |
+|:---:|:---:|:---:|
+| $L_1$ | $0.50$ | $0.03$ |
+| $L_2$ | $0.30$ | $0.06$ |
+| $L_3$ | $0.20$ | $0.10$ |
+
+1. Calcula la probabilidad total $P(D)$ de que un QD elegido al azar del lote unificado sea defectuoso.
+2. Aplica el Teorema de Bayes para calcular $P(L_2 \mid D)$ y $P(L_3 \mid D)$.
+3. De un lote de 15 QDs, ¿cuántas combinaciones distintas de 4 QDs pueden seleccionarse para control de calidad ($C(15,4)$)?
+
+Escribe tu solución en una celda de código nueva en tu notebook. La celda de autoevaluación de la siguiente sección verificará tu resultado.
+
 ## Referencias
 
 * Chan, S. H. (2021). *Introduction to Probability for Data Science*. Michigan Publishing. Capítulos sobre fundamentos de probabilidad, combinatoria y Teorema de Bayes.

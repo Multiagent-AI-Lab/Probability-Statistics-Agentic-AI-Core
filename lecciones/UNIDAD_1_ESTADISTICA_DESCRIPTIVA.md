@@ -334,6 +334,18 @@ plt.show()
 * **Error**: Asumir que "media > mediana implica asimetría positiva" (y viceversa) como regla universal.
   **Correcto**: esa relación es válida solo como heurística para distribuciones unimodales razonablemente regulares. En distribuciones multimodales o con outliers extremos la relación puede romperse; el diagnóstico correcto de asimetría es el coeficiente de asimetría (skewness) o la inspección visual del histograma.
 
+## Ejercicio Propuesto
+
+Un laboratorio de caracterización sintetizó un tercer lote de nanopartículas de plata (AgNPs) con un método de reducción química modificado y midió, vía DLS, el diámetro (en nm) de $n=14$ partículas:
+
+$$x = \{21.4,\ 22.1,\ 20.8,\ 23.3,\ 21.9,\ 22.5,\ 52.7,\ 21.2,\ 22.8,\ 21.1,\ 22.2,\ 21.6,\ 53.9,\ 22.0\}$$
+
+1. Calcula la media, mediana y desviación estándar muestral de este lote.
+2. Aplica el criterio del IQR para identificar todos los valores atípicos (pueden ser más de uno).
+3. Recalcula la media excluyendo los valores atípicos detectados y compárala con la mediana del conjunto completo. ¿Cuál de las dos, la media original o la media sin atípicos, se acerca más a la mediana? Justifica por qué ocurre esto en términos de robustez estadística.
+
+Escribe tu solución en una celda de código nueva en tu notebook. La celda de autoevaluación de la siguiente sección verificará tu resultado.
+
 ## Referencias
 
 * Bruce, P., Bruce, A. & Gedeck, P. (2020). *Practical Statistics for Data Scientists: 50+ Essential Concepts Using R and Python* (2nd ed.). O'Reilly Media. Capítulos sobre estadística descriptiva y exploración de datos.

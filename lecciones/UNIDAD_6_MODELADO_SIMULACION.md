@@ -238,6 +238,16 @@ print(f"Resistencia Promedio Simulada de Fibras de Carbono: {np.mean(resistencia
 * **Error**: Tratar los números generados por `numpy.random` (o cualquier generador pseudoaleatorio) como verdaderamente aleatorios e impredecibles.
   **Correcto**: son deterministas — dado el mismo `seed`, la secuencia completa se reproduce exactamente. Esto es una ventaja para la reproducibilidad de experimentos computacionales, pero implica que no son adecuados para aplicaciones criptográficas que requieren aleatoriedad genuina.
 
+## Ejercicio Propuesto
+
+El tiempo hasta la primera falla de un nanosensor de gas basado en óxido de grafeno sigue una distribución Exponencial con tasa $\lambda = 0.05$ fallas/hora ($X \sim \text{Exponencial}(\lambda = 0.05)$).
+
+1. Deriva simbólicamente (con SymPy) la función cuantil $F^{-1}(u)$ del método de la Transformada Inversa para la Exponencial, y evalúala en $u=0.65$ para obtener un tiempo de falla simulado (en horas). Verifica tu resultado contra `scipy.stats.expon.ppf(0.65, scale=1/0.05)`.
+2. Fija la semilla `np.random.seed(6)` y genera 5 valores uniformes con `np.random.rand(5)`. Aplica la Transformada Inversa a cada uno para obtener 5 tiempos de falla simulados y calcula su media.
+3. Explica por qué, si otro estudiante ejecuta tu mismo código con `np.random.seed(6)`, debe obtener exactamente los mismos 5 valores.
+
+Escribe tu solución en una celda de código nueva en tu notebook. La celda de autoevaluación de la siguiente sección verificará tu resultado.
+
 ## Referencias
 
 * Johansson, R. (2019). *Numerical Python: Scientific Computing and Data Science Applications with Numpy, SciPy and Matplotlib* (2nd ed.). Apress. Capítulos sobre simulación numérica y generación de números aleatorios con SciPy.
