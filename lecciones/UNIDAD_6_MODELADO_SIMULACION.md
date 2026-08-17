@@ -227,6 +227,17 @@ resistencia_fibras = 15.0 * (-np.log(u_vals)) ** (1.0 / 2.2)
 print(f"Resistencia Promedio Simulada de Fibras de Carbono: {np.mean(resistencia_fibras):.3f} MPa")
 ```
 
+## Errores Comunes / Misconceptions
+
+* **Error**: Asumir que aumentar el número de iteraciones Monte Carlo siempre mejora la precisión proporcionalmente, sin considerar el costo computacional.
+  **Correcto**: el error estándar de una estimación Monte Carlo converge como $O(1/\sqrt{N})$, no linealmente — para reducir el error a la mitad se necesitan aproximadamente 4 veces más simulaciones. Duplicar $N$ solo reduce el error en un factor de $\approx 1.41$.
+
+* **Error**: Confundir el muestreo con reemplazo (usado en bootstrap) con el muestreo sin reemplazo.
+  **Correcto**: el bootstrap no paramétrico remuestrea *con reemplazo* de la muestra original (algunos datos pueden repetirse, otros quedar fuera de una réplica dada) precisamente para poder estimar la variabilidad del estadístico; muestrear sin reemplazo del mismo tamaño simplemente reproduce la muestra original sin aportar información nueva.
+
+* **Error**: Tratar los números generados por `numpy.random` (o cualquier generador pseudoaleatorio) como verdaderamente aleatorios e impredecibles.
+  **Correcto**: son deterministas — dado el mismo `seed`, la secuencia completa se reproduce exactamente. Esto es una ventaja para la reproducibilidad de experimentos computacionales, pero implica que no son adecuados para aplicaciones criptográficas que requieren aleatoriedad genuina.
+
 ## Referencias
 
 * Johansson, R. (2019). *Numerical Python: Scientific Computing and Data Science Applications with Numpy, SciPy and Matplotlib* (2nd ed.). Apress. Capítulos sobre simulación numérica y generación de números aleatorios con SciPy.

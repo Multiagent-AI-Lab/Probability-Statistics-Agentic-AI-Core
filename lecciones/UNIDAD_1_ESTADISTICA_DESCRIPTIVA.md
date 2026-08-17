@@ -323,6 +323,17 @@ plt.tight_layout()
 plt.show()
 ```
 
+## Errores Comunes / Misconceptions
+
+* **Error**: Confundir la desviación estándar muestral ($s$, denominador $n-1$) con la poblacional ($\sigma$, denominador $n$).
+  **Correcto**: usar $n-1$ (corrección de Bessel) siempre que se estime $\sigma$ a partir de una muestra — produce un estimador insesgado de la varianza poblacional; usar $n$ solo cuando se dispone de la población completa.
+
+* **Error**: Usar la media aritmética como medida de tendencia central sin verificar la presencia de outliers extremos.
+  **Correcto**: la media no es robusta — un solo valor extremo puede desplazarla arbitrariamente lejos del centro real de los datos. Ante outliers confirmados, reportar también la mediana (o una media recortada) y justificar cuál es más representativa.
+
+* **Error**: Asumir que "media > mediana implica asimetría positiva" (y viceversa) como regla universal.
+  **Correcto**: esa relación es válida solo como heurística para distribuciones unimodales razonablemente regulares. En distribuciones multimodales o con outliers extremos la relación puede romperse; el diagnóstico correcto de asimetría es el coeficiente de asimetría (skewness) o la inspección visual del histograma.
+
 ## Referencias
 
 * Bruce, P., Bruce, A. & Gedeck, P. (2020). *Practical Statistics for Data Scientists: 50+ Essential Concepts Using R and Python* (2nd ed.). O'Reilly Media. Capítulos sobre estadística descriptiva y exploración de datos.
