@@ -391,3 +391,46 @@ Escribe tu solución en una celda de código nueva en tu notebook. La celda de a
 
 * García, J., Molina, J. M., Berlanga, A., Patricio, M. Á., Bustamante, Á. L. & Padilla, W. R. (2018). *Ciencia de Datos: Técnicas Analíticas y Aprendizaje Estadístico en un Enfoque Práctico*. Alfaomega/Publicaciones Altaria. Capítulos sobre inferencia estadística aplicada y aprendizaje estadístico como cierre integrador del curso.
 * Virtanen, P. et al. (2020). SciPy 1.0: Fundamental Algorithms for Scientific Computing in Python. *Nature Methods*, 17, 261-272. Documentación: [docs.scipy.org/doc/scipy/reference/stats.html](https://docs.scipy.org/doc/scipy/reference/stats.html)
+
+## Autoevaluación
+
+Guarda tu solución al Ejercicio Propuesto en un archivo separado y evalúala contra el pipeline de auditoría del curso:
+
+```python
+%%writefile solucion_ejercicio_u8.py
+# Completa aquí tu solución al Ejercicio Propuesto de esta unidad.
+import numpy as np
+import scipy.stats as stats
+
+sno2 = np.array([3.58, 3.62, 3.55, 3.60, 3.57, 3.63, 3.59, 3.56])
+in2o3 = np.array([3.71, 3.68, 3.75, 3.70, 3.73, 3.69, 3.72, 3.74])
+alpha = 0.05
+
+# TODO: calcula la media y desviación estándar muestral de cada grupo
+# TODO: verifica el supuesto de homocedasticidad con la prueba de Levene (stats.levene)
+#       antes de elegir la variante de la prueba t
+# TODO: ejecuta stats.ttest_ind(sno2, in2o3, equal_var=False) (Welch) y decide si se
+#       rechaza H0; interpreta el resultado sin usar la palabra "causa"
+```
+
+```python
+from src.multiagent_core.code_auditor_agent import CodeAuditorAgent
+from external_skills.pedagogy.socratic_debugger import SocraticDebugger
+
+with open("solucion_ejercicio_u8.py", encoding="utf-8") as f:
+    codigo_alumno = f.read()
+
+auditor = CodeAuditorAgent()
+resultado = auditor.audit_code(codigo_alumno)
+
+if resultado["issues"] or resultado["metrics"]["has_security_risk"]:
+    debugger = SocraticDebugger()
+    for issue in resultado["issues"]:
+        tipo_error = "syntax_error" if "SyntaxError" in issue else "generic"
+        print("💡", debugger.generate_socratic_question(tipo_error, "Unidad 8"))
+    print("\n--- Detalle técnico ---")
+    print(resultado)
+else:
+    print("✅ Tu código pasa las verificaciones automáticas de estilo y seguridad.")
+    print(resultado)
+```

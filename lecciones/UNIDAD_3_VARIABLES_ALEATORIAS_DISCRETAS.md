@@ -309,3 +309,44 @@ Escribe tu solución en una celda de código nueva en tu notebook. La celda de a
 
 * Unpingco, J. (2019). *Python for Probability, Statistics, and Machine Learning* (2nd ed.). Springer. Capítulos sobre variables aleatorias discretas y su implementación computacional.
 * Virtanen, P. et al. (2020). SciPy 1.0: Fundamental Algorithms for Scientific Computing in Python. *Nature Methods*, 17, 261-272. Documentación: [docs.scipy.org/doc/scipy/reference/stats.html](https://docs.scipy.org/doc/scipy/reference/stats.html)
+
+## Autoevaluación
+
+Guarda tu solución al Ejercicio Propuesto en un archivo separado y evalúala contra el pipeline de auditoría del curso:
+
+```python
+%%writefile solucion_ejercicio_u3.py
+# Completa aquí tu solución al Ejercicio Propuesto de esta unidad.
+import scipy.stats as stats
+
+n = 25
+p = 0.08
+
+# TODO: calcula P(X = 3) usando la fórmula exacta de la PMF binomial (stats.binom.pmf)
+# TODO: calcula P(X <= 3) y P(X >= 1) usando la CDF (stats.binom.cdf), no la PMF
+# TODO: calcula E[X] y Var(X)
+# TODO: calcula la aproximación Poisson de P(X=3) con lambda = n*p y compárala con el valor exacto
+```
+
+```python
+from src.multiagent_core.code_auditor_agent import CodeAuditorAgent
+from external_skills.pedagogy.socratic_debugger import SocraticDebugger
+
+with open("solucion_ejercicio_u3.py", encoding="utf-8") as f:
+    codigo_alumno = f.read()
+
+auditor = CodeAuditorAgent()
+resultado = auditor.audit_code(codigo_alumno)
+
+if resultado["issues"] or resultado["metrics"]["has_security_risk"]:
+    debugger = SocraticDebugger()
+    for issue in resultado["issues"]:
+        tipo_error = "syntax_error" if "SyntaxError" in issue else "generic"
+        print("💡", debugger.generate_socratic_question(tipo_error, "Unidad 3"))
+    print("\n--- Detalle técnico ---")
+    print(resultado)
+else:
+    print("✅ Tu código pasa las verificaciones automáticas de estilo y seguridad.")
+    print(resultado)
+```
+

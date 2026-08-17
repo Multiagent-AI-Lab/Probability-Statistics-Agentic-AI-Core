@@ -252,3 +252,44 @@ Escribe tu solución en una celda de código nueva en tu notebook. La celda de a
 
 * Johansson, R. (2019). *Numerical Python: Scientific Computing and Data Science Applications with Numpy, SciPy and Matplotlib* (2nd ed.). Apress. Capítulos sobre simulación numérica y generación de números aleatorios con SciPy.
 * Virtanen, P. et al. (2020). SciPy 1.0: Fundamental Algorithms for Scientific Computing in Python. *Nature Methods*, 17, 261-272. Documentación: [docs.scipy.org/doc/scipy/reference/stats.html](https://docs.scipy.org/doc/scipy/reference/stats.html)
+
+## Autoevaluación
+
+Guarda tu solución al Ejercicio Propuesto en un archivo separado y evalúala contra el pipeline de auditoría del curso:
+
+```python
+%%writefile solucion_ejercicio_u6.py
+# Completa aquí tu solución al Ejercicio Propuesto de esta unidad.
+import numpy as np
+import scipy.stats as stats
+
+lam = 0.05
+
+# TODO: deriva simbólicamente (o analíticamente) la función cuantil F^-1(u) de la
+#       Transformada Inversa para la Exponencial y evalúala en u=0.65
+# TODO: verifica tu resultado contra stats.expon.ppf(0.65, scale=1/lam)
+# TODO: fija np.random.seed(6), genera 5 valores uniformes con np.random.rand(5),
+#       aplica la Transformada Inversa a cada uno y calcula la media de los 5 tiempos de falla
+```
+
+```python
+from src.multiagent_core.code_auditor_agent import CodeAuditorAgent
+from external_skills.pedagogy.socratic_debugger import SocraticDebugger
+
+with open("solucion_ejercicio_u6.py", encoding="utf-8") as f:
+    codigo_alumno = f.read()
+
+auditor = CodeAuditorAgent()
+resultado = auditor.audit_code(codigo_alumno)
+
+if resultado["issues"] or resultado["metrics"]["has_security_risk"]:
+    debugger = SocraticDebugger()
+    for issue in resultado["issues"]:
+        tipo_error = "syntax_error" if "SyntaxError" in issue else "generic"
+        print("💡", debugger.generate_socratic_question(tipo_error, "Unidad 6"))
+    print("\n--- Detalle técnico ---")
+    print(resultado)
+else:
+    print("✅ Tu código pasa las verificaciones automáticas de estilo y seguridad.")
+    print(resultado)
+```
