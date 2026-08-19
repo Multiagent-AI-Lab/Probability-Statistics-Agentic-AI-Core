@@ -130,7 +130,9 @@ class CodeAuditorAgent:
                 issues.append(f"SyntaxError in code block: {e.msg} at line {e.lineno}")
 
         metrics["has_security_risk"] = len(security_issues) > 0
-        passed = len(issues) == 0 or valid_blocks > 0
+        passed = (len(issues) == 0 or valid_blocks > 0) and not metrics[
+            "has_security_risk"
+        ]
         score = 100.0 if len(issues) == 0 else 90.0 if valid_blocks > 0 else 0.0
 
         return {

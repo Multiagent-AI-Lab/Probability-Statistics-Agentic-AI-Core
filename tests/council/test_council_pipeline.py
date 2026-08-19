@@ -79,3 +79,39 @@ def test_council_pipeline_propagates_unit_name_to_safety_gate():
     )
     res = pipeline.process_content(texto_con_anacronismo, unit_name="UNIDAD 2")
     assert res["reports"]["safety_gate"]["critical"] is True
+
+
+def test_council_pipeline_blocks_on_low_monte_carlo_iterations():
+    """El guardrail de convergencia Monte Carlo de EngineerAgent debe conectarse
+    a la decision final del pipeline: N_sim bajo => eng_res["passed"] False =>
+    approved False vía QAAgent.final_audit (regresión del hallazgo de review
+    final: check_monte_carlo_convergence existía pero nunca se invocaba)."""
+    pipeline = CouncilPipeline()
+    sample_text = (
+        """# Título de Prueba
+"""
+        + "teoría " * 850
+        + """
+$$\\boxed{E = mc^2}$$
+
+```python
+import scipy.stats as stats
+from IPython.display import display, Math
+import matplotlib.pyplot as plt
+import seaborn as sns
+import numpy as np
+
+N_sim = 50
+data = np.random.normal(size=N_sim)
+stats.shapiro(data)
+plt.plot(data)
+sns.histplot(data)
+display(Math(r'\\bar{x} = 3.0'))
+```
+Interpretación y análisis nanotecnológico con referencia a Walpole.
+"""
+    )
+    res = pipeline.process_content(sample_text)
+    assert res["reports"]["engineer"]["passed"] is False
+    assert len(res["reports"]["engineer"]["monte_carlo_warnings"]) > 0
+    assert res["approved"] is False
