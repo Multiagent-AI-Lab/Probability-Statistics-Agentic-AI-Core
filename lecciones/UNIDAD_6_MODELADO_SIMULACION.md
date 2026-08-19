@@ -221,15 +221,29 @@ Dada una variable aleatoria continua $X$ con CDF $F(x)$:
 2. Calcular $X = F^{-1}(U)$.
 
 ### 10.2 Simulación de la Distribución de Weibull para Resistencia de Fibras de Carbono
+
+Encapsulamos el algoritmo general de §10.1 en una función reutilizable — cualquier distribución cuya CDF inversa $F^{-1}(u)$ tenga forma cerrada puede simularse llamándola con la función correspondiente:
+
 ```python
 import numpy as np
 import scipy.stats as stats
 import matplotlib.pyplot as plt
 
-np.random.seed(42)
-N_sim = 50_000
-u_vals = np.random.uniform(0, 1, N_sim)
-resistencia_fibras = 15.0 * (-np.log(u_vals)) ** (1.0 / 2.2)
+
+def simular_transformada_inversa(cdf_inversa, n_muestras, semilla):
+    """Aplica el algoritmo general de la Transformada Inversa (§10.1):
+    genera U ~ Uniforme(0,1) y devuelve X = cdf_inversa(U)."""
+    np.random.seed(semilla)
+    u_vals = np.random.uniform(0, 1, n_muestras)
+    return cdf_inversa(u_vals)
+
+
+## CDF inversa de Weibull(k=2.2, lambda=15.0): F^{-1}(u) = lambda * (-ln(u))^(1/k)
+cdf_inversa_weibull = lambda u: 15.0 * (-np.log(u)) ** (1.0 / 2.2)
+
+resistencia_fibras = simular_transformada_inversa(
+    cdf_inversa_weibull, n_muestras=50_000, semilla=42
+)
 
 print(f"Resistencia Promedio Simulada de Fibras de Carbono: {np.mean(resistencia_fibras):.3f} MPa")
 ```
