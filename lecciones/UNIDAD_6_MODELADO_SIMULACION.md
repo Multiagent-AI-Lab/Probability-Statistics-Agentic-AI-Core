@@ -28,6 +28,13 @@ if 'google.colab' in sys.modules:
 
 ---
 
+## Prerequisitos de esta unidad
+
+- **Distribuciones Continuas y su CDF** (Unidad 5) — el Método de la Transformada Inversa parte directamente de invertir la CDF de la distribución continua a simular.
+- **Simulación Monte Carlo** (Unidad 2) — introducida ahí como filtrado bayesiano; aquí se generaliza al modelado estocástico completo.
+
+---
+
 ## 1. Fundamentación Teórica y Conceptos Clave de Simulación
 
 El **Modelado y Simulación Estocástica** comprende la caracterización computacional de sistemas físicos, químicos y probabilísticos cuya complejidad analítica impide resolverlos mediante integrales explícitas o fórmulas cerradas. En el ámbito de la Nanotecnología y la Inteligencia Artificial, la simulación estocástica permite modelar el movimiento browniano de nanopartículas, la difusividad térmica en películas delgadas, los procesos de transporte cuántico en puntos cuánticos (quantum dots) y la inferencia variacional en modelos generativos.

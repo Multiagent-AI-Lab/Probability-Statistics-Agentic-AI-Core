@@ -28,6 +28,13 @@ if 'google.colab' in sys.modules:
 
 ---
 
+## Prerequisitos de esta unidad
+
+- **Pruebas de Hipótesis e Inferencia Estadística** (Unidad 7) — la metodología completa (Z-test, t-test, no paramétricas) se aplica aquí al proyecto integrador.
+- **PCA y Whitening Gaussiano** (Unidad 4) — desarrollados en la §7 de esa unidad, reutilizados sin re-derivar en el cierre integrador de esta unidad (§9, Distancia de Mahalanobis).
+
+---
+
 ## 1. Fundamentación Teórica: Metodología de Pruebas de Hipótesis y Evaluación de Proyectos
 
 El **Proyecto Integrador** consolida las herramientas de Estadística Descriptiva, Teoría de la Probabilidad, Variables Aleatorias, Inferencia Estadística y Simulación Estocástica desarrolladas a lo largo del curso. En este marco, los estudiantes aplican la metodología completa de Pruebas de Hipótesis para la toma de decisiones basada en datos empíricos en sistemas nanotecnológicos y modelos de Inteligencia Artificial.

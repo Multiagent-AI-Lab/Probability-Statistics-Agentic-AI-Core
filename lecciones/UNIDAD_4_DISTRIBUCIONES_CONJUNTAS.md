@@ -28,6 +28,12 @@ if 'google.colab' in sys.modules:
 
 ---
 
+## Prerequisitos de esta unidad
+
+- **PMF de Variables Aleatorias Discretas** (Unidad 3) — base directa para construir la PMF conjunta $P(X=x, Y=y)$ de dos o más variables.
+
+---
+
 ## 1. Fundamentación Teórica: Distribuciones Conjuntas y Marginales
 
 ### 1.1 Concepto General

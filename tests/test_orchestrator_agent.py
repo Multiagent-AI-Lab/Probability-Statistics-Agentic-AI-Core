@@ -114,6 +114,32 @@ def test_enforce_gate_false_compiles_everything(temp_lecciones_dir):
     )
 
 
+def test_generate_curriculum_map_writes_mermaid_file(temp_lecciones_dir):
+    lecciones_dir, notebooks_dir = temp_lecciones_dir
+    orchestrator = OrchestratorAgent(
+        lecciones_dir=lecciones_dir, notebooks_dir=notebooks_dir
+    )
+
+    map_path = orchestrator.generate_curriculum_map()
+
+    assert os.path.exists(map_path)
+    with open(map_path, encoding="utf-8") as f:
+        content = f.read()
+    assert "graph LR" in content
+    assert "U1" in content
+
+
+def test_run_full_pipeline_also_generates_curriculum_map(temp_lecciones_dir):
+    lecciones_dir, notebooks_dir = temp_lecciones_dir
+    orchestrator = OrchestratorAgent(
+        lecciones_dir=lecciones_dir, notebooks_dir=notebooks_dir
+    )
+
+    orchestrator.run_full_pipeline(enforce_gate=False)
+
+    assert os.path.exists(os.path.join(notebooks_dir, "curriculum_map.mmd"))
+
+
 def test_orchestrator_uses_council_pipeline_internally():
     from src.multiagent_core.pipeline import CouncilPipeline
 
