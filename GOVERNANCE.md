@@ -15,6 +15,7 @@ El objetivo primordial de este proyecto es el desarrollo de materiales pedagógi
 
 ### 🏗️ Lead Architect (@Architect)
 * **Responsabilidad**: Guardián de la estructura del proyecto, la jerarquía curricular y las dependencias.
+* **Estado en el pipeline: advisory/opt-in por diseño.** `validate_structure(file_tree)` audita la completitud del *curso completo* (¿existen las 8 `UNIDAD_*`?), no la validez de una lección individual. `CouncilPipeline.process_content()` se invoca por lección (`OrchestratorAgent`, `PedagogicalReviewPipeline`), así que ningún caller de producción le pasa `file_tree` hoy — conectarlo ahí bloquearía la auditoría de una unidad válida solo porque otra unidad no está presente en ese momento. `architect_res` es `{"passed": True, "skipped": True}` por defecto; un caller que audite completitud curricular puede invocar `ArchitectAgent.validate_structure(file_tree)` directamente, fuera de este pipeline por-lección.
 
 ### 🔬 Senior Researcher (@Scientist)
 * **Responsabilidad**: **Dueño de la Teoría**. Fundamentación axiomática, derivaciones y expresiones LaTeX.

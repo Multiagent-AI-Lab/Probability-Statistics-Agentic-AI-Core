@@ -38,6 +38,7 @@ resultado = eval("2 + 2")
     res = auditor.audit_code(code)
     assert res["metrics"]["has_security_risk"] is True
     assert any("eval" in issue.lower() for issue in res["security_issues"])
+    assert res["passed"] is False
 
 
 def test_detecta_uso_de_exec():

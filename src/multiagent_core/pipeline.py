@@ -29,6 +29,26 @@ class CouncilPipeline:
     def process_content(
         self, text_or_code: str, unit_name: str = "", file_tree: list = None
     ) -> Dict[str, Any]:
+        """Ejecuta el Consejo de 8 Expertos sobre una única lección/unidad.
+
+        Nota de diseño sobre `file_tree` (@Architect, opt-in/advisory):
+        `ArchitectAgent.validate_structure` audita la *completitud del curso
+        completo* (¿existen las 8 UNIDAD_* del programa?), no la validez de
+        una lección individual. `process_content()` en cambio se invoca por
+        lección (una unidad a la vez, p.ej. desde
+        `OrchestratorAgent._check_gate` y desde
+        `PedagogicalReviewPipeline.review_and_auto_fix_lesson`). Pasar aquí
+        un `file_tree` real del directorio de lecciones bloquearía la
+        auditoría de UNIDAD_1 solo porque UNIDAD_5 no está presente en ese
+        momento (normal durante desarrollo incremental o en tests que usan
+        subconjuntos de unidades) — un falso bloqueo sin relación con la
+        calidad de la lección auditada. Por eso ningún caller de producción
+        pasa `file_tree` hoy: @Architect queda deliberadamente como
+        advisory/opt-in en este flujo (ver GOVERNANCE.md §2), no conectado
+        por defecto. Un caller que sí necesite auditar completitud curricular
+        puede invocar `ArchitectAgent.validate_structure(file_tree)`
+        directamente fuera de este pipeline por-lección.
+        """
         # 0. Editor (limpieza estructural, corre primero para que el resto
         #    audite contenido ya limpio de metadatos sueltos/títulos descontextualizados)
         editor_res = self.editor.audit_layout(text_or_code)
@@ -43,8 +63,11 @@ class CouncilPipeline:
         # 2. Scientist (Teoría y LaTeX)
         sci_res = self.scientist.check_theory(text_or_code)
 
-        # 3. Engineer (Código SciPy/Statsmodels)
+        # 3. Engineer (Código SciPy/Statsmodels + guardrail de convergencia Monte Carlo)
         eng_res = self.engineer.check_code_implementation(text_or_code)
+        mc_res = self.engineer.check_monte_carlo_convergence(text_or_code)
+        eng_res["passed"] = eng_res["passed"] and not mc_res["critical"]
+        eng_res["monte_carlo_warnings"] = mc_res["warnings"]
 
         # 4. Safety Gate (Loop L1: Verificación de Supuestos Estadísticos + secuencia curricular)
         gate_res = self.safety_gate.validate_assumptions(text_or_code, unit_name)
