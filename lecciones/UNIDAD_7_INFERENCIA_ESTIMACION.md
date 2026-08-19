@@ -28,6 +28,13 @@ if 'google.colab' in sys.modules:
 
 ---
 
+## Prerequisitos de esta unidad
+
+- **Distribuciones Muestrales: Chi-cuadrada, t-Student y F** (Unidad 5) — señaladas explícitamente en la Parte C de esa unidad como "prerequisito de Inferencia"; son la base de todas las pruebas paramétricas de esta unidad.
+- **Estadística Descriptiva y Medidas de Tendencia Central** (Unidad 1) — insumo directo para los estimadores puntuales (Método de Momentos, MLE) desarrollados aquí.
+
+---
+
 ## 1. Fundamentación Teórica de la Inferencia Estadística
 
 La **Prueba de Hipótesis Estadística** es el proceso formal de utilizar información muestral para confirmar o refutar una aseveración (hipótesis) sobre un parámetro desconocido $\theta$ asociado a una distribución de probabilidad $f(x; \theta)$ de una población. Es una de las dos ramas centrales de la inferencia estadística (junto con la estimación de parámetros) y es la herramienta cuantitativa estándar para validar afirmaciones sobre procesos experimentales en ingeniería.

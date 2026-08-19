@@ -28,6 +28,12 @@ if 'google.colab' in sys.modules:
 
 ---
 
+## Prerequisitos de esta unidad
+
+- **Teorema de Bayes y Probabilidad Condicional** (Unidad 2) — se reutiliza al interpretar la PMF de una variable aleatoria condicionada a un evento observado.
+
+---
+
 ## 1. Fundamentación Teórica y Conceptos Clave
 
 En la teoría de la probabilidad y la ingeniería, una **Variable Aleatoria Discreta (VAD)** es una función determinista $X: \Omega \rightarrow \mathbb{R}$ que asigna un valor real a cada resultado de un espacio muestral $\Omega$, de modo que el rango de valores $R_X = \{x_1, x_2, x_3, \dots\}$ es un conjunto finito o infinito contable.

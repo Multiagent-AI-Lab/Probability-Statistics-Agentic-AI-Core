@@ -5,8 +5,11 @@ OrchestratorAgent: Coordinates compilation, code auditing, content auditing, and
 import os
 from typing import Any, Dict, List, Optional
 
+from pathlib import Path
+
 from .code_auditor_agent import CodeAuditorAgent
 from .content_auditor_agent import ContentAuditorAgent
+from .curriculum_map_agent import CurriculumMapAgent
 from .evaluator_agent import EvaluatorAgent
 from .notebook_compiler_agent import NotebookCompilerAgent
 from .pipeline import CouncilPipeline
@@ -25,6 +28,7 @@ class OrchestratorAgent:
         self.content_auditor = ContentAuditorAgent()
         self.evaluator = EvaluatorAgent()
         self.council = CouncilPipeline()
+        self.curriculum_map_agent = CurriculumMapAgent()
 
     @staticmethod
     def _unit_name_from_filename(md_filename: str) -> str:
@@ -86,6 +90,19 @@ class OrchestratorAgent:
             "gate_reason": gate_decision["reason"],
         }
 
+    def generate_curriculum_map(self) -> str:
+        """Genera el mapa de dependencias curriculares (Mermaid) a partir de
+        las secciones '## Prerequisitos de esta unidad' de las lecciones, y
+        lo guarda en notebooks_dir/curriculum_map.mmd."""
+        os.makedirs(self.compiler.notebooks_dir, exist_ok=True)
+        diagram = self.curriculum_map_agent.render_dag(
+            Path(self.compiler.lecciones_dir)
+        )
+        map_path = os.path.join(self.compiler.notebooks_dir, "curriculum_map.mmd")
+        with open(map_path, "w", encoding="utf-8") as f:
+            f.write(diagram)
+        return map_path
+
     def run_full_pipeline(self, enforce_gate: bool = True) -> List[Dict[str, Any]]:
         results = []
         if not os.path.exists(self.compiler.lecciones_dir):
@@ -121,5 +138,7 @@ class OrchestratorAgent:
             results.append(
                 self.run_pipeline_on_file(fname, gate_decision=gate_decision)
             )
+
+        self.generate_curriculum_map()
 
         return results
