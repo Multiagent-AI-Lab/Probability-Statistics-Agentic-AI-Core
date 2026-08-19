@@ -679,7 +679,7 @@ plt.show()
 El ajuste manual de distribuciones (comparar histograma, KDE y Q-Q plot "a ojo" contra candidatas teóricas, como en §8.1) no escala cuando se necesita evaluar sistemáticamente decenas de familias de distribuciones candidatas. La librería `distfit` automatiza ese proceso: ajusta un conjunto de distribuciones candidatas por máxima verosimilitud, calcula una métrica de bondad de ajuste (suma de residuos cuadrados, RSS, entre la densidad empírica y la teórica) para cada una, y devuelve la de mejor ajuste ordenadas por score.
 
 ```python
-## pip install distfit
+%pip install -q distfit
 from distfit import distfit
 import numpy as np
 import scipy.stats as stats
@@ -769,6 +769,9 @@ if resultado["issues"] or resultado["metrics"]["has_security_risk"]:
     for issue in resultado["issues"]:
         tipo_error = "syntax_error" if "SyntaxError" in issue else "generic"
         print("💡", debugger.generate_socratic_question(tipo_error, "Unidad 1"))
+    for issue in resultado["security_issues"]:
+        print("🔒", debugger.generate_socratic_question("security_risk", "Unidad 1"))
+        print("   ", issue)
     print("\n--- Detalle técnico ---")
     print(resultado)
 else:

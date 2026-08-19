@@ -370,6 +370,9 @@ if resultado["issues"] or resultado["metrics"]["has_security_risk"]:
     for issue in resultado["issues"]:
         tipo_error = "syntax_error" if "SyntaxError" in issue else "generic"
         print("💡", debugger.generate_socratic_question(tipo_error, "Unidad 5"))
+    for issue in resultado["security_issues"]:
+        print("🔒", debugger.generate_socratic_question("security_risk", "Unidad 5"))
+        print("   ", issue)
     print("\n--- Detalle técnico ---")
     print(resultado)
 else:
