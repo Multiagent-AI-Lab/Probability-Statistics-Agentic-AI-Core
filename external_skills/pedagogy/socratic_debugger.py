@@ -33,5 +33,13 @@ class SocraticDebugger:
                 "con la firma real de la función? Consulta la documentación oficial "
                 "si tienes dudas del orden de los parámetros."
             )
+        elif "security_risk" in error_type_lower:
+            return (
+                "Antes de darte la respuesta: revisa el hallazgo de seguridad "
+                f"detectado en {context}. ¿Estás usando `eval`/`exec` sobre datos "
+                "externos, construyendo una consulta o ruta de archivo por "
+                "concatenación de strings, o cargando datos serializados sin "
+                "validar su origen?"
+            )
         else:
             return f"Revisa el desarrollo del paso actual: ¿concuerdan las unidades y supuestos en {context}?"

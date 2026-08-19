@@ -193,7 +193,7 @@ Bajo $H_0$ (todas las poblaciones tienen la misma distribución), $H \sim \chi^2
 
 **Contexto de nanotecnología (Mann-Whitney)**: se mide la dureza Vickers (HV) de nanocompuestos cerámica-nanotubos de carbono con dos concentraciones de refuerzo; el grupo A tiene una lectura anómala (aglomerado local de CNT) que distorsiona su media.
 
-**Contexto de nanotecnología (Kruskal-Wallis)**: se comparan ángulos de contacto de recubrimientos hidrofóbicos con tres tipos de nanopartículas (SiO$_2$, TiO$_2$, ZnO), donde ZnO presenta mayor varianza por inestabilidad del proceso de síntesis — la condición de homogeneidad de varianzas requerida por ANOVA (ver §1.11, Levene) se viola, justificando el uso de Kruskal-Wallis.
+**Contexto de nanotecnología (Kruskal-Wallis)**: se comparan ángulos de contacto de recubrimientos hidrofóbicos con tres tipos de nanopartículas (SiO$_2$, TiO$_2$, ZnO), donde ZnO presenta mayor varianza por inestabilidad del proceso de síntesis — la condición de homogeneidad de varianzas requerida por ANOVA (ver §1.12, Levene) se viola, justificando el uso de Kruskal-Wallis.
 
 **Solución computacional**:
 ```python
@@ -230,7 +230,7 @@ print(f"\nKruskal-Wallis H: H={h_stat:.4f}, p-valor={h_p:.6f}")
 print("Conclusion:", "Al menos un recubrimiento difiere (rechaza H0)" if h_p < 0.05 else "No se detecta diferencia")
 ```
 
-**Interpretación**: el KS de dos muestras rechaza $H_0$ ($D=0.4250$, $p=0.0013$): los dos métodos de síntesis de AgNPs producen distribuciones de tamaño distinguibles, pese a tener medias similares (el KS es sensible a diferencias en la *forma* completa de la distribución, no solo en la media). En el caso de dureza, el t-test bilateral **no detecta diferencia** ($p=0.4405$) porque el outlier de 980 HV infla artificialmente la varianza y la media del grupo A; el Mann-Whitney dirigido ($H_1: A<B$), al basarse en rangos, sí detecta que B es consistentemente más duro ($p=0.0325 < 0.05$) — el mismo patrón de robustez que ilustra por qué estas pruebas son preferibles ante outliers. Finalmente, Kruskal-Wallis rechaza $H_0$ con fuerte evidencia ($p=0.000263$): al menos un recubrimiento produce un ángulo de contacto distinto — este resultado es el prerrequisito para el post-hoc de Dunn de §1.12.
+**Interpretación**: el KS de dos muestras rechaza $H_0$ ($D=0.4250$, $p=0.0013$): los dos métodos de síntesis de AgNPs producen distribuciones de tamaño distinguibles, pese a tener medias similares (el KS es sensible a diferencias en la *forma* completa de la distribución, no solo en la media). En el caso de dureza, el t-test bilateral **no detecta diferencia** ($p=0.4405$) porque el outlier de 980 HV infla artificialmente la varianza y la media del grupo A; el Mann-Whitney dirigido ($H_1: A<B$), al basarse en rangos, sí detecta que B es consistentemente más duro ($p=0.0325 < 0.05$) — el mismo patrón de robustez que ilustra por qué estas pruebas son preferibles ante outliers. Finalmente, Kruskal-Wallis rechaza $H_0$ con fuerte evidencia ($p=0.000263$): al menos un recubrimiento produce un ángulo de contacto distinto — este resultado es el prerrequisito para el post-hoc de Dunn de §1.14.
 
 $$\boxed{D_{KS}=0.4250\ (p=0.0013) \qquad U_{MW}=6.0\ (p=0.0325,\ \text{una cola}) \qquad H_{KW}=16.4854\ (p=0.000263)}$$
 
@@ -916,6 +916,9 @@ if resultado["issues"] or resultado["metrics"]["has_security_risk"]:
     for issue in resultado["issues"]:
         tipo_error = "syntax_error" if "SyntaxError" in issue else "generic"
         print("💡", debugger.generate_socratic_question(tipo_error, "Unidad 7"))
+    for issue in resultado["security_issues"]:
+        print("🔒", debugger.generate_socratic_question("security_risk", "Unidad 7"))
+        print("   ", issue)
     print("\n--- Detalle técnico ---")
     print(resultado)
 else:

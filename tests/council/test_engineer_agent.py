@@ -64,3 +64,20 @@ datos = np.random.normal(0, 1, n_muestras)
 """
     result = agent.check_monte_carlo_convergence(code)
     assert result["critical"] is True
+
+
+def test_n_samples_de_tamano_de_dataset_no_dispara_falso_positivo():
+    """n_samples (ingles) se usa en las lecciones para tamano de dataset
+    (p. ej. UNIDAD_8, RANSAC con 45 filas), no para iteraciones Monte Carlo.
+    No debe disparar el guardrail aunque el valor este bajo el umbral."""
+    agent = EngineerAgent()
+    code = """
+import numpy as np
+np.random.seed(74)
+n_samples = 45
+radio_nm = np.linspace(5, 60, n_samples).reshape(-1, 1)
+spr_pico = 2.3 * radio_nm.ravel() + np.random.normal(0, 3, n_samples)
+"""
+    result = agent.check_monte_carlo_convergence(code)
+    assert result["critical"] is False
+    assert result["warnings"] == []

@@ -638,7 +638,7 @@ El ejemplo anterior (§10.2) usó valores de $\hat\mu$ y $\hat\sigma$ ya calcula
 
 ```python
 ## En Google Colab, instalar la extensión TF de TFP si no está disponible:
-## %pip install -q "tensorflow-probability[tf]"
+%pip install -q "tensorflow-probability[tf]"
 import numpy as np
 import tensorflow as tf
 import tensorflow_probability as tfp
@@ -791,6 +791,9 @@ if resultado["issues"] or resultado["metrics"]["has_security_risk"]:
     for issue in resultado["issues"]:
         tipo_error = "syntax_error" if "SyntaxError" in issue else "generic"
         print("💡", debugger.generate_socratic_question(tipo_error, "Unidad 8"))
+    for issue in resultado["security_issues"]:
+        print("🔒", debugger.generate_socratic_question("security_risk", "Unidad 8"))
+        print("   ", issue)
     print("\n--- Detalle técnico ---")
     print(resultado)
 else:

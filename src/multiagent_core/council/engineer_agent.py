@@ -9,8 +9,13 @@ from typing import Any, Dict, List
 class EngineerAgent:
     """Agent responsible for checking code quality, type hints, SciPy/Statsmodels usage, and Monte Carlo convergence."""
 
+    # No incluye "samples" (inglés): en las lecciones ese nombre se usa para
+    # tamaño de dataset (p. ej. n_samples = 45 filas de un ejemplo de RANSAC),
+    # no para conteo de iteraciones/muestras de una simulación Monte Carlo.
+    # El patrón de simulación real del curso usa "muestras" (español) o
+    # "sim"/"iter" explícitos — ver UNIDAD_6_MODELADO_SIMULACION.md.
     _SAMPLE_COUNT_PATTERN = re.compile(
-        r"\b(?:N|n)_?(?:sim|muestras|samples|iter|iteraciones)\s*=\s*(\d[\d_]*)",
+        r"\b(?:N|n)_?(?:sim|muestras|iter|iteraciones)\s*=\s*(\d[\d_]*)",
         re.IGNORECASE,
     )
 
