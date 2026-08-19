@@ -45,3 +45,15 @@ El objetivo primordial de este proyecto es el desarrollo de materiales pedagógi
 - **Loop L1 (Fallo en Código / Supuestos)**: `@Safety_Gate` $\to$ `@Engineer` para corregir la implementación.
 - **Loop L2 (Fallo Teórico / Consistencia)**: `@Librarian` $\to$ `@Scientist` para ajustar la fundamentación matemática.
 - **Loop L3 (Protocolo Incompleto)**: `@QA` $\to$ `@Engineer` para agregar componentes faltantes.
+
+---
+
+## 4. Qué gate realmente bloquea la compilación (por diseño, no por omisión)
+
+`CouncilPipeline.process_content()` calcula un reporte por cada uno de los 8 agentes y los agrega en `final_qa.approved` (`@QA.final_audit`, `all(passed)` sobre los 8). Sin embargo, `OrchestratorAgent._check_gate` — el gate real que decide si una lección se compila a notebook (`enforce_gate=True`) — consulta **únicamente** `reports["safety_gate"]["critical"]`, no `final_qa.approved`.
+
+Esto es una decisión de diseño explícita, no un descuido: `@Safety_Gate` es el único de los 8 agentes cuyo fallo representa un riesgo real de contenido incorrecto o prematuro llegando al estudiante (supuestos estadísticos violados, terminología de unidades posteriores mencionada antes de tiempo). Los otros 7 reportes (`@Architect`, `@Scientist`, `@Engineer`, `@Analyst`, `@Librarian`, `@QA`, `@Editor`) son señales asesoras — se calculan, quedan disponibles en `final_qa.reports` para quien invoque `CouncilPipeline` directamente, pero no bloquean automáticamente la compilación de la lección.
+
+**Por qué no se conectó `approved` al gate real**: al momento de escribir esto, U8 tiene un warning no crítico de `@Safety_Gate` (`critical=False`, supuestos de regresión no verificados) que haría fallar `final_qa.approved` si el gate lo consultara — bloquearía una lección que hoy compila y publica correctamente por un hallazgo asesor, no por un riesgo real de contenido. Conectar `approved` al gate requeriría primero resolver ese warning (y cualquier otro similar que surja de los 7 reportes asesores) para no introducir bloqueos retroactivos inesperados sobre contenido ya publicado.
+
+Si en el futuro se decide que algún otro reporte del Consejo (p. ej. `@Engineer` tras el guardrail de convergencia Monte Carlo) debe ser bloqueante como `@Safety_Gate`, la forma correcta es promoverlo explícitamente en `_check_gate` — nunca asumir que `final_qa.approved` ya lo cubre.
