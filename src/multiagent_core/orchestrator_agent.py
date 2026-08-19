@@ -3,9 +3,8 @@ OrchestratorAgent: Coordinates compilation, code auditing, content auditing, and
 """
 
 import os
-from typing import Any, Dict, List, Optional
-
 from pathlib import Path
+from typing import Any, Dict, List, Optional
 
 from .code_auditor_agent import CodeAuditorAgent
 from .content_auditor_agent import ContentAuditorAgent
