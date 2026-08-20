@@ -762,6 +762,37 @@ Escribe tu solución en una celda de código nueva en tu notebook. La celda de a
 * García, J., Molina, J. M., Berlanga, A., Patricio, M. Á., Bustamante, Á. L. & Padilla, W. R. (2018). *Ciencia de Datos: Técnicas Analíticas y Aprendizaje Estadístico en un Enfoque Práctico*. Alfaomega/Publicaciones Altaria. Capítulos sobre inferencia estadística aplicada y aprendizaje estadístico como cierre integrador del curso.
 * Virtanen, P. et al. (2020). SciPy 1.0: Fundamental Algorithms for Scientific Computing in Python. *Nature Methods*, 17, 261-272. Documentación: [docs.scipy.org/doc/scipy/reference/stats.html](https://docs.scipy.org/doc/scipy/reference/stats.html)
 
+## Herramientas de esta Unidad
+
+**StatsTutorAgent** — resuelve tus dudas conceptuales sobre el proyecto integrador citando el contenido exacto de esta unidad, y te hace una pregunta socrática si detecta un error conceptual común (p. ej. usar una prueba sin verificar sus supuestos) en vez de darte la respuesta directa:
+
+```python
+import os
+import sys
+from pathlib import Path
+
+if 'google.colab' in sys.modules:
+    from google.colab import userdata
+    for nombre_secreto in ("GEMINI_API_KEY", "GOOGLE_API_KEY"):
+        try:
+            os.environ["GEMINI_API_KEY"] = userdata.get(nombre_secreto)
+            break
+        except Exception:
+            continue
+    else:
+        print(
+            "⚠️ [Unidad 8] No se encontró el secreto GEMINI_API_KEY ni GOOGLE_API_KEY en Colab. "
+            "Créalo en el ícono de llave 🔑 de la barra lateral izquierda para usar StatsTutorAgent."
+        )
+
+from src.multiagent_core.stats_tutor_agent import StatsTutorAgent
+
+tutor = StatsTutorAgent(course_dir=Path("lecciones"))
+print(tutor.ask("¿cómo elijo qué prueba estadística aplicar según el tipo de datos de mi proyecto?"))
+```
+
+No requiere configuración adicional más allá de tu `GEMINI_API_KEY` (créala en [aistudio.google.com/apikey](https://aistudio.google.com/apikey) y agrégala como secreto de Colab o variable de entorno local).
+
 ## Autoevaluación
 
 Guarda tu solución al Ejercicio Propuesto en un archivo separado y evalúala contra el pipeline de auditoría del curso:

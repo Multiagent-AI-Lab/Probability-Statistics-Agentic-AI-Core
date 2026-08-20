@@ -757,8 +757,8 @@ if 'google.colab' in sys.modules:
             continue
     else:
         print(
-            "⚠️ No se encontró el secreto GEMINI_API_KEY ni GOOGLE_API_KEY en Colab. "
-            "Créalo en el ícono de llave 🔑 de la barra lateral izquierda."
+            "⚠️ [Unidad 1] No se encontró el secreto GEMINI_API_KEY ni GOOGLE_API_KEY en Colab. "
+            "Créalo en el ícono de llave 🔑 de la barra lateral izquierda para usar StatsTutorAgent."
         )
 
 from src.multiagent_core.stats_tutor_agent import StatsTutorAgent
