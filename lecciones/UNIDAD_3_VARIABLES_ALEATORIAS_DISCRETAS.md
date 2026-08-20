@@ -560,6 +560,7 @@ Escribe tu solución en una celda de código nueva en tu notebook. La celda de a
 ## Referencias
 
 * Unpingco, J. (2019). *Python for Probability, Statistics, and Machine Learning* (2nd ed.). Springer. Capítulos sobre variables aleatorias discretas y su implementación computacional.
+* Li, Y. & Jiang, Z. (2008). An Overview of Reliability and Failure Mode Analysis of Microelectromechanical Systems (MEMS). En *Handbook of Performability Engineering*. Springer, London. https://doi.org/10.1007/978-1-84800-131-2_58 — modos de falla y análisis de confiabilidad de micro-sensores, el contexto aplicado del ejemplo analítico de esta unidad (conteo Binomial de defectos en un lote de nano-sensores).
 * Virtanen, P. et al. (2020). SciPy 1.0: Fundamental Algorithms for Scientific Computing in Python. *Nature Methods*, 17, 261-272. Documentación: [docs.scipy.org/doc/scipy/reference/stats.html](https://docs.scipy.org/doc/scipy/reference/stats.html)
 
 ## Herramientas de esta Unidad

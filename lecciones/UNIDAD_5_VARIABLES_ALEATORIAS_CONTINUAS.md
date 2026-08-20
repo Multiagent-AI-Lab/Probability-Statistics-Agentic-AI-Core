@@ -686,6 +686,7 @@ Escribe tu solución en una celda de código nueva en tu notebook. La celda de a
 ## Referencias
 
 * Unpingco, J. (2019). *Python for Probability, Statistics, and Machine Learning* (2nd ed.). Springer. Capítulos sobre variables aleatorias continuas, distribuciones y su implementación con SciPy.
+* Sharafi, S. M., Flores, M., Appuhami, H. & Selim, F. A. (2026). Control of Microstructure, Trap Levels, and Trap Distribution in HfO2 Films Grown by Atomic Layer Deposition. *Nanomaterials*, 16(8), 451. https://doi.org/10.3390/nano16080451 — control de espesor y microestructura de películas de HfO₂ depositadas por ALD, el material y proceso exactos del ejemplo aplicado de esta unidad (Distribución Normal del espesor dieléctrico).
 * Virtanen, P. et al. (2020). SciPy 1.0: Fundamental Algorithms for Scientific Computing in Python. *Nature Methods*, 17, 261-272. Documentación: [docs.scipy.org/doc/scipy/reference/stats.html](https://docs.scipy.org/doc/scipy/reference/stats.html)
 
 ## Herramientas de esta Unidad
