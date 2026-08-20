@@ -40,6 +40,28 @@ class OrchestratorAgent:
     # (no un stub que siempre pasa, como librarian). Ver GOVERNANCE.md #4.
     _BLOCKING_REPORTS = ("engineer", "editor", "scientist", "analyst")
 
+    @staticmethod
+    def _describe_failed_report(name: str, report: Dict[str, Any]) -> str:
+        """Arma un detalle legible del motivo de fallo de un reporte, usando
+        los campos numericos que cada agente expone (si estan presentes) en
+        vez de solo su nombre, para que quien depure localmente sepa que
+        corregir sin re-ejecutar el pipeline."""
+        if name == "scientist" and "word_count" in report:
+            return (
+                f"{name} (palabras={report['word_count']}, "
+                f"formulas={report.get('math_equation_count', 0)})"
+            )
+        if name == "analyst" and "plot_count" in report:
+            return (
+                f"{name} (graficos={report['plot_count']}, "
+                f"interpretacion={report.get('has_interpretation', False)})"
+            )
+        if name == "engineer" and "has_scipy_or_statsmodels" in report:
+            return f"{name} (scipy/statsmodels={report['has_scipy_or_statsmodels']})"
+        if name == "editor" and "issues" in report:
+            return f"{name} ({len(report['issues'])} hallazgo(s) de maquetación)"
+        return name
+
     def _check_gate(
         self, md_filename: str, md_text: str, duplicate_unit_names: set
     ) -> Dict[str, Any]:
@@ -57,10 +79,14 @@ class OrchestratorAgent:
             name for name in self._BLOCKING_REPORTS if not reports[name]["passed"]
         ]
         if failed_reports:
+            detalles = [
+                self._describe_failed_report(name, reports[name])
+                for name in failed_reports
+            ]
             return {
                 "blocked": True,
                 "reason": (
-                    f"El Consejo no aprobó la lección en: {', '.join(failed_reports)}."
+                    f"El Consejo no aprobó la lección en: {', '.join(detalles)}."
                 ),
             }
 
