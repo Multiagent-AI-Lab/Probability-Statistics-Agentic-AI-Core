@@ -675,6 +675,7 @@ Escribe tu solución en una celda de código nueva en tu notebook. La celda de a
 ## Referencias
 
 * Agresti, A. & Kateri, M. (2022). *Foundations of Statistics for Data Scientists: With R and Python*. Chapman & Hall/CRC (Texts in Statistical Science). Capítulos sobre distribuciones multivariadas y dependencia entre variables aleatorias.
+* Pochapski, D. J. et al. (2021). Zeta Potential and Colloidal Stability Predictions for Inorganic Nanoparticle Dispersions: Effects of Experimental Conditions and Electrokinetic Models on the Interpretation of Results. *Langmuir*, 37(43), 13379-13389. https://doi.org/10.1021/acs.langmuir.1c02056 — relación entre diámetro de partícula y potencial zeta en dispersiones coloidales, la distribución conjunta bivariada modelada en el ejemplo aplicado de esta unidad.
 * Virtanen, P. et al. (2020). SciPy 1.0: Fundamental Algorithms for Scientific Computing in Python. *Nature Methods*, 17, 261-272. Documentación: [docs.scipy.org/doc/scipy/reference/stats.html](https://docs.scipy.org/doc/scipy/reference/stats.html)
 
 ## Herramientas de esta Unidad
