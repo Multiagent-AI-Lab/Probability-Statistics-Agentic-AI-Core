@@ -5,6 +5,7 @@ Tests for OrchestratorAgent.run_full_pipeline con enforce_gate.
 import os
 import shutil
 import tempfile
+from pathlib import Path
 
 import pytest
 
@@ -247,6 +248,45 @@ def test_check_gate_reason_lists_every_failed_blocking_report():
     assert "editor" in gate_decision["reason"]
 
 
+def test_check_gate_reason_incluye_detalle_numerico_de_scientist_y_analyst():
+    """El mensaje de reason debe incluir el detalle que causó el fallo
+    (word_count/math_equation_count de scientist, plot_count de analyst),
+    no solo el nombre del agente -- para que quien depure localmente sepa
+    qué corregir sin tener que re-ejecutar el pipeline manualmente."""
+    orchestrator = OrchestratorAgent(
+        lecciones_dir="lecciones", notebooks_dir="notebooks"
+    )
+
+    class _StubCouncil:
+        def process_content(self, md_text, unit_name=""):
+            return {
+                "reports": {
+                    "safety_gate": {"passed": True, "critical": False},
+                    "engineer": {"passed": True},
+                    "editor": {"passed": True},
+                    "scientist": {
+                        "passed": False,
+                        "word_count": 120,
+                        "math_equation_count": 2,
+                    },
+                    "analyst": {
+                        "passed": False,
+                        "plot_count": 0,
+                        "has_interpretation": False,
+                    },
+                }
+            }
+
+    orchestrator.council = _StubCouncil()
+
+    gate_decision = orchestrator._check_gate("UNIDAD_1.md", "texto", set())
+
+    assert gate_decision["blocked"] is True
+    assert "120" in gate_decision["reason"]
+    assert "2" in gate_decision["reason"]
+    assert "0" in gate_decision["reason"]
+
+
 UNIDAD_2_SOLO_ANACRONISMO = (
     """# UNIDAD 2 PROBABILIDAD COMBINATORIA
 ## Asignatura: Probabilidad y Estadística Inferencial
@@ -318,3 +358,31 @@ def test_enforce_gate_still_blocks_on_safety_gate_critical(
     u2_result = results[0]
     assert u2_result["gate_blocked"] is True
     assert "🚨" in u2_result["gate_reason"]
+
+
+def test_ninguna_leccion_real_del_curso_es_bloqueada_por_el_gate():
+    """Gate de no-regresión: corre el pipeline real (enforce_gate=True) sobre
+    las 8 lecciones reales del curso en lecciones/, no sobre fixtures
+    sintéticas. Si una edición futura hace caer alguna lección por debajo de
+    los umbrales de engineer/editor/scientist/analyst/safety_gate, este test
+    debe fallar antes de que el contenido se publique — documentado como
+    deuda pendiente en GOVERNANCE.md §4 hasta ahora.
+
+    Las rutas se anclan a este archivo (no a strings relativos al cwd de
+    pytest) para que el test sea robusto sin importar desde dónde se invoque."""
+    repo_root = Path(__file__).resolve().parent.parent
+    orchestrator = OrchestratorAgent(
+        lecciones_dir=str(repo_root / "lecciones"),
+        notebooks_dir=str(repo_root / "notebooks"),
+    )
+
+    results = orchestrator.run_full_pipeline(enforce_gate=True)
+
+    assert len(results) == 8, "Se esperan exactamente las 8 lecciones del curso"
+
+    bloqueadas = [
+        (r["md_filename"], r["gate_reason"]) for r in results if r["gate_blocked"]
+    ]
+    assert bloqueadas == [], (
+        "El gate real bloquea contenido ya publicado del curso: " f"{bloqueadas}"
+    )
