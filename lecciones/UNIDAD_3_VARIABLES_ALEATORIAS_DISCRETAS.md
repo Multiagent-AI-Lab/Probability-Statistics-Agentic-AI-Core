@@ -355,6 +355,31 @@ $$\boxed{P(X \ge 1) = 1 - 0.358486 = 0.64151 \quad (64.15\%)}$$
 $$\mathbb{E}[X] = n p = 20 \times 0.05 = \boxed{1.0 \text{ nano-sensor}}$$
 $$\text{Var}(X) = n p (1-p) = 20 \times 0.05 \times 0.95 = 0.95 \implies \sigma = \sqrt{0.95} \approx \boxed{0.9747\text{ nano-sensores}}$$
 
+### 3.6 Prueba Unitaria con pytest
+
+Se contrasta cada resultado derivado a mano (combinatoria + PMF Binomial) contra `scipy.stats.binom`, que calcula la misma fórmula sin riesgo de error aritmético humano:
+
+```python
+import pytest
+from scipy.stats import binom
+
+n, p = 20, 0.05
+
+
+def test_probabilidad_de_exactamente_2_defectuosos():
+    assert binom.pmf(2, n, p) == pytest.approx(0.18868, rel=1e-3)
+
+
+def test_probabilidad_de_al_menos_1_defectuoso_por_complemento():
+    prob_al_menos_uno = 1 - binom.pmf(0, n, p)
+    assert prob_al_menos_uno == pytest.approx(0.64151, rel=1e-3)
+
+
+def test_esperanza_y_varianza_binomial():
+    assert n * p == pytest.approx(1.0)
+    assert n * p * (1 - p) == pytest.approx(0.95)
+```
+
 ---
 
 ## 4. Código de Verificación Simbólica (SymPy)

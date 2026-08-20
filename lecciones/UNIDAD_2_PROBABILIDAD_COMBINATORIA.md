@@ -165,6 +165,40 @@ $$\boxed{P(R_3|D) = \frac{P(D|R_3)P(R_3)}{P(D)} = \frac{0.08 \times 0.20}{0.0410
 
 **Interpretación**: Aunque el reactor $R_3$ solo sintetiza el $20\%$ del volumen total de nanopartículas, si descubrimos que una nanopartícula está defectuosa, la probabilidad de que provenga de $R_3$ se duplica casi al $39.02\%$ debido a su mayor tasa individual de defectos ($8\%$).
 
+### 5.5 Prueba Unitaria con pytest
+
+Antes de reportar $P(R_3|D)\approx 0.39$ como resultado final, se verifica computacionalmente cada paso de la derivación — la partición de probabilidades a priori, la probabilidad total y el propio Teorema de Bayes — para blindar el cálculo contra errores de álgebra o de redondeo manual:
+
+```python
+import pytest
+
+p_r1, p_r2, p_r3 = 0.45, 0.35, 0.20
+p_d_dado_r1, p_d_dado_r2, p_d_dado_r3 = 0.04, 0.02, 0.08
+
+
+def test_las_probabilidades_a_priori_de_los_reactores_suman_uno():
+    assert (p_r1 + p_r2 + p_r3) == pytest.approx(1.0)
+
+
+def test_probabilidad_total_de_defecto():
+    p_d = p_d_dado_r1 * p_r1 + p_d_dado_r2 * p_r2 + p_d_dado_r3 * p_r3
+    assert p_d == pytest.approx(0.041, rel=1e-6)
+
+
+def test_teorema_de_bayes_para_r3_dado_defecto():
+    p_d = p_d_dado_r1 * p_r1 + p_d_dado_r2 * p_r2 + p_d_dado_r3 * p_r3
+    p_r3_dado_d = (p_d_dado_r3 * p_r3) / p_d
+    assert p_r3_dado_d == pytest.approx(16 / 41, rel=1e-6)
+
+
+def test_posterior_de_r3_es_mayor_que_su_prior_por_su_alta_tasa_de_defecto():
+    ## R3 duplica su probabilidad al condicionar en "defectuosa": esto NO
+    ## ocurriria si su tasa de defecto fuera igual al promedio del lote.
+    p_d = p_d_dado_r1 * p_r1 + p_d_dado_r2 * p_r2 + p_d_dado_r3 * p_r3
+    p_r3_dado_d = (p_d_dado_r3 * p_r3) / p_d
+    assert p_r3_dado_d > p_r3
+```
+
 ---
 
 ## 6. Código de Verificación Simbólica (SymPy)
