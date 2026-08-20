@@ -35,16 +35,34 @@ class OrchestratorAgent:
             return f"UNIDAD {md_filename.split('_')[1]}"
         return md_filename
 
+    # Reportes del Consejo promovidos a bloqueantes ademas de safety_gate:
+    # los unicos 3 con logica real de deteccion de un defecto de publicacion
+    # (no un stub que siempre pasa, como librarian). Ver GOVERNANCE.md #4.
+    _BLOCKING_REPORTS = ("engineer", "editor", "scientist", "analyst")
+
     def _check_gate(
         self, md_filename: str, md_text: str, duplicate_unit_names: set
     ) -> Dict[str, Any]:
         unit_name = self._unit_name_from_filename(md_filename)
 
         council_result = self.council.process_content(md_text, unit_name=unit_name)
-        safety_result = council_result["reports"]["safety_gate"]
+        reports = council_result["reports"]
+
+        safety_result = reports["safety_gate"]
         if safety_result["critical"]:
             reason = "; ".join(w for w in safety_result["warnings"] if "🚨" in w)
             return {"blocked": True, "reason": reason}
+
+        failed_reports = [
+            name for name in self._BLOCKING_REPORTS if not reports[name]["passed"]
+        ]
+        if failed_reports:
+            return {
+                "blocked": True,
+                "reason": (
+                    f"El Consejo no aprobó la lección en: {', '.join(failed_reports)}."
+                ),
+            }
 
         if unit_name in duplicate_unit_names:
             return {
