@@ -360,8 +360,11 @@ $$\text{Var}(X) = n p (1-p) = 20 \times 0.05 \times 0.95 = 0.95 \implies \sigma 
 Se contrasta cada resultado derivado a mano (combinatoria + PMF Binomial) contra `scipy.stats.binom`, que calcula la misma fórmula sin riesgo de error aritmético humano:
 
 ```python
+import ipytest
 import pytest
 from scipy.stats import binom
+
+ipytest.autoconfig()
 
 n, p = 20, 0.05
 
@@ -378,6 +381,9 @@ def test_probabilidad_de_al_menos_1_defectuoso_por_complemento():
 def test_esperanza_y_varianza_binomial():
     assert n * p == pytest.approx(1.0)
     assert n * p * (1 - p) == pytest.approx(0.95)
+
+
+ipytest.run("-vv")
 ```
 
 ---

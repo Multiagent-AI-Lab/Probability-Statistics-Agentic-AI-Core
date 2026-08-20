@@ -137,8 +137,11 @@ Este valor coincide mucho más con la mediana original ($12.95\ \text{nm}$), con
 Todo cálculo estadístico manual debe verificarse computacionalmente antes de reportarse — la misma disciplina de `pytest` que ya conoces de Lógica de Programación aplica aquí: en vez de solo confiar en la derivación a mano, se escribe una prueba que falla si el resultado numérico se aparta del valor esperado.
 
 ```python
+import ipytest
 import numpy as np
 import pytest
+
+ipytest.autoconfig()
 
 diametros_nm = np.array([12.1, 13.4, 11.8, 14.2, 12.9, 13.0, 40.5, 12.5, 13.8, 12.3])
 
@@ -162,6 +165,9 @@ def test_media_sin_el_atipico_se_acerca_a_la_mediana_original():
     diametros_limpios = diametros_nm[diametros_nm != 40.5]
     mediana_original = np.median(diametros_nm)
     assert np.mean(diametros_limpios) == pytest.approx(mediana_original, abs=0.1)
+
+
+ipytest.run("-vv")
 ```
 
 `test_desviacion_estandar_muestral_usa_correccion_de_bessel` es la prueba más importante del bloque: si alguien olvida `ddof=1` (equivalente al denominador $n-1$ visto en el §1.2), NumPy calcula la desviación estándar **poblacional** por defecto ($\sigma$, denominador $n$) y la prueba falla — exactamente el error conceptual descrito en "Errores Comunes" al final de esta unidad.

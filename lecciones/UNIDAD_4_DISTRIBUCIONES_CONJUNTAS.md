@@ -300,9 +300,12 @@ Aproximadamente el $4.78\%$ de las nanopartículas individuales caen en zona de 
 Antes de simular por Cholesky, se verifica que $\Sigma$ sea una matriz de covarianza válida (semidefinida positiva — de lo contrario `np.linalg.cholesky` fallaría al intentar factorizarla), además de contrastar la correlación y la probabilidad de zona de riesgo:
 
 ```python
+import ipytest
 import numpy as np
 import pytest
 from scipy.stats import norm
+
+ipytest.autoconfig()
 
 Sigma = np.array([[16.0, -18.0], [-18.0, 36.0]])
 sigma_x, sigma_y = 4.0, 6.0
@@ -322,6 +325,9 @@ def test_coeficiente_de_correlacion_diametro_potencial_zeta():
 def test_probabilidad_de_zona_de_riesgo_de_agregacion():
     prob_riesgo = 1 - norm.cdf(-30, loc=-40, scale=sigma_y)
     assert prob_riesgo == pytest.approx(0.0478, rel=1e-2)
+
+
+ipytest.run("-vv")
 ```
 
 ---
