@@ -336,6 +336,37 @@ Escribe tu solución en una celda de código nueva en tu notebook. La celda de a
 * Unpingco, J. (2019). *Python for Probability, Statistics, and Machine Learning* (2nd ed.). Springer. Capítulos sobre variables aleatorias continuas, distribuciones y su implementación con SciPy.
 * Virtanen, P. et al. (2020). SciPy 1.0: Fundamental Algorithms for Scientific Computing in Python. *Nature Methods*, 17, 261-272. Documentación: [docs.scipy.org/doc/scipy/reference/stats.html](https://docs.scipy.org/doc/scipy/reference/stats.html)
 
+## Herramientas de esta Unidad
+
+**StatsTutorAgent** — resuelve tus dudas conceptuales sobre variables aleatorias continuas citando el contenido exacto de esta unidad, y te hace una pregunta socrática si detecta un error conceptual común en vez de darte la respuesta directa:
+
+```python
+import os
+import sys
+from pathlib import Path
+
+if 'google.colab' in sys.modules:
+    from google.colab import userdata
+    for nombre_secreto in ("GEMINI_API_KEY", "GOOGLE_API_KEY"):
+        try:
+            os.environ["GEMINI_API_KEY"] = userdata.get(nombre_secreto)
+            break
+        except Exception:
+            continue
+    else:
+        print(
+            "⚠️ [Unidad 5] No se encontró el secreto GEMINI_API_KEY ni GOOGLE_API_KEY en Colab. "
+            "Créalo en el ícono de llave 🔑 de la barra lateral izquierda para usar StatsTutorAgent."
+        )
+
+from src.multiagent_core.stats_tutor_agent import StatsTutorAgent
+
+tutor = StatsTutorAgent(course_dir=Path("lecciones"))
+print(tutor.ask("¿qué papel juega la función de densidad de probabilidad en una variable continua?"))
+```
+
+No requiere configuración adicional más allá de tu `GEMINI_API_KEY` (créala en [aistudio.google.com/apikey](https://aistudio.google.com/apikey) y agrégala como secreto de Colab o variable de entorno local).
+
 ## Autoevaluación
 
 Guarda tu solución al Ejercicio Propuesto en un archivo separado y evalúala contra el pipeline de auditoría del curso:
