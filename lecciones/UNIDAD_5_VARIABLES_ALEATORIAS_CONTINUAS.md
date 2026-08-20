@@ -122,6 +122,331 @@ Generalización multivariada de la distribución Beta: modela vectores de propor
 * Esperanza por componente: $\mathbb{E}[X_i] = \alpha_i / \sum_j \alpha_j$.
 * **Aplicación en nanotecnología**: en la síntesis de nanomateriales compuestos (por ejemplo, una aleación nanoparticulada de Au-Ag-Pt), las fracciones molares de cada elemento constituyente suman siempre 1; la distribución Dirichlet modela la incertidumbre conjunta de estas proporciones de composición generadas por variabilidad del proceso de síntesis, generalizando el caso univariado de la distribución Beta a $k$ componentes de la aleación de nanomateriales.
 
+### 2.12 Profundización: PDF Completa, CDF y Aplicaciones por Dominio
+
+Las subsecciones 2.1 a 2.11 dan la definición mínima de cada familia. Esta subsección profundiza tres de las distribuciones más usadas en el curso — Normal, Weibull y Chi-cuadrada — con su CDF explícita, código de comparación gráfica en `scipy.stats`, y ejemplos de uso concretos en **Nanotecnología**, **Inteligencia Artificial** y **Diseño de Experimentos (DOE)**, más allá del PDF y una sola aplicación ya vistos arriba.
+
+#### 2.12.1 Distribución Normal — Profundización
+
+* **CDF**: $F(x) = \Phi\left(\dfrac{x-\mu}{\sigma}\right)$, donde $\Phi$ es la CDF de la Normal estándar $\mathcal{N}(0,1)$ — no tiene forma cerrada y se evalúa numéricamente (`scipy.stats.norm.cdf`).
+* **Regla empírica 68-95-99.7%**: $P(\mu-\sigma < X < \mu+\sigma) \approx 0.6826$, $P(\mu-2\sigma < X < \mu+2\sigma) \approx 0.9544$, $P(\mu-3\sigma < X < \mu+3\sigma) \approx 0.9974$ — se usa para fijar límites de control estadístico de procesos (SPC) sin necesitar la CDF exacta.
+* **Estandarización**: si $X \sim \mathcal{N}(\mu, \sigma^2)$, entonces $a + bX \sim \mathcal{N}(a+b\mu,\, b^2\sigma^2)$; en particular $Z = (X-\mu)/\sigma \sim \mathcal{N}(0,1)$, lo que permite calcular cualquier probabilidad de $X$ a partir de la tabla o CDF de $Z$.
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.stats import norm
+
+## Comparación de PDFs Normales: variabilidad del diámetro de puntos cuánticos
+## de CdSe sintetizados con 3 protocolos distintos (misma media, distinta sigma)
+x = np.linspace(-6, 6, 400)
+parametros = [(-2, 1.0), (0, 1.0), (2, 1.5)]
+
+plt.figure(figsize=(9, 5))
+for mu, sigma in parametros:
+    plt.plot(x, norm.pdf(x, loc=mu, scale=sigma), label=f"$\\mu={mu}$, $\\sigma={sigma}$")
+plt.title("PDF Normal: efecto de $\\mu$ (desplazamiento) y $\\sigma$ (dispersión)")
+plt.xlabel("x")
+plt.ylabel("Densidad")
+plt.legend()
+plt.grid(alpha=0.3)
+plt.show()
+```
+
+**Aplicaciones — Nanotecnología**: (1) *Distribución de tamaño de nanopartículas*: el diámetro medio ($\mu$) y su dispersión ($\sigma$) de un lote de puntos cuánticos o nanopartículas de oro se modelan como Normal; una $\sigma$ pequeña (lote monodisperso) es crítica en nanomedicina y en *displays* QLED. (2) *Variabilidad en nanodispositivos*: variaciones en el grosor de la capa aislante de un nanotransistor por imprecisiones de litografía, usadas para fijar tolerancias de fabricación. (3) *Ruido instrumental*: mediciones repetidas de espesor de película delgada por AFM, donde se asume error de medición Normal para construir intervalos de confianza.
+
+**Aplicaciones — Inteligencia Artificial**: (1) *Inicialización de pesos*: las redes neuronales inicializan pesos muestreando de $\mathcal{N}(0, \sigma^2)$ pequeña (inicialización de Xavier/He) para evitar gradientes que exploten o se desvanezcan. (2) *Naive Bayes Gaussiano*: asume que cada característica numérica, condicionada a la clase, sigue una Normal. (3) *Modelos de Mezclas Gaussianas (GMM)* y el espacio latente de autoencoders variacionales (VAE), modelado como Normal multivariada.
+
+**Aplicaciones — DOE**: (1) *Análisis de varianza entre tratamientos* (tema formal de unidades posteriores de inferencia): la validez de las pruebas $t$ y $F$ subyacentes depende de que los residuos del modelo sean aproximadamente Normales (verificado con Shapiro-Wilk). (2) *Intervalos de confianza y pruebas $t$/$Z$*: el Teorema del Límite Central permite usar la Normal para la media muestral aunque la población no sea perfectamente Normal, si $n$ es grande. (3) *Control estadístico de procesos (SPC)*: gráficos de control $\bar{X}$ y $R$ con límites $\mu \pm 3\sigma$ para detectar procesos fuera de control.
+
+#### 2.12.2 Distribución de Weibull — Profundización
+
+* **CDF**: $F(x) = 1 - e^{-(x/\lambda)^k}$ para $x \ge 0$.
+* **Interpretación del parámetro de forma $k$**: $k<1$ indica tasa de falla decreciente ("mortalidad infantil", defectos de fabricación); $k=1$ recupera la distribución Exponencial (tasa de falla constante); $k>1$ indica tasa de falla creciente (desgaste, fatiga, envejecimiento) — las tres fases de la curva de la bañera de confiabilidad.
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.stats import weibull_min
+
+## Comparación de PDFs Weibull: tres regímenes de falla de un recubrimiento
+## protector de nanopartículas de sílice (mismo lambda, distinto k)
+x = np.linspace(0, 3, 300)
+k_valores = [0.5, 1, 2]
+
+plt.figure(figsize=(9, 5))
+for k in k_valores:
+    plt.plot(x, weibull_min.pdf(x, c=k, scale=1), label=f"k={k}")
+plt.title("PDF Weibull: régimen de falla según el parámetro de forma k")
+plt.xlabel("Tiempo hasta falla (unidades normalizadas)")
+plt.ylabel("Densidad")
+plt.legend(title="Forma (k)")
+plt.grid(alpha=0.3)
+plt.show()
+```
+
+**Aplicaciones — Nanotecnología / Ciencia de Materiales**: (1) *Resistencia a la fractura de materiales frágiles*: la falla de cerámicas ($\text{SiC}$, $\text{Al}_2\text{O}_3$) o fibras de carbono está gobernada por el defecto crítico más débil en el volumen sometido a tensión ("teoría del eslabón más débil"); un módulo de Weibull $k$ alto ($k>10$) indica defectos uniformes y alta calidad. (2) *Efecto de escala (size effect)*: predice que un componente de mayor volumen es estadísticamente más débil, al tener mayor probabilidad de contener un defecto crítico. (3) *Fallos en nano-dispositivos* ($k<1$, defectos de fabricación en un chip o capa delgada) vs. *fatiga en recubrimientos* ($k>1$, degradación acumulada).
+
+**Aplicaciones — Confiabilidad / Vida Útil**: (1) *Predicción de vida a fatiga*: relación entre número de ciclos de tensión y probabilidad de falla, esencial en diseño aeronáutico y automotriz. (2) *Cualificación de materiales compuestos*: comparar la vida característica ($\eta$) de distintas aleaciones bajo condiciones extremas. (3) *Modelado de corrosión*: tiempo hasta que el espesor residual no corroído es insuficiente.
+
+**Aplicaciones — DOE**: al diseñar un experimento de vida acelerada (temperatura, humedad, voltaje) para caracterizar la confiabilidad de un nanomaterial, se ajusta un modelo Weibull a los tiempos de falla observados en cada condición para extrapolar la vida útil en condiciones normales de operación.
+
+#### 2.12.3 Distribución Chi-cuadrada — Profundización
+
+* **CDF**: no tiene forma cerrada; se evalúa numéricamente (`scipy.stats.chi2.cdf`).
+* **Forma según $k$**: para $k=1$ la distribución está fuertemente sesgada a la derecha; a medida que $k$ aumenta, se vuelve más simétrica y se aproxima a una Normal (consecuencia del Teorema del Límite Central sobre la suma de $k$ cuadrados).
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.stats import chi2
+
+## Comparación de PDFs Chi-cuadrada: bondad de ajuste de un modelo de
+## vida util (Weibull/Log-Normal) a datos de fallo de nanomateriales
+x = np.linspace(0, 30, 500)
+k_valores = [1, 2, 5, 10]
+
+plt.figure(figsize=(9, 5))
+for k in k_valores:
+    plt.plot(x, chi2.pdf(x, df=k), label=f"k={k}")
+plt.title("PDF Chi-cuadrada: convergencia a la Normal al aumentar los grados de libertad")
+plt.xlabel("x")
+plt.ylabel("Densidad")
+plt.legend(title="Grados de libertad (k)")
+plt.grid(alpha=0.3)
+plt.show()
+```
+
+**Aplicaciones — Ciencia de Materiales**: (1) *Bondad de ajuste de distribuciones de vida útil*: la prueba de Chi-cuadrada compara frecuencias de fallo observadas contra las esperadas bajo un modelo teórico (Weibull, Log-Normal); un $\chi^2$ bajo indica buen ajuste. (2) *Análisis de dispersión en mediciones*: construir intervalos de confianza para la varianza poblacional de una propiedad del material (resistencia, dureza, espesor), donde una varianza excesiva señala falta de homogeneidad en el proceso de fabricación. (3) *Ajuste por mínimos cuadrados ponderados*: técnicas como reflectividad de rayos X (XRR) o elipsometría reportan un $\chi^2$ reducido como métrica de bondad de ajuste — cercano a 1 indica ajuste excelente.
+
+**Aplicaciones — DOE**: (1) *Independencia de factores experimentales*: la prueba $\chi^2$ de independencia sobre una tabla de contingencia evalúa si un factor categórico (p. ej., tipo de catalizador) es independiente del resultado (éxito/fallo). (2) *Comparación de varianzas entre tratamientos*: pruebas de homocedasticidad (Bartlett, Levene) que fundamentan la validez de un análisis de varianza posterior entre tratamientos, tema formal de unidades de inferencia. (3) *Diseños factoriales con datos categóricos*: analizar si los efectos de interacción entre factores son significativos cuando la respuesta es binaria o nominal.
+
+#### 2.12.4 Distribución Uniforme Continua — Profundización
+
+* **CDF**: $F(x) = 0$ si $x<a$; $F(x) = \dfrac{x-a}{b-a}$ si $a\le x<b$; $F(x)=1$ si $x\ge b$.
+* La densidad constante hace de la Uniforme la distribución "sin memoria estructural": ningún subintervalo de igual longitud es más probable que otro, lo que la vuelve el generador base de todo método de simulación Monte Carlo (transformada inversa, ver §10 de Modelado y Simulación).
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.stats import uniform
+
+## PDF de la Uniforme(0,1): base de la generacion de numeros pseudoaleatorios
+## para simulacion Monte Carlo de procesos de sintesis de nanomateriales
+x = np.linspace(-0.2, 1.2, 300)
+plt.figure(figsize=(8, 5))
+plt.plot(x, uniform.pdf(x, loc=0, scale=1), color="blue", linewidth=2)
+plt.title("PDF de la Distribución Uniforme(0,1)")
+plt.xlabel("x")
+plt.ylabel("Densidad")
+plt.grid(alpha=0.3)
+plt.show()
+```
+
+**Aplicaciones**: (1) *Nanotecnología*: modelar el error de cuantificación al redondear una medición digital de espesor de película delgada, o el tiempo de espera de un proceso de deposición programado en un intervalo fijo sin preferencia temporal. (2) *IA*: generación de números pseudoaleatorios base para simulación Monte Carlo — toda otra distribución (Normal, Exponencial, Weibull) se obtiene transformando muestras Uniformes vía el método de la transformada inversa. (3) *DOE*: modelar parámetros de calidad de un proceso de fabricación (p. ej., el grosor de una pieza) cuando solo se conocen los límites mínimo y máximo, sin evidencia de que los valores centrales sean más probables.
+
+#### 2.12.5 Distribución Exponencial — Profundización
+
+* **CDF**: $F(x) = 1-e^{-\lambda x}$ para $x\ge 0$.
+* **Propiedad de falta de memoria**: es la única distribución continua con $P(X>s+t \mid X>s) = P(X>t)$ — la probabilidad de esperar $t$ unidades más no depende de cuánto se ha esperado ya.
+* **Conexión Poisson-Exponencial**: si los eventos de un proceso ocurren según Poisson con tasa $\lambda$, el tiempo entre eventos consecutivos sigue Exponencial($\lambda$).
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.stats import expon
+
+## PDF Exponencial: tiempo hasta el primer defecto detectado en una
+## linea de fabricacion de nanocables, para 3 tasas de defectos distintas
+x = np.linspace(0, 5, 300)
+lambdas = [0.5, 1.0, 1.5]
+
+plt.figure(figsize=(9, 5))
+for lam in lambdas:
+    plt.plot(x, expon.pdf(x, scale=1/lam), label=f"$\\lambda={lam}$")
+plt.title("PDF Exponencial para distintas tasas $\\lambda$")
+plt.xlabel("Tiempo hasta el evento")
+plt.ylabel("Densidad")
+plt.legend()
+plt.grid(alpha=0.3)
+plt.show()
+```
+
+**Aplicaciones**: (1) *Nanotecnología*: tiempo de vida útil del componente más simple en teoría de confiabilidad (caso límite $k=1$ de Weibull); tiempo entre fallos consecutivos de un nano-dispositivo bajo tasa de falla constante. (2) *IA*: tiempos entre llegadas en colas de procesamiento (p. ej., tiempo entre solicitudes a un servidor de inferencia), modelado clásico en teoría de colas. (3) *DOE*: modelar el tiempo hasta el primer defecto detectado en una línea de producción bajo tasa de defectos constante, para diseñar la frecuencia óptima de inspección.
+
+#### 2.12.6 Distribución Gamma — Profundización
+
+* **CDF**: $F(x) = \int_0^x f(t)\,dt$, sin forma cerrada; se evalúa numéricamente (`scipy.stats.gamma.cdf`).
+* **Interpretación**: generaliza la Exponencial al tiempo hasta el $k$-ésimo evento de un proceso Poisson — si $k$ etapas exponenciales independientes de la misma tasa se sostienen en secuencia, su suma sigue Gamma($k$, $\theta$). Para $k=1$ recupera la Exponencial.
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.stats import gamma
+
+## PDF Gamma: tiempo total de un proceso de crecimiento de nanocristales
+## en multiples etapas de nucleacion y crecimiento (k etapas, misma escala)
+x = np.linspace(0, 20, 300)
+formas = [(2, 1), (5, 1)]
+
+plt.figure(figsize=(9, 5))
+for k, theta in formas:
+    plt.plot(x, gamma.pdf(x, a=k, scale=theta), label=f"k={k}, $\\theta$={theta}")
+plt.title("PDF Gamma: efecto del parámetro de forma k")
+plt.xlabel("x")
+plt.ylabel("Densidad")
+plt.legend()
+plt.grid(alpha=0.3)
+plt.show()
+```
+
+**Aplicaciones**: (1) *Nanotecnología*: tiempo total de crecimiento de un nanocristal cuando el proceso involucra $k$ etapas secuenciales (nucleación, crecimiento capa por capa); acumulación de daño por radiación en un semiconductor hasta alcanzar un umbral de falla, donde $k$ representa el número de "golpes" necesarios. (2) *Ciencia de Materiales*: rugosidad superficial en deposición de películas delgadas, resultado de la acumulación de muchos depósitos aleatorios individuales. (3) *DOE*: modelar el tiempo de espera total de una muestra a través de $k$ estaciones de trabajo secuenciales con tiempos de procesamiento exponenciales, para optimizar el flujo de una línea de caracterización.
+
+#### 2.12.7 Distribución t-Student — Profundización
+
+* **CDF**: sin forma cerrada; se evalúa numéricamente (`scipy.stats.t.cdf`).
+* **Interpretación de $\nu$**: para $\nu$ pequeño la distribución tiene colas más pesadas que la Normal (mayor probabilidad de valores extremos, reflejando la incertidumbre extra de estimar $\sigma$ con pocos datos); a medida que $\nu\to\infty$ converge a la Normal estándar.
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.stats import t, norm
+
+## PDF t-Student: colas mas pesadas que la Normal cuando el tamano de
+## muestra (grados de libertad) es pequeno
+x = np.linspace(-5, 5, 400)
+grados_libertad = [1, 2, 5, 10]
+
+plt.figure(figsize=(9, 5))
+for nu in grados_libertad:
+    plt.plot(x, t.pdf(x, df=nu), label=f"$\\nu={nu}$")
+plt.plot(x, norm.pdf(x), "k--", label="Normal(0,1)")
+plt.title("PDF t-Student: convergencia a la Normal al aumentar los grados de libertad")
+plt.xlabel("x")
+plt.ylabel("Densidad")
+plt.legend()
+plt.grid(alpha=0.3)
+plt.show()
+```
+
+**Aplicaciones**: (1) *Nanotecnología*: estimar la media de una propiedad medida en un lote pequeño ($n<30$) de nanomateriales (p. ej., conductividad térmica de nanotubos de carbono) cuando la varianza poblacional real es desconocida — situación habitual en caracterización experimental de bajo volumen. (2) *DOE*: construir intervalos de confianza para la media de una variable de proceso cuando solo se dispone de una muestra piloto pequeña, antes de escalar el experimento. (3) *Ciencia de Materiales*: comparar la media de dos lotes pequeños de un mismo material sintetizado por rutas distintas, fundamento de la prueba $t$ de dos muestras.
+
+#### 2.12.8 Distribución F (Fisher-Snedecor) — Profundización
+
+* **CDF**: sin forma cerrada; se evalúa numéricamente (`scipy.stats.f.cdf`).
+* **Definición como cociente**: $F = \dfrac{\chi^2_{d_1}/d_1}{\chi^2_{d_2}/d_2}$ — el cociente de dos varianzas muestrales independientes normalizadas por sus grados de libertad. Si dos poblaciones tienen la misma varianza, $F$ debería estar cerca de 1.
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.stats import f
+
+## PDF F: comparacion de la dispersion del diametro de nanoparticulas
+## obtenidas por 2 rutas de sintesis distintas (sol-gel vs hidrotermal)
+x = np.linspace(0.01, 5, 400)
+pares_gl = [(2, 5), (5, 2), (10, 5)]
+
+plt.figure(figsize=(9, 5))
+for d1, d2 in pares_gl:
+    plt.plot(x, f.pdf(x, dfn=d1, dfd=d2), label=f"$d_1={d1}$, $d_2={d2}$")
+plt.title("PDF F: sensibilidad a los grados de libertad del numerador y denominador")
+plt.xlabel("x")
+plt.ylabel("Densidad")
+plt.legend()
+plt.grid(alpha=0.3)
+plt.show()
+```
+
+**Aplicaciones**: (1) *Nanotecnología / Ciencia de Materiales*: comparar la dispersión del diámetro de nanopartículas obtenidas por dos rutas de síntesis (sol-gel vs. hidrotermal) mediante el cociente de varianzas muestrales. (2) *DOE*: base estadística de las pruebas de igualdad de varianzas entre tratamientos y de la evaluación de bondad de ajuste en modelos de regresión, temas formales de unidades de inferencia. (3) *Confiabilidad*: verificar el supuesto de homocedasticidad entre lotes de producción antes de aplicar pruebas de comparación de medias.
+
+#### 2.12.9 Distribución Log-Normal — Profundización
+
+* **CDF**: $F(x) = \Phi\left(\dfrac{\ln x - \mu}{\sigma}\right)$ para $x>0$, donde $\Phi$ es la CDF Normal estándar.
+* **Origen multiplicativo**: si $X = e^Y$ con $Y\sim\mathcal{N}(\mu,\sigma^2)$, entonces $X$ es Log-Normal — modela variables que resultan de la *multiplicación* de muchos factores aleatorios independientes (crecimiento multiplicativo), a diferencia de la Normal que modela una *suma* de factores.
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.stats import lognorm
+
+## PDF Log-Normal: distribucion del diametro de nanoparticulas obtenidas
+## por nucleacion y crecimiento en fase liquida (proceso multiplicativo)
+x = np.linspace(0.01, 10, 400)
+parametros = [(0, 0.5), (1, 1.0)]
+
+plt.figure(figsize=(9, 5))
+for mu, sigma in parametros:
+    plt.plot(x, lognorm.pdf(x, s=sigma, scale=np.exp(mu)), label=f"$\\mu={mu}$, $\\sigma={sigma}$")
+plt.title("PDF Log-Normal: sesgo a la derecha por origen multiplicativo")
+plt.xlabel("x")
+plt.ylabel("Densidad")
+plt.legend()
+plt.grid(alpha=0.3)
+plt.show()
+```
+
+**Aplicaciones**: (1) *Nanotecnología*: modelo estándar para el diámetro de nanopartículas obtenidas por nucleación y crecimiento (metálicas, óxidos, poliméricas), y para tamaño de grano en materiales policristalinos. (2) *Confiabilidad*: tiempo de vida de recubrimientos o películas delgadas sujetos a degradación multiplicativa (crecimiento de grietas por fatiga), donde la tasa de falla aumenta con el tiempo. (3) *IA*: variables de latencia o tiempo de respuesta en sistemas computacionales, positivas y sesgadas a la derecha — se recomienda transformación logarítmica antes de aplicar métodos que asumen normalidad.
+
+#### 2.12.10 Distribución Beta — Profundización
+
+* **CDF**: $F(x) = \int_0^x f(t)\,dt$, sin forma cerrada; se evalúa numéricamente (`scipy.stats.beta.cdf`).
+* **Interpretación de $\alpha,\beta$**: si $\alpha>\beta$ la densidad se concentra cerca de 1 (sesgo a la derecha); si $\alpha<\beta$ se concentra cerca de 0 (sesgo a la izquierda); $\alpha=\beta=1$ recupera la Uniforme(0,1).
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.stats import beta
+
+## PDF Beta: rendimiento (yield) de funcionalizacion exitosa de
+## nanotubos de carbono en dos lotes de sintesis con calidad distinta
+x = np.linspace(0, 1, 300)
+parametros = [(2, 5), (5, 2)]
+
+plt.figure(figsize=(9, 5))
+for a, b in parametros:
+    plt.plot(x, beta.pdf(x, a=a, b=b), label=f"$\\alpha={a}$, $\\beta={b}$")
+plt.title("PDF Beta: sesgo segun la relación entre alpha y beta")
+plt.xlabel("Proporción (0 a 1)")
+plt.ylabel("Densidad")
+plt.legend()
+plt.grid(alpha=0.3)
+plt.show()
+```
+
+**Aplicaciones**: (1) *Nanotecnología*: rendimiento (yield) de funcionalización exitosa de nanotubos o nanocables en un lote de síntesis; pureza de un material tras un proceso de purificación, ambos naturalmente acotados en $[0,1]$. (2) *IA*: distribución conjugada a priori de la Binomial en inferencia bayesiana — usada en A/B testing (comparar tasas de conversión de dos algoritmos) y en el algoritmo Thompson Sampling para problemas de bandido multi-brazo. (3) *DOE*: modelar la incertidumbre sobre la fracción de área efectiva de poro en un filtro nanoporoso, tratando la porosidad como una probabilidad en vez de un valor fijo.
+
+#### 2.12.11 Distribución de Dirichlet — Profundización
+
+* **Interpretación geométrica**: genera vectores en el símplex $k$-dimensional (todas las combinaciones de $k$ proporciones no negativas que suman 1); es la generalización multivariada exacta de la Beta ($k=2$ recupera la Beta).
+* **Muestreo vía Gamma**: para simular $\mathbf{X}\sim\text{Dirichlet}(\boldsymbol{\alpha})$, se generan $k$ variables Gamma independientes $Y_i\sim\text{Gamma}(\alpha_i,1)$ y se normalizan: $X_i = Y_i/\sum_j Y_j$.
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+
+## Simulacion Dirichlet (via Gamma) de la composicion molar de una
+## aleacion nanoparticulada Au-Ag-Pt (k=3 componentes), dos regimenes
+np.random.seed(7)
+alphas = [(1, 1, 1), (5, 1, 1)]
+
+fig, axes = plt.subplots(1, 2, figsize=(11, 5))
+for ax, alpha in zip(axes, alphas):
+    gamma_samples = np.column_stack([
+        np.random.gamma(shape=a, scale=1, size=800) for a in alpha
+    ])
+    dirichlet_samples = gamma_samples / gamma_samples.sum(axis=1, keepdims=True)
+    ax.scatter(dirichlet_samples[:, 0], dirichlet_samples[:, 1], alpha=0.4, s=10)
+    ax.set_title(f"Dirichlet($\\alpha$={alpha})")
+    ax.set_xlabel("$x_1$ (fracción Au)")
+    ax.set_ylabel("$x_2$ (fracción Ag)")
+    ax.set_xlim(0, 1)
+    ax.set_ylim(0, 1)
+plt.tight_layout()
+plt.show()
+```
+
+**Aplicaciones**: (1) *Nanotecnología*: composición molar de una aleación nanoparticulada de $k$ elementos (p. ej., Au-Ag-Pt), donde las fracciones deben sumar 1 exactamente. (2) *IA*: distribución a priori conjugada de la Multinomial — corazón del modelo *Latent Dirichlet Allocation* (LDA) para modelado de temas en procesamiento de lenguaje natural, y de modelos de mezclas para *clustering* no paramétrico. (3) *DOE*: generación de datos sintéticos de proporciones (p. ej., composición de una mezcla de reactivos) que deben respetar la restricción de suma igual a 1.
+
 ---
 
 ## 3. Ejemplo Analítico Paso a Paso: Espesor de Películas Delgadas en Litografía Nanométrica
