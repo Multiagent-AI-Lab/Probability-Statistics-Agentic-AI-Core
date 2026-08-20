@@ -295,6 +295,35 @@ $$P(Y > -30) = P\left(Z > \frac{-30-(-40)}{6}\right) = P(Z > 1.667) \approx \box
 
 Aproximadamente el $4.78\%$ de las nanopartículas individuales caen en zona de riesgo de agregación por baja repulsión electrostática, información crítica para decidir si el lote requiere reformulación del agente estabilizante.
 
+### 5.6 Prueba Unitaria con pytest
+
+Antes de simular por Cholesky, se verifica que $\Sigma$ sea una matriz de covarianza válida (semidefinida positiva — de lo contrario `np.linalg.cholesky` fallaría al intentar factorizarla), además de contrastar la correlación y la probabilidad de zona de riesgo:
+
+```python
+import numpy as np
+import pytest
+from scipy.stats import norm
+
+Sigma = np.array([[16.0, -18.0], [-18.0, 36.0]])
+sigma_x, sigma_y = 4.0, 6.0
+
+
+def test_matriz_de_covarianza_es_semidefinida_positiva():
+    ## Requisito para que exista la descomposicion de Cholesky (Sigma = L L^T)
+    eigenvalores = np.linalg.eigvalsh(Sigma)
+    assert (eigenvalores >= 0).all()
+
+
+def test_coeficiente_de_correlacion_diametro_potencial_zeta():
+    rho = Sigma[0, 1] / (sigma_x * sigma_y)
+    assert rho == pytest.approx(-0.75)
+
+
+def test_probabilidad_de_zona_de_riesgo_de_agregacion():
+    prob_riesgo = 1 - norm.cdf(-30, loc=-40, scale=sigma_y)
+    assert prob_riesgo == pytest.approx(0.0478, rel=1e-2)
+```
+
 ---
 
 ## 6. Vectores Aleatorios, Matriz de Covarianza y Normal Multivariada

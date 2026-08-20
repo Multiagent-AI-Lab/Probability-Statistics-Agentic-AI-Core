@@ -132,6 +132,40 @@ $$\bar{x}_{\text{limpia}} = \frac{116.0}{9} \approx \boxed{12.89\ \text{nm}}$$
 
 Este valor coincide mucho más con la mediana original ($12.95\ \text{nm}$), confirmando que el diámetro característico real del lote de AuNPs sintetizadas es de aproximadamente $12.9\ \text{nm}$, no $15.65\ \text{nm}$.
 
+### 2.6 Paso 5: Prueba Unitaria con pytest
+
+Todo cálculo estadístico manual debe verificarse computacionalmente antes de reportarse — la misma disciplina de `pytest` que ya conoces de Lógica de Programación aplica aquí: en vez de solo confiar en la derivación a mano, se escribe una prueba que falla si el resultado numérico se aparta del valor esperado.
+
+```python
+import numpy as np
+import pytest
+
+diametros_nm = np.array([12.1, 13.4, 11.8, 14.2, 12.9, 13.0, 40.5, 12.5, 13.8, 12.3])
+
+
+def test_media_muestral_coincide_con_calculo_manual():
+    assert np.mean(diametros_nm) == pytest.approx(15.65, rel=1e-4)
+
+
+def test_desviacion_estandar_muestral_usa_correccion_de_bessel():
+    ## ddof=1 (denominador n-1) -- sin esto, pytest fallaria con s ~ 8.31 en vez de 8.76
+    assert np.std(diametros_nm, ddof=1) == pytest.approx(8.76, rel=1e-3)
+
+
+def test_valor_atipico_de_agregacion_se_detecta_por_criterio_iqr():
+    q1, q3 = np.percentile(diametros_nm, [25, 75])
+    limite_superior = q3 + 1.5 * (q3 - q1)
+    assert 40.5 > limite_superior
+
+
+def test_media_sin_el_atipico_se_acerca_a_la_mediana_original():
+    diametros_limpios = diametros_nm[diametros_nm != 40.5]
+    mediana_original = np.median(diametros_nm)
+    assert np.mean(diametros_limpios) == pytest.approx(mediana_original, abs=0.1)
+```
+
+`test_desviacion_estandar_muestral_usa_correccion_de_bessel` es la prueba más importante del bloque: si alguien olvida `ddof=1` (equivalente al denominador $n-1$ visto en el §1.2), NumPy calcula la desviación estándar **poblacional** por defecto ($\sigma$, denominador $n$) y la prueba falla — exactamente el error conceptual descrito en "Errores Comunes" al final de esta unidad.
+
 ---
 
 ## 3. Código de Verificación Simbólica (SymPy)

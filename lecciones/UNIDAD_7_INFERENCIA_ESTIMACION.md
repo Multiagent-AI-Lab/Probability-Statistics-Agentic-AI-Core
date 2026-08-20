@@ -673,6 +673,41 @@ $$\text{p-valor} = 2 \cdot P(Z < -2.55) = 2 \cdot 0.00539 \approx \boxed{0.0108}
 
 Como $0.0108 < 0.05$, el p-valor confirma la decisión de rechazo tomada con el valor crítico, reforzando que el lote debe someterse a revisión del proceso de síntesis antes de su liberación para recubrimientos antimicrobianos.
 
+### 2.6 Prueba Unitaria con pytest
+
+Se verifica que el estadístico $z_0$, el valor crítico $z_{0.025}$ y el p-valor coincidan con los calculados a mano, y que la regla de decisión (rechazar $H_0$ porque $z_0$ cae fuera de la región de no rechazo) sea la correcta:
+
+```python
+import pytest
+from scipy.stats import norm
+
+x_bar, mu_0, sigma, n = 48.3, 50, 4, 36
+alpha = 0.05
+
+
+def test_estadistico_z_de_prueba():
+    z0 = (x_bar - mu_0) / (sigma / n ** 0.5)
+    assert z0 == pytest.approx(-2.55, rel=1e-3)
+
+
+def test_valor_critico_bilateral_para_alpha_005():
+    z_critico = norm.ppf(1 - alpha / 2)
+    assert z_critico == pytest.approx(1.96, rel=1e-3)
+
+
+def test_se_rechaza_h0_porque_z0_cae_fuera_de_la_region_de_no_rechazo():
+    z0 = (x_bar - mu_0) / (sigma / n ** 0.5)
+    z_critico = norm.ppf(1 - alpha / 2)
+    assert abs(z0) > z_critico
+
+
+def test_p_valor_coincide_con_la_decision_de_rechazo():
+    z0 = (x_bar - mu_0) / (sigma / n ** 0.5)
+    p_valor = 2 * norm.cdf(z0)
+    assert p_valor == pytest.approx(0.0108, rel=1e-2)
+    assert p_valor < alpha
+```
+
 ---
 
 ## 3. Código de Verificación Simbólica (SymPy)

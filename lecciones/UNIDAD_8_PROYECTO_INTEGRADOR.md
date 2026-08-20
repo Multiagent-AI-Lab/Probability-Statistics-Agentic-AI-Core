@@ -107,6 +107,44 @@ Grados de libertad $\nu = 15 + 15 - 2 = 28$. Para $\alpha = 0.05$ (dos colas), e
 
 Puesto que $|t_{calc}| = 4.6212 > 2.0484$, **se rechaza la hipótesis nula $H_0$** con un $p$-valor de $p < 0.0001$.
 
+### 3.5 Prueba Unitaria con pytest
+
+Se verifica de punta a punta la prueba $t$ de dos muestras con varianza agrupada: la varianza agrupada, el estadístico $t_{calc}$, el valor crítico y la decisión final de rechazo:
+
+```python
+import pytest
+from scipy.stats import t
+
+n_a, n_b = 15, 15
+xbar_a, s_a = 24.5, 2.1
+xbar_b, s_b = 21.2, 1.8
+alpha = 0.05
+
+
+def test_varianza_agrupada():
+    sp2 = ((n_a - 1) * s_a**2 + (n_b - 1) * s_b**2) / (n_a + n_b - 2)
+    assert sp2 == pytest.approx(3.825, rel=1e-3)
+
+
+def test_estadistico_t_calculado():
+    sp2 = ((n_a - 1) * s_a**2 + (n_b - 1) * s_b**2) / (n_a + n_b - 2)
+    sp = sp2**0.5
+    se = sp * (1 / n_a + 1 / n_b) ** 0.5
+    t_calc = (xbar_a - xbar_b) / se
+    assert t_calc == pytest.approx(4.6212, rel=1e-3)
+
+
+def test_se_rechaza_h0_por_superar_el_valor_critico():
+    sp2 = ((n_a - 1) * s_a**2 + (n_b - 1) * s_b**2) / (n_a + n_b - 2)
+    sp = sp2**0.5
+    se = sp * (1 / n_a + 1 / n_b) ** 0.5
+    t_calc = (xbar_a - xbar_b) / se
+    gl = n_a + n_b - 2
+    t_critico = t.ppf(1 - alpha / 2, gl)
+    assert abs(t_calc) > t_critico
+    assert t_critico == pytest.approx(2.0484, rel=1e-3)
+```
+
 ---
 
 ## 4. Código de Verificación Simbólica (SymPy)

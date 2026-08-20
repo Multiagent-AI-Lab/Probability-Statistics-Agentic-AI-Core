@@ -481,6 +481,27 @@ Buscamos $z_{0.95}$ tal que $\Phi(z_{0.95}) = 0.95 \implies z_{0.95} \approx 1.6
 Desestandarizando:
 $$\boxed{x_{0.95} = \mu + z_{0.95} \cdot \sigma = 8.5 + (1.64485 \times 0.4) = 8.5 + 0.65794 = 9.1579\text{ nm}}$$
 
+### 3.5 Prueba Unitaria con pytest
+
+En vez de consultar tablas de la Normal estándar (con el redondeo que eso implica), se verifican los dos resultados directamente contra `scipy.stats.norm`, que evalúa $\Phi$ con precisión de punto flotante completa:
+
+```python
+import pytest
+from scipy.stats import norm
+
+mu, sigma = 8.5, 0.4
+
+
+def test_probabilidad_de_espesor_dentro_de_tolerancia():
+    prob = norm.cdf(9.1, mu, sigma) - norm.cdf(7.9, mu, sigma)
+    assert prob == pytest.approx(0.86638, rel=1e-4)
+
+
+def test_percentil_95_de_la_produccion():
+    x_95 = norm.ppf(0.95, mu, sigma)
+    assert x_95 == pytest.approx(9.1579, rel=1e-4)
+```
+
 ---
 
 ## 4. Código de Verificación Simbólica (SymPy)

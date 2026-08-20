@@ -111,6 +111,39 @@ $$\boxed{T = 12.0 \times 1.03297 \approx 12.3957 \text{ segundos}}$$
 ### 2.4 Paso 3: Cálculo del Valor Esperado Teórico $\mathbb{E}[T]$
 $$\mathbb{E}[T] = \lambda \cdot \Gamma\left(1 + \frac{1}{k}\right) = 12.0 \cdot \Gamma(1 + 0.6667) = 12.0 \cdot \Gamma(1.6667) \approx 12.0 \times 0.902746 \approx 10.833 \text{ s}$$
 
+### 2.5 Prueba Unitaria con pytest
+
+Antes de lanzar millones de trayectorias simuladas, se verifica la fórmula generadora de la transformada inversa contra un valor de $U$ conocido y contra la función de supervivencia de `scipy.stats.weibull_min` (deben ser funciones inversas entre sí):
+
+```python
+import pytest
+import numpy as np
+from scipy.stats import weibull_min
+from scipy.special import gamma
+
+lam, k = 12.0, 1.5
+
+
+def test_transformada_inversa_para_u_conocida():
+    U = 0.35
+    T = lam * (-np.log(U)) ** (1 / k)
+    assert T == pytest.approx(12.3953, rel=1e-4)
+
+
+def test_transformada_inversa_es_consistente_con_la_funcion_de_supervivencia():
+    ## La formula usa T = lambda*(-ln U)^(1/k), que invierte 1-F(t)=U (la
+    ## funcion de supervivencia), no F(t)=U directamente -- por eso se
+    ## contrasta contra .sf() y no contra .cdf().
+    U = 0.35
+    T = lam * (-np.log(U)) ** (1 / k)
+    assert weibull_min.sf(T, c=k, scale=lam) == pytest.approx(U, rel=1e-6)
+
+
+def test_esperanza_teorica_del_tiempo_de_transito():
+    esperanza = lam * gamma(1 + 1 / k)
+    assert esperanza == pytest.approx(10.833, rel=1e-3)
+```
+
 ---
 
 ## 3. Código de Verificación Simbólica (SymPy)
