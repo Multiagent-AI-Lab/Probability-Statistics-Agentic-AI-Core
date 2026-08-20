@@ -109,6 +109,221 @@ Generaliza la distribución Binomial a experimentos con más de dos resultados p
 * PMF: $P(X_1=k_1,\dots,X_k=k_k) = \dfrac{n!}{k_1!\,k_2!\cdots k_k!}\, p_1^{k_1} p_2^{k_2} \cdots p_k^{k_k}$, con $\sum_i k_i = n$.
 * Esperanza por componente: $\mathbb{E}[X_i] = np_i$, Desviación estándar: $\sigma_i = \sqrt{np_i(1-p_i)}$.
 
+### 2.9 Profundización: PMF Completa, CDF y Aplicaciones por Dominio
+
+Las subsecciones 2.1 a 2.8 dan la definición mínima de cada familia. Esta subsección profundiza las 8 distribuciones discretas del curso con su CDF explícita, código de comparación gráfica en `scipy.stats`, y ejemplos de uso concretos en **Nanotecnología**, **Inteligencia Artificial** y **Diseño de Experimentos (DOE)**.
+
+#### 2.9.1 Distribución Bernoulli — Profundización
+
+* **CDF**: $F(x) = 0$ si $x<0$; $F(x) = 1-p$ si $0\le x<1$; $F(x)=1$ si $x\ge 1$.
+* Caso especial de la Binomial con $n=1$: `scipy.stats.bernoulli` es un atajo de `binom(n=1, p)`.
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.stats import bernoulli
+
+## PMF de Bernoulli: probabilidad de que un nanosensor individual
+## detecte correctamente un analito en una sola prueba (p=0.7)
+p = 0.7
+dist = bernoulli(p)
+valores = [0, 1]
+probabilidades = dist.pmf(valores)
+
+plt.figure(figsize=(6, 4))
+plt.bar(valores, probabilidades, color=["lightcoral", "skyblue"], edgecolor="black")
+plt.xticks(valores, ["0 (fallo)", "1 (éxito)"])
+plt.title(f"PMF Bernoulli(p={p})")
+plt.ylabel("Probabilidad")
+plt.ylim(0, 1)
+plt.show()
+```
+
+**Aplicaciones**: (1) *Nanotecnología*: resultado binario de una sola prueba de control de calidad sobre un nanodispositivo (pasa/no pasa la especificación de espesor). (2) *IA*: unidad básica de clasificación binaria — la salida de una neurona con activación sigmoide seguida de umbral se modela como Bernoulli con $p$ igual a la probabilidad predicha. (3) *DOE*: resultado de un único ensayo experimental con dos desenlaces posibles (p. ej., una réplica de síntesis produce o no el polimorfo deseado).
+
+#### 2.9.2 Distribución Binomial — Profundización
+
+* **CDF**: $F(x) = P(X\le x) = \sum_{i=0}^{\lfloor x\rfloor} \binom{n}{i}p^i(1-p)^{n-i}$.
+* Suma de $n$ Bernoulli($p$) independientes: modela el conteo total de éxitos en un número fijo de ensayos idénticos.
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.stats import binom
+
+## PMF Binomial: numero de nanoparticulas defectuosas en un lote de
+## n=20 con probabilidad de defecto p=0.05 por particula
+n, p = 20, 0.05
+dist = binom(n, p)
+k = np.arange(0, n + 1)
+
+plt.figure(figsize=(8, 5))
+plt.bar(k, dist.pmf(k), color="steelblue", edgecolor="black")
+plt.title(f"PMF Binomial(n={n}, p={p})")
+plt.xlabel("Número de defectos (k)")
+plt.ylabel("Probabilidad")
+plt.show()
+```
+
+**Aplicaciones**: (1) *Nanotecnología*: número de nanopartículas defectuosas en un lote de tamaño fijo bajo una tasa de defecto constante por partícula — control de calidad de síntesis. (2) *IA*: número de predicciones correctas de un clasificador binario sobre un conjunto de prueba de tamaño fijo, bajo el supuesto de accuracy constante; fundamento del intervalo de confianza binomial para accuracy reportada. (3) *DOE*: número de réplicas exitosas de un experimento (p. ej., síntesis que alcanza la pureza objetivo) de un total de $n$ réplicas planeadas, para dimensionar el tamaño de muestra necesario.
+
+#### 2.9.3 Distribución de Poisson — Profundización
+
+* **CDF**: $F(x) = P(X\le x) = \sum_{i=0}^{\lfloor x\rfloor} \dfrac{\lambda^i e^{-\lambda}}{i!}$.
+* Límite de la Binomial cuando $n\to\infty$, $p\to 0$ con $np=\lambda$ constante — modela conteos raros en un intervalo continuo de tiempo o espacio.
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.stats import poisson
+
+## PMF Poisson: numero de fallas de un nano-dispositivo por cada
+## 1000 horas de operacion, con tasa promedio lambda=4
+lam = 4
+dist = poisson(lam)
+k = np.arange(0, 16)
+
+plt.figure(figsize=(8, 5))
+plt.bar(k, dist.pmf(k), color="darkorange", edgecolor="black")
+plt.title(f"PMF Poisson($\\lambda$={lam})")
+plt.xlabel("Número de eventos (k)")
+plt.ylabel("Probabilidad")
+plt.show()
+```
+
+**Aplicaciones**: (1) *Nanotecnología*: número de fallas de un nano-dispositivo por unidad de tiempo de operación, o número de defectos puntuales por unidad de área en una película delgada. (2) *IA*: número de solicitudes que llega a un servidor de inferencia por unidad de tiempo, modelo base para dimensionar la capacidad de un sistema de predicción en producción. (3) *DOE*: número de eventos raros observados en un experimento de conteo (p. ej., número de núcleos de cristalización espontánea por unidad de volumen), fundamento de las pruebas de bondad de ajuste para procesos de conteo.
+
+#### 2.9.4 Distribución Geométrica — Profundización
+
+* **CDF**: $F(x) = P(X\le x) = 1-(1-p)^{\lfloor x\rfloor}$.
+* Modela el número de ensayos Bernoulli($p$) independientes hasta (e incluyendo) el primer éxito; análogo discreto de la propiedad de falta de memoria de la Exponencial.
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.stats import geom
+
+## PMF Geometrica: numero de intentos de sintesis hasta obtener el
+## primer lote de nanoparticulas dentro de especificacion (p=0.3)
+p = 0.3
+dist = geom(p)
+k = np.arange(1, 15)
+
+plt.figure(figsize=(8, 5))
+plt.bar(k, dist.pmf(k), color="seagreen", edgecolor="black")
+plt.title(f"PMF Geométrica(p={p})")
+plt.xlabel("Número de ensayos hasta el primer éxito (k)")
+plt.ylabel("Probabilidad")
+plt.show()
+```
+
+**Aplicaciones**: (1) *Nanotecnología*: número de intentos de síntesis necesarios hasta obtener el primer lote de nanopartículas dentro de especificación, útil para estimar el costo esperado de un protocolo de bajo rendimiento. (2) *IA*: número de consultas a un modelo generativo hasta obtener la primera salida que pasa un filtro de calidad, relevante en técnicas de *rejection sampling*. (3) *DOE*: número de réplicas experimentales necesarias hasta observar el primer resultado exitoso, para planear el presupuesto de un experimento secuencial.
+
+#### 2.9.5 Distribución Binomial Negativa — Profundización
+
+* **CDF**: sin forma cerrada simple; se evalúa numéricamente (`scipy.stats.nbinom.cdf`).
+* Generaliza la Geométrica: modela el número de ensayos hasta obtener $r$ éxitos (no solo el primero). Para $r=1$ recupera la Geométrica.
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.stats import nbinom
+
+## PMF Binomial Negativa: numero de lotes de sintesis necesarios
+## hasta obtener r=5 lotes dentro de especificacion (p=0.4)
+r, p = 5, 0.4
+dist = nbinom(r, p)
+k = np.arange(0, 31)
+
+plt.figure(figsize=(8, 5))
+plt.bar(k, dist.pmf(k), color="mediumpurple", edgecolor="black")
+plt.title(f"PMF Binomial Negativa(r={r}, p={p})")
+plt.xlabel("Número de fallos antes del r-ésimo éxito (k)")
+plt.ylabel("Probabilidad")
+plt.show()
+```
+
+**Aplicaciones**: (1) *Nanotecnología*: número de lotes de síntesis necesarios hasta acumular $r$ lotes dentro de especificación, para planificar la producción de un número fijo de muestras válidas. (2) *IA*: modelado de conteos con sobre-dispersión (varianza mayor que la media) en datos de conteo del mundo real, donde la Poisson resulta demasiado restrictiva — común en modelos de recuento de eventos raros con heterogeneidad. (3) *DOE*: número de réplicas experimentales necesarias hasta acumular un número objetivo de resultados exitosos, extendiendo el caso geométrico a metas de más de un éxito.
+
+#### 2.9.6 Distribución Hipergeométrica — Profundización
+
+* **CDF**: $F(x) = \sum_{j=0}^{\lfloor x\rfloor} \dfrac{\binom{K}{j}\binom{N-K}{n-j}}{\binom{N}{n}}$.
+* A diferencia de la Binomial, modela muestreo **sin reemplazo** de una población finita — las probabilidades cambian con cada extracción.
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.stats import hypergeom
+
+## PMF Hipergeometrica: numero de nanoparticulas defectuosas al
+## extraer una muestra de n=15 de un lote finito N=50 con K=10 defectuosas
+N, K, n = 50, 10, 15
+dist = hypergeom(N, K, n)
+k = np.arange(0, min(K, n) + 1)
+
+plt.figure(figsize=(8, 5))
+plt.bar(k, dist.pmf(k), color="indianred", edgecolor="black")
+plt.title(f"PMF Hipergeométrica(N={N}, K={K}, n={n})")
+plt.xlabel("Número de defectuosas en la muestra (k)")
+plt.ylabel("Probabilidad")
+plt.show()
+```
+
+**Aplicaciones**: (1) *Nanotecnología*: número de nanopartículas defectuosas al extraer una muestra de inspección de un lote finito de producción, sin reponer las unidades muestreadas — el caso realista de control de calidad destructivo. (2) *IA*: muestreo de un conjunto de datos finito (p. ej., seleccionar un subconjunto de validación sin reemplazo de un dataset fijo), relevante para el diseño de validación cruzada. (3) *DOE*: número de muestras con una característica de interés (p. ej., un lote de materia prima defectuoso) al extraer una muestra de auditoría de un envío finito, sin reposición.
+
+#### 2.9.7 Distribución Uniforme Discreta — Profundización
+
+* **CDF**: $F(x) = \dfrac{\lfloor x\rfloor - a + 1}{k}$ para $a\le x\le b$, con $k=b-a+1$.
+* Todos los $k$ valores del rango $\{a,\dots,b\}$ son igualmente probables — es el generador discreto base para simulación por muestreo aleatorio simple.
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.stats import randint
+
+## PMF Uniforme Discreta: seleccion aleatoria de una posicion de
+## un chip de 6 sitios de reaccion en un ensayo de sintesis paralela
+a, b = 1, 6
+dist = randint(a, b + 1)
+valores = np.arange(a, b + 1)
+
+plt.figure(figsize=(7, 4))
+plt.bar(valores, dist.pmf(valores), color="gold", edgecolor="black")
+plt.title(f"PMF Uniforme Discreta en [{a}, {b}]")
+plt.xlabel("Valor (x)")
+plt.ylabel("Probabilidad")
+plt.show()
+```
+
+**Aplicaciones**: (1) *Nanotecnología*: selección aleatoria de un sitio de reacción entre $k$ posiciones equivalentes en un chip de síntesis paralela, cuando no hay razón física para preferir una posición sobre otra. (2) *IA*: asignación aleatoria uniforme de ejemplos a particiones de entrenamiento/validación cuando se desea que cada partición tenga igual probabilidad de recibir cualquier ejemplo. (3) *DOE*: aleatorización del orden de corrida de los tratamientos de un experimento (randomización), un requisito metodológico estándar para evitar sesgos por efectos temporales.
+
+#### 2.9.8 Distribución Multinomial — Profundización
+
+* Generaliza la Binomial a $k>2$ categorías; no tiene una CDF cerrada de uso práctico — se trabaja directamente con la PMF conjunta o vía simulación.
+* Cada componente marginal $X_i$ es por sí sola Binomial($n$, $p_i$), pero las componentes no son independientes entre sí (están ligadas por $\sum_i X_i = n$).
+
+```python
+import numpy as np
+from scipy.stats import multinomial
+
+## PMF Multinomial: clasificacion de n=20 nanoparticulas en 3
+## categorias de tamano (pequena, mediana, grande) segun el proceso
+n = 20
+probabilidades = [0.2, 0.5, 0.3]
+dist = multinomial(n, probabilidades)
+
+## Probabilidad de obtener exactamente 4 pequenas, 10 medianas, 6 grandes
+conteo_observado = [4, 10, 6]
+prob = dist.pmf(conteo_observado)
+print(f"P(4 pequeñas, 10 medianas, 6 grandes) = {prob:.4f}")
+
+## Esperanza por categoria: E[X_i] = n * p_i
+esperanza = n * np.array(probabilidades)
+print(f"Esperanza por categoría: {esperanza}")
+```
+
+**Aplicaciones**: (1) *Nanotecnología*: clasificación de un lote de $n$ nanopartículas en $k$ categorías de tamaño (pequeña/mediana/grande) según las probabilidades conocidas de un proceso de síntesis sol-gel. (2) *IA*: distribución de probabilidad de salida de un clasificador multiclase (capa *softmax*) sobre $k$ categorías — la Multinomial es la distribución muestral subyacente a los conteos de predicciones correctas por clase. (3) *DOE*: resultado de un experimento con más de dos desenlaces categóricos posibles por unidad experimental (p. ej., clasificar cada muestra en "aprobada", "reprocesable" o "rechazada"), base de las pruebas de bondad de ajuste $\chi^2$ sobre datos categóricos.
+
 ---
 
 ## 3. Ejemplo Analítico Paso a Paso: Inspección Nanotecnológica de Micro-sensores
