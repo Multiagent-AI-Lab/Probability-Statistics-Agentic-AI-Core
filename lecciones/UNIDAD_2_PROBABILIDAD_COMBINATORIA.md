@@ -170,7 +170,10 @@ $$\boxed{P(R_3|D) = \frac{P(D|R_3)P(R_3)}{P(D)} = \frac{0.08 \times 0.20}{0.0410
 Antes de reportar $P(R_3|D)\approx 0.39$ como resultado final, se verifica computacionalmente cada paso de la derivación — la partición de probabilidades a priori, la probabilidad total y el propio Teorema de Bayes — para blindar el cálculo contra errores de álgebra o de redondeo manual:
 
 ```python
+import ipytest
 import pytest
+
+ipytest.autoconfig()
 
 p_r1, p_r2, p_r3 = 0.45, 0.35, 0.20
 p_d_dado_r1, p_d_dado_r2, p_d_dado_r3 = 0.04, 0.02, 0.08
@@ -197,6 +200,9 @@ def test_posterior_de_r3_es_mayor_que_su_prior_por_su_alta_tasa_de_defecto():
     p_d = p_d_dado_r1 * p_r1 + p_d_dado_r2 * p_r2 + p_d_dado_r3 * p_r3
     p_r3_dado_d = (p_d_dado_r3 * p_r3) / p_d
     assert p_r3_dado_d > p_r3
+
+
+ipytest.run("-vv")
 ```
 
 ---

@@ -678,8 +678,11 @@ Como $0.0108 < 0.05$, el p-valor confirma la decisión de rechazo tomada con el 
 Se verifica que el estadístico $z_0$, el valor crítico $z_{0.025}$ y el p-valor coincidan con los calculados a mano, y que la regla de decisión (rechazar $H_0$ porque $z_0$ cae fuera de la región de no rechazo) sea la correcta:
 
 ```python
+import ipytest
 import pytest
 from scipy.stats import norm
+
+ipytest.autoconfig()
 
 x_bar, mu_0, sigma, n = 48.3, 50, 4, 36
 alpha = 0.05
@@ -706,6 +709,9 @@ def test_p_valor_coincide_con_la_decision_de_rechazo():
     p_valor = 2 * norm.cdf(z0)
     assert p_valor == pytest.approx(0.0108, rel=1e-2)
     assert p_valor < alpha
+
+
+ipytest.run("-vv")
 ```
 
 ---

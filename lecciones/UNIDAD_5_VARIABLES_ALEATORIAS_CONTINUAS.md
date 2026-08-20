@@ -486,8 +486,11 @@ $$\boxed{x_{0.95} = \mu + z_{0.95} \cdot \sigma = 8.5 + (1.64485 \times 0.4) = 8
 En vez de consultar tablas de la Normal estándar (con el redondeo que eso implica), se verifican los dos resultados directamente contra `scipy.stats.norm`, que evalúa $\Phi$ con precisión de punto flotante completa:
 
 ```python
+import ipytest
 import pytest
 from scipy.stats import norm
+
+ipytest.autoconfig()
 
 mu, sigma = 8.5, 0.4
 
@@ -500,6 +503,9 @@ def test_probabilidad_de_espesor_dentro_de_tolerancia():
 def test_percentil_95_de_la_produccion():
     x_95 = norm.ppf(0.95, mu, sigma)
     assert x_95 == pytest.approx(9.1579, rel=1e-4)
+
+
+ipytest.run("-vv")
 ```
 
 ---

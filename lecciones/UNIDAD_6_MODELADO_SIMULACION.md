@@ -116,10 +116,13 @@ $$\mathbb{E}[T] = \lambda \cdot \Gamma\left(1 + \frac{1}{k}\right) = 12.0 \cdot 
 Antes de lanzar millones de trayectorias simuladas, se verifica la fórmula generadora de la transformada inversa contra un valor de $U$ conocido y contra la función de supervivencia de `scipy.stats.weibull_min` (deben ser funciones inversas entre sí):
 
 ```python
+import ipytest
 import pytest
 import numpy as np
 from scipy.stats import weibull_min
 from scipy.special import gamma
+
+ipytest.autoconfig()
 
 lam, k = 12.0, 1.5
 
@@ -142,6 +145,9 @@ def test_transformada_inversa_es_consistente_con_la_funcion_de_supervivencia():
 def test_esperanza_teorica_del_tiempo_de_transito():
     esperanza = lam * gamma(1 + 1 / k)
     assert esperanza == pytest.approx(10.833, rel=1e-3)
+
+
+ipytest.run("-vv")
 ```
 
 ---
