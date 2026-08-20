@@ -738,6 +738,37 @@ Escribe tu solución en una celda de código nueva en tu notebook. La celda de a
 * Bruce, P., Bruce, A. & Gedeck, P. (2020). *Practical Statistics for Data Scientists: 50+ Essential Concepts Using R and Python* (2nd ed.). O'Reilly Media. Capítulos sobre estadística descriptiva y exploración de datos.
 * Virtanen, P. et al. (2020). SciPy 1.0: Fundamental Algorithms for Scientific Computing in Python. *Nature Methods*, 17, 261-272. Documentación: [docs.scipy.org/doc/scipy/reference/stats.html](https://docs.scipy.org/doc/scipy/reference/stats.html)
 
+## Herramientas de esta Unidad
+
+**StatsTutorAgent** — resuelve tus dudas conceptuales sobre estadística descriptiva citando el contenido exacto de esta unidad, y te hace una pregunta socrática si detecta un error conceptual común (p. ej. confundir varianza muestral con poblacional) en vez de darte la respuesta directa:
+
+```python
+import os
+import sys
+from pathlib import Path
+
+if 'google.colab' in sys.modules:
+    from google.colab import userdata
+    for nombre_secreto in ("GEMINI_API_KEY", "GOOGLE_API_KEY"):
+        try:
+            os.environ["GEMINI_API_KEY"] = userdata.get(nombre_secreto)
+            break
+        except Exception:
+            continue
+    else:
+        print(
+            "⚠️ No se encontró el secreto GEMINI_API_KEY ni GOOGLE_API_KEY en Colab. "
+            "Créalo en el ícono de llave 🔑 de la barra lateral izquierda."
+        )
+
+from src.multiagent_core.stats_tutor_agent import StatsTutorAgent
+
+tutor = StatsTutorAgent(course_dir=Path("lecciones"))
+print(tutor.ask("¿por qué la desviación estándar muestral usa n-1 en vez de n?"))
+```
+
+No requiere configuración adicional más allá de tu `GEMINI_API_KEY` (créala en [aistudio.google.com/apikey](https://aistudio.google.com/apikey) y agrégala como secreto de Colab o variable de entorno local).
+
 ## Autoevaluación
 
 Guarda tu solución al Ejercicio Propuesto en un archivo separado y evalúala contra el pipeline de auditoría del curso:
