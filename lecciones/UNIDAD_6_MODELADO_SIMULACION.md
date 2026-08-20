@@ -252,16 +252,16 @@ plt.show()
 
 ---
 
-## 10. Módulo de Simulación: Método de la Transformada Inversa y Aceptación-Rechazo
+## 6. Módulo de Simulación: Método de la Transformada Inversa y Aceptación-Rechazo
 
-### 10.1 Algoritmo General de la Transformada Inversa
+### 6.1 Algoritmo General de la Transformada Inversa
 Dada una variable aleatoria continua $X$ con CDF $F(x)$:
 1. Generar $U \sim \text{Uniforme}(0, 1)$.
 2. Calcular $X = F^{-1}(U)$.
 
-### 10.2 Simulación de la Distribución de Weibull para Resistencia de Fibras de Carbono
+### 6.2 Simulación de la Distribución de Weibull para Resistencia de Fibras de Carbono
 
-Encapsulamos el algoritmo general de §10.1 en una función reutilizable — cualquier distribución cuya CDF inversa $F^{-1}(u)$ tenga forma cerrada puede simularse llamándola con la función correspondiente:
+Encapsulamos el algoritmo general de §6.1 en una función reutilizable — cualquier distribución cuya CDF inversa $F^{-1}(u)$ tenga forma cerrada puede simularse llamándola con la función correspondiente:
 
 ```python
 import numpy as np
@@ -270,7 +270,7 @@ import matplotlib.pyplot as plt
 
 
 def simular_transformada_inversa(cdf_inversa, n_muestras, semilla):
-    """Aplica el algoritmo general de la Transformada Inversa (§10.1):
+    """Aplica el algoritmo general de la Transformada Inversa (§6.1):
     genera U ~ Uniforme(0,1) y devuelve X = cdf_inversa(U)."""
     np.random.seed(semilla)
     u_vals = np.random.uniform(0, 1, n_muestras)

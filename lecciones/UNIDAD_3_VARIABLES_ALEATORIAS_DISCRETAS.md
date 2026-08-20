@@ -509,14 +509,14 @@ print(f"Número esperado por categoría: {esperanza}")
 
 ---
 
-## 10. Módulo de Simulación: Algoritmo de Generación Estocástica de Variables Discretas
+## 7. Módulo de Simulación: Algoritmo de Generación Estocástica de Variables Discretas
 
-### 10.1 Algoritmo General de Inversión por Suma Acumulada
+### 7.1 Algoritmo General de Inversión por Suma Acumulada
 Dada una variable aleatoria discreta $X$ con PMF $P(X = x_k) = p_k$:
 1. Generar $U \sim \text{Uniforme}(0, 1)$.
 2. Seleccionar el menor índice $k$ tal que $\sum_{j=1}^k p_j \ge U$.
 
-### 10.2 Simulación Estocástica en Python de Fallas Poisson
+### 7.2 Simulación Estocástica en Python de Fallas Poisson
 ```python
 import numpy as np
 import scipy.stats as stats
@@ -532,7 +532,7 @@ print(f"Varianza Muestral Simulada:             {np.var(muestras_poisson):.4f} |
 
 ---
 
-## 11. Referencia Avanzada (Opcional)
+## 8. Referencia Avanzada (Opcional)
 
 Este curso (tercer semestre) trata a las variables aleatorias discretas con herramientas de cálculo elemental. Para quien desee profundizar hacia un tratamiento formal medida-teórico (variables aleatorias como funciones medibles, espacios de probabilidad abstractos), el curso de posgrado **MIT 6.436J — Fundamentals of Probability** (Prof. Yury Polyanskiy) cubre este mismo tema en sus *Lecture Notes* 4–6, con los prerrequisitos de análisis real y teoría de la medida que ese enfoque exige: [ocw.mit.edu/courses/6-436j-fundamentals-of-probability-fall-2018/pages/lecture-notes](https://ocw.mit.edu/courses/6-436j-fundamentals-of-probability-fall-2018/pages/lecture-notes/).
 
