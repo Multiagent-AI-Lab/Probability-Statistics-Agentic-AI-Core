@@ -10,6 +10,10 @@ import requests
 
 logger = logging.getLogger(__name__)
 
+# Excluye espacios del sufijo del DOI -- un DOI real con paréntesis o espacio
+# en el sufijo (raro, pero existen en algunos DOIs de libros) no matchearía
+# y el texto se trataría como "sin DOI" (degrada a validación por palabra
+# clave, sin lanzar error). No se ha visto este caso en el curso.
 _DOI_PATTERN = re.compile(r"DOI:\s*\[(10\.\d{4,9}/[^\]\s?#]{1,300})\]", re.IGNORECASE)
 _REFERENCE_KEYWORDS = ("walpole", "montgomery", "scipy", "mit", "meta-analysis")
 CROSSREF_API_BASE = "https://api.crossref.org/works"
@@ -52,7 +56,10 @@ class LibrarianAgent:
 
         Si el texto no cita ningún DOI, se aprueba con la sola presencia de
         una palabra clave (no se llama a Crossref sin necesidad). Si cita
-        DOIs, cada uno debe resolver para que el reporte pase.
+        DOIs, cada uno debe resolver para que el reporte pase -- una palabra
+        clave presente no compensa un DOI roto, porque citar un DOI que no
+        existe es una afirmación bibliográfica más fuerte y verificable que
+        solo mencionar un autor de referencia.
         """
         text_lower = text.lower()
         has_keyword = any(kw in text_lower for kw in _REFERENCE_KEYWORDS)
