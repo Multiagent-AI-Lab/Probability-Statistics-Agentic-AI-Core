@@ -17,6 +17,7 @@ from pathlib import Path
 from typing import Optional
 
 import chromadb
+import requests
 from chromadb.utils.embedding_functions import SentenceTransformerEmbeddingFunction
 from dotenv import load_dotenv
 from google import genai
@@ -40,6 +41,9 @@ DEFAULT_MEMORY_FILENAME = ".tutor_memory.json"
 MAX_EPISODIOS = 50
 PREFIJO_LONGITUD = 5
 EMBEDDING_MODEL_NAME = "paraphrase-multilingual-MiniLM-L12-v2"
+_DOI_PATTERN = re.compile(r"DOI:\s*\[(10\.\d{4,9}/[^\]\s?#]+)\]", re.IGNORECASE)
+CROSSREF_API_BASE = "https://api.crossref.org/works"
+CROSSREF_TIMEOUT_SECONDS = 10
 
 _SOCRATIC_RULES: dict[str, str] = {
     "p-valor": (
@@ -127,13 +131,67 @@ class StatsTutorAgent:
     def _split_into_sections(self, content: str) -> list[str]:
         return [s.strip() for s in re.split(r"\n(?=##?\s)", content) if s.strip()]
 
+    def _extract_dois(self, content: str) -> list[str]:
+        """Extrae los identificadores DOI citados en el texto de una lección.
+
+        Extrae del texto del link Markdown (`[10.xxxx/yyyy]`), no de la URL —
+        algunos DOI reales contienen paréntesis en su propio identificador,
+        lo que rompería un regex que delimite por ')' en la URL.
+
+        Args:
+            content: Texto completo de un archivo Markdown de lección.
+
+        Returns:
+            Lista de DOI únicos, en el orden en que aparecen en el texto.
+        """
+        return list(dict.fromkeys(_DOI_PATTERN.findall(content)))
+
+    def _fetch_abstract(self, doi: str) -> Optional[str]:
+        """Consulta el abstract público de un DOI vía la API de Crossref.
+
+        La API de Crossref es gratuita, no requiere API key, y expone el
+        abstract de un registro incluso cuando el texto completo del paper
+        está detrás de un paywall.
+
+        Args:
+            doi: Identificador DOI a consultar.
+
+        Returns:
+            Texto plano del abstract (markup JATS removido), o None si la
+            consulta falla o el registro no tiene abstract.
+        """
+        try:
+            response = requests.get(
+                f"{CROSSREF_API_BASE}/{doi}",
+                timeout=CROSSREF_TIMEOUT_SECONDS,
+                allow_redirects=False,
+            )
+            response.raise_for_status()
+            abstract_jats = response.json()["message"].get("abstract")
+            if not abstract_jats:
+                logger.info("DOI %s no tiene abstract disponible en Crossref.", doi)
+                return None
+            return re.sub(r"<[^>]+>", "", abstract_jats).strip()
+        except (requests.RequestException, KeyError, ValueError, AttributeError) as e:
+            logger.warning("No se pudo obtener el abstract de DOI %s: %s", doi, e)
+            return None
+
     def _build_index(self) -> None:
+        """Indexa los MDs del curso y los abstracts de sus DOI citados en
+        ChromaDB, si aún no lo están.
+
+        Cada DOI citado (en cualquier archivo) se consulta una sola vez vía
+        Crossref y se indexa como un documento adicional — si el mismo DOI
+        aparece en varios archivos, se indexa un solo documento con todas
+        las fuentes listadas en su metadata.
+        """
         if self.collection.count() > 0:
             return
 
         documents: list[str] = []
         metadatas: list[dict] = []
         ids: list[str] = []
+        doi_a_archivos: dict[str, list[str]] = {}
 
         for filepath in self._get_markdown_files():
             try:
@@ -148,6 +206,22 @@ class StatsTutorAgent:
                 documents.append(section)
                 metadatas.append({"source": filepath.name, "section": title})
                 ids.append(f"{filepath.stem}__{idx}")
+
+            for doi in self._extract_dois(content):
+                doi_a_archivos.setdefault(doi, []).append(filepath.name)
+
+        for doi, archivos in doi_a_archivos.items():
+            abstract = self._fetch_abstract(doi)
+            if abstract is None:
+                continue
+            documents.append(abstract)
+            metadatas.append(
+                {
+                    "source": ", ".join(archivos),
+                    "section": f"Referencia DOI: {doi}",
+                }
+            )
+            ids.append(f"doi_{doi.replace('/', '_')}")
 
         if documents:
             self.collection.add(documents=documents, metadatas=metadatas, ids=ids)
