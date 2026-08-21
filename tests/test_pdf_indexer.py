@@ -81,3 +81,25 @@ def test_index_pdf_incluye_source_con_nombre_de_archivo(tmp_path: Path):
 
     # PDF en blanco -> sin texto -> sin chunks, pero no debe fallar.
     assert resultado == []
+
+
+def test_chunk_page_text_corte_fijo_cuando_oracion_excede_max_chars():
+    """Ejercita la rama de corte fijo por caracteres: una oración individual
+    sin puntos internos que excede max_chars se divide en bloques de tamaño
+    fijo (último recurso del _dividir_texto_largo)."""
+    # Texto sin ". " internos, más largo que max_chars (600 caracteres)
+    texto_largo = "Una palabra muy larga " * 50  # ~1150 caracteres sin puntos internos
+    max_chars = 600
+
+    chunks = chunk_page_text(texto_largo, page_number=1, max_chars=max_chars)
+
+    # Debe generar al menos 2 chunks por el corte fijo
+    assert len(chunks) >= 2
+    # Ningún chunk debe exceder max_chars
+    assert all(len(c["text"]) <= max_chars for c in chunks)
+    # Verificar que cada chunk tiene la estructura correcta
+    assert all(c["page"] == 1 for c in chunks)
+    # La suma de todos los chunks debe ser >= texto original
+    # (puede tener espacios/puntos extras del procesamiento)
+    texto_reconstructido = "".join(c["text"] for c in chunks)
+    assert len(texto_reconstructido) >= len(texto_largo) - 10  # tolerancia mínima
