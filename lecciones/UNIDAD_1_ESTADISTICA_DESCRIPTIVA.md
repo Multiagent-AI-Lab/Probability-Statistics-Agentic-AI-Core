@@ -776,7 +776,7 @@ Escribe tu solución en una celda de código nueva en tu notebook. La celda de a
 ## Referencias
 
 * Bruce, P., Bruce, A. & Gedeck, P. (2020). *Practical Statistics for Data Scientists: 50+ Essential Concepts Using R and Python* (2nd ed.). O'Reilly Media. Capítulos sobre estadística descriptiva y exploración de datos.
-* Dong, J., Carpinone, P. L., Pyrgiotakis, G., Demokritou, P. & Moudgil, B. M. (2020). Synthesis of Precision Gold Nanoparticles Using Turkevich Method. *KONA Powder and Particle Journal*, 37, 224-232. https://doi.org/10.14356/kona.2020011 — caracterización estadística del diámetro y dispersión de tamaño de AuNPs sintetizadas por el método de Turkevich, el mismo protocolo del ejemplo aplicado de esta unidad.
+* Dong, J., Carpinone, P. L., Pyrgiotakis, G., Demokritou, P. & Moudgil, B. M. (2020). Synthesis of Precision Gold Nanoparticles Using Turkevich Method. *KONA Powder and Particle Journal*, 37, 224-232. DOI: [10.14356/kona.2020011](https://doi.org/10.14356/kona.2020011) — caracterización estadística del diámetro y dispersión de tamaño de AuNPs sintetizadas por el método de Turkevich, el mismo protocolo del ejemplo aplicado de esta unidad.
 * Virtanen, P. et al. (2020). SciPy 1.0: Fundamental Algorithms for Scientific Computing in Python. *Nature Methods*, 17, 261-272. Documentación: [docs.scipy.org/doc/scipy/reference/stats.html](https://docs.scipy.org/doc/scipy/reference/stats.html)
 
 ## Herramientas de esta Unidad

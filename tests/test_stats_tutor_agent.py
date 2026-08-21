@@ -5,6 +5,7 @@ from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import pytest
+import requests
 
 from src.multiagent_core.stats_tutor_agent import StatsTutorAgent
 
@@ -116,3 +117,263 @@ def test_add_episode_y_retrieve_relevant_episodes(course_dir: Path, tmp_path: Pa
         "¿Cómo se calcula la desviación estándar?"
     )
     assert len(relevantes) == 1
+
+
+class TestExtractDois:
+    def test_extrae_un_doi_simple(self, course_dir: Path, tmp_path: Path):
+        tutor = StatsTutorAgent(
+            course_dir, chroma_path=tmp_path / "chroma", memory_path=tmp_path / "m.json"
+        )
+        texto = (
+            "Dong, J. et al. (2020). *KONA Powder and Particle Journal*, 37, 224. "
+            "DOI: [10.14356/kona.2020011](https://doi.org/10.14356/kona.2020011)."
+        )
+        assert tutor._extract_dois(texto) == ["10.14356/kona.2020011"]
+
+    def test_extrae_doi_con_parentesis_internos(self, course_dir: Path, tmp_path: Path):
+        """Regresión: algunos DOI reales contienen paréntesis en su propio
+        identificador. Un regex que delimite por ')' en la URL trunca este
+        DOI incorrectamente."""
+        tutor = StatsTutorAgent(
+            course_dir, chroma_path=tmp_path / "chroma", memory_path=tmp_path / "m.json"
+        )
+        texto = (
+            "Van Hardeveld, R., & Hartog, F. (1969). *Surface Science*, 15(2), 189. "
+            "DOI: [10.1016/0039-6028(69)90148-4](https://doi.org/10.1016/0039-6028(69)90148-4)."
+        )
+        assert tutor._extract_dois(texto) == ["10.1016/0039-6028(69)90148-4"]
+
+    def test_deduplica_doi_repetido_en_el_mismo_texto(
+        self, course_dir: Path, tmp_path: Path
+    ):
+        tutor = StatsTutorAgent(
+            course_dir, chroma_path=tmp_path / "chroma", memory_path=tmp_path / "m.json"
+        )
+        texto = (
+            "Primera mención. DOI: [10.1039/d2na00809b](https://doi.org/10.1039/d2na00809b). "
+            "Segunda mención del mismo. DOI: [10.1039/d2na00809b](https://doi.org/10.1039/d2na00809b)."
+        )
+        assert tutor._extract_dois(texto) == ["10.1039/d2na00809b"]
+
+    def test_texto_sin_doi_retorna_lista_vacia(self, course_dir: Path, tmp_path: Path):
+        tutor = StatsTutorAgent(
+            course_dir, chroma_path=tmp_path / "chroma", memory_path=tmp_path / "m.json"
+        )
+        assert tutor._extract_dois("Texto sin ninguna cita bibliográfica.") == []
+
+    def test_texto_con_link_doi_invalido_no_extrae_nada(
+        self, course_dir: Path, tmp_path: Path
+    ):
+        tutor = StatsTutorAgent(
+            course_dir, chroma_path=tmp_path / "chroma", memory_path=tmp_path / "m.json"
+        )
+        texto = (
+            "Ver el trabajo de Vollath. DOI: [ver Vollath 2018](https://example.com)."
+        )
+        assert tutor._extract_dois(texto) == []
+
+
+class TestFetchAbstract:
+    def test_retorna_abstract_limpio_de_markup_jats(
+        self, course_dir: Path, tmp_path: Path
+    ):
+        tutor = StatsTutorAgent(
+            course_dir, chroma_path=tmp_path / "chroma", memory_path=tmp_path / "m.json"
+        )
+        mock_response = MagicMock()
+        mock_response.json.return_value = {
+            "message": {"abstract": "<jats:p>Texto del abstract con markup.</jats:p>"}
+        }
+        mock_response.raise_for_status.return_value = None
+
+        with patch(
+            "src.multiagent_core.stats_tutor_agent.requests.get",
+            return_value=mock_response,
+        ):
+            resultado = tutor._fetch_abstract("10.14356/kona.2020011")
+
+        assert resultado == "Texto del abstract con markup."
+
+    def test_retorna_none_si_falla_la_peticion_de_red(
+        self, course_dir: Path, tmp_path: Path
+    ):
+        tutor = StatsTutorAgent(
+            course_dir, chroma_path=tmp_path / "chroma", memory_path=tmp_path / "m.json"
+        )
+
+        with patch(
+            "src.multiagent_core.stats_tutor_agent.requests.get",
+            side_effect=requests.exceptions.Timeout("timeout simulado"),
+        ):
+            resultado = tutor._fetch_abstract("10.9999/doi-inexistente")
+
+        assert resultado is None
+
+    def test_retorna_none_si_el_registro_no_tiene_abstract(
+        self, course_dir: Path, tmp_path: Path
+    ):
+        tutor = StatsTutorAgent(
+            course_dir, chroma_path=tmp_path / "chroma", memory_path=tmp_path / "m.json"
+        )
+        mock_response = MagicMock()
+        mock_response.json.return_value = {"message": {}}
+        mock_response.raise_for_status.return_value = None
+
+        with patch(
+            "src.multiagent_core.stats_tutor_agent.requests.get",
+            return_value=mock_response,
+        ):
+            resultado = tutor._fetch_abstract("10.1234/sin-abstract")
+
+        assert resultado is None
+
+    def test_retorna_none_si_status_code_es_error(
+        self, course_dir: Path, tmp_path: Path
+    ):
+        tutor = StatsTutorAgent(
+            course_dir, chroma_path=tmp_path / "chroma", memory_path=tmp_path / "m.json"
+        )
+        mock_response = MagicMock()
+        mock_response.raise_for_status.side_effect = requests.exceptions.HTTPError(
+            "404"
+        )
+
+        with patch(
+            "src.multiagent_core.stats_tutor_agent.requests.get",
+            return_value=mock_response,
+        ):
+            resultado = tutor._fetch_abstract("10.0000/no-existe")
+
+        assert resultado is None
+
+
+class TestBuildIndexConDois:
+    @pytest.fixture
+    def course_dir_con_doi(self, tmp_path: Path) -> Path:
+        (tmp_path / "UNIDAD_TEST.md").write_text(
+            "# Unidad de prueba\n\n"
+            "## Sección con cita\n\n"
+            "Un dato real respaldado por literatura. "
+            "DOI: [10.14356/kona.2020011](https://doi.org/10.14356/kona.2020011).\n",
+            encoding="utf-8",
+        )
+        return tmp_path
+
+    @pytest.fixture
+    def course_dir_con_doi_repetido(self, tmp_path: Path) -> Path:
+        (tmp_path / "UNIDAD_A_TEST.md").write_text(
+            "# Unidad A\n\n## Sección A\n\n"
+            "DOI: [10.1039/D0MA00439A](https://doi.org/10.1039/D0MA00439A).\n",
+            encoding="utf-8",
+        )
+        (tmp_path / "UNIDAD_B_TEST.md").write_text(
+            "# Unidad B\n\n## Sección B\n\n"
+            "DOI: [10.1039/D0MA00439A](https://doi.org/10.1039/D0MA00439A).\n",
+            encoding="utf-8",
+        )
+        return tmp_path
+
+    def test_abstract_se_indexa_con_metadata_de_referencia_doi(
+        self, course_dir_con_doi: Path, tmp_path: Path
+    ):
+        mock_response = MagicMock()
+        mock_response.json.return_value = {
+            "message": {"abstract": "Abstract de prueba sobre nanopartículas de oro."}
+        }
+        mock_response.raise_for_status.return_value = None
+
+        with patch(
+            "src.multiagent_core.stats_tutor_agent.requests.get",
+            return_value=mock_response,
+        ):
+            tutor = StatsTutorAgent(
+                course_dir=course_dir_con_doi,
+                chroma_path=tmp_path / "chroma",
+                memory_path=tmp_path / "m.json",
+            )
+
+        resultado = tutor._search_local_docs("nanopartículas de oro")
+        assert "Referencia DOI: 10.14356/kona.2020011" in resultado
+        assert "Abstract de prueba sobre nanopartículas de oro" in resultado
+
+    def test_doi_que_falla_no_impide_indexar_el_resto_del_archivo(
+        self, course_dir_con_doi: Path, tmp_path: Path
+    ):
+        with patch(
+            "src.multiagent_core.stats_tutor_agent.requests.get",
+            side_effect=requests.exceptions.Timeout("timeout simulado"),
+        ):
+            tutor = StatsTutorAgent(
+                course_dir=course_dir_con_doi,
+                chroma_path=tmp_path / "chroma",
+                memory_path=tmp_path / "m.json",
+            )
+
+        resultado = tutor._search_local_docs("sección con cita")
+        assert "UNIDAD_TEST.md" in resultado
+
+    def test_doi_repetido_en_dos_archivos_solo_consulta_crossref_una_vez(
+        self, course_dir_con_doi_repetido: Path, tmp_path: Path
+    ):
+        mock_response = MagicMock()
+        mock_response.json.return_value = {
+            "message": {"abstract": "Abstract único sobre nucleación."}
+        }
+        mock_response.raise_for_status.return_value = None
+
+        with patch(
+            "src.multiagent_core.stats_tutor_agent.requests.get",
+            return_value=mock_response,
+        ) as mock_get:
+            StatsTutorAgent(
+                course_dir=course_dir_con_doi_repetido,
+                chroma_path=tmp_path / "chroma",
+                memory_path=tmp_path / "m.json",
+            )
+
+        assert mock_get.call_count == 1
+
+    def test_un_archivo_con_multiples_dois_distintos_indexa_ambos(self, tmp_path: Path):
+        """Confirma que el bucle interno de _extract_dois por archivo
+        alimenta correctamente varias entradas en doi_a_archivos sin
+        pisarse entre sí cuando un mismo archivo cita más de un DOI."""
+        (tmp_path / "UNIDAD_MULTI_TEST.md").write_text(
+            "# Unidad con dos citas\n\n## Sección A\n\n"
+            "Primera referencia. DOI: [10.14356/kona.2020011]"
+            "(https://doi.org/10.14356/kona.2020011).\n\n"
+            "## Sección B\n\n"
+            "Segunda referencia distinta. DOI: [10.1016/j.cie.2023.109421]"
+            "(https://doi.org/10.1016/j.cie.2023.109421).\n",
+            encoding="utf-8",
+        )
+
+        def fake_get(url, **kwargs):
+            mock_response = MagicMock()
+            mock_response.raise_for_status.return_value = None
+            mock_response.json.return_value = {
+                "message": {"abstract": f"Abstract único para {url}."}
+            }
+            return mock_response
+
+        with patch(
+            "src.multiagent_core.stats_tutor_agent.requests.get",
+            side_effect=fake_get,
+        ) as mock_get:
+            tutor = StatsTutorAgent(
+                course_dir=tmp_path,
+                chroma_path=tmp_path / "chroma",
+                memory_path=tmp_path / "m.json",
+            )
+
+        assert mock_get.call_count == 2
+
+        secciones_indexadas = tutor.collection.get()["metadatas"]
+        titulos_referencia_doi = {
+            m["section"]
+            for m in secciones_indexadas
+            if m["section"].startswith("Referencia DOI")
+        }
+        assert titulos_referencia_doi == {
+            "Referencia DOI: 10.14356/kona.2020011",
+            "Referencia DOI: 10.1016/j.cie.2023.109421",
+        }
