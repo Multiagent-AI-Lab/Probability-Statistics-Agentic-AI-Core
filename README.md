@@ -4,6 +4,7 @@
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Framework](https://img.shields.io/badge/Framework-Multi--Agent%20Council-orange.svg)](#sistema-de-agentes-y-gobernanza)
 [![Status](https://img.shields.io/badge/status-production--ready-brightgreen.svg)](#)
+[![Tests](https://img.shields.io/badge/tests-142%20passing-brightgreen.svg)](tests/)
 
 Repositorio oficial y núcleo agéntico para la asignatura de **Probabilidad y Estadística Inferencial** de la **Ingeniería en Inteligencia Artificial y Nanotecnología** en la **Universidad de La Ciénega del Estado de Michoacán de Ocampo (UCEMICH)**.
 
@@ -107,11 +108,11 @@ PROBABILIDAD Y ESTADÍSTICA/
 
 ## 🏛️ Sistema de Agentes y Gobernanza (El Consejo de Expertos)
 
-El proyecto opera bajo la supervisión de un **Consejo de 8 Agentes** con 3 loops de retroalimentación (**L1, L2, L3**):
+El proyecto opera bajo la supervisión de un **Consejo de 8 Agentes** con 3 loops de retroalimentación (**L1, L2, L3**). Ver `GOVERNANCE.md` §4 para el detalle completo de qué reporte bloquea la publicación y por qué.
 
 ```mermaid
 graph TD
-    Arch["🏗️ @Architect<br/>Estructura + Memoria"] --> Sci["🔬 @Scientist<br/>Teoría Estadística + LaTeX"]
+    Arch["🏗️ @Architect<br/>Completitud del curso (8 unidades)<br/>Bloqueante solo en run_full_pipeline"] --> Sci["🔬 @Scientist<br/>Teoría Estadística + LaTeX"]
     Sci --> Eng["⚙️ @Engineer<br/>Código scipy/statsmodels"]
     Eng --> Gate["🛡️ @Safety_Gate<br/>Anacronismos + Mismatch Temático"]
     Eng --> Editor["🎨 @Editor<br/>Bloques Duplicados (cross-unit / intra-file)"]
@@ -121,9 +122,9 @@ graph TD
     Gate -->|"✅ Válido"| Ana["📊 @Analyst<br/>Visualización + Interpretación"]
     Editor -->|"✅ Sin duplicados"| Ana
 
-    Ana --> Lib["📚 @Librarian<br/>Validación vs Literatura"]
+    Ana --> Lib["📚 @Librarian<br/>DOIs citados verificados vía Crossref<br/>(asesor, no bloqueante)"]
 
-    Lib -->|"❌ Resultado irreal"| Sci
+    Lib -->|"❌ DOI no resuelve"| Sci
     Lib -->|"✅ Validado"| QA["✅ @QA<br/>Protocolo Maestro"]
 
     QA -->|"❌ Incompleto"| Eng
@@ -131,6 +132,8 @@ graph TD
     Gatekeeper -->|"❌ Bloqueado"| Skip(("⏸️ Notebook<br/>NO compilado"))
     Gatekeeper -->|"✅ Compilar"| Done(("🏁 Notebook<br/>Maestro"))
 ```
+
+**Bloqueantes reales de publicación**: `@Safety_Gate`, `@Engineer`, `@Editor`, `@Scientist`, `@Analyst` (siempre), más `@Architect` (solo en `run_full_pipeline`, que conoce el curso completo). `@Librarian` y `@QA` son asesores — sus reportes se calculan y quedan disponibles, pero no bloquean el gate (detalle y motivo en `GOVERNANCE.md` §4).
 
 ---
 
