@@ -21,6 +21,8 @@ from chromadb.utils.embedding_functions import SentenceTransformerEmbeddingFunct
 from dotenv import load_dotenv
 from google import genai
 
+from .pdf_indexer import index_pdf
+
 load_dotenv()
 
 logger = logging.getLogger(__name__)
@@ -40,6 +42,8 @@ DEFAULT_MEMORY_FILENAME = ".tutor_memory.json"
 MAX_EPISODIOS = 50
 PREFIJO_LONGITUD = 5
 EMBEDDING_MODEL_NAME = "paraphrase-multilingual-MiniLM-L12-v2"
+BIBLIOGRAFIA_COLLECTION_NAME = "bibliografia_pdfs"
+BIBLIOGRAFIA_MAX_CHARS_POR_CHUNK = 1000
 _DOI_PATTERN = re.compile(r"DOI:\s*\[(10\.\d{4,9}/[^\]\s?#]+)\]", re.IGNORECASE)
 CROSSREF_API_BASE = "https://api.crossref.org/works"
 CROSSREF_TIMEOUT_SECONDS = 10
@@ -85,6 +89,7 @@ class StatsTutorAgent:
         course_dir: Path,
         chroma_path: Path | None = None,
         memory_path: Path | None = None,
+        bibliografia_dir: Path | None = None,
     ) -> None:
         self.course_dir = Path(course_dir)
         self.model_name = "gemini-2.5-flash"
@@ -98,10 +103,17 @@ class StatsTutorAgent:
             if memory_path
             else self.course_dir / DEFAULT_MEMORY_FILENAME
         )
+        self.bibliografia_dir = (
+            Path(bibliografia_dir)
+            if bibliografia_dir
+            else self.course_dir.parent / "bibliografia"
+        )
         self.chroma_path.mkdir(parents=True, exist_ok=True)
         self.chroma_client = chromadb.PersistentClient(path=str(self.chroma_path))
         self.collection = self._get_or_create_collection()
+        self.bibliografia_collection = self._get_or_create_bibliografia_collection()
         self._build_index()
+        self._build_bibliografia_index()
 
     def _get_or_create_collection(self) -> chromadb.Collection:
         embedding_function = SentenceTransformerEmbeddingFunction(
@@ -122,6 +134,28 @@ class StatsTutorAgent:
             self.chroma_client.delete_collection("lecciones_probabilidad")
             return self.chroma_client.get_or_create_collection(
                 "lecciones_probabilidad", embedding_function=embedding_function
+            )
+
+    def _get_or_create_bibliografia_collection(self) -> chromadb.Collection:
+        embedding_function = SentenceTransformerEmbeddingFunction(
+            model_name=EMBEDDING_MODEL_NAME
+        )
+        try:
+            return self.chroma_client.get_or_create_collection(
+                BIBLIOGRAFIA_COLLECTION_NAME, embedding_function=embedding_function
+            )
+        except ValueError as e:
+            if "Embedding function conflict" not in str(e):
+                raise
+            logger.warning(
+                "Colección '%s' indexada con un embedding distinto; "
+                "reconstruyendo con %s.",
+                BIBLIOGRAFIA_COLLECTION_NAME,
+                EMBEDDING_MODEL_NAME,
+            )
+            self.chroma_client.delete_collection(BIBLIOGRAFIA_COLLECTION_NAME)
+            return self.chroma_client.get_or_create_collection(
+                BIBLIOGRAFIA_COLLECTION_NAME, embedding_function=embedding_function
             )
 
     def _get_markdown_files(self) -> list[Path]:
@@ -224,6 +258,37 @@ class StatsTutorAgent:
 
         if documents:
             self.collection.add(documents=documents, metadatas=metadatas, ids=ids)
+
+    def _build_bibliografia_index(self) -> None:
+        """Indexa los PDFs de self.bibliografia_dir en una colección
+        ChromaDB separada de las lecciones, si aún no lo están.
+
+        Tolera que la carpeta no exista (es gitignored, puede no estar
+        presente en CI o clones nuevos) -- no indexa nada y retorna. Un PDF
+        individual que index_pdf no pueda procesar (corrupto, sin texto)
+        simplemente no aporta chunks; no detiene el resto de los PDFs.
+        """
+        if self.bibliografia_collection.count() > 0:
+            return
+
+        if not self.bibliografia_dir.is_dir():
+            return
+
+        documents: list[str] = []
+        metadatas: list[dict] = []
+        ids: list[str] = []
+
+        for pdf_path in sorted(self.bibliografia_dir.glob("*.pdf")):
+            chunks = index_pdf(pdf_path, max_chars=BIBLIOGRAFIA_MAX_CHARS_POR_CHUNK)
+            for idx, chunk in enumerate(chunks):
+                documents.append(chunk["text"])
+                metadatas.append({"source": chunk["source"], "page": chunk["page"]})
+                ids.append(f"{pdf_path.stem}__p{chunk['page']}__{idx}")
+
+        if documents:
+            self.bibliografia_collection.add(
+                documents=documents, metadatas=metadatas, ids=ids
+            )
 
     def _search_local_docs(self, query: str) -> str:
         if self.collection.count() == 0:

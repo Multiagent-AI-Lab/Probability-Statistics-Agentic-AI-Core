@@ -377,3 +377,109 @@ class TestBuildIndexConDois:
             "Referencia DOI: 10.14356/kona.2020011",
             "Referencia DOI: 10.1016/j.cie.2023.109421",
         }
+
+
+class TestBibliografiaIndex:
+    def _crear_pdf_con_texto(self, path: Path, texto_por_pagina: list[str]) -> None:
+        """Crea un PDF real usando pypdf, con una página en blanco por cada
+        entrada de texto_por_pagina -- pypdf.PdfWriter no soporta insertar
+        texto directamente sin reportlab, así que estos tests parchean
+        pdf_indexer.index_pdf directamente en vez de generar PDFs con
+        contenido real (ver Task 2 para los tests de extracción real)."""
+        from pypdf import PdfWriter
+
+        writer_test = PdfWriter()
+        for _ in texto_por_pagina:
+            writer_test.add_blank_page(width=612, height=792)
+        with open(path, "wb") as f:
+            writer_test.write(f)
+
+    def test_sin_carpeta_bibliografia_no_falla_y_coleccion_queda_vacia(
+        self, course_dir: Path, tmp_path: Path
+    ):
+        tutor = StatsTutorAgent(
+            course_dir,
+            chroma_path=tmp_path / "chroma",
+            memory_path=tmp_path / "m.json",
+            bibliografia_dir=tmp_path / "bibliografia_inexistente",
+        )
+
+        assert tutor.bibliografia_collection.count() == 0
+
+    def test_pdf_con_texto_se_indexa_en_coleccion_separada(
+        self, course_dir: Path, tmp_path: Path
+    ):
+        bibliografia_dir = tmp_path / "bibliografia"
+        bibliografia_dir.mkdir()
+        self._crear_pdf_con_texto(bibliografia_dir / "libro.pdf", [""])
+
+        with patch(
+            "src.multiagent_core.stats_tutor_agent.index_pdf",
+            return_value=[
+                {
+                    "text": "Contenido del libro sobre distribuciones.",
+                    "page": 1,
+                    "source": "libro.pdf",
+                }
+            ],
+        ):
+            tutor = StatsTutorAgent(
+                course_dir,
+                chroma_path=tmp_path / "chroma",
+                memory_path=tmp_path / "m.json",
+                bibliografia_dir=bibliografia_dir,
+            )
+
+        assert tutor.bibliografia_collection.count() == 1
+        metadatas = tutor.bibliografia_collection.get()["metadatas"]
+        assert metadatas[0]["source"] == "libro.pdf"
+        assert metadatas[0]["page"] == 1
+
+    def test_pdf_sin_chunks_no_agrega_nada_a_la_coleccion(
+        self, course_dir: Path, tmp_path: Path
+    ):
+        bibliografia_dir = tmp_path / "bibliografia"
+        bibliografia_dir.mkdir()
+        self._crear_pdf_con_texto(bibliografia_dir / "vacio.pdf", [""])
+
+        with patch(
+            "src.multiagent_core.stats_tutor_agent.index_pdf",
+            return_value=[],
+        ):
+            tutor = StatsTutorAgent(
+                course_dir,
+                chroma_path=tmp_path / "chroma",
+                memory_path=tmp_path / "m.json",
+                bibliografia_dir=bibliografia_dir,
+            )
+
+        assert tutor.bibliografia_collection.count() == 0
+
+    def test_indexacion_de_bibliografia_es_persistente_entre_instancias(
+        self, course_dir: Path, tmp_path: Path
+    ):
+        bibliografia_dir = tmp_path / "bibliografia"
+        bibliografia_dir.mkdir()
+        self._crear_pdf_con_texto(bibliografia_dir / "libro.pdf", [""])
+        chroma_path = tmp_path / "chroma"
+
+        with patch(
+            "src.multiagent_core.stats_tutor_agent.index_pdf",
+            return_value=[
+                {"text": "Contenido de prueba.", "page": 1, "source": "libro.pdf"}
+            ],
+        ) as mock_index_pdf:
+            StatsTutorAgent(
+                course_dir,
+                chroma_path=chroma_path,
+                memory_path=tmp_path / "m1.json",
+                bibliografia_dir=bibliografia_dir,
+            )
+            StatsTutorAgent(
+                course_dir,
+                chroma_path=chroma_path,
+                memory_path=tmp_path / "m2.json",
+                bibliografia_dir=bibliografia_dir,
+            )
+
+        assert mock_index_pdf.call_count == 1
