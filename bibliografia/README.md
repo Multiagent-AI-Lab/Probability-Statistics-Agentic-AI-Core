@@ -18,7 +18,9 @@ Los libros de texto citados en la sección `## Referencias` de las 8 lecciones (
 
 ## Uso con `StatsTutorAgent`
 
-Esta carpeta NO se indexa automáticamente todavía — `StatsTutorAgent._get_markdown_files()` solo lee `lecciones/*.md`. Indexar PDFs de esta carpeta (extracción de texto + chunking) es una extensión futura, fuera del alcance del plan `docs/superpowers/plans/2026-08-15-uniformizacion-agentes-y-contenido.md` (Task 7 implementa el RAG sobre `lecciones/*.md` únicamente, siguiendo el mismo patrón que `TutorAgent` de Programming-Logic, que tampoco indexa PDFs locales — solo abstracts de DOIs vía Crossref).
+Esta carpeta **sigue sin indexarse automáticamente** — `StatsTutorAgent._get_markdown_files()` solo lee `lecciones/*.md`, y ningún código de este repo abre ni extrae texto de los PDFs de `bibliografia/`. Indexar estos PDFs (extracción de texto + chunking) sigue siendo una extensión futura fuera de alcance.
+
+**Distinto (y ya implementado desde 2026-08) es el RAG sobre DOIs citados en las lecciones**: `StatsTutorAgent._build_index()` extrae los DOIs en formato `DOI: [10.xxxx/yyyy](url)` de cada `UNIDAD_*.md`, consulta el abstract público de cada uno vía la API de Crossref (`_fetch_abstract`), y lo indexa en ChromaDB como contexto adicional para las respuestas de Gemini — sin necesidad de tener el PDF local. Es el mismo patrón que `TutorAgent` de Programming-Logic. Esto cubre los DOIs citados inline en el texto (una referencia específica por unidad, agregada en 2026-08), no los libros completos de esta carpeta.
 
 ## Por qué está gitignored
 
