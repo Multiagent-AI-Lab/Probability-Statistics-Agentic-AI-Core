@@ -4,7 +4,7 @@ Integra ContentAuditorAgent, ScientistAgent (@Scientist), SafetyGateAgent (@Safe
 LayoutEditorialAgent (@Editor), SocraticDebugger y EvaluatorCriticAgent.
 """
 
-from typing import Any, Dict, List
+from typing import Any
 
 from external_skills.pedagogy.socratic_debugger import SocraticDebugger
 
@@ -17,12 +17,12 @@ class EvaluatorCriticAgent:
 
     def synthesize_critique(
         self,
-        content_audit: Dict[str, Any],
-        sci_critique: Dict[str, Any],
-        safety_critique: Dict[str, Any],
-        editorial_audit: Dict[str, Any],
-        socratic_questions: List[str],
-    ) -> Dict[str, Any]:
+        content_audit: dict[str, Any],
+        sci_critique: dict[str, Any],
+        safety_critique: dict[str, Any],
+        editorial_audit: dict[str, Any],
+        socratic_questions: list[str],
+    ) -> dict[str, Any]:
 
         critiques = []
         recommendations = []
@@ -60,7 +60,7 @@ class EvaluatorCriticAgent:
             for w in warnings:
                 critiques.append(f"🛡️ [@Safety_Gate]: Alerta instruccional: {w}")
                 recommendations.append(
-                    f"Incluir verificación previa de supuestos antes del código."
+                    "Incluir verificación previa de supuestos antes del código."
                 )
         else:
             critiques.append(
@@ -110,7 +110,7 @@ class PedagogicalReviewPipeline:
 
     def review_and_auto_fix_lesson(
         self, lesson_text: str, unit_name: str = "Unidad", auto_fix: bool = True
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         # 1. Auditoría inicial de diseño editorial (via Editor del Consejo)
         editorial_audit = self.council.editor.audit_layout(lesson_text)
 

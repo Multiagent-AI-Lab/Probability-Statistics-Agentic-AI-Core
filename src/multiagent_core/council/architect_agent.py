@@ -2,7 +2,7 @@
 ArchitectAgent (@Architect): Guardian of project structure, syllabus map, and memory.
 """
 
-from typing import Dict, Any, List
+from typing import Any
 
 
 class ArchitectAgent:
@@ -20,10 +20,10 @@ class ArchitectAgent:
             "UNIDAD_8_PROYECTO_INTEGRADOR",
         ]
 
-    def validate_structure(self, file_tree: List[str]) -> Dict[str, Any]:
+    def validate_structure(self, file_tree: list[str]) -> dict[str, Any]:
         missing = [u for u in self.units if not any(u in f for f in file_tree)]
         return {
             "valid": len(missing) == 0,
             "missing_units": missing,
-            "total_units": len(self.units)
+            "total_units": len(self.units),
         }

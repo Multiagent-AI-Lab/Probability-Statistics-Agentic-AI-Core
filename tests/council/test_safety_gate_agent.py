@@ -3,6 +3,7 @@ Tests for SafetyGateAgent (8 unidades + distincion warning/critico).
 """
 
 import pytest
+
 from src.multiagent_core.council.safety_gate_agent import SafetyGateAgent
 
 

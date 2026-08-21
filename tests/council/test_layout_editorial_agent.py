@@ -4,7 +4,6 @@ Tests for LayoutEditorialAgent.detect_duplicate_blocks.
 
 from src.multiagent_core.council.layout_editorial_agent import LayoutEditorialAgent
 
-
 INTRO_SCIPY = (
     "## TEMA: AJUSTE DE DISTRIBUCIONES\n\n"
     "Este es un bloque introductorio largo sobre SciPy que se repite igual "
@@ -27,8 +26,10 @@ def test_no_duplicates_returns_empty_list():
 def test_detects_cross_unit_duplicate():
     editor = LayoutEditorialAgent()
     lessons = {
-        "UNIDAD 1": INTRO_SCIPY + "\n\n## Resto de U1\n\nContenido propio de estadistica descriptiva.",
-        "UNIDAD 6": INTRO_SCIPY + "\n\n## Resto de U6\n\nContenido propio de inferencia y estimacion.",
+        "UNIDAD 1": INTRO_SCIPY
+        + "\n\n## Resto de U1\n\nContenido propio de estadistica descriptiva.",
+        "UNIDAD 6": INTRO_SCIPY
+        + "\n\n## Resto de U6\n\nContenido propio de inferencia y estimacion.",
     }
     result = editor.detect_duplicate_blocks(lessons)
     assert len(result) >= 1
@@ -40,7 +41,9 @@ def test_detects_cross_unit_duplicate():
 def test_detects_intra_file_duplicate():
     editor = LayoutEditorialAgent()
     lessons = {
-        "UNIDAD 4": INTRO_SCIPY + "\n\n## Seccion intermedia\n\nAlgo distinto aqui.\n\n" + INTRO_SCIPY,
+        "UNIDAD 4": INTRO_SCIPY
+        + "\n\n## Seccion intermedia\n\nAlgo distinto aqui.\n\n"
+        + INTRO_SCIPY,
     }
     result = editor.detect_duplicate_blocks(lessons)
     assert len(result) >= 1

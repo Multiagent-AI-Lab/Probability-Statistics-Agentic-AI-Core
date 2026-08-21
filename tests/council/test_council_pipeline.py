@@ -7,8 +7,11 @@ from src.multiagent_core.pipeline import CouncilPipeline
 
 def test_council_pipeline():
     pipeline = CouncilPipeline()
-    sample_text = """# Título de Prueba
-""" + "teoría " * 850 + """
+    sample_text = (
+        """# Título de Prueba
+"""
+        + "teoría " * 850
+        + """
 $$\\boxed{E = mc^2}$$
 
 ```python
@@ -25,6 +28,7 @@ display(Math(r'\\bar{x} = 3.0'))
 ```
 Interpretación y análisis nanotecnológico con referencia a Walpole.
 """
+    )
     res = pipeline.process_content(sample_text)
     assert "reports" in res
     assert "final_qa" in res
@@ -44,8 +48,11 @@ def test_council_pipeline_invokes_all_8_agents():
 
 def test_council_pipeline_reports_include_architect_and_editor():
     pipeline = CouncilPipeline()
-    sample_text = """# Título de Prueba
-""" + "teoría " * 850 + """
+    sample_text = (
+        """# Título de Prueba
+"""
+        + "teoría " * 850
+        + """
 $$\\boxed{E = mc^2}$$
 
 ```python
@@ -62,6 +69,7 @@ display(Math(r'\\bar{x} = 3.0'))
 ```
 Interpretación y análisis nanotecnológico con referencia a Walpole.
 """
+    )
     res = pipeline.process_content(sample_text)
     assert "architect" in res["reports"]
     assert "editor" in res["reports"]

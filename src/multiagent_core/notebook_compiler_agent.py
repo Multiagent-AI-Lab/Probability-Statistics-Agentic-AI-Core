@@ -6,7 +6,7 @@ Dividiendo limpiamente secciones (## H2 y ---) en celdas Markdown modulares.
 import json
 import os
 import re
-from typing import Any, Dict, List
+from typing import Any, ClassVar
 
 from .flowchart_agent import FlowchartAgent
 
@@ -14,7 +14,7 @@ from .flowchart_agent import FlowchartAgent
 class NotebookCompilerAgent:
     """Agent that compiles Markdown lessons into clean, executable Jupyter Notebooks."""
 
-    FLOWCHART_ENABLED_UNITS = {"UNIDAD_6_MODELADO_SIMULACION.md"}
+    FLOWCHART_ENABLED_UNITS: ClassVar[set[str]] = {"UNIDAD_6_MODELADO_SIMULACION.md"}
 
     def __init__(
         self, lecciones_dir: str = "lecciones", notebooks_dir: str = "notebooks"
@@ -48,7 +48,7 @@ class NotebookCompilerAgent:
 
         return text
 
-    def _split_markdown_into_modular_cells(self, md_text: str) -> List[Dict[str, Any]]:
+    def _split_markdown_into_modular_cells(self, md_text: str) -> list[dict[str, Any]]:
         cells = []
         md_text = self._sanitize_text(md_text)
 
@@ -74,7 +74,7 @@ class NotebookCompilerAgent:
 
     def parse_markdown_to_cells(
         self, md_content: str, md_filename: str = ""
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         cells = []
         pattern = r"```(python|r|mermaid|bash|sh)?\n(.*?)```"
         pos = 0

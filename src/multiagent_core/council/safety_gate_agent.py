@@ -4,7 +4,7 @@ Secuencia Curricular y Pedagogía Socrática.
 """
 
 import re
-from typing import Any, Dict
+from typing import Any
 
 _CODE_BLOCK_PATTERN = re.compile(r"```.*?```", re.DOTALL)
 
@@ -92,7 +92,7 @@ class SafetyGateAgent:
 
     def validate_assumptions(
         self, lesson_text: str, unit_name: str = ""
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         warnings = []
         critical_flags = []
         text_lower = lesson_text.lower()
