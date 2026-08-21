@@ -4,7 +4,7 @@ OrchestratorAgent: Coordinates compilation, code auditing, content auditing, and
 
 import os
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from .code_auditor_agent import CodeAuditorAgent
 from .content_auditor_agent import ContentAuditorAgent
@@ -41,7 +41,7 @@ class OrchestratorAgent:
     _BLOCKING_REPORTS = ("engineer", "editor", "scientist", "analyst")
 
     @staticmethod
-    def _describe_failed_report(name: str, report: Dict[str, Any]) -> str:
+    def _describe_failed_report(name: str, report: dict[str, Any]) -> str:
         """Arma un detalle legible del motivo de fallo de un reporte, usando
         los campos numericos que cada agente expone (si estan presentes) en
         vez de solo su nombre, para que quien depure localmente sepa que
@@ -60,14 +60,28 @@ class OrchestratorAgent:
             return f"{name} (scipy/statsmodels={report['has_scipy_or_statsmodels']})"
         if name == "editor" and "issues" in report:
             return f"{name} ({len(report['issues'])} hallazgo(s) de maquetación)"
+        if name == "architect" and "missing_units" in report:
+            return f"{name} (unidades faltantes={report['missing_units']})"
         return name
 
     def _check_gate(
-        self, md_filename: str, md_text: str, duplicate_unit_names: set
-    ) -> Dict[str, Any]:
+        self,
+        md_filename: str,
+        md_text: str,
+        duplicate_unit_names: set,
+        file_tree: list[str] | None = None,
+    ) -> dict[str, Any]:
+        """`file_tree` solo debe pasarse desde un caller que conozca el
+        listado completo de lecciones del curso (hoy: `run_full_pipeline`).
+        Con `file_tree`, @Architect se vuelve bloqueante (completitud real
+        del curso); sin él, `process_content` lo deja como advisory/opt-in
+        (`{"passed": True, "skipped": True}`) para no bloquear una lección
+        válida solo porque se audita de forma aislada. Ver GOVERNANCE.md §4."""
         unit_name = self._unit_name_from_filename(md_filename)
 
-        council_result = self.council.process_content(md_text, unit_name=unit_name)
+        council_result = self.council.process_content(
+            md_text, unit_name=unit_name, file_tree=file_tree
+        )
         reports = council_result["reports"]
 
         safety_result = reports["safety_gate"]
@@ -75,8 +89,12 @@ class OrchestratorAgent:
             reason = "; ".join(w for w in safety_result["warnings"] if "🚨" in w)
             return {"blocked": True, "reason": reason}
 
+        blocking_reports = self._BLOCKING_REPORTS
+        if file_tree is not None:
+            blocking_reports = blocking_reports + ("architect",)
+
         failed_reports = [
-            name for name in self._BLOCKING_REPORTS if not reports[name]["passed"]
+            name for name in blocking_reports if not reports[name]["passed"]
         ]
         if failed_reports:
             detalles = [
@@ -99,8 +117,8 @@ class OrchestratorAgent:
         return {"blocked": False, "reason": ""}
 
     def run_pipeline_on_file(
-        self, md_filename: str, gate_decision: Optional[Dict[str, Any]] = None
-    ) -> Dict[str, Any]:
+        self, md_filename: str, gate_decision: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
         if gate_decision is None:
             gate_decision = {"blocked": False, "reason": ""}
 
@@ -146,7 +164,7 @@ class OrchestratorAgent:
             f.write(diagram)
         return map_path
 
-    def run_full_pipeline(self, enforce_gate: bool = True) -> List[Dict[str, Any]]:
+    def run_full_pipeline(self, enforce_gate: bool = True) -> list[dict[str, Any]]:
         results = []
         if not os.path.exists(self.compiler.lecciones_dir):
             return results
@@ -155,7 +173,7 @@ class OrchestratorAgent:
             f for f in os.listdir(self.compiler.lecciones_dir) if f.endswith(".md")
         )
 
-        lessons_text: Dict[str, str] = {}
+        lessons_text: dict[str, str] = {}
         for fname in md_filenames:
             with open(
                 os.path.join(self.compiler.lecciones_dir, fname), "r", encoding="utf-8"
@@ -173,7 +191,10 @@ class OrchestratorAgent:
             if enforce_gate:
                 unit_name = self._unit_name_from_filename(fname)
                 gate_decision = self._check_gate(
-                    fname, lessons_text[unit_name], duplicate_unit_names
+                    fname,
+                    lessons_text[unit_name],
+                    duplicate_unit_names,
+                    file_tree=md_filenames,
                 )
             else:
                 gate_decision = {"blocked": False, "reason": ""}
