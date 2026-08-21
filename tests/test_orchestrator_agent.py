@@ -11,6 +11,33 @@ import pytest
 
 from src.multiagent_core.orchestrator_agent import OrchestratorAgent
 
+_TODAS_LAS_UNIDADES = [
+    "UNIDAD_1_ESTADISTICA_DESCRIPTIVA",
+    "UNIDAD_2_PROBABILIDAD_COMBINATORIA",
+    "UNIDAD_3_VARIABLES_ALEATORIAS_DISCRETAS",
+    "UNIDAD_4_DISTRIBUCIONES_CONJUNTAS",
+    "UNIDAD_5_VARIABLES_ALEATORIAS_CONTINUAS",
+    "UNIDAD_6_MODELADO_SIMULACION",
+    "UNIDAD_7_INFERENCIA_ESTIMACION",
+    "UNIDAD_8_PROYECTO_INTEGRADOR",
+]
+
+
+def _completar_unidades_faltantes(lecciones_dir: str) -> None:
+    """Crea un .md vacío por cada unidad del curso que el fixture no haya
+    escrito, solo para que @Architect (bloqueante en run_full_pipeline
+    desde que se conectó al gate) no bloquee estos tests por completitud
+    de curso -- no es lo que estos tests aíslan."""
+    existentes = {Path(f).stem for f in os.listdir(lecciones_dir)}
+    for unidad in _TODAS_LAS_UNIDADES:
+        if unidad in existentes:
+            continue
+        with open(
+            os.path.join(lecciones_dir, f"{unidad}.md"), "w", encoding="utf-8"
+        ) as f:
+            f.write(f"# {unidad}\n")
+
+
 UNIDAD_2_CONTENIDO_MEZCLADO = """# UNIDAD 2 PROBABILIDAD COMBINATORIA
 ## Asignatura: Probabilidad y Estadística Inferencial
 
@@ -75,6 +102,7 @@ def temp_lecciones_dir():
         encoding="utf-8",
     ) as f:
         f.write(UNIDAD_2_CONTENIDO_MEZCLADO)
+    _completar_unidades_faltantes(lecciones_dir)
 
     yield lecciones_dir, notebooks_dir
     shutil.rmtree(tmp_dir)
@@ -227,7 +255,7 @@ def test_check_gate_reason_lists_every_failed_blocking_report():
     )
 
     class _StubCouncil:
-        def process_content(self, md_text, unit_name=""):
+        def process_content(self, md_text, unit_name="", file_tree=None):
             passing_report = {"passed": True, "critical": False, "warnings": []}
             return {
                 "reports": {
@@ -258,7 +286,7 @@ def test_check_gate_reason_incluye_detalle_numerico_de_scientist_y_analyst():
     )
 
     class _StubCouncil:
-        def process_content(self, md_text, unit_name=""):
+        def process_content(self, md_text, unit_name="", file_tree=None):
             return {
                 "reports": {
                     "safety_gate": {"passed": True, "critical": False},
@@ -358,6 +386,50 @@ def test_enforce_gate_still_blocks_on_safety_gate_critical(
     u2_result = results[0]
     assert u2_result["gate_blocked"] is True
     assert "🚨" in u2_result["gate_reason"]
+
+
+@pytest.fixture
+def temp_lecciones_dir_incompleto():
+    """Solo UNIDAD_1 presente -- @Architect debe reportar 7 unidades
+    faltantes cuando run_full_pipeline le pasa el file_tree real."""
+    tmp_dir = tempfile.mkdtemp()
+    lecciones_dir = os.path.join(tmp_dir, "lecciones")
+    notebooks_dir = os.path.join(tmp_dir, "notebooks")
+    os.makedirs(lecciones_dir)
+
+    with open(
+        os.path.join(lecciones_dir, "UNIDAD_1_ESTADISTICA_DESCRIPTIVA.md"),
+        "w",
+        encoding="utf-8",
+    ) as f:
+        f.write(UNIDAD_1_CONTENIDO_OK)
+
+    yield lecciones_dir, notebooks_dir
+    shutil.rmtree(tmp_dir)
+
+
+def test_run_full_pipeline_bloquea_por_architect_cuando_faltan_unidades(
+    temp_lecciones_dir_incompleto,
+):
+    """run_full_pipeline conoce el listado completo de .md del directorio,
+    a diferencia de process_content() invocado aislado por lección -- por
+    eso es el único caller que puede pasarle file_tree real a @Architect
+    sin el falso-bloqueo que describe GOVERNANCE.md §4 (una unidad válida
+    bloqueada solo porque otra no está presente en ese momento: aquí SÍ
+    faltan de verdad, así que el bloqueo es la señal correcta)."""
+    lecciones_dir, notebooks_dir = temp_lecciones_dir_incompleto
+    orchestrator = OrchestratorAgent(
+        lecciones_dir=lecciones_dir, notebooks_dir=notebooks_dir
+    )
+
+    results = orchestrator.run_full_pipeline(enforce_gate=True)
+
+    u1_result = results[0]
+    assert u1_result["gate_blocked"] is True
+    assert "architect" in u1_result["gate_reason"].lower()
+    assert not os.path.exists(
+        os.path.join(notebooks_dir, "UNIDAD_1_ESTADISTICA_DESCRIPTIVA.ipynb")
+    )
 
 
 def test_ninguna_leccion_real_del_curso_es_bloqueada_por_el_gate():
