@@ -2,8 +2,6 @@
 Tests for NotebookCompilerAgent.
 """
 
-import os
-
 from src.multiagent_core.notebook_compiler_agent import NotebookCompilerAgent
 
 

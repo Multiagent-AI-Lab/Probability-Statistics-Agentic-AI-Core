@@ -60,7 +60,10 @@ api_key = "sk-abcdef1234567890"
 """
     res = auditor.audit_code(code)
     assert res["metrics"]["has_security_risk"] is True
-    assert any("credencial" in issue.lower() or "api_key" in issue.lower() for issue in res["security_issues"])
+    assert any(
+        "credencial" in issue.lower() or "api_key" in issue.lower()
+        for issue in res["security_issues"]
+    )
 
 
 def test_no_marca_riesgo_con_os_environ():

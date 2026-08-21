@@ -14,7 +14,6 @@ import logging
 import os
 import re
 from pathlib import Path
-from typing import Optional
 
 import chromadb
 import requests
@@ -84,8 +83,8 @@ class StatsTutorAgent:
     def __init__(
         self,
         course_dir: Path,
-        chroma_path: Optional[Path] = None,
-        memory_path: Optional[Path] = None,
+        chroma_path: Path | None = None,
+        memory_path: Path | None = None,
     ) -> None:
         self.course_dir = Path(course_dir)
         self.model_name = "gemini-2.5-flash"
@@ -146,7 +145,7 @@ class StatsTutorAgent:
         """
         return list(dict.fromkeys(_DOI_PATTERN.findall(content)))
 
-    def _fetch_abstract(self, doi: str) -> Optional[str]:
+    def _fetch_abstract(self, doi: str) -> str | None:
         """Consulta el abstract público de un DOI vía la API de Crossref.
 
         La API de Crossref es gratuita, no requiere API key, y expone el
@@ -284,7 +283,7 @@ class StatsTutorAgent:
         puntuados.sort(key=lambda e: e["score"], reverse=True)
         return puntuados[:top_k]
 
-    def _diagnose_error(self, message: str) -> Optional[str]:
+    def _diagnose_error(self, message: str) -> str | None:
         """Genera una pista socrática si el mensaje contiene un misconception
         estadístico conocido (p-valor mal interpretado, varianza muestral vs
         poblacional, correlación/causalidad) — a diferencia del TutorAgent de

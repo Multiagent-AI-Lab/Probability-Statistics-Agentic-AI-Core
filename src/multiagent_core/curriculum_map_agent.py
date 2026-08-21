@@ -11,7 +11,7 @@ adaptado al dominio de probabilidad y estadística.
 
 import re
 from pathlib import Path
-from typing import Dict, List
+from typing import ClassVar
 
 SKILL_METADATA = {
     "name": "curriculum_map_agent",
@@ -56,7 +56,7 @@ _UNIT_NUMBER_FROM_FILENAME = re.compile(r"UNIDAD_(\d+)_")
 _PREREQUISITO_LINEA = re.compile(r"^- \*\*(.+?)\*\*\s*\(Unidad (\d+)\)")
 
 
-def extract_fenced_blocks(markdown_text: str) -> List[tuple]:
+def extract_fenced_blocks(markdown_text: str) -> list[tuple]:
     """Extrae bloques de código fenced (```lang\\ncode\\n```) de un texto Markdown.
 
     Returns:
@@ -72,7 +72,7 @@ def extract_fenced_blocks(markdown_text: str) -> List[tuple]:
 class CurriculumMapAgent:
     """Agente que sugiere y renderiza el mapa de dependencias entre unidades."""
 
-    _NOMBRES_UNIDAD = {
+    _NOMBRES_UNIDAD: ClassVar[dict[int, str]] = {
         1: "Estadística Descriptiva",
         2: "Probabilidad y Combinatoria",
         3: "Variables Aleatorias Discretas",
@@ -87,7 +87,7 @@ class CurriculumMapAgent:
         match = _UNIT_NUMBER_FROM_FILENAME.match(md_path.name)
         return int(match.group(1)) if match else -1
 
-    def _leer_unidades_ordenadas(self, course_dir: Path) -> List[tuple]:
+    def _leer_unidades_ordenadas(self, course_dir: Path) -> list[tuple]:
         resultado = []
         for md_path in course_dir.glob("UNIDAD_*.md"):
             numero = self._numero_de_unidad(md_path)
@@ -103,12 +103,12 @@ class CurriculumMapAgent:
                 return linea.strip()
         return ""
 
-    def suggest_prerequisites(self, course_dir: Path) -> Dict[int, List[dict]]:
+    def suggest_prerequisites(self, course_dir: Path) -> dict[int, list[dict]]:
         unidades = self._leer_unidades_ordenadas(course_dir)
-        resultado: Dict[int, List[dict]] = {}
+        resultado: dict[int, list[dict]] = {}
 
         for i, (numero_actual, content_actual) in enumerate(unidades):
-            candidatos: List[dict] = []
+            candidatos: list[dict] = []
             unidades_anteriores = unidades[:i]
 
             for termino in TERMINOS_TECNICOS_CURADOS:
@@ -131,7 +131,7 @@ class CurriculumMapAgent:
 
         return resultado
 
-    def _extrae_relaciones_de_seccion(self, content: str) -> List[dict]:
+    def _extrae_relaciones_de_seccion(self, content: str) -> list[dict]:
         relaciones = []
         for linea in content.split("\n"):
             match = _PREREQUISITO_LINEA.match(linea.strip())

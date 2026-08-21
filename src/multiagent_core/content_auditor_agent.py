@@ -3,7 +3,7 @@ ContentAuditorAgent: Audits lessons and notebooks against the 9 mandatory compon
 """
 
 import re
-from typing import Any, Dict
+from typing import Any, ClassVar
 
 
 class ContentAuditorAgent:
@@ -22,7 +22,7 @@ class ContentAuditorAgent:
             "Diccionario de Variables",
         ]
 
-    NANO_TERMS = [
+    NANO_TERMS: ClassVar[list[str]] = [
         "nanopartíc",
         "nanotub",
         "potencial zeta",
@@ -53,7 +53,7 @@ class ContentAuditorAgent:
         matches = self._DICCIONARIO_ENTRADA_PATTERN.findall(markdown_text)
         return len(matches) >= self.DICCIONARIO_MIN_ENTRADAS
 
-    def audit_content(self, markdown_text: str) -> Dict[str, Any]:
+    def audit_content(self, markdown_text: str) -> dict[str, Any]:
         words = len(markdown_text.split())
         latex_boxed = r"\boxed" in markdown_text or r"\boxed{" in markdown_text
         has_sympy = "sympy" in markdown_text.lower()

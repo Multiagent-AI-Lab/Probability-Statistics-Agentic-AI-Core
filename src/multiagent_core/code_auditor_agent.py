@@ -4,7 +4,7 @@ CodeAuditorAgent: Audits Python code for statistical correctness, PEP8, display(
 
 import ast
 import re
-from typing import Any, Dict, List
+from typing import Any
 
 
 class CodeAuditorAgent:
@@ -17,7 +17,7 @@ class CodeAuditorAgent:
             re.IGNORECASE,
         )
 
-    def extract_python_code_blocks(self, markdown_or_code: str) -> List[str]:
+    def extract_python_code_blocks(self, markdown_or_code: str) -> list[str]:
         if "```" not in markdown_or_code:
             return [markdown_or_code]
 
@@ -28,19 +28,22 @@ class CodeAuditorAgent:
         clean_lines = []
         for line in code_str.split("\n"):
             stripped = line.strip()
-            if stripped.startswith("!") or stripped.startswith("%"):
+            if stripped.startswith(("!", "%")):
                 continue
             clean_lines.append(line)
         return "\n".join(clean_lines)
 
-    def _check_security(self, code_str: str, tree: ast.AST) -> List[str]:
+    def _check_security(self, code_str: str, tree: ast.AST) -> list[str]:
         issues = []
         for node in ast.walk(tree):
-            if isinstance(node, ast.Call) and isinstance(node.func, ast.Name):
-                if node.func.id in ("eval", "exec"):
-                    issues.append(
-                        f"Uso de '{node.func.id}()' detectado (Riesgo OWASP LLM-02, línea {node.lineno})."
-                    )
+            if (
+                isinstance(node, ast.Call)
+                and isinstance(node.func, ast.Name)
+                and node.func.id in ("eval", "exec")
+            ):
+                issues.append(
+                    f"Uso de '{node.func.id}()' detectado (Riesgo OWASP LLM-02, línea {node.lineno})."
+                )
 
         for match in self._credential_pattern.finditer(code_str):
             if "os.environ" not in code_str[max(0, match.start() - 30) : match.end()]:
@@ -50,12 +53,12 @@ class CodeAuditorAgent:
 
         return issues
 
-    def audit_code(self, code_str: str) -> Dict[str, Any]:
+    def audit_code(self, code_str: str) -> dict[str, Any]:
         blocks = self.extract_python_code_blocks(code_str)
 
         issues = []
         warnings = []
-        security_issues: List[str] = []
+        security_issues: list[str] = []
         metrics = {
             "uses_scipy": False,
             "uses_statsmodels": False,
@@ -94,14 +97,13 @@ class CodeAuditorAgent:
                                 metrics["uses_statsmodels"] = True
                             if "sympy" in alias.name:
                                 metrics["uses_sympy"] = True
-                    elif isinstance(node, ast.ImportFrom):
-                        if node.module:
-                            if "scipy" in node.module:
-                                metrics["uses_scipy"] = True
-                            if "statsmodels" in node.module:
-                                metrics["uses_statsmodels"] = True
-                            if "sympy" in node.module:
-                                metrics["uses_sympy"] = True
+                    elif isinstance(node, ast.ImportFrom) and node.module:
+                        if "scipy" in node.module:
+                            metrics["uses_scipy"] = True
+                        if "statsmodels" in node.module:
+                            metrics["uses_statsmodels"] = True
+                        if "sympy" in node.module:
+                            metrics["uses_sympy"] = True
 
                     if isinstance(node, ast.Call):
                         func_name = ""
@@ -114,18 +116,19 @@ class CodeAuditorAgent:
                             metrics["uses_display_math"] = True
                         elif func_name == "print":
                             for arg in node.args:
-                                if isinstance(arg, ast.Constant) and isinstance(
-                                    arg.value, str
-                                ):
-                                    if (
+                                if (
+                                    isinstance(arg, ast.Constant)
+                                    and isinstance(arg.value, str)
+                                    and (
                                         r"\frac" in arg.value
                                         or r"\mu" in arg.value
                                         or r"\sigma" in arg.value
-                                    ):
-                                        metrics["uses_raw_print_latex"] = True
-                                        warnings.append(
-                                            "Avoid print() for LaTeX equations; use display(Math()) instead."
-                                        )
+                                    )
+                                ):
+                                    metrics["uses_raw_print_latex"] = True
+                                    warnings.append(
+                                        "Avoid print() for LaTeX equations; use display(Math()) instead."
+                                    )
             except SyntaxError as e:
                 issues.append(f"SyntaxError in code block: {e.msg} at line {e.lineno}")
 

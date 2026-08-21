@@ -33,7 +33,7 @@ class FlowchartAgent:
         """Lee un código fuente en Python y genera la cadena del diagrama Mermaid."""
         try:
             tree = ast.parse(code_source)
-        except Exception as e:
+        except SyntaxError as e:
             return f"%% Error al parsear código: {e}\n"
 
         # Encontrar la primera función en el código
@@ -108,7 +108,7 @@ class FlowchartAgent:
                     lines.append(f"    {last_true} --> {join_id}")
                     current_last = join_id
 
-            elif isinstance(stmt, ast.While) or isinstance(stmt, ast.For):
+            elif isinstance(stmt, (ast.While, ast.For)):
                 # Estructura de Ciclo (Mientras / Para)
                 loop_cond_id = self._next_node_id()
                 loop_type = "Mientras" if isinstance(stmt, ast.While) else "Para"

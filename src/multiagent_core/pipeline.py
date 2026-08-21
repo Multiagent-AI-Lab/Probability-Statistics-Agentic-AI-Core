@@ -2,15 +2,16 @@
 Pipeline: Orquestador principal del Consejo de 8 Expertos con Loops L1, L2 y L3.
 """
 
-from typing import Dict, Any
-from .council.architect_agent import ArchitectAgent
-from .council.scientist_agent import ScientistAgent
-from .council.engineer_agent import EngineerAgent
-from .council.safety_gate_agent import SafetyGateAgent
+from typing import Any
+
 from .council.analyst_agent import AnalystAgent
+from .council.architect_agent import ArchitectAgent
+from .council.engineer_agent import EngineerAgent
+from .council.layout_editorial_agent import LayoutEditorialAgent
 from .council.librarian_agent import LibrarianAgent
 from .council.qa_agent import QAAgent
-from .council.layout_editorial_agent import LayoutEditorialAgent
+from .council.safety_gate_agent import SafetyGateAgent
+from .council.scientist_agent import ScientistAgent
 
 
 class CouncilPipeline:
@@ -27,8 +28,8 @@ class CouncilPipeline:
         self.qa = QAAgent()
 
     def process_content(
-        self, text_or_code: str, unit_name: str = "", file_tree: list = None
-    ) -> Dict[str, Any]:
+        self, text_or_code: str, unit_name: str = "", file_tree: list | None = None
+    ) -> dict[str, Any]:
         """Ejecuta el Consejo de 8 Expertos sobre una única lección/unidad.
 
         Nota de diseño sobre `file_tree` (@Architect, opt-in/advisory):
@@ -55,7 +56,9 @@ class CouncilPipeline:
 
         # 1. Architect (estructura del proyecto; solo valida si se provee file_tree)
         architect_res = (
-            self._normalize_architect_result(self.architect.validate_structure(file_tree))
+            self._normalize_architect_result(
+                self.architect.validate_structure(file_tree)
+            )
             if file_tree is not None
             else {"passed": True, "skipped": True}
         )
@@ -98,5 +101,5 @@ class CouncilPipeline:
         }
 
     @staticmethod
-    def _normalize_architect_result(result: Dict[str, Any]) -> Dict[str, Any]:
+    def _normalize_architect_result(result: dict[str, Any]) -> dict[str, Any]:
         return {**result, "passed": result.get("valid", False)}

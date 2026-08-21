@@ -8,10 +8,9 @@ con la convención de identificadores (node_1, node_2, ...).
 """
 
 import re
-from typing import List, Tuple
 
 
-def extract_mermaid_blocks(markdown_text: str) -> List[Tuple[int, str]]:
+def extract_mermaid_blocks(markdown_text: str) -> list[tuple[int, str]]:
     """Extract mermaid code blocks with their index in the document."""
     pattern = r"```mermaid\s*\n(.*?)\n```"
     matches = re.finditer(pattern, markdown_text, re.DOTALL)
