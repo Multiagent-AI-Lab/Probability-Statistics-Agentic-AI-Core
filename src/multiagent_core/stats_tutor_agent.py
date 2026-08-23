@@ -38,6 +38,8 @@ SKILL_METADATA = {
 
 DEFAULT_CHROMA_DIRNAME = ".chroma"
 TOP_K_RESULTS = 3
+TOP_K_LECCIONES = 2
+TOP_K_BIBLIOGRAFIA = 1
 DEFAULT_MEMORY_FILENAME = ".tutor_memory.json"
 MAX_EPISODIOS = 50
 PREFIJO_LONGITUD = 5
@@ -291,23 +293,36 @@ class StatsTutorAgent:
             )
 
     def _search_local_docs(self, query: str) -> str:
-        if self.collection.count() == 0:
-            return "No se encontraron documentos locales relevantes."
-
-        resultados = self.collection.query(query_texts=[query], n_results=TOP_K_RESULTS)
-        documentos = resultados.get("documents", [[]])[0]
-        metadatas = resultados.get("metadatas", [[]])[0]
-
-        if not documentos:
-            return "No se encontraron documentos locales relevantes."
-
         context_parts = []
-        for doc, meta in zip(documentos, metadatas):
-            fuente = meta.get("source", "desconocido")
-            seccion = meta.get("section", "")
-            context_parts.append(
-                f"--- Fuente: {fuente} | Sección: {seccion} ---\n{doc}\n"
+
+        if self.collection.count() > 0:
+            resultados = self.collection.query(
+                query_texts=[query], n_results=TOP_K_LECCIONES
             )
+            documentos = resultados.get("documents", [[]])[0]
+            metadatas = resultados.get("metadatas", [[]])[0]
+            for doc, meta in zip(documentos, metadatas):
+                fuente = meta.get("source", "desconocido")
+                seccion = meta.get("section", "")
+                context_parts.append(
+                    f"--- Fuente: {fuente} | Sección: {seccion} ---\n{doc}\n"
+                )
+
+        if self.bibliografia_collection.count() > 0:
+            resultados_bib = self.bibliografia_collection.query(
+                query_texts=[query], n_results=TOP_K_BIBLIOGRAFIA
+            )
+            documentos_bib = resultados_bib.get("documents", [[]])[0]
+            metadatas_bib = resultados_bib.get("metadatas", [[]])[0]
+            for doc, meta in zip(documentos_bib, metadatas_bib):
+                fuente = meta.get("source", "desconocido")
+                pagina = meta.get("page", "?")
+                context_parts.append(
+                    f"--- Fuente: {fuente} | Página: {pagina} ---\n{doc}\n"
+                )
+
+        if not context_parts:
+            return "No se encontraron documentos locales relevantes."
 
         return "\n".join(context_parts)
 

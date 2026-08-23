@@ -483,3 +483,55 @@ class TestBibliografiaIndex:
             )
 
         assert mock_index_pdf.call_count == 1
+
+
+class TestSearchLocalDocsConBibliografia:
+    def test_combina_resultados_de_lecciones_y_bibliografia(
+        self, course_dir: Path, tmp_path: Path
+    ):
+        from pypdf import PdfWriter
+
+        bibliografia_dir = tmp_path / "bibliografia"
+        bibliografia_dir.mkdir()
+        writer_test = PdfWriter()
+        writer_test.add_blank_page(width=612, height=792)
+        with open(bibliografia_dir / "libro.pdf", "wb") as f:
+            writer_test.write(f)
+
+        with patch(
+            "src.multiagent_core.stats_tutor_agent.index_pdf",
+            return_value=[
+                {
+                    "text": "La media muestral es un estimador insesgado según este libro.",
+                    "page": 42,
+                    "source": "libro.pdf",
+                }
+            ],
+        ):
+            tutor = StatsTutorAgent(
+                course_dir,
+                chroma_path=tmp_path / "chroma",
+                memory_path=tmp_path / "m.json",
+                bibliografia_dir=bibliografia_dir,
+            )
+
+        contexto = tutor._search_local_docs("¿Cómo se calcula la media muestral?")
+
+        assert "UNIDAD_1" in contexto
+        assert "libro.pdf" in contexto
+        assert "Página: 42" in contexto
+
+    def test_sin_bibliografia_indexada_solo_devuelve_lecciones(
+        self, course_dir: Path, tmp_path: Path
+    ):
+        tutor = StatsTutorAgent(
+            course_dir,
+            chroma_path=tmp_path / "chroma",
+            memory_path=tmp_path / "m.json",
+            bibliografia_dir=tmp_path / "bibliografia_inexistente",
+        )
+
+        contexto = tutor._search_local_docs("¿Cómo se calcula la media muestral?")
+
+        assert "UNIDAD_1" in contexto
+        assert "Página:" not in contexto
