@@ -64,3 +64,15 @@ El objetivo primordial de este proyecto es el desarrollo de materiales pedagógi
 Si en el futuro se decide promover `@Librarian` a bloqueante (aceptando la dependencia de red en el gate) u otro reporte, la forma correcta es agregarlo a `OrchestratorAgent._BLOCKING_REPORTS` — nunca asumir que `final_qa.approved` ya lo cubre.
 
 **Sobre la cita repetida de SciPy (Virtanen et al. 2020, decisión 2026-08)**: `@Engineer.check_code_implementation` detecta `has_scipy_or_statsmodels` en el código de cada unidad, y las 8 lecciones citan el paper de SciPy como referencia de esa librería. Se evaluó y se decidió **mantener la repetición**: cada unidad usa scipy/statsmodels en su propio código de ejemplo, así que citar la fuente del software en cada una es válido académicamente (no es relleno ni plagio) — es equivalente a citar el mismo libro de texto en cada capítulo que lo usa. La variedad bibliográfica real se atacó agregando una referencia específica adicional por unidad (un DOI de aplicación en nanotecnología distinto en cada una), no quitando la cita de SciPy.
+
+## 5. Indexación de bibliografia/ en el RAG (2026-08)
+
+`StatsTutorAgent` indexa los PDFs de `bibliografia/` en una colección
+ChromaDB separada (`bibliografia_pdfs`), distinta de `lecciones_probabilidad`.
+Esto es deliberado: un libro de texto completo puede generar cientos de
+chunks, que ahogarían el contexto de las lecciones si se buscara en una
+sola colección mezclada. `_search_local_docs` combina 2 resultados de
+lecciones + 1 de bibliografía en cada consulta — nunca una búsqueda
+`top_k` única sobre ambas fuentes juntas. Ver
+`docs/superpowers/specs/2026-08-21-indexacion-bibliografia-pdfs-design.md`
+para el detalle de diseño completo.

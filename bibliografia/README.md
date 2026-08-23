@@ -18,9 +18,25 @@ Los libros de texto citados en la sección `## Referencias` de las 8 lecciones (
 
 ## Uso con `StatsTutorAgent`
 
-Esta carpeta **sigue sin indexarse automáticamente** — `StatsTutorAgent._get_markdown_files()` solo lee `lecciones/*.md`, y ningún código de este repo abre ni extrae texto de los PDFs de `bibliografia/`. Indexar estos PDFs (extracción de texto + chunking) sigue siendo una extensión futura fuera de alcance.
+Desde 2026-08, `StatsTutorAgent` indexa estos PDFs automáticamente en una
+colección ChromaDB separada (`bibliografia_pdfs`), distinta de la colección
+de lecciones (`lecciones_probabilidad`). La indexación ocurre la primera
+vez que se instancia el agente (`collection.count() > 0` evita reprocesar
+en instancias siguientes) y usa `pdf_indexer.py` (extracción con `pypdf`,
+chunking por página).
 
-**Distinto (y ya implementado desde 2026-08) es el RAG sobre DOIs citados en las lecciones**: `StatsTutorAgent._build_index()` extrae los DOIs en formato `DOI: [10.xxxx/yyyy](url)` de cada `UNIDAD_*.md`, consulta el abstract público de cada uno vía la API de Crossref (`_fetch_abstract`), y lo indexa en ChromaDB como contexto adicional para las respuestas de Gemini — sin necesidad de tener el PDF local. Es el mismo patrón que `TutorAgent` de Programming-Logic. Esto cubre los DOIs citados inline en el texto (una referencia específica por unidad, agregada en 2026-08), no los libros completos de esta carpeta.
+`_search_local_docs` combina 2 resultados de lecciones + 1 de bibliografía
+en cada consulta, para que el contexto de las lecciones del curso nunca
+quede ahogado por el volumen de los libros completos (ver
+`docs/superpowers/specs/2026-08-21-indexacion-bibliografia-pdfs-design.md`
+para el razonamiento completo).
+
+Un PDF escaneado (sin texto seleccionable) o corrupto se omite sin
+detener la indexación de los demás — se loguea como warning/error.
+
+Esto es distinto del RAG de DOIs citados inline en las lecciones (ver
+sección anterior): aquél indexa abstracts de Crossref por DOI citado, este
+indexa el texto completo de los libros de esta carpeta.
 
 ## Por qué está gitignored
 
