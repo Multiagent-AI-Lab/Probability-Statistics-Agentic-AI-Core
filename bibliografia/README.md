@@ -1,20 +1,18 @@
 # Bibliografía
 
-Carpeta local (gitignored, no se publica en GitHub) para PDFs de referencias académicas del curso — libros de texto con copyright, no material de dominio propio del repo.
-
 ## Qué va aquí
 
-Los libros de texto citados en la sección `## Referencias` de las 8 lecciones (`lecciones/UNIDAD_*.md`), ver `RUBRICA_GENERAL.md` y `PROTOCOLO_MAESTRO.md` para el criterio de bibliografía exigido. Referencias base del programa oficial (`docs/legado/Anexo 8- Planeación didáctica_..._extracted.txt`, Sección 8) y las agregadas durante el plan de uniformización de contenido (2026-08-15):
+Los libros de texto citados en la sección `## Referencias` de las 8 lecciones (`lecciones/UNIDAD_*.md`), ver `RUBRICA_GENERAL.md` y `PROTOCOLO_MAESTRO.md` para el criterio de bibliografía exigido. PDFs actualmente presentes en esta carpeta:
 
-- Ross, S. — *A First Course in Probability*
-- Wasserman, L. — *All of Statistics*
-- Casella, G. & Berger, R. — *Statistical Inference*
-- Montgomery, D. C. & Runger, G. C. — *Applied Statistics and Probability for Engineers*
-- Walpole, R. E. et al. — *Probabilidad y estadística para ingeniería y ciencias* (bibliografía oficial del Anexo 8)
-
-## Convención de nombre de archivo
-
-`Apellido_Año_TituloCorto.pdf` (ej. `Wasserman_2004_AllOfStatistics.pdf`) — facilita que `StatsTutorAgent` (o cualquier script de indexado futuro) pueda referenciar la fuente por nombre de archivo sin depender de metadatos internos del PDF.
+- *Ciencia de Datos* (2018)
+- *Foundations of Statistics for Data Scientists: With R and Python* (Chapman & Hall/CRC Texts in Statistical Science)
+- *Introduction to Probability for Data Science*
+- *Introduction to Statistical Methods, Design of Experiments and Statistical Quality Control*
+- *Mathematics for Machine Learning*
+- *Numerical Python: Scientific Computing and Data Science Applications with NumPy, SciPy and Matplotlib*
+- *Practical Statistics for Data Scientists: 50 Essential Concepts Using R and Python* (Peter Bruce, Andrew Bruce, Peter Gedeck)
+- *Probabilistic Machine Learning: An Introduction*
+- *Python for Probability, Statistics, and Machine Learning*
 
 ## Uso con `StatsTutorAgent`
 
