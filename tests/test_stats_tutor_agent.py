@@ -519,7 +519,7 @@ class TestSearchLocalDocsConBibliografia:
 
         assert "UNIDAD_1" in contexto
         assert "libro.pdf" in contexto
-        assert "Página: 42" in contexto
+        assert 'pagina="42"' in contexto
 
     def test_sin_bibliografia_indexada_solo_devuelve_lecciones(
         self, course_dir: Path, tmp_path: Path
@@ -534,4 +534,4 @@ class TestSearchLocalDocsConBibliografia:
         contexto = tutor._search_local_docs("¿Cómo se calcula la media muestral?")
 
         assert "UNIDAD_1" in contexto
-        assert "Página:" not in contexto
+        assert 'pagina="' not in contexto
