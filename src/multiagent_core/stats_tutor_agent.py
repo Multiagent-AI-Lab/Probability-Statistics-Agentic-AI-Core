@@ -9,10 +9,12 @@ debugger socrático para errores estadísticos comunes (misconceptions),
 no solo excepciones de Python.
 """
 
+import hashlib
 import json
 import logging
 import os
 import re
+import tempfile
 from pathlib import Path
 
 import chromadb
@@ -82,6 +84,62 @@ _SOCRATIC_FALLBACK = (
 )
 
 
+def resolver_chroma_path_seguro(chroma_path: Path) -> Path:
+    """Redirige `chroma_path` a una ruta ASCII-safe si contiene caracteres
+    no-ASCII (ej. tildes).
+
+    El backend hnswlib de ChromaDB falla en Windows al persistir el índice
+    HNSW cuando el path contiene caracteres no-ASCII: solo escribe
+    `index_metadata.pickle` sin los binarios (`header.bin`, `data_level0.bin`,
+    etc.), dejando el índice corrupto e ilegible en la siguiente apertura
+    ("Cannot open header file"). Confirmado experimentalmente: un solo
+    carácter con tilde en el path basta para reproducirlo, incluso en un
+    path corto fuera de cualquier repo.
+
+    La ruta de redirección es determinística (hash del path original) para
+    que la persistencia entre instancias siga funcionando igual que con un
+    path ASCII normal. El hash es solo para namespacing determinista de un
+    path no confidencial (curso público), no tiene propósito criptográfico.
+
+    Nota: el directorio destino vive bajo el directorio temporal del
+    sistema, compartido entre procesos/usuarios de la misma máquina. El
+    contenido persistido (lecciones del curso, abstracts públicos de
+    Crossref, bibliografía académica) no es sensible, pero cualquier otro
+    proceso con acceso a esa carpeta podría corromper o borrar el índice.
+    Este índice vive fuera de la carpeta del curso: no se mueve ni se
+    borra junto con ella.
+
+    Si `tempfile.gettempdir()` en sí contiene caracteres no-ASCII (ej. el
+    perfil de Windows del usuario tiene tilde en el nombre), se usa
+    `Path.home()` como alternativa; si tampoco es ASCII-safe, se lanza
+    `RuntimeError` en vez de devolver silenciosamente un path que
+    reproduciría el mismo bug.
+    """
+    if chroma_path.as_posix().isascii():
+        return chroma_path
+
+    hash_path = hashlib.sha256(str(chroma_path).encode("utf-8")).hexdigest()[:16]
+
+    for base_dir in (Path(tempfile.gettempdir()), Path.home()):
+        if base_dir.as_posix().isascii():
+            ruta_segura = base_dir / "multiagent_core_chroma" / hash_path
+            logger.warning(
+                "chroma_path '%s' contiene caracteres no-ASCII, lo que corrompe "
+                "el índice HNSW en Windows. Redirigiendo a '%s'. Este índice "
+                "vive fuera de la carpeta del curso: bórralo manualmente ahí "
+                "si necesitas reindexar desde cero.",
+                chroma_path,
+                ruta_segura,
+            )
+            return ruta_segura
+
+    raise RuntimeError(
+        f"chroma_path '{chroma_path}' contiene caracteres no-ASCII y no se "
+        "encontró ningún directorio base ASCII-safe (ni el temp del sistema "
+        "ni el home del usuario) para redirigirlo de forma segura."
+    )
+
+
 class StatsTutorAgent:
     """Agente Tutor RAG que responde dudas del curso de Probabilidad y
     Estadística usando embeddings de ChromaDB sobre la documentación local."""
@@ -95,7 +153,7 @@ class StatsTutorAgent:
     ) -> None:
         self.course_dir = Path(course_dir)
         self.model_name = "gemini-2.5-flash"
-        self.chroma_path = (
+        self.chroma_path = resolver_chroma_path_seguro(
             Path(chroma_path)
             if chroma_path
             else self.course_dir / DEFAULT_CHROMA_DIRNAME

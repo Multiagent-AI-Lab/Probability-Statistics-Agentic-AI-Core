@@ -7,7 +7,10 @@ from unittest.mock import MagicMock, patch
 import pytest
 import requests
 
-from src.multiagent_core.stats_tutor_agent import StatsTutorAgent
+from src.multiagent_core.stats_tutor_agent import (
+    StatsTutorAgent,
+    resolver_chroma_path_seguro,
+)
 
 
 @pytest.fixture
@@ -535,3 +538,61 @@ class TestSearchLocalDocsConBibliografia:
 
         assert "UNIDAD_1" in contexto
         assert 'pagina="' not in contexto
+
+
+class TestResolverChromaPathSeguro:
+    def test_path_ascii_no_se_modifica(self, tmp_path: Path):
+        path_ascii = tmp_path / "chroma"
+
+        resultado = resolver_chroma_path_seguro(path_ascii)
+
+        assert resultado == path_ascii
+
+    def test_path_con_tilde_se_redirige_fuera_del_original(self, tmp_path: Path):
+        path_con_tilde = tmp_path / "PROBABILIDAD Y ESTADÍSTICA" / ".chroma"
+
+        resultado = resolver_chroma_path_seguro(path_con_tilde)
+
+        assert resultado != path_con_tilde
+        assert resultado.as_posix().isascii()
+
+    def test_redireccion_es_deterministica_para_el_mismo_path(self, tmp_path: Path):
+        path_con_tilde = tmp_path / "PROBABILIDAD Y ESTADÍSTICA" / ".chroma"
+
+        resultado_1 = resolver_chroma_path_seguro(path_con_tilde)
+        resultado_2 = resolver_chroma_path_seguro(path_con_tilde)
+
+        assert resultado_1 == resultado_2
+
+    def test_paths_con_tilde_distintos_redirigen_a_destinos_distintos(
+        self, tmp_path: Path
+    ):
+        path_a = tmp_path / "cursoA_ESTADÍSTICA" / ".chroma"
+        path_b = tmp_path / "cursoB_ESTADÍSTICA" / ".chroma"
+
+        resultado_a = resolver_chroma_path_seguro(path_a)
+        resultado_b = resolver_chroma_path_seguro(path_b)
+
+        assert resultado_a != resultado_b
+
+    def test_aplicar_dos_veces_sobre_un_path_con_tilde_es_idempotente(
+        self, tmp_path: Path
+    ):
+        path_con_tilde = tmp_path / "PROBABILIDAD Y ESTADÍSTICA" / ".chroma"
+
+        resultado = resolver_chroma_path_seguro(path_con_tilde)
+        resultado_reaplicado = resolver_chroma_path_seguro(resultado)
+
+        assert resultado_reaplicado == resultado
+
+    def test_lanza_error_si_ningun_directorio_base_es_ascii_safe(self, tmp_path: Path):
+        path_con_tilde = tmp_path / "ESTADÍSTICA" / ".chroma"
+
+        with (
+            patch("tempfile.gettempdir", return_value=r"C:\Users\José\Temp"),
+            patch("src.multiagent_core.stats_tutor_agent.Path.home") as mock_home,
+        ):
+            mock_home.return_value = Path(r"C:\Users\José")
+
+            with pytest.raises(RuntimeError, match="no-ASCII"):
+                resolver_chroma_path_seguro(path_con_tilde)
