@@ -82,7 +82,9 @@ PROBABILIDAD Y ESTADÍSTICA/
 │   ├── orchestration/
 │   └── numerical/
 │
-├── scripts/legacy/                     ← Scripts de un solo uso del proceso de corrección de contenido
+├── scripts/
+│   ├── run_pedagogical_editorial_autofix.py  ← Auto-corrección editorial + recompilación (entry-point activo)
+│   └── legacy/                         ← Scripts de un solo uso del proceso de corrección de contenido
 ├── tests/                              ← Suite de pruebas automáticas (Pytest)
 ├── docs/                               ← Documentación y auditoría de notebooks
 ├── data/                               ← Datasets (Nanopartículas Meta-Analysis)

@@ -54,6 +54,15 @@ docs/superpowers/
 tmp/
 tmp_inspect/
 
+# Artefactos de compilación LaTeX (regenerables, no fuente) -- solo se
+# versiona el .tex fuente y el .pdf resultado final. (*.log ya cubierto arriba)
+*.aux
+*.out
+*.synctex.gz
+*.toc
+*.fls
+*.fdb_latexmk
+
 # Archivos temporales de Office
 ~$*
 
