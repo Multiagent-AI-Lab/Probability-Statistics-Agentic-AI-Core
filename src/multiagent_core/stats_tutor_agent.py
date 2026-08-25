@@ -496,6 +496,34 @@ Responde en español de forma estructurada, usando Markdown. Explica el razonami
                 model=self.model_name, contents=prompt
             )
             respuesta_texto = response.text
+            if respuesta_texto is None:
+                # Gemini puede devolver response.text = None sin lanzar
+                # excepción (ej. contenido bloqueado por safety filters) --
+                # ese caso no cae en el except de abajo, así que se maneja
+                # explícitamente para no propagar un TypeError más adelante.
+                finish_reason = None
+                try:
+                    finish_reason = response.candidates[0].finish_reason
+                except (AttributeError, IndexError, TypeError):
+                    pass
+                logger.warning(
+                    "Gemini devolvió response.text=None para la pregunta "
+                    "%r (finish_reason=%s)",
+                    question[:200],
+                    finish_reason,
+                )
+                # No se concatena `context` crudo aquí (a diferencia del
+                # except de abajo, patrón preexistente): en el camino feliz
+                # ese contexto -- que puede incluir bibliografía de
+                # terceros -- nunca llega al alumno sin pasar primero por
+                # el resumen/cita de Gemini. Devolverlo tal cual en este
+                # fallback lo expondría crudo y sin la curaduría editorial
+                # que normalmente aplica el modelo.
+                respuesta_texto = (
+                    "El modelo no pudo generar una respuesta para esta "
+                    "pregunta. Intenta reformular la pregunta con otras "
+                    "palabras."
+                )
         except Exception as e:
             logger.exception("Fallo al invocar al modelo Gemini")
             respuesta_texto = (

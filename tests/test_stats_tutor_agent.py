@@ -64,6 +64,74 @@ def test_maneja_error_de_la_api_sin_lanzar_excepcion(course_dir: Path, tmp_path:
         assert "Error" in respuesta or "error" in respuesta.lower()
 
 
+def test_maneja_response_text_none_sin_lanzar_excepcion(
+    course_dir: Path, tmp_path: Path
+):
+    """Gemini puede devolver response.text = None sin lanzar excepción (ej.
+    contenido bloqueado por safety filters, respuesta vacía tras un error
+    parcial de la API) -- ese caso no entra al except de ask(), y antes de
+    este fix reventaba con TypeError al hacer slicing sobre None dentro de
+    _add_episode. Confirmado en ejecución real: un 503 intermitente de
+    Gemini dejó response.text en None y abortó toda la corrida del
+    notebook de ejemplo.
+
+    El fallback no debe incluir el contexto RAG crudo (hallazgo de
+    security-reviewer): en el camino feliz ese contexto -- que puede
+    incluir bibliografía de terceros -- nunca llega al alumno sin pasar
+    primero por el resumen/cita de Gemini."""
+    with patch("src.multiagent_core.stats_tutor_agent.genai.Client") as mock_client_cls:
+        mock_client = MagicMock()
+        mock_response = MagicMock(spec=["text", "candidates"])
+        mock_response.text = None
+        mock_response.candidates = []
+        mock_client.models.generate_content.return_value = mock_response
+        mock_client_cls.return_value = mock_client
+
+        tutor = StatsTutorAgent(
+            course_dir,
+            chroma_path=tmp_path / "chroma",
+            memory_path=tmp_path / "memory.json",
+        )
+        with patch.dict("os.environ", {"GEMINI_API_KEY": "fake-key"}):
+            respuesta = tutor.ask("¿Qué es la media muestral?")
+
+        assert respuesta is not None
+        assert "no pudo generar una respuesta" in respuesta.lower()
+        assert "UNIDAD_1" not in respuesta
+        assert "<documento" not in respuesta
+
+
+def test_response_text_none_registra_finish_reason_si_esta_disponible(
+    course_dir: Path, tmp_path: Path, caplog
+):
+    """Si Gemini expone finish_reason (ej. SAFETY, RECITATION) en
+    response.candidates, se incluye en el log de warning para facilitar
+    debugging -- sin que su ausencia o un candidates vacío/mal formado
+    rompa el manejo del caso response.text=None."""
+    with patch("src.multiagent_core.stats_tutor_agent.genai.Client") as mock_client_cls:
+        mock_client = MagicMock()
+        mock_response = MagicMock(spec=["text", "candidates"])
+        mock_response.text = None
+        mock_candidate = MagicMock(spec=["finish_reason"])
+        mock_candidate.finish_reason = "SAFETY"
+        mock_response.candidates = [mock_candidate]
+        mock_client.models.generate_content.return_value = mock_response
+        mock_client_cls.return_value = mock_client
+
+        tutor = StatsTutorAgent(
+            course_dir,
+            chroma_path=tmp_path / "chroma",
+            memory_path=tmp_path / "memory.json",
+        )
+        with (
+            patch.dict("os.environ", {"GEMINI_API_KEY": "fake-key"}),
+            caplog.at_level("WARNING"),
+        ):
+            tutor.ask("¿Qué es la media muestral?")
+
+        assert "SAFETY" in caplog.text
+
+
 def test_encuentra_seccion_relevante_por_busqueda_semantica(
     course_dir: Path, tmp_path: Path
 ):
