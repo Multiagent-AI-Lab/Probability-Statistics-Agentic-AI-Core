@@ -137,6 +137,8 @@ graph TD
 
 **Bloqueantes reales de publicación**: `@Safety_Gate`, `@Engineer`, `@Editor`, `@Scientist`, `@Analyst` (siempre), más `@Architect` (solo en `run_full_pipeline`, que conoce el curso completo). `@Librarian` y `@QA` son asesores — sus reportes se calculan y quedan disponibles, pero no bloquean el gate (detalle y motivo en `GOVERNANCE.md` §4).
 
+**Ejemplo ejecutable de uso**: `notebooks_extra/USO_SISTEMA_MULTIAGENTE.ipynb` corre `OrchestratorAgent.run_full_pipeline()` sobre las unidades reales del curso y `StatsTutorAgent.ask()` con una pregunta temática puntual, con salida real ya guardada. No es una unidad evaluada — vive fuera de `lecciones/` y no pasa por este mismo gate.
+
 ---
 
 ## 🚀 Instalación y Guía de Inicio Rápido
