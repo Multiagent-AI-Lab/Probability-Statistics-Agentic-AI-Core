@@ -5,6 +5,7 @@ StatsTutorAgent, en una colección ChromaDB separada de las lecciones.
 """
 
 import logging
+import re
 from pathlib import Path
 
 from pypdf import PdfReader
@@ -13,6 +14,14 @@ from pypdf.errors import PdfReadError, PyPdfError
 logger = logging.getLogger(__name__)
 
 DEFAULT_MAX_CHARS = 1000
+
+# Algunos PDFs académicos con símbolos matemáticos en fuentes itálicas (ej.
+# variables como 𝑋, 𝑌) hacen que pypdf extraiga un surrogate UTF-16 huérfano
+# (mitad alta sin su pareja baja) cuando el mapeo de esa fuente está
+# incompleto. Ese carácter es inválido en un str de Python bien formado y
+# rompe cualquier librería que lo intente codificar a UTF-8 (ej. el
+# tokenizer de HuggingFace en Rust, que lanza un TypeError al embeber).
+_SURROGATE_HUERFANO_RE = re.compile("[\ud800-\udfff]")
 
 
 def extract_pages(pdf_path: Path) -> list[str]:
@@ -44,6 +53,17 @@ def extract_pages(pdf_path: Path) -> list[str]:
                 e,
             )
             texto = ""
+        texto, n_surrogates = _SURROGATE_HUERFANO_RE.subn("", texto)
+        if n_surrogates:
+            logger.warning(
+                "Página %d de %s contenía %d carácter(es) surrogate UTF-16 "
+                "huérfano(s) (símbolo matemático con mapeo de fuente "
+                "incompleto); se eliminaron para no romper la tokenización "
+                "posterior.",
+                numero_pagina,
+                pdf_path.name,
+                n_surrogates,
+            )
         paginas.append(texto)
 
     return paginas

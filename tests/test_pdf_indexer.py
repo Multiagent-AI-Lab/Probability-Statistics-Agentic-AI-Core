@@ -2,6 +2,7 @@
 de bibliografía de StatsTutorAgent."""
 
 from pathlib import Path
+from unittest.mock import MagicMock, patch
 
 from pypdf import PdfWriter
 
@@ -81,6 +82,73 @@ def test_index_pdf_incluye_source_con_nombre_de_archivo(tmp_path: Path):
 
     # PDF en blanco -> sin texto -> sin chunks, pero no debe fallar.
     assert resultado == []
+
+
+def test_extract_pages_elimina_surrogates_huerfanos(tmp_path: Path):
+    """Algunos PDFs académicos con símbolos matemáticos en fuentes itálicas
+    (ej. variables como 𝑋, 𝑌) hacen que pypdf extraiga un surrogate UTF-16
+    huérfano (\\ud835 sin su pareja baja) cuando el mapeo de la fuente está
+    incompleto. Ese carácter es inválido en un str de Python bien formado y
+    el tokenizer de HuggingFace (Rust) lo rechaza con un TypeError al
+    embeber -- confirmado en bibliografia/PracticalStatisticsforDataScientists...pdf,
+    donde rompía la indexación de forma consistente (no aleatoria como se
+    pensaba inicialmente). Debe limpiarse en la extracción, no dejarse para
+    que cada consumidor (script de indexación, StatsTutorAgent) lo maneje
+    por su cuenta."""
+    pdf_path = _crear_pdf_de_prueba(tmp_path, [""])
+    texto_con_surrogate_huerfano = "Bagging usa \ud835 como variable de respuesta."
+
+    with patch("src.multiagent_core.pdf_indexer.PdfReader") as mock_reader_cls:
+        mock_page = MagicMock()
+        mock_page.extract_text.return_value = texto_con_surrogate_huerfano
+        mock_reader_cls.return_value.pages = [mock_page]
+
+        paginas = extract_pages(pdf_path)
+
+    assert len(paginas) == 1
+    assert "\ud835" not in paginas[0]
+    # El texto sin el surrogate debe seguir siendo codificable a UTF-8 (lo
+    # que el tokenizer necesita) sin lanzar UnicodeEncodeError.
+    paginas[0].encode("utf-8")
+
+
+def test_extract_pages_elimina_multiples_surrogates_en_la_misma_pagina(tmp_path: Path):
+    """El log agrega el conteo por página (`n_surrogates`) en vez de emitir
+    una línea por carácter -- este test ejercita la rama de pluralización
+    (>1 surrogate) y confirma que todos se eliminan, no solo el primero."""
+    pdf_path = _crear_pdf_de_prueba(tmp_path, [""])
+    texto = "Sean \ud835 y \ud835 dos variables aleatorias, con media \ud835."
+
+    with patch("src.multiagent_core.pdf_indexer.PdfReader") as mock_reader_cls:
+        mock_page = MagicMock()
+        mock_page.extract_text.return_value = texto
+        mock_reader_cls.return_value.pages = [mock_page]
+
+        paginas = extract_pages(pdf_path)
+
+    assert "\ud835" not in paginas[0]
+    paginas[0].encode("utf-8")
+
+
+def test_extract_pages_elimina_surrogate_pegado_sin_espacios(tmp_path: Path):
+    """Cuando el surrogate huérfano está pegado a texto en ambos lados (sin
+    espacio, ej. la fuente itálica no insertó separador), eliminarlo
+    concatena las palabras circundantes (ej. "valor𝑋es" -> "valores"). Es
+    un trade-off aceptado (ver review de python-reviewer): preferible a
+    dejar un carácter no codificable que rompe el tokenizer, pero se
+    documenta explícitamente con un test para que el comportamiento no
+    sea una sorpresa si alguien lo encuentra más adelante."""
+    pdf_path = _crear_pdf_de_prueba(tmp_path, [""])
+    texto = "el valor\ud835es una variable aleatoria"
+
+    with patch("src.multiagent_core.pdf_indexer.PdfReader") as mock_reader_cls:
+        mock_page = MagicMock()
+        mock_page.extract_text.return_value = texto
+        mock_reader_cls.return_value.pages = [mock_page]
+
+        paginas = extract_pages(pdf_path)
+
+    assert paginas[0] == "el valores una variable aleatoria"
 
 
 def test_chunk_page_text_corte_fijo_cuando_oracion_excede_max_chars():
