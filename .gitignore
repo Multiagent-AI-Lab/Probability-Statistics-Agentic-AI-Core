@@ -44,6 +44,11 @@ docs/superpowers/
 .chroma/
 .tutor_memory.json
 
+# Paquete de distribución para alumnos (PDFs + índice ChromaDB
+# pre-generado) -- se genera localmente con
+# scripts/empaquetar_distribucion_bibliografia.py, nunca se publica.
+dist/
+
 # IDEs & Editores
 .vscode/
 .idea/

@@ -121,15 +121,30 @@ def _upsert_con_reintento(
             time.sleep(1)
 
 
-def main() -> None:
-    if not BIBLIOGRAFIA_DIR.is_dir():
-        logger.error("No existe la carpeta %s", BIBLIOGRAFIA_DIR)
-        return
+def main(
+    bibliografia_dir: Path = BIBLIOGRAFIA_DIR, chroma_path: Path = CHROMA_PATH
+) -> list[str]:
+    """Indexa todos los PDFs de `bibliografia_dir` en una colección ChromaDB
+    persistida en `chroma_path`. Los defaults apuntan a la bibliografía y el
+    índice del propio repo; se parametrizan para que
+    scripts/empaquetar_distribucion_bibliografia.py pueda reusar esta misma
+    lógica apuntando a un destino de empaquetado distinto (ej. dist/).
 
-    pdfs = sorted(BIBLIOGRAFIA_DIR.glob("*.pdf"))
+    Returns:
+        Lista de nombres de PDFs que no se pudieron indexar (vacía si todos
+        se guardaron correctamente). El llamador decide qué hacer con un
+        índice parcial -- ej. empaquetar_distribucion_bibliografia.py aborta
+        el empaquetado si esta lista no está vacía, para no distribuir un
+        zip con bibliografía incompleta sin que sea evidente.
+    """
+    if not bibliografia_dir.is_dir():
+        logger.error("No existe la carpeta %s", bibliografia_dir)
+        return []
+
+    pdfs = sorted(bibliografia_dir.glob("*.pdf"))
     if not pdfs:
-        logger.error("No hay PDFs en %s", BIBLIOGRAFIA_DIR)
-        return
+        logger.error("No hay PDFs en %s", bibliografia_dir)
+        return []
 
     logger.info(
         "Encontrados %d PDFs. Usando hasta %d workers en paralelo.",
@@ -137,8 +152,8 @@ def main() -> None:
         MAX_WORKERS,
     )
 
-    CHROMA_PATH.mkdir(parents=True, exist_ok=True)
-    client = chromadb.PersistentClient(path=str(CHROMA_PATH))
+    chroma_path.mkdir(parents=True, exist_ok=True)
+    client = chromadb.PersistentClient(path=str(chroma_path))
     collection = _get_or_create_bibliografia_collection(client)
 
     total_chunks_guardados = 0
@@ -201,6 +216,8 @@ def main() -> None:
             len(pdfs_fallidos),
             ", ".join(pdfs_fallidos),
         )
+
+    return pdfs_fallidos
 
 
 if __name__ == "__main__":
