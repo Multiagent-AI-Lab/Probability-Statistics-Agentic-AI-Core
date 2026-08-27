@@ -13,11 +13,11 @@ Repositorio oficial y núcleo agéntico para la asignatura de **Probabilidad y E
 ## 📌 Tabla de Contenidos
 
 1. [Visión General del Curso](#visión-general-del-curso)
-2. [Estructura del Repositorio](#estructura-del-repositorio)
-3. [Mapa Curricular de Unidades](#mapa-curricular-de-unidades)
-4. [Sistema de Agentes y Gobernanza (El Consejo de Expertos)](#sistema-de-agentes-y-gobernanza)
-5. [Instalación y Guía de Inicio Rápido](#instalación-y-guía-de-inicio-rápido)
-6. [Pipeline de Conversión Inteligente](#pipeline-de-conversión-inteligente)
+2. [Uso Crítico de IA en este Curso](#uso-crítico-de-ia-en-este-curso)
+3. [Estructura del Repositorio](#estructura-del-repositorio)
+4. [Mapa Curricular de Unidades](#mapa-curricular-de-unidades)
+5. [Sistema de Agentes y Gobernanza (El Consejo de Expertos)](#sistema-de-agentes-y-gobernanza)
+6. [Instalación y Guía de Inicio Rápido](#instalación-y-guía-de-inicio-rápido)
 7. [Licencia y Créditos](#licencia-y-créditos)
 
 ---
@@ -27,6 +27,36 @@ Repositorio oficial y núcleo agéntico para la asignatura de **Probabilidad y E
 Este proyecto conecta la teoría de probabilidad e inferencia estadística con aplicaciones reales en **Nanotecnología** (caracterización de nanopartículas, películas delgadas CVD, nano-sensores, simulación stocástica) y **Desarrollo de IA** (evaluación multimodelo de LLMs, análisis de residuos y pruebas de bondad de ajuste).
 
 La **fuente de verdad** reside en las lecciones escritas en Markdown estructurado (`lecciones/*.md`), las cuales se compilan automáticamente a Jupyter Notebooks interactivos (`notebooks/*.ipynb`) siguiendo un estricto **Protocolo Maestro** de 8 componentes pedagógicos.
+
+---
+
+## 🧠 Uso Crítico de IA en este Curso
+
+A diferencia de un curso de programación desde cero, en **Probabilidad y Estadística Inferencial** el uso de asistentes de IA (ChatGPT, Claude, Gemini, GitHub Copilot, `StatsTutorAgent` de este mismo repositorio, etc.) está **permitido desde la Unidad 1**, sin restricción progresiva por unidad. Esto no es una licencia para aceptar cualquier respuesta de IA sin más: es una responsabilidad explícita de **verificación crítica**.
+
+### La regla del curso
+
+> **Ninguna respuesta de una IA se acepta como correcta sin verificarla de forma independiente** — contra un cálculo analítico hecho a mano, contra `scipy.stats`/`sympy`, o contra una simulación numérica. Esto no es opcional ni un paso "extra": es parte del método científico que este curso enseña, y es exactamente el mismo criterio que ya aplica el ciclo Teoría → Ejemplo Analítico → Verificación Computacional de cada unidad (`lecciones/UNIDAD_*.md`) — la IA es una fuente más de hipótesis a contrastar, no un oráculo.
+
+### Por qué esto importa específicamente en probabilidad y estadística
+
+Los modelos de lenguaje generan texto matemático con fluidez, lo cual los hace particularmente peligrosos en esta materia: una respuesta con apariencia rigurosa (notación correcta, estructura de solución convincente) puede contener un error conceptual sutil que un alumno sin la base teórica no detectaría. Errores documentados con frecuencia en la literatura y en la práctica:
+
+* **Confundir varianza muestral y poblacional**: una IA puede calcular $\text{Var}(X)$ usando el denominador $n$ (poblacional) cuando el problema pide la estimación insesgada con $n-1$ (corrección de Bessel, ver `UNIDAD_1_ESTADISTICA_DESCRIPTIVA.md` §1.2) — o viceversa — sin señalar la ambigüedad ni preguntar cuál corresponde.
+* **Parametrizaciones inconsistentes de una misma distribución**: la Exponencial, la Gamma y la Weibull tienen al menos dos convenciones comunes cada una (tasa $\lambda$ vs. escala $\theta=1/\lambda$; forma-escala vs. forma-tasa). Una IA entrenada con material que mezcla ambas convenciones puede aplicar la fórmula de una parametrización a los parámetros de otra sin avisar, produciendo un resultado numéricamente incorrecto pero con apariencia de rigor completo.
+* **Teorema de Bayes con las probabilidades invertidas**: es común que una IA calcule $P(B\mid A)$ cuando el problema pide $P(A\mid B)$ (o aplique la Regla de la Probabilidad Total con una partición que no suma 1), un error señalado explícitamente como *misconception* recurrente en `UNIDAD_2_PROBABILIDAD_COMBINATORIA.md`.
+* **Redondeo prematuro en cálculos multi-paso**: una IA que resuelve "en su cabeza" (sin mostrar precisión completa en cada paso intermedio) acumula error de redondeo que puede cambiar la decisión final de una prueba de hipótesis (p. ej., un p-valor que cruza el umbral de $\alpha=0.05$ solo por el redondeo intermedio).
+
+### Cómo verificar en la práctica
+
+Cada unidad de este curso ya provee las herramientas para esa verificación, sin necesitar nada externo:
+
+1. **Cálculo analítico a mano** (Sección "Ejemplo Analítico Paso a Paso" de cada unidad) — el estándar de referencia.
+2. **Verificación simbólica con SymPy** (Sección "Código de Verificación Simbólica") — confirma el álgebra sin ambigüedad de redondeo.
+3. **Verificación computacional con `scipy.stats`/`statsmodels`** (Sección "Solución Computacional") — la fuente de verdad numérica del curso.
+4. **`StatsTutorAgent`** (Sección "Herramientas de esta Unidad" de cada lección) — a diferencia de un asistente de IA genérico, este tutor cita el contenido exacto de la unidad y hace una pregunta socrática ante un error conceptual común en vez de simplemente dar la respuesta; sigue siendo IA, y su salida también debe contrastarse contra los pasos 1-3 cuando el resultado sea crítico para una entrega.
+
+Si una respuesta de IA (de cualquier herramienta) no coincide con al menos uno de estos tres caminos de verificación independientes, el criterio del curso es simple: **la IA está equivocada, no el cálculo manual**, hasta que se demuestre lo contrario paso a paso.
 
 ---
 
