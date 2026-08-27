@@ -267,7 +267,57 @@ plt.show()
 1. **Validación de Supuestos**: Las pruebas de Shapiro-Wilk en ambos lotes confirmaron la normalidad ($p > 0.05$) y la prueba de Levene confirmó la homogeneidad de varianzas ($p > 0.05$), justificando el uso de la prueba $t$ de Student agrupada.
 2. **Conclusión Técnica Nanotecnológica**: Dado que $p < 0.0001 < 0.05$, rechazamos $H_0$. El método de síntesis por microondas produce nanopartículas significativamente más pequeñas y de mayor superficie específica que el método sol-gel convencional.
 
-### 6.2 Diccionario de Variables Nanotecnológicas
+### 6.2 Diccionario de Variables de la Unidad
+
+Notación general introducida en las Secciones 1, 7, 9 y 11, independiente del ejemplo aplicado específico:
+
+**Pruebas de hipótesis**
+
+* $x_1, x_2, \dots, x_n$: muestra observada de $n$ mediciones.
+* $\theta$: parámetro poblacional bajo estudio.
+* $H_0$: hipótesis nula (afirmación de no efecto o estado por defecto).
+* $H_1$ (o $H_a$): hipótesis alternativa.
+* $T(X)$: estadístico de prueba, función de la muestra con distribución conocida bajo $H_0$.
+* $\mathcal{R}$: región de rechazo / región crítica.
+* $\alpha$: nivel de significancia; probabilidad de Error Tipo I.
+* $\beta$: probabilidad de Error Tipo II.
+* $1-\beta$: potencia de la prueba.
+
+**Regresión y correlación**
+
+* $\rho_{X,Y}$ (o $r$): coeficiente de correlación de Pearson.
+* $\hat y = mx + b$: recta ajustada por mínimos cuadrados.
+* $R^2$: coeficiente de determinación.
+* $R$: correlación múltiple, raíz de $R^2$ de una regresión con varios predictores.
+* $\rho_S$: coeficiente de correlación de rango de Spearman.
+* $\tau$: coeficiente de correlación de rango de Kendall.
+* $r_{Y,X_2 \cdot X_1}$: correlación parcial entre $Y$ y $X_2$ controlando por $X_1$.
+* $\epsilon_i$: residuo de la observación $i$ en un modelo de regresión.
+* $g(\mu) = \eta$: función de enlace de un Modelo Lineal Generalizado (GLM).
+* $\text{Var}(Y)$: varianza de la variable de respuesta $Y$.
+
+**Regularización (perspectiva ML)**
+
+* $\hat f(x)$: función estimada por el modelo en el punto $x$.
+* $f(x)$: función real (desconocida) que genera los datos.
+* $\text{Sesgo}^2(x)$: componente de sesgo del error esperado de predicción.
+* $\text{Varianza}(x)$: componente de varianza del error esperado de predicción.
+* $\sigma^2$: varianza del ruido irreducible.
+* $\lambda$ (o $\lambda_1, \lambda_2$): parámetro(s) de penalización de la regularización.
+* $\beta_j$: coeficiente $j$-ésimo del modelo de regresión.
+* $L_2$: penalización de Ridge, $\sum_j \beta_j^2$.
+* $L_1$: penalización de Lasso, $\sum_j |\beta_j|$.
+
+**Multivariado (PCA/Mahalanobis)**
+
+* $\mathbf{x}, \mathbf{\mu}$: vector de observación y vector de medias en $p$ dimensiones.
+* $\mathbf{\Sigma}$: matriz de covarianza.
+* $\mathbf{\Sigma}^{-1}$: matriz de covarianza inversa (matriz de precisión).
+* $D^2$: distancia de Mahalanobis al cuadrado.
+* $\chi^2_p$: distribución Chi-cuadrado con $p$ grados de libertad.
+* $p$ (en este contexto): número de dimensiones (variables) del vector aleatorio multivariado.
+
+### 6.3 Diccionario de Variables Nanotecnológicas del Ejemplo Aplicado
 * $\mu_A, \mu_B$: Medias poblacionales de diámetro de cristalito de $\text{TiO}_2$ ($\text{nm}$).
 * $S_p$: Desviación estándar agrupada (pooled standard deviation).
 * $t_{calc}$: Estadístico $t$ de Student empírico.

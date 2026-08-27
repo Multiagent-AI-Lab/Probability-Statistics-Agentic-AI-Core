@@ -816,7 +816,63 @@ plt.show()
 2. **t-test como Generalización Práctica**: cuando $\sigma$ no se conoce de antemano (caso más común en un laboratorio que evalúa un lote nuevo sin historial), el t-test de una muestra (`scipy.stats.ttest_1samp`) sustituye naturalmente al Z-test, ampliando la incertidumbre de la región crítica para compensar el desconocimiento de la varianza poblacional.
 3. **Bondad de Ajuste como Extensión Multi-categoría**: la prueba $\chi^2$ de bondad de ajuste generaliza la lógica de "comparar lo observado contra lo esperado bajo $H_0$" a distribuciones completas de tamaño de partícula agrupadas en bandas, útil cuando el control de calidad no se limita a un único estadístico resumen sino a la forma completa de la distribución de tamaños del lote.
 
-### 5.2 Diccionario de Variables Nanotecnológicas
+### 5.2 Diccionario de Variables de la Unidad
+
+Notación general introducida en las Secciones 1 y 6, independiente del ejemplo aplicado específico:
+
+**Prueba de hipótesis**
+* $\theta$: parámetro poblacional desconocido sujeto a contraste, asociado a una distribución $f(x;\theta)$.
+* $H_0$: hipótesis nula, la aseveración por defecto sobre $\theta$.
+* $H_1$: hipótesis alternativa, complementaria a $H_0$.
+* $\alpha$: nivel de significancia; probabilidad de Error Tipo I ($P(\text{rechazar }H_0\mid H_0\text{ verdadera})$).
+* $\beta$: probabilidad de Error Tipo II ($P(\text{no rechazar }H_0\mid H_0\text{ falsa})$).
+* $1-\beta$: poder de la prueba (probabilidad de rechazar correctamente $H_0$ cuando es falsa).
+* p-valor: probabilidad de obtener un resultado igual o más extremo que el observado, asumiendo $H_0$ verdadera.
+* $k$: constante crítica del cociente de verosimilitud en el Lema de Neyman-Pearson.
+* $Z$: estadístico de prueba para la media con varianza $\sigma^2$ conocida, $Z\sim N(0,1)$ bajo $H_0$.
+* $t$: estadístico de prueba para la media con varianza desconocida, $t\sim t_{n-1}$ bajo $H_0$.
+* $\chi^2_0$: estadístico de prueba para la varianza, o para bondad de ajuste/contingencia/proporciones, $\chi^2_0\sim\chi^2_{n-1}$ (u otros grados de libertad según el caso).
+* $O_i, E_i$: frecuencias observadas y esperadas en la $i$-ésima categoría de una prueba de bondad de ajuste.
+* $e_{ij}, n_{ij}$: frecuencia esperada y observada en la celda $(i,j)$ de una tabla de contingencia.
+* $D_{n,m}$: estadístico de Kolmogorov-Smirnov de dos muestras (máxima distancia entre las CDF empíricas $F_n$ y $F_m$).
+* $U$: estadístico de Mann-Whitney-Wilcoxon; $R_1$: suma de rangos combinados del grupo 1.
+* $H$: estadístico de Kruskal-Wallis para $k>2$ grupos independientes basados en rangos.
+* $n_+, n_-$: número de observaciones por encima/por debajo del valor de referencia $\theta_0$ en la prueba de signos.
+* $W$: estadístico de la prueba de Levene para homogeneidad de varianzas, $W\sim F_{k-1,N-k}$ bajo $H_0$.
+* $z_{ij}$ (Levene): desviación absoluta de la observación $ij$ respecto a la mediana de su grupo, $z_{ij}=|x_{ij}-\tilde x_i|$.
+* $d$: tamaño del efecto ($d$ de Cohen); $s_{pooled}$: desviación estándar combinada (pooled) de dos grupos.
+* $z_{ij}$ (Dunn): estadístico $z$ de la comparación par a par entre los grupos $i,j$ en el post-hoc de Dunn; $C$: corrección por empates.
+* $p_{\text{ajustado}}$: p-valor corregido por comparaciones múltiples (corrección de Bonferroni).
+* $R$: número de repeticiones (permutaciones) en un test de permutación; $\Delta_{\text{obs}}, \Delta^*$: diferencia de medias observada y bajo remuestreo.
+
+**Estimación puntual (Método de Momentos, MLE y MAP)**
+* $\mu_j$: $j$-ésimo momento poblacional, $\mu_j=E[X^j]$; $m_j$: $j$-ésimo momento muestral.
+* $\hat\theta_{MoM}$: estimador por Método de los Momentos de un parámetro $\theta$.
+* $\hat\mu_{MLE}$: estimador de Máxima Verosimilitud de la media poblacional.
+* $\ell(\theta)$ / $\ln L$: log-verosimilitud de la muestra en función de $\theta$.
+* $p(\theta)$: distribución a priori sobre el parámetro $\theta$.
+* $p(\theta\mid x)$: distribución a posteriori de $\theta$ dada la muestra $x$.
+* $\hat\theta_{MAP}$: estimador de Máximo a Posteriori, el valor de $\theta$ que maximiza la posterior.
+
+**Pruebas no paramétricas y bondad de ajuste**
+* $\tilde\mu$: mediana poblacional, contrastada contra un valor de referencia $\theta_0$ en la prueba de signos y de la mediana.
+
+**Regresión y diagnósticos**
+* $\pi(x)$: probabilidad de éxito modelada por regresión logística en función de $x$.
+* $\beta_0,\beta_1$: intercepto y pendiente del modelo logístico (escala logit).
+* $\text{ODDS}$: razón de momios, $\pi/(1-\pi)$; $e^{\beta_1}$: odds ratio (factor multiplicativo por unidad de $x$).
+* $\text{LD}_{50}$: dosis letal media, el valor de $x$ para el cual $\pi(x)=0.5$.
+* $\Lambda$: estadístico de la Razón de Verosimilitud (LRT), $\Lambda\sim\chi^2_1$ bajo $H_0$.
+* $D_i$: Distancia de Cook de la observación $i$-ésima, mide su influencia sobre los coeficientes ajustados.
+* $h_{ii}$: leverage (apalancamiento) de la observación $i$, elemento diagonal de la Hat Matrix.
+* $\text{VIF}_j$: Factor de Inflación de Varianza del predictor $X_j$, $\text{VIF}_j=1/(1-R_j^2)$.
+
+**Bootstrap**
+* $B$: número de réplicas bootstrap generadas por remuestreo con reemplazo.
+* $x_b^*$: la $b$-ésima muestra remuestreada con reemplazo; $\hat\theta_b^*$: estimador calculado sobre esa réplica.
+* $[\alpha/2,\ 1-\alpha/2]$: percentiles usados para construir el intervalo de confianza bootstrap del $(1-\alpha)\times100\%$.
+
+### 5.3 Diccionario de Variables Nanotecnológicas del Ejemplo Aplicado
 * $\mu_0$: diámetro medio histórico especificado del proceso de síntesis de AgNPs ($50\ \text{nm}$).
 * $\sigma$: desviación estándar poblacional históricamente conocida del proceso ($4\ \text{nm}$).
 * $\bar{x}$: diámetro medio muestral medido por DLS en el nuevo lote bajo control de calidad.

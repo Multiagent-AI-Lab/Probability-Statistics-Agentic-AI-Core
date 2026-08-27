@@ -824,7 +824,54 @@ display(Math(fr"\text{{Covarianza Simulada: }} \text{{Cov}}(X, Y) = {cov_sim[0, 
 2. **PCA como Herramienta de Reducción de Dimensionalidad**: al aplicar `PCAFromScratch` sobre datos correlacionados (2D o 3D), la primera componente principal (PC1) captura la dirección de máxima varianza conjunta — en un contexto de caracterización de nanopartículas, esto permitiría combinar múltiples mediciones fisicoquímicas correlacionadas (diámetro, potencial zeta, índice de polidispersidad) en un único índice de calidad del lote.
 3. **Whitening como Preprocesamiento**: la transformación de blanqueamiento (ZCA/PCA/Cholesky) deja la covarianza en la identidad, eliminando la correlación estructural entre variables — un paso común antes de alimentar datos de caracterización de nanomateriales a modelos de aprendizaje automático que asumen features no correlacionados.
 
-### 10.2 Diccionario de Variables Nanotecnológicas
+### 10.2 Diccionario de Variables de la Unidad
+
+Notación general introducida en las Secciones 1-7, independiente del ejemplo aplicado específico:
+
+**Distribuciones conjuntas, marginales y condicionales**
+
+* $P_{X,Y}(x,y)$: función de masa de probabilidad (PMF) conjunta de dos variables discretas $X$ e $Y$.
+* $f_{X,Y}(x,y)$: función de densidad de probabilidad (PDF) conjunta de dos variables continuas $X$ e $Y$.
+* $P_X(x)$, $P_Y(y)$: PMF marginal de $X$ (respectivamente $Y$), obtenida sumando la conjunta sobre la otra variable.
+* $f_X(x)$, $f_Y(y)$: PDF marginal de $X$ (respectivamente $Y$), obtenida integrando la conjunta sobre la otra variable.
+* $P_{Y|X}(y|x)$: PMF condicional de $Y$ dado $X=x$ (caso discreto).
+* $f_{Y|X}(y|x)$: PDF condicional de $Y$ dado $X=x$ (caso continuo).
+* $E[Y|X=x]$: esperanza condicional de $Y$ dado que $X$ toma el valor $x$.
+* $\text{Var}(Y|X)$: varianza condicional de $Y$ dado $X$ (en general una función de $X$, no una constante).
+* $\mathbb{E}[\text{Var}(Y|X)]$: término de "variabilidad dentro" de la Ley de la Varianza Total — promedio de la varianza condicional sobre la distribución de $X$.
+* $\text{Var}(\mathbb{E}[Y|X])$: término de "variabilidad entre" de la Ley de la Varianza Total — varianza de la esperanza condicional al variar $X$.
+
+**Independencia, suma y convolución**
+
+* $\text{Cov}(X,Y)$: covarianza entre $X$ y $Y$; covarianza cero es necesaria pero no suficiente para independencia.
+* $Z = X+Y$: variable suma de dos variables aleatorias, cuya distribución se obtiene por convolución de las distribuciones de $X$ y $Y$ cuando son independientes.
+* $P_Z(z)$, $f_Z(z)$: PMF (discreta) o PDF (continua) de la variable suma $Z$.
+* $f_X * f_Y$: notación de convolución entre las densidades de $X$ y $Y$.
+* $\mathcal{F}\{\cdot\}$: transformada (de Fourier o función generadora de momentos/probabilidad) usada para convertir una convolución en un producto.
+* $G_X(s)$: función generadora de probabilidad (PGF) de $X$.
+* $\phi_X(t)$: función característica de $X$.
+
+**Vectores aleatorios y matriz de covarianza**
+
+* $\mathbf{X}$: vector aleatorio de $p$ componentes $(X_1,\dots,X_p)$.
+* $\mathbb{E}[\mathbf{X}]$: vector de esperanzas, con una entrada $E[X_i]$ por cada componente.
+* $\mathbf{\mu}$ (o $\mu$): vector de medias de un vector aleatorio.
+* $\mathbf{\Sigma}$ (o $\Sigma$): matriz de covarianza del vector aleatorio; $\Sigma_{ii}=\text{Var}(X_i)$ en la diagonal y $\Sigma_{ij}=\text{Cov}(X_i,X_j)$ fuera de ella.
+* $\rho_{X,Y}$: coeficiente de correlación entre $X$ y $Y$, definido como $\text{Cov}(X,Y)/(\sigma_X\sigma_Y)$.
+* $\mathcal{N}(\mathbf{\mu},\mathbf{\Sigma})$: distribución normal multivariada con vector de medias $\mathbf{\mu}$ y matriz de covarianza $\mathbf{\Sigma}$.
+* $D^2$: distancia (al cuadrado) de Mahalanobis, $D^2=(\mathbf{x}-\mathbf{\mu})^T\mathbf{\Sigma}^{-1}(\mathbf{x}-\mathbf{\mu})$.
+* $L$: factor de la descomposición de Cholesky de $\Sigma$ tal que $\Sigma=LL^T$, usado para simular vectores correlacionados a partir de ruido gaussiano independiente.
+
+**Transformaciones lineales, whitening y PCA**
+
+* $\mathbf{A}$, $\mathbf{b}$: matriz y vector de una transformación lineal $\mathbf{Y}=\mathbf{A}\mathbf{X}+\mathbf{b}$ aplicada a un vector Gaussiano.
+* $\mathbf{V}$, $\mathbf{\Lambda}$: matriz de eigenvectores y matriz diagonal de eigenvalores de la descomposición espectral $\mathbf{\Sigma}=\mathbf{V}\mathbf{\Lambda}\mathbf{V}^T$.
+* $\lambda_i$: eigenvalor $i$-ésimo de $\Sigma$, indica la magnitud de variación en la dirección de su eigenvector asociado.
+* $\mathbf{W}$: matriz de blanqueamiento (whitening) tal que $\mathbf{W}\mathbf{\Sigma}\mathbf{W}^T=I$.
+* $\mathbf{X}_c$: matriz de datos centrada (media cero) usada como punto de partida de PCA.
+* $\mathbf{V}_k$: submatriz con las primeras $k$ direcciones principales (eigenvectores de mayor eigenvalor), usada para proyectar los datos a menor dimensión.
+
+### 10.3 Diccionario de Variables Nanotecnológicas del Ejemplo Aplicado
 * $X$: diámetro de la nanopartícula coloidal (nm).
 * $Y$: potencial zeta de la nanopartícula ($\zeta$, mV), medida de la carga superficial efectiva y de la estabilidad electrostática de la suspensión.
 * $\mu, \Sigma$: vector de medias y matriz de covarianza del vector aleatorio bivariado $(X,Y)$ del lote de síntesis.

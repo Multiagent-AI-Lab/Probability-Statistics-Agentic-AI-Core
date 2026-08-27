@@ -245,7 +245,28 @@ plt.show()
 1. **Fidelidad del Generador por Transformada Inversa**: El histograma de frecuencias simuladas con $100,000$ réplicas se superpone perfectamente sobre la curva teórica de la densidad de Weibull $\text{PDF}(t)$.
 2. **Validación Mediante Q-Q Plot**: La alineación lineal estricta sobre la diagonal de $45^\circ$ en el gráfico Q-Q demuestra que el generador estocástico no introduce sesgos en las colas de la distribución, garantizando la validez para estimar tiempos extremos de penetración tumoral.
 
-### 5.2 Diccionario de Variables Nanotecnológicas
+### 5.2 Diccionario de Variables de la Unidad
+
+Notación general introducida en las Secciones 1 y 6, independiente del ejemplo aplicado específico:
+
+* $U$: variable aleatoria uniforme estándar, $U \sim \text{Uniforme}(0, 1)$, insumo base de todo método de generación.
+* $X_n$: entero generado en el paso $n$ por un Generador Congruencial Lineal (LCG).
+* $a$: multiplicador de la recurrencia del LCG.
+* $c$: en el LCG, el incremento de la recurrencia; en Aceptación-Rechazo, la constante envolvente tal que $f(x) \le c \cdot g(x)$.
+* $m$: módulo de la recurrencia del LCG.
+* $X_0$: semilla (seed) inicial del generador congruencial.
+* $F(x)$: función de distribución acumulada (CDF) de la variable objetivo a simular.
+* $F^{-1}(u)$: función cuantil (CDF inversa) usada en el método de la Transformada Inversa.
+* $f(x)$: densidad de probabilidad objetivo en el método de Aceptación-Rechazo.
+* $g(x)$: densidad de probabilidad propuesta (auxiliar), de la cual se sabe simular directamente.
+* $Y$: variable generada desde la propuesta $g(y)$ en el algoritmo de Aceptación-Rechazo, candidata a ser aceptada como muestra de $f$.
+* $Z_1, Z_2$: par de variables aleatorias normales estándar independientes generadas por el método de Box-Muller.
+* $U_1, U_2$: par de variables uniformes independientes usadas como insumo del método de Box-Muller.
+* $\theta$: valor de la integral definida que se desea estimar mediante Monte Carlo.
+* $\hat{\theta}_N$: estimador de Monte Carlo de $\theta$, calculado a partir de $N$ réplicas.
+* $N$: número de réplicas (tamaño de muestra) usadas en la estimación de Monte Carlo.
+
+### 5.3 Diccionario de Variables Nanotecnológicas del Ejemplo Aplicado
 * $U$: Variable aleatoria uniforme estándar $U \sim \text{Uniforme}(0, 1)$ que actúa como semilla probabilística.
 * $T$: Tiempo de tránsito estocástico de la nanopartícula a través de la membrana microvascular (segundos).
 * $\lambda$: Parámetro de escala de Weibull ($\lambda = 12.0\text{ s}$), relacionado con la viscosidad del estroma tumoral.

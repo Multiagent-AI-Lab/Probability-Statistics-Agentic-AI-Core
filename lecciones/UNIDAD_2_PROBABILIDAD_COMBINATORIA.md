@@ -460,7 +460,31 @@ plt.show()
 1. **Actualización Bayesiana de Creencias**: En el gráfico de barra comparativo se aprecia el efecto directo del Teorema de Bayes. Aunque el **Reactor 1** dominaba la producción a priori con un $45\%$, su baja tasa de defectos ($4\%$) reduce su responsabilidad a posteriori al $43.9\%$. Por el contrario, el **Reactor 3**, que solo producía el $20\%$ de las nanopartículas, pasa a representar casi el $39.02\%$ de todas las piezas defectuosas debido a su alta tasa de falla ($8\%$).
 2. **Convergencia Monte Carlo**: El segundo gráfico demuestra empíricamente la Ley de los Grandes Números. Al incrementar el tamaño muestral de la simulación hacia $1,000,000$ de ensayos, la frecuencia relativa simulada converge con precisión de tres decimales hacia el valor teórico de $\frac{16}{41} \approx 0.39024$.
 
-### 8.2 Diccionario de Variables Nanotecnológicas
+### 8.2 Diccionario de Variables de la Unidad
+
+Notación general introducida en las Secciones 1-4 y 5.6, independiente del ejemplo aplicado específico:
+
+* $\mathcal{E}$: experimento aleatorio.
+* $\Omega$: espacio muestral (conjunto de todos los resultados posibles).
+* $A, B \subseteq \Omega$: eventos o sucesos (subconjuntos del espacio muestral).
+* $A \cup B$: unión de eventos (ocurre al menos uno).
+* $A \cap B$: intersección de eventos (ocurren ambos).
+* $A^c$ o $\bar{A}$: complemento de un evento.
+* $\emptyset$: evento imposible o conjunto vacío.
+* $P: \mathcal{F} \rightarrow [0,1]$: función de probabilidad definida sobre los eventos.
+* $P(A)$: probabilidad del evento $A$.
+* $n!$: factorial de $n$, número de permutaciones de $n$ objetos distintos.
+* $P(n)$: permutaciones de $n$ objetos distintos.
+* $P(n, r)$: permutaciones de $n$ objetos tomados de $r$ en $r$.
+* $P(n; n_1, n_2, \dots, n_k)$: permutaciones con repetición (multiset) de $n$ objetos agrupados en $k$ tipos.
+* $\binom{n}{r}$ o $C(n, r)$: combinaciones de $n$ objetos tomados de $r$ en $r$ (el orden no importa).
+* $P(A|B)$: probabilidad condicional de $A$ dado que ocurrió $B$.
+* $A_1, A_2, \dots, A_k$: partición del espacio muestral $\Omega$ (eventos mutuamente excluyentes cuya unión es $\Omega$).
+* $P(A_j)$: probabilidad a priori de la hipótesis o causa $A_j$.
+* $P(B|A_j)$: verosimilitud (likelihood) de observar la evidencia $B$ bajo la hipótesis $A_j$.
+* $P(A_j|B)$: probabilidad a posteriori de $A_j$ dada la evidencia $B$ (Teorema de Bayes).
+
+### 8.3 Diccionario de Variables Nanotecnológicas del Ejemplo Aplicado
 * $R_1, R_2, R_3$: Eventos que representan el reactor químico de síntesis coloidal de origen.
 * $D$: Evento binario que indica si una nanopartícula se encuentra defectuosa (fuera del rango de tamaño óptimo $15 \pm 2\text{ nm}$).
 * $P(R_i)$: Probabilidad a priori de selección de una nanopartícula del reactor $i$.

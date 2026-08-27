@@ -722,7 +722,63 @@ print(muestras_dirichlet)
 1. **Conformidad de Proceso Litográfico**: El $86.64\%$ del lote de obleas cumple con la especificación de tolerancia ($7.9 - 9.1\text{ nm}$). El percentil $95\%$ se ubica en $9.1579\text{ nm}$, indicando que menos del $5\%$ de la producción supera esa cota máxima de espesor.
 2. **Modelado de Fallas**: El gráfico comparativo resalta las diferencias entre distribuciones continuas: la Exponencial posee una tasa de falla constante (falta de memoria), mientras que la Weibull con $k=2.5$ caracteriza el envejecimiento por fatiga de materiales nanotecnológicos.
 
-### 6.2 Diccionario de Variables Nanotecnológicas
+### 6.2 Diccionario de Variables de la Unidad
+
+Notación general introducida en las Secciones 1-2, independiente del ejemplo aplicado específico:
+
+**Notación general de variables aleatorias continuas (Sección 1)**
+* $X$: variable aleatoria continua genérica, $X:\Omega\rightarrow\mathbb{R}$.
+* $R_X$: rango (soporte) de valores posibles de $X$.
+* $f_X(x)$: función de densidad de probabilidad (PDF) de $X$.
+* $F_X(x)$: función de distribución acumulada (CDF) de $X$.
+* $\mathbb{E}[X]$: valor esperado (media) de $X$.
+* $\text{Var}(X)$: varianza de $X$.
+* $g(X)$: transformación (función) aplicada a la variable aleatoria $X$.
+
+**Distribución Uniforme (2.1, 2.12.4)**
+* $a, b$: límites inferior y superior del intervalo de soporte.
+
+**Distribución Normal (2.2, 2.12.1)**
+* $\mu$: media de la distribución Normal.
+* $\sigma$ (y $\sigma^2$): desviación estándar (y varianza) de la distribución Normal.
+* $Z$: variable normal estándar, $Z = (X-\mu)/\sigma \sim \mathcal{N}(0,1)$.
+* $\Phi(z)$: CDF de la Normal estándar $\mathcal{N}(0,1)$.
+
+**Distribución Exponencial (2.3, 2.12.5)**
+* $\lambda$: parámetro de tasa de la distribución Exponencial.
+
+**Distribución Gamma (2.4, 2.12.6)**
+* $k$: parámetro de forma de la distribución Gamma.
+* $\theta$: parámetro de escala de la distribución Gamma.
+
+**Distribución de Weibull (2.5, 2.12.2)**
+* $k$: parámetro de forma de la distribución de Weibull.
+* $\lambda$: parámetro de escala de la distribución de Weibull.
+
+**Distribución Chi-cuadrada (2.6, 2.12.3)**
+* $k$: grados de libertad de la distribución Chi-cuadrada ($\chi^2_k$).
+
+**Distribución t-Student (2.7, 2.12.7)**
+* $\nu$: grados de libertad de la distribución t-Student.
+
+**Distribución F (2.8, 2.12.8)**
+* $d_1, d_2$: grados de libertad del numerador y del denominador de la distribución F.
+
+**Distribución Log-Normal (2.9, 2.12.9)**
+* $\mu, \sigma$: media y desviación estándar del logaritmo de la variable ($\ln X \sim \mathcal{N}(\mu,\sigma^2)$).
+
+**Distribución Beta (2.10, 2.12.10)**
+* $\alpha, \beta$: parámetros de forma de la distribución Beta.
+
+**Distribución de Dirichlet (2.11, 2.12.11)**
+* $\mathbf{X}$: vector aleatorio en el símplex ($\sum_i x_i = 1$).
+* $\boldsymbol{\alpha}$ (y $\alpha_i$): vector de parámetros de concentración de la distribución Dirichlet (y su $i$-ésima componente).
+
+**Funciones especiales (2.13)**
+* $\Gamma(\cdot)$: función Gamma, generalización del factorial ($\Gamma(n)=(n-1)!$ para $n$ entero positivo).
+* $B(\cdot,\cdot)$: función Beta, $B(x,y)=\Gamma(x)\Gamma(y)/\Gamma(x+y)$.
+
+### 6.3 Diccionario de Variables Nanotecnológicas del Ejemplo Aplicado
 * $X$: Espesor continuo de la capa dieléctrica $\text{HfO}_2$ ($\text{nm}$).
 * $\mu$: Espesor medio poblacional ($\mu = 8.5\text{ nm}$).
 * $\sigma$: Desviación estándar de deposición por capa atómica ($\sigma = 0.4\text{ nm}$).
