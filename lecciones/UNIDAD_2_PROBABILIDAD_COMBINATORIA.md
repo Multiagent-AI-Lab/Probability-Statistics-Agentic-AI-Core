@@ -93,6 +93,52 @@ Propiedades del coeficiente binomial:
 * $\binom{n}{r} = \binom{n}{n-r}$
 * Teorema del Binomio: $(x + y)^n = \sum_{k=0}^n \binom{n}{k} x^{n-k} y^k$
 
+### 2.4 Ejemplos Resueltos de Técnicas de Conteo Aplicadas a Nanotecnología
+
+Reconocer *cuál* técnica de conteo aplica a un problema dado es más difícil que ejecutar la fórmula una vez identificada. Los siguientes cuatro ejemplos cortos, cada uno con una técnica distinta, sirven de referencia rápida antes de enfrentar el banco de ejercicios de la Sección 9.
+
+**Ejemplo A (Principio Multiplicativo — configuración binaria)**: Un arreglo de biosensores nanoelectrónicos tiene $8$ interruptores independientes, cada uno en estado ON/OFF. ¿Cuántas configuraciones distintas del arreglo son posibles?
+$$\underbrace{2 \times 2 \times \cdots \times 2}_{8 \text{ veces}} = 2^8 = \boxed{256 \text{ configuraciones}}$$
+Es un caso particular del principio multiplicativo donde los $8$ pasos tienen siempre $n_i = 2$ opciones — patrón que reaparece constantemente en el conteo de estados de sistemas binarios (bits de memoria, arreglos de sensores, rutas de un autómata).
+
+**Ejemplo B (Principio Multiplicativo — material compuesto en capas)**: Un material nanocompuesto se fabrica apilando, en orden, una capa base (3 tipos de polímero disponibles), una capa intermedia (4 tipos de nanopartícula catalizadora) y una capa de recubrimiento (2 tipos de sellado). ¿Cuántos materiales distintos pueden ensamblarse?
+$$3 \times 4 \times 2 = \boxed{24 \text{ materiales distintos}}$$
+A diferencia del Ejemplo A, aquí cada paso tiene un número distinto de opciones ($n_1=3$, $n_2=4$, $n_3=2$) — la esencia del principio multiplicativo es que el número de pasos y de opciones por paso puede variar libremente, siempre que los pasos sean secuenciales e independientes entre sí.
+
+**Ejemplo C (Combinación simple — selección sin orden)**: De un lote de $12$ nanopartículas de plata (AgNPs) sintetizadas, se seleccionan al azar $4$ para un ensayo de dispersión dinámica de luz (DLS). El orden en que se colocan en el equipo no afecta la medición. ¿Cuántas selecciones distintas de $4$ nanopartículas son posibles?
+$$\binom{12}{4} = \frac{12!}{4! \, 8!} = \boxed{495 \text{ selecciones}}$$
+
+**Ejemplo D (Combinación mixta — dos grupos disjuntos)**: Un laboratorio tiene $6$ nanotubos de carbono de pared simple (SWCNT) y $4$ de pared múltiple (MWCNT). Para un experimento se necesitan exactamente $2$ SWCNT y $1$ MWCNT. ¿De cuántas formas puede formarse el grupo experimental?
+
+A diferencia del Ejemplo C (una sola combinación), aquí hay **dos decisiones independientes que se combinan multiplicativamente**: elegir el subgrupo de SWCNT y, por separado, el de MWCNT.
+$$\binom{6}{2} \times \binom{4}{1} = 15 \times 4 = \boxed{60 \text{ grupos experimentales distintos}}$$
+Este patrón —una combinación por cada grupo disjunto, multiplicadas entre sí— es la técnica que subyace a ejercicios donde el enunciado exige "exactamente $k_1$ de un tipo y $k_2$ de otro": se resuelve como combinaciones independientes conectadas por el principio multiplicativo, nunca como una sola combinación sobre el total combinado.
+
+```python
+import math
+
+## Ejemplo A: configuraciones binarias de un arreglo de biosensores
+n_interruptores = 8
+configuraciones = 2 ** n_interruptores
+
+## Ejemplo B: material compuesto en 3 capas con distinto número de opciones
+opciones_capa_base, opciones_capa_intermedia, opciones_capa_sellado = 3, 4, 2
+materiales_distintos = opciones_capa_base * opciones_capa_intermedia * opciones_capa_sellado
+
+## Ejemplo C: combinación simple para ensayo DLS
+seleccion_agnps = math.comb(12, 4)
+
+## Ejemplo D: combinación mixta de dos grupos disjuntos (SWCNT y MWCNT)
+grupos_swcnt = math.comb(6, 2)
+grupos_mwcnt = math.comb(4, 1)
+grupos_experimentales = grupos_swcnt * grupos_mwcnt
+
+print(f"Ejemplo A — Configuraciones del arreglo de biosensores: {configuraciones}")
+print(f"Ejemplo B — Materiales nanocompuestos distintos: {materiales_distintos}")
+print(f"Ejemplo C — Selecciones de 4 AgNPs de un lote de 12: {seleccion_agnps}")
+print(f"Ejemplo D — Grupos experimentales (2 SWCNT y 1 MWCNT): {grupos_experimentales}")
+```
+
 ---
 
 ## 3. Probabilidad Condicional e Independencia
@@ -111,6 +157,43 @@ Dos eventos $A$ y $B$ son **estocásticamente independientes** si y solo si la o
 $$P(A|B) = P(A) \quad \iff \quad P(A \cap B) = P(A) \cdot P(B)$$
 
 > ⚠️ **Distinción Crítica**: Eventos mutuamente excluyentes ($A \cap B = \emptyset$) NO son independientes si $P(A)>0$ y $P(B)>0$, ya que la ocurrencia de uno imposibilita por completo la ocurrencia del otro ($P(A|B) = 0 \neq P(A)$).
+
+### 3.3 Ejemplos Resueltos: Despejar la Intersección y Verificar Independencia
+
+**Ejemplo E (despejar $P(A\cap B)$ desde una condicional dada)**: en un control de calidad de nanotransistores, el $40\%$ de las obleas provienen de la Máquina A ($P(M)=0.40$), y de esas, el $80\%$ pasa la prueba de continuidad eléctrica ($P(\text{Apta}|M)=0.80$). Se sabe además que, considerando toda la producción (ambas máquinas), el $60\%$ de las obleas son aptas ($P(\text{Apta})=0.60$). ¿Cuál es la probabilidad de que una oblea apta haya salido de la Máquina A, $P(M|\text{Apta})$?
+
+El dato $P(\text{Apta}|M)$ no puede aplicarse directamente en Bayes sin antes obtener la intersección:
+$$P(M \cap \text{Apta}) = P(M) \cdot P(\text{Apta}|M) = 0.40 \times 0.80 = 0.32$$
+$$P(M|\text{Apta}) = \frac{P(M \cap \text{Apta})}{P(\text{Apta})} = \frac{0.32}{0.60} = \frac{8}{15} \approx \boxed{0.5333}$$
+Esta técnica —despejar primero la intersección con la Regla General del Producto (§3.1) antes de invocar Bayes— es la que con más frecuencia se olvida al enfrentar un problema donde el enunciado da $P(B|A)$ y $P(B)$ pero pide $P(A|B)$.
+
+**Ejemplo F (contraejemplo de NO independencia — falacia de la intuición)**: un laboratorio tiene dos monedas usadas para asignar aleatoriamente muestras a un grupo de control: una moneda justa ($P(\text{Cara})=0.5$) y una moneda cargada ($P(\text{Cara})=0.7$), elegida cada una con probabilidad $0.5$ al inicio del experimento. Sea $A$ = "se usó la moneda cargada" y $B$ = "el primer lanzamiento fue cara". ¿Son $A$ y $B$ independientes?
+
+Por el Teorema de la Probabilidad Total (§4.1, adelantando su uso):
+$$P(B) = P(B|A)P(A) + P(B|A^c)P(A^c) = (0.7)(0.5) + (0.5)(0.5) = 0.60$$
+Comparando $P(B|A) = 0.70$ contra $P(B) = 0.60$: **no son iguales**, por lo tanto $A$ y $B$ **no son independientes** — saber que salió cara sí actualiza la creencia sobre qué moneda se usó (de hecho, es exactamente el mecanismo detrás del Teorema de Bayes: si no hubiera dependencia entre el origen y el resultado, condicionar no aportaría ninguna información). Este contraejemplo es útil para evitar el error inverso al de "Distinción Crítica" de arriba: así como excluyentes no implica independiente, tampoco toda situación que *parece* simétrica es independiente — hay que verificar la igualdad $P(B|A)=P(B)$ explícitamente, nunca asumirla.
+
+```python
+## Ejemplo E: despejar la interseccion antes de aplicar Bayes
+p_maquina_a = 0.40
+p_apta_dado_a = 0.80
+p_apta_total = 0.60
+
+interseccion_a_apta = p_maquina_a * p_apta_dado_a
+p_a_dado_apta = interseccion_a_apta / p_apta_total
+
+## Ejemplo F: contraejemplo de NO independencia (monedas justa vs cargada)
+p_moneda_cargada = 0.5
+p_cara_dado_cargada = 0.7
+p_cara_dado_justa = 0.5
+
+p_cara_total = p_cara_dado_cargada * p_moneda_cargada + p_cara_dado_justa * (1 - p_moneda_cargada)
+son_independientes = abs(p_cara_dado_cargada - p_cara_total) < 1e-9
+
+print(f"Ejemplo E — P(Maquina A | Apta) = {p_a_dado_apta:.4f}")
+print(f"Ejemplo F — P(Cara) marginal = {p_cara_total:.4f} vs P(Cara | Cargada) = {p_cara_dado_cargada:.4f}")
+print(f"Ejemplo F — ¿A y B independientes?: {son_independientes}")
+```
 
 ---
 
@@ -203,6 +286,53 @@ def test_posterior_de_r3_es_mayor_que_su_prior_por_su_alta_tasa_de_defecto():
 
 
 ipytest.run("-vv")
+```
+
+---
+
+## 5.6 Estudio de Caso: El Problema de los Tres Prisioneros
+
+El ejemplo de los reactores (Sección 5) resuelve Bayes en un caso donde la intuición y el cálculo coinciden. El siguiente caso clásico —isomorfo al problema de Monty Hall— es célebre precisamente porque la intuición falla: sirve para poner a prueba si el Teorema de Bayes se aplicó por comprensión o solo por sustitución mecánica en una fórmula.
+
+**Planteamiento**: tres prisioneros, $A$, $B$ y $C$, esperan sentencia. Se sabe que exactamente uno de los tres será indultado (liberado) y los otros dos ejecutados, con probabilidad uniforme a priori:
+$$P(A) = P(B) = P(C) = \frac{1}{3}$$
+El prisionero $A$ le pide al guardia (que conoce el resultado, pero no puede revelárselo directamente a $A$) que le diga el nombre de **uno de los otros dos** ($B$ o $C$) que será ejecutado con certeza. El guardia responde: "$B$ será ejecutado". La pregunta es: ¿cambia esta información la probabilidad de que $A$ sea el indultado?
+
+**Solución vía Bayes**: sea $G_B$ el evento "el guardia dice que $B$ será ejecutado". Las verosimilitudes dependen de la regla que sigue el guardia cuando tiene más de una opción válida (si $A$ es el indultado, el guardia puede decir "$B$" o "$C$" con igual probabilidad, por simetría):
+
+$$P(G_B|A) = \frac{1}{2}, \qquad P(G_B|B) = 0, \qquad P(G_B|C) = 1$$
+
+Nótese que estas dos últimas verosimilitudes son valores extremos (0 y 1), no intermedios: si $B$ fuera el indultado, el guardia jamás diría "$B$ será ejecutado" (sería falso); si $C$ fuera el indultado, el guardia está obligado a decir "$B$" porque es la única opción de ejecutado que no es $A$.
+
+Aplicando el Teorema de la Probabilidad Total (§4.1):
+$$P(G_B) = P(G_B|A)P(A) + P(G_B|B)P(B) + P(G_B|C)P(C) = \left(\frac{1}{2}\right)\left(\frac{1}{3}\right) + (0)\left(\frac{1}{3}\right) + (1)\left(\frac{1}{3}\right) = \frac{1}{6} + \frac{1}{3} = \frac{1}{2}$$
+
+Y aplicando Bayes (§4.2) para cada hipótesis:
+$$P(A|G_B) = \frac{P(G_B|A)P(A)}{P(G_B)} = \frac{(1/2)(1/3)}{1/2} = \frac{1}{3} \qquad P(C|G_B) = \frac{P(G_B|C)P(C)}{P(G_B)} = \frac{(1)(1/3)}{1/2} = \frac{2}{3}$$
+
+$$\boxed{P(A|G_B) = \frac{1}{3} \text{ (no cambia)}, \qquad P(C|G_B) = \frac{2}{3} \text{ (se duplica)}}$$
+
+**Interpretación**: la información del guardia **no cambia** la probabilidad de que $A$ sea el indultado —sigue siendo $1/3$, igual que antes de preguntar—, pero **sí concentra** la probabilidad restante casi por completo sobre $C$ ($2/3$), en vez de repartirla equitativamente entre $B$ (que ya se descartó, $P=0$) y $C$. La falacia intuitiva más común es asumir que, al eliminar a $B$ como opción, la probabilidad se reparte $50/50$ entre $A$ y $C$ — esto ignora que la respuesta del guardia no es una elección al azar entre los dos no-$A$, sino una elección **forzada** cuando $C$ es el indultado ($P(G_B|C)=1$) y solo parcialmente libre cuando $A$ lo es ($P(G_B|A)=1/2$). Esa asimetría en la verosimilitud, no en el prior, es lo que rompe la simetría aparente del resultado.
+
+**Pregunta de reflexión**: ¿por qué el resultado sería diferente si, en cambio de pedirle al guardia que nombre a un ejecutado, $A$ pudiera *ver* directamente si $B$ fue ejecutado por una causa totalmente ajena (por ejemplo, un evento aleatorio independiente del indulto)? Piensa en qué verosimilitud $P(\text{evidencia}|A)$, $P(\text{evidencia}|B)$, $P(\text{evidencia}|C)$ correspondería a ese escenario alternativo, y si seguiría siendo asimétrica de la misma forma.
+
+```python
+## Verificacion del Problema de los Tres Prisioneros
+p_a, p_b, p_c = 1/3, 1/3, 1/3
+
+## Verosimilitudes de que el guardia diga "B sera ejecutado"
+p_gb_dado_a = 1/2  ## A es el indultado: el guardia elige entre B y C al azar
+p_gb_dado_b = 0    ## B es el indultado: el guardia nunca diria que B sera ejecutado
+p_gb_dado_c = 1    ## C es el indultado: el guardia esta obligado a decir "B"
+
+p_gb = p_gb_dado_a * p_a + p_gb_dado_b * p_b + p_gb_dado_c * p_c
+
+p_a_dado_gb = (p_gb_dado_a * p_a) / p_gb
+p_c_dado_gb = (p_gb_dado_c * p_c) / p_gb
+
+print(f"P(G_B) = {p_gb:.4f}")
+print(f"P(A | G_B) = {p_a_dado_gb:.4f}  (antes de preguntar: {p_a:.4f}, no cambia)")
+print(f"P(C | G_B) = {p_c_dado_gb:.4f}  (antes de preguntar: {p_c:.4f}, se duplica)")
 ```
 
 ---
@@ -348,6 +478,9 @@ plt.show()
 * **Error**: Tratar "eventos mutuamente excluyentes" y "eventos independientes" como sinónimos o como conceptos compatibles en el caso general.
   **Correcto**: si $A$ y $B$ son mutuamente excluyentes ($A \cap B = \emptyset$) y ambos tienen probabilidad positiva, entonces necesariamente son dependientes, porque $P(A \cap B) = 0 \neq P(A)\,P(B)$. Son propiedades distintas que rara vez coexisten.
 
+* **Error**: Asumir que, al descartar una de $k$ opciones igualmente probables mediante evidencia adicional, la probabilidad restante se reparte equitativamente entre las opciones sobrevivientes (falacia del "50/50 automático").
+  **Correcto**: como demuestra el Problema de los Tres Prisioneros (§5.6), la forma en que se genera la evidencia determina cómo se redistribuye la probabilidad — si la evidencia es más probable bajo una hipótesis que bajo otra ($P(G_B|C)=1$ vs. $P(G_B|A)=1/2$), la redistribución es asimétrica. Repartir siempre por igual ignora la verosimilitud de la evidencia bajo cada hipótesis.
+
 ## Ejercicio Propuesto
 
 Una planta de síntesis de puntos cuánticos (Quantum Dots, QDs) de CdSe produce su lote diario en tres líneas de reacción, $L_1$, $L_2$ y $L_3$, con las siguientes proporciones de producción y tasas de defecto (fuera de especificación de emisión fotoluminiscente):
@@ -363,6 +496,18 @@ Una planta de síntesis de puntos cuánticos (Quantum Dots, QDs) de CdSe produce
 3. De un lote de 15 QDs, ¿cuántas combinaciones distintas de 4 QDs pueden seleccionarse para control de calidad ($C(15,4)$)?
 
 Escribe tu solución en una celda de código nueva en tu notebook. La celda de autoevaluación de la siguiente sección verificará tu resultado.
+
+### Ejercicios Adicionales de Práctica
+
+Los siguientes tres ejercicios no forman parte del Ejercicio Propuesto que verifica la Autoevaluación, pero se recomienda resolverlos como práctica adicional antes de continuar a la Unidad 3:
+
+1. **(Regla de la Cadena con 3+ eventos)** De un mazo de $52$ cartas se extraen $3$ cartas **sin reemplazo**. ¿Cuál es la probabilidad de que las tres sean figuras (J, Q o K)? Generaliza la Regla General del Producto de la Sección 3.1 (que solo cubre 2 eventos) a tres eventos encadenados:
+   $$P(A_1 \cap A_2 \cap A_3) = P(A_1) \cdot P(A_2|A_1) \cdot P(A_3|A_1 \cap A_2)$$
+   donde cada factor refleja que el mazo tiene una carta menos, y una figura menos, tras cada extracción.
+
+2. **(Independencia con/sin reemplazo)** Una urna de control de calidad contiene $6$ canicas que representan nanopartículas conformes y $4$ que representan nanopartículas defectuosas. Se extraen dos canicas. Calcula $P(\text{ambas conformes})$ en dos escenarios: (a) con reemplazo, (b) sin reemplazo. ¿En cuál de los dos escenarios las extracciones son eventos independientes? Justifica en términos de si $P(\text{2da conforme} \mid \text{1ra conforme})$ cambia respecto a $P(\text{2da conforme})$.
+
+3. **(Partición de tres categorías, nanotecnología)** Un laboratorio de síntesis de nanopartículas lipídicas para liberación de fármacos produce partículas con carga superficial positiva ($40\%$), negativa ($35\%$) o neutra ($25\%$), medida por potencial zeta. La tasa de agregación no deseada (formación de agregados que invalidan el lote) es del $12\%$ para carga positiva, $5\%$ para carga negativa y $20\%$ para carga neutra. Si una nanopartícula elegida al azar del lote unificado presenta agregación, calcula la probabilidad de que su carga superficial haya sido neutra. Compara la estructura de este ejercicio con el ejemplo de los reactores de la Sección 5 — es la misma técnica (partición de 3 categorías + Bayes) aplicada a un dataset distinto.
 
 ## Referencias
 
