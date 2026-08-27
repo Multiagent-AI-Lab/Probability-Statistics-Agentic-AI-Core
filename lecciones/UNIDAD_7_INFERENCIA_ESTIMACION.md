@@ -836,24 +836,47 @@ La inferencia moderna combina la **Estimación por Máxima Verosimilitud (MLE)**
 
 ### 6.1 Inferencia Bootstrap en Python
 
+El **Bootstrap no paramétrico** responde una pregunta que el enfoque analítico clásico (§1.6, IC basado en $t$/$Z$) solo resuelve bajo el supuesto de normalidad: ¿cuál es la incertidumbre de un estimador cuando **no** se conoce (o no se puede tabular fácilmente) su distribución muestral exacta? En vez de derivar una fórmula, el Bootstrap la **simula**: remuestrea la propia muestra observada, repitiendo el proceso miles de veces, para construir empíricamente la distribución del estimador.
+
+**Contexto de nanotecnología**: se mide el tiempo hasta falla (en horas) de $n=40$ nano-sensores piezoresistivos bajo estrés acelerado, modelado como $\text{Exponencial}(\lambda)$. Se desea un intervalo de confianza del $95\%$ para el tiempo medio de falla $\mathbb{E}[X]=1/\lambda$, sin depender de la aproximación normal de la media muestral (válida asintóticamente, pero cuestionable con $n=40$ y una distribución tan asimétrica como la Exponencial).
+
 ```python
 import numpy as np
 import scipy.stats as stats
 from IPython.display import display, Math
 
 np.random.seed(42)
-muestra_exp = stats.expon.rvs(scale=12.5, size=40)  # muestra original
+n = 40
+muestra_exp = stats.expon.rvs(scale=12.5, size=n)  # tiempo hasta falla, muestra original
 
-## Bootstrap (B = 10,000 réplicas)
+## --- Bootstrap no parametrico (B = 10,000 replicas) ---
 B = 10_000
-medias_boot = [np.mean(np.random.choice(muestra_exp, size=len(muestra_exp), replace=True)) for _ in range(B)]
+rng = np.random.default_rng(42)
+medias_boot = np.array([
+    np.mean(rng.choice(muestra_exp, size=n, replace=True)) for _ in range(B)
+])
 
-ic_inf = np.percentile(medias_boot, 2.5)
-ic_sup = np.percentile(medias_boot, 97.5)
+ic_boot_inf = np.percentile(medias_boot, 2.5)
+ic_boot_sup = np.percentile(medias_boot, 97.5)
 
-display(Math(fr"\text{{Media Muestral Original: }} \bar{{X}} = {np.mean(muestra_exp):.3f}"))
-display(Math(fr"\text{{Intervalo de Confianza Bootstrap 95\%: }} [{ic_inf:.3f}, {ic_sup:.3f}]"))
+## --- Comparacion: IC analitico aproximado por el Teorema del Limite Central ---
+## (asume que la media muestral es aproximadamente Normal, valido para n grande)
+error_estandar = np.std(muestra_exp, ddof=1) / np.sqrt(n)
+z_critico = stats.norm.ppf(0.975)
+ic_normal_inf = np.mean(muestra_exp) - z_critico * error_estandar
+ic_normal_sup = np.mean(muestra_exp) + z_critico * error_estandar
+
+display(Math(fr"\text{{Media Muestral Original: }} \bar{{X}} = {np.mean(muestra_exp):.3f}\text{{ h}}"))
+display(Math(fr"\text{{IC Bootstrap 95\% (percentil): }} [{ic_boot_inf:.3f},\ {ic_boot_sup:.3f}]\text{{ h}}"))
+display(Math(fr"\text{{IC Normal aproximado 95\% (TLC): }} [{ic_normal_inf:.3f},\ {ic_normal_sup:.3f}]\text{{ h}}"))
+
+print(f"\nDesviacion estandar de las {B} medias bootstrap (error estandar bootstrap): {np.std(medias_boot):.4f}")
+print(f"Error estandar analitico (TLC): {error_estandar:.4f}")
 ```
+
+**Interpretación**: los dos métodos producen intervalos muy similares ($[7.62, 14.86]$ Bootstrap vs. $[7.47, 14.75]$ Normal-TLC) porque $n=40$ ya es razonablemente grande para que el Teorema del Límite Central se cumpla bien sobre la media — pero el Bootstrap llegó a ese resultado **sin asumir** normalidad de $\bar X$ en ningún punto del cálculo, solo remuestreando los datos observados. Esta es la ventaja práctica del método: funciona igual de bien (y a veces mejor) cuando $n$ es pequeño, cuando el estimador de interés no es la media (p. ej. una mediana o un percentil, para los que no existe una fórmula analítica simple de error estándar), o cuando la forma de la distribución subyacente es incierta.
+
+---
 
 ### 6.2 Verificación Simbólica del Estimador MLE de la Media Normal
 
@@ -900,6 +923,48 @@ ks_stat, ks_pvalue = stats.kstest(datos_diametro, 'norm', args=(mu_mle, sigma_ml
 print(f"Kolmogorov-Smirnov: estadístico={ks_stat:.4f}, p-valor={ks_pvalue:.4f}")
 print("Buen ajuste (p > 0.05)" if ks_pvalue > 0.05 else "Ajuste cuestionable (p <= 0.05)")
 ```
+
+### 6.4 Estimación MAP (Máximo a Posteriori): Incorporando Conocimiento Previo
+
+El **Método de Momentos** (§1.9) y el **MLE** (§6.2-6.3) comparten un supuesto: toda la información sobre el parámetro $\theta$ proviene únicamente de la muestra observada. La estimación **Bayesiana** relaja ese supuesto incorporando explícitamente conocimiento previo sobre $\theta$ —de literatura, procesos similares ya caracterizados, o restricciones físicas conocidas— mediante una **distribución a priori** $p(\theta)$. El Teorema de Bayes (Unidad 2, §4.2) combina ese prior con la verosimilitud de los datos $p(x|\theta)$ para obtener la **distribución a posteriori**:
+$$p(\theta \mid x) \propto p(x \mid \theta)\cdot p(\theta)$$
+
+El estimador **Máximo a Posteriori (MAP)** es el valor de $\theta$ que maximiza esa posterior — el análogo bayesiano del MLE, pero "penalizado" por el prior:
+$$\hat\theta_{MAP} = \arg\max_\theta\ p(x\mid\theta)\,p(\theta)$$
+
+**Caso: proporción de éxito con prior Beta (conjugado de la Bernoulli/Binomial)**. Un prior $\theta\sim\text{Beta}(\alpha,\beta)$ es **conjugado** de la verosimilitud Binomial: la posterior resultante es también una Beta, con actualización trivial de sus parámetros. Si se observan $x$ éxitos en $n$ ensayos:
+$$p(\theta\mid x) = \text{Beta}(\alpha+x,\ \beta+n-x) \qquad\Longrightarrow\qquad \hat\theta_{MAP} = \frac{\alpha+x-1}{\alpha+\beta+n-2}\quad(\alpha,\beta>1)$$
+
+**Contexto de nanotecnología**: un nuevo proceso de funcionalización de nanotubos de carbono se somete a $n=20$ ensayos, de los cuales $x=14$ resultan en funcionalización exitosa. Antes de este experimento, procesos similares documentados en la literatura sugieren una tasa de éxito moderada, sin fuerte evidencia hacia ningún extremo — se modela ese conocimiento previo con un prior débil $\text{Beta}(\alpha=2,\beta=2)$ (equivalente a "2 pseudo-éxitos y 2 pseudo-fracasos" de información previa, centrado en $0.5$).
+
+```python
+import numpy as np
+from scipy.stats import beta
+
+## Prior debil: Beta(2,2), centrado en 0.5, poca informacion previa
+alpha_prior, beta_prior = 2, 2
+n, x = 20, 14  # 14 exitos en 20 ensayos de funcionalizacion
+
+## Posterior: Beta(alpha+x, beta+n-x) -- conjugacion Beta-Binomial
+alpha_post = alpha_prior + x
+beta_post = beta_prior + (n - x)
+
+## Estimadores puntuales a comparar
+theta_mle = x / n                                                    # MLE: solo los datos
+theta_map = (alpha_post - 1) / (alpha_post + beta_post - 2)           # MAP: datos + prior
+theta_media_posterior = alpha_post / (alpha_post + beta_post)         # media de la posterior (otro resumen bayesiano)
+
+print(f"MLE (solo datos):              theta_hat = {theta_mle:.4f}")
+print(f"MAP (datos + prior Beta(2,2)): theta_hat = {theta_map:.4f}")
+print(f"Media de la posterior:         theta_hat = {theta_media_posterior:.4f}")
+print(f"\nPosterior resultante: Beta(alpha={alpha_post}, beta={beta_post})")
+```
+
+**Interpretación**: el MLE ($\hat\theta=0.700$) usa únicamente los 20 ensayos observados; el MAP ($\hat\theta=0.6818$) lo "encoge" ligeramente hacia el $0.5$ del prior, precisamente porque el prior aporta la equivalente de información previa moderada. A medida que $n\to\infty$, el término de los datos ($x$, $n-x$) domina sobre el prior fijo ($\alpha$, $\beta$) y $\hat\theta_{MAP}\to\hat\theta_{MLE}$ — el prior deja de importar cuando hay suficiente evidencia muestral, un comportamiento deseable de cualquier estimador bayesiano razonable.
+
+**Conexión con regularización (Ridge/Lasso)**: esta misma idea —"penalizar" la verosimilitud pura con una creencia previa— es la justificación probabilística exacta detrás de la regularización en regresión, ya usada en §1.18 de esta unidad para diagnosticar multicolinealidad (VIF) y que reaparece en el Proyecto Integrador (Unidad 8) al comparar Ridge, Lasso y Elastic Net: un prior **Normal** sobre los coeficientes $\beta$ de una regresión conduce a la penalización $L_2$ de **Ridge**; un prior **Laplace** conduce a la penalización $L_1$ de **Lasso**. En ambos casos, "MAP con ese prior" y "mínimos cuadrados con esa regularización" son **el mismo estimador** vistos desde dos lenguajes distintos (bayesiano vs. optimización penalizada).
+
+---
 
 ## Errores Comunes / Misconceptions
 
