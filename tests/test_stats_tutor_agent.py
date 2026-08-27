@@ -50,6 +50,9 @@ def test_construye_prompt_con_contexto_y_pregunta(course_dir: Path, tmp_path: Pa
 
 
 def test_maneja_error_de_la_api_sin_lanzar_excepcion(course_dir: Path, tmp_path: Path):
+    """El fallback de error no debe exponer el contexto RAG crudo (que
+    puede incluir bibliografía de terceros) sin pasar por la curaduría
+    de Gemini -- mismo criterio que el camino de response.text=None."""
     with patch("src.multiagent_core.stats_tutor_agent.genai.Client") as mock_client_cls:
         mock_client_cls.side_effect = Exception("API unreachable")
 
@@ -62,6 +65,8 @@ def test_maneja_error_de_la_api_sin_lanzar_excepcion(course_dir: Path, tmp_path:
             respuesta = tutor.ask("¿Qué es la varianza?")
 
         assert "Error" in respuesta or "error" in respuesta.lower()
+        assert "Contexto Local Recuperado" not in respuesta
+        assert "<documento" not in respuesta
 
 
 def test_maneja_response_text_none_sin_lanzar_excepcion(

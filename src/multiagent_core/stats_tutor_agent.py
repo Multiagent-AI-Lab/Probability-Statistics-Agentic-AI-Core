@@ -526,9 +526,15 @@ Responde en español de forma estructurada, usando Markdown. Explica el razonami
                 )
         except Exception as e:
             logger.exception("Fallo al invocar al modelo Gemini")
+            # No se concatena `context` crudo (mismo criterio que el caso
+            # response.text=None de arriba): puede incluir bibliografía de
+            # terceros sin curar, y exponerla sin pasar por Gemini
+            # rompería la mitigación de prompt injection para el propio
+            # alumno que lea la respuesta de error.
             respuesta_texto = (
                 f"Error al invocar al modelo Gemini: {e}\n\n"
-                f"[Contexto Local Recuperado]:\n{context}"
+                "No se pudo generar una respuesta. Intenta de nuevo en "
+                "unos momentos."
             )
 
         self._add_episode(question, respuesta_texto[:300])
