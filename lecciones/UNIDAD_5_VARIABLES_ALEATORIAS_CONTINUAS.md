@@ -56,6 +56,41 @@ $$f_X(x) = \frac{d}{dx} F_X(x)$$
 * **Varianza**:
   $$\text{Var}(X) = \sigma^2 = \int_{-\infty}^{+\infty} (x - \mu)^2 f_X(x) dx = \mathbb{E}[X^2] - (\mathbb{E}[X])^2$$
 
+### 1.4 La Desigualdad de Jensen: $\mathbb{E}[g(X)]$ vs. $g(\mathbb{E}[X])$
+
+Un error frecuente al transformar una variable aleatoria es asumir que $\mathbb{E}[g(X)] = g(\mathbb{E}[X])$ — es decir, que "el promedio de la función es la función del promedio". Esto es **falso en general** cuando $g$ no es lineal. La propia fórmula de la varianza de arriba ya lo evidencia: si fuera cierto que $\mathbb{E}[X^2]=(\mathbb{E}[X])^2$, la varianza de cualquier variable no constante sería siempre cero.
+
+La **Desigualdad de Jensen** precisa la dirección del error: si $g$ es una función **convexa** (como $g(x)=x^2$),
+$$\mathbb{E}[g(X)] \ge g(\mathbb{E}[X])$$
+(la desigualdad se invierte para $g$ cóncava). Intuitivamente, una función convexa "premia más" los valores alejados de la media de lo que "penaliza" los cercanos, por lo que promediar después de transformar da un resultado mayor o igual que transformar el promedio.
+
+**Ejemplo aplicado**: la temperatura de un reactor de síntesis varía uniformemente $X\sim U(20,80)\ ^\circ\text{C}$ dentro de la ventana operativa. Si el consumo energético del sistema de calentamiento es proporcional al cuadrado de la temperatura, $Y=X^2$:
+$$\mathbb{E}[X] = \frac{20+80}{2}=50, \qquad g(\mathbb{E}[X]) = 50^2 = 2500$$
+$$\mathbb{E}[X^2] = \text{Var}(X) + (\mathbb{E}[X])^2 = \frac{(80-20)^2}{12} + 2500 = 300 + 2500 = \boxed{2800 \ne 2500}$$
+
+```python
+import numpy as np
+
+a, b = 20, 80  # X ~ U(a, b): temperatura del reactor en grados C
+
+E_X = (a + b) / 2
+Var_X = (b - a) ** 2 / 12
+E_X2 = Var_X + E_X ** 2  # E[X^2] via Var(X) = E[X^2] - (E[X])^2
+g_de_E_X = E_X ** 2       # g(E[X]) = (E[X])^2
+
+print(f"E[X] = {E_X}")
+print(f"g(E[X]) = (E[X])^2 = {g_de_E_X}")
+print(f"E[X^2] (via Var(X) + E[X]^2) = {E_X2}")
+print(f"¿Se cumple Jensen (E[X^2] >= g(E[X]))? {E_X2 >= g_de_E_X}")
+
+## Verificacion por simulacion Monte Carlo
+rng = np.random.default_rng(0)
+muestras = rng.uniform(a, b, size=500_000)
+print(f"\nE[X^2] simulado: {np.mean(muestras ** 2):.2f}  (teorico: {E_X2})")
+```
+
+La diferencia de $300$ entre ambos valores **no es un error de cálculo**: es exactamente $\text{Var}(X)$, lo cual no es casualidad — reordenando la fórmula de la varianza, $\mathbb{E}[X^2]-(\mathbb{E}[X])^2=\text{Var}(X)\ge0$ siempre, que es precisamente la Desigualdad de Jensen aplicada al caso particular $g(x)=x^2$. En ingeniería de procesos, ignorar esta distinción al estimar consumo energético o cualquier magnitud que dependa de forma no lineal de una variable de proceso lleva a subestimar sistemáticamente el promedio real de esa magnitud.
+
 ---
 
 ## 2. Familias Principales de Distribuciones Continuas
@@ -446,6 +481,44 @@ plt.show()
 ```
 
 **Aplicaciones**: (1) *Nanotecnología*: composición molar de una aleación nanoparticulada de $k$ elementos (p. ej., Au-Ag-Pt), donde las fracciones deben sumar 1 exactamente. (2) *IA*: distribución a priori conjugada de la Multinomial — corazón del modelo *Latent Dirichlet Allocation* (LDA) para modelado de temas en procesamiento de lenguaje natural, y de modelos de mezclas para *clustering* no paramétrico. (3) *DOE*: generación de datos sintéticos de proporciones (p. ej., composición de una mezcla de reactivos) que deben respetar la restricción de suma igual a 1.
+
+### 2.13 Las Funciones Gamma y Beta: el Fundamento Matemático Detrás de las PDFs
+
+Las secciones anteriores usan $\Gamma(k)$ (Gamma, Weibull, Chi-cuadrada, t-Student) y $B(\alpha,\beta)$ (Beta, F, Dirichlet) como constantes de normalización sin desarrollarlas — son **funciones matemáticas especiales**, no las distribuciones de probabilidad que llevan su nombre, y vale la pena distinguirlas explícitamente antes de seguir usándolas como caja negra.
+
+**Función Gamma**: generaliza el factorial a números reales (y complejos) positivos:
+$$\Gamma(z) = \int_0^\infty t^{z-1}e^{-t}\,dt, \qquad \Gamma(n) = (n-1)!\ \text{para } n\in\mathbb{Z}^+$$
+Por ejemplo, $\Gamma(2)=1!=1$ y $\Gamma(5)=4!=24$ — es precisamente esta función la que aparece en el denominador de la PDF Gamma (§2.4) para garantizar que el área bajo la curva sea 1.
+
+**Función Beta**: relacionada con la Gamma mediante la identidad
+$$B(x,y) = \int_0^1 t^{x-1}(1-t)^{y-1}\,dt = \frac{\Gamma(x)\Gamma(y)}{\Gamma(x+y)}$$
+Es **simétrica**: $B(x,y)=B(y,x)$. Por ejemplo, $B(2,3) = \dfrac{\Gamma(2)\Gamma(3)}{\Gamma(5)} = \dfrac{1\times2}{24} = \dfrac{1}{12}\approx0.0833$ — esta es la constante que normaliza la PDF Beta (§2.10) y aparece también en la PDF F (§2.8).
+
+```python
+import math
+
+from scipy.special import gamma, beta
+import numpy as np
+
+## Funcion Gamma: verifica que generaliza el factorial (Gamma(n) = (n-1)!)
+valores_z = np.array([2, 3, 5])
+gamma_valores = gamma(valores_z)
+factoriales_equivalentes = [math.factorial(z - 1) for z in valores_z]
+print(f"Gamma(2)={gamma_valores[0]:.1f}  Gamma(3)={gamma_valores[1]:.1f}  Gamma(5)={gamma_valores[2]:.1f}")
+print(f"Factoriales equivalentes (n-1)!: {factoriales_equivalentes}")
+
+## Funcion Beta: verifica la relacion B(x,y) = Gamma(x)Gamma(y)/Gamma(x+y)
+x_val, y_val = 2, 3
+beta_directa = beta(x_val, y_val)
+beta_via_gamma = (gamma(x_val) * gamma(y_val)) / gamma(x_val + y_val)
+beta_simetrica = beta(y_val, x_val)  # B(y,x) debe dar el mismo resultado que B(x,y)
+
+print(f"\nB(2,3) directa:        {beta_directa:.6f}")
+print(f"B(2,3) via Gamma:      {beta_via_gamma:.6f}")
+print(f"B(3,2) (simetria):     {beta_simetrica:.6f}")
+```
+
+**Por qué importa distinguirlas**: `scipy.special.gamma` y `scipy.special.beta` calculan las *funciones matemáticas* $\Gamma(z)$ y $B(x,y)$ — no confundir con `scipy.stats.gamma` y `scipy.stats.beta`, que son las *distribuciones de probabilidad* Gamma y Beta ya usadas en las Secciones 2.4/2.6/2.7/2.10/2.12.6/2.12.10 de esta unidad (mismo nombre de módulo, API completamente distinta: una da un número, la otra da un objeto de distribución con `.pdf()`, `.cdf()`, `.rvs()`, etc.).
 
 ---
 
