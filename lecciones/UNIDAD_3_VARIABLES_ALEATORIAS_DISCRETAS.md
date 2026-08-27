@@ -139,6 +139,21 @@ plt.ylim(0, 1)
 plt.show()
 ```
 
+**Nota de implementación**: como `bernoulli(p)` es exactamente `binom(n=1, p)`, ambas clases de `scipy.stats` son intercambiables — es común encontrar código que usa una u otra según la fuente. El siguiente fragmento reproduce el mismo resultado del bloque anterior usando `binom` directamente, para un nanosensor que detecta la presencia de un contaminante con probabilidad $p=0.9$ de operar correctamente en una sola prueba:
+
+```python
+from scipy.stats import binom
+
+p_exito = 0.9
+x = 1  # exito: sensor no contaminado
+
+probabilidad_pmf = binom.pmf(k=x, n=1, p=p_exito)         # equivalente a bernoulli.pmf(x, p_exito)
+probabilidad_cdf = binom.cdf(k=x, n=1, p=p_exito)         # equivalente a bernoulli.cdf(x, p_exito)
+
+print(f"P(X={x}) via binom(n=1): {probabilidad_pmf:.4f}")
+print(f"F({x}) via binom(n=1):   {probabilidad_cdf:.4f}")
+```
+
 **Aplicaciones**: (1) *Nanotecnología*: resultado binario de una sola prueba de control de calidad sobre un nanodispositivo (pasa/no pasa la especificación de espesor). (2) *IA*: unidad básica de clasificación binaria — la salida de una neurona con activación sigmoide seguida de umbral se modela como Bernoulli con $p$ igual a la probabilidad predicha. (3) *DOE*: resultado de un único ensayo experimental con dos desenlaces posibles (p. ej., una réplica de síntesis produce o no el polimorfo deseado).
 
 #### 2.9.2 Distribución Binomial — Profundización
@@ -193,6 +208,23 @@ plt.show()
 
 **Aplicaciones**: (1) *Nanotecnología*: número de fallas de un nano-dispositivo por unidad de tiempo de operación, o número de defectos puntuales por unidad de área en una película delgada. (2) *IA*: número de solicitudes que llega a un servidor de inferencia por unidad de tiempo, modelo base para dimensionar la capacidad de un sistema de predicción en producción. (3) *DOE*: número de eventos raros observados en un experimento de conteo (p. ej., número de núcleos de cristalización espontánea por unidad de volumen), fundamento de las pruebas de bondad de ajuste para procesos de conteo.
 
+**Ejemplo — Análisis de doble cola de riesgo (dopaje de nanotransistores)**: en la fabricación de un nanotransistor, el número de átomos dopantes que terminan en el canal de conducción sigue $X \sim \text{Poisson}(\lambda=3)$ por unidad de volumen del canal. Un canal con **cero átomos dopantes** ($X=0$) es un fallo crítico (el transistor no conmuta); un canal con **6 o más** ($X\ge 6$) introduce variabilidad excesiva de voltaje umbral. A diferencia de los ejemplos anteriores, que evalúan un solo extremo de la distribución, aquí interesan **ambas colas simultáneamente**:
+
+$$P(X=0) = \frac{3^0 e^{-3}}{0!} = e^{-3} \approx 0.0498, \qquad P(X\ge 6) = 1 - P(X\le 5) = 1 - F(5)$$
+
+```python
+from scipy.stats import poisson
+
+lam = 3
+riesgo_canal_vacio = poisson.pmf(0, mu=lam)        # PMF en un extremo: fallo por ausencia de dopantes
+riesgo_exceso_dopantes = 1 - poisson.cdf(5, mu=lam)  # 1 - CDF en el otro extremo: fallo por exceso
+
+print(f"P(X=0) — riesgo de canal sin dopar:        {riesgo_canal_vacio:.4f}")
+print(f"P(X>=6) — riesgo de exceso de dopantes:    {riesgo_exceso_dopantes:.4f}")
+print(f"Riesgo total combinado (ambas colas):      {riesgo_canal_vacio + riesgo_exceso_dopantes:.4f}")
+```
+El patrón de combinar `pmf` en un extremo con `1 - cdf` en el otro —ya usado de forma parcial en la Sección 3.4 para $P(X\ge1)$— se generaliza aquí a un análisis de **dos colas de riesgo distintas** sobre la misma distribución, típico de especificaciones de manufactura con límites tanto inferior como superior.
+
 #### 2.9.4 Distribución Geométrica — Profundización
 
 * **CDF**: $F(x) = P(X\le x) = 1-(1-p)^{\lfloor x\rfloor}$.
@@ -218,6 +250,8 @@ plt.show()
 ```
 
 **Aplicaciones**: (1) *Nanotecnología*: número de intentos de síntesis necesarios hasta obtener el primer lote de nanopartículas dentro de especificación, útil para estimar el costo esperado de un protocolo de bajo rendimiento. (2) *IA*: número de consultas a un modelo generativo hasta obtener la primera salida que pasa un filtro de calidad, relevante en técnicas de *rejection sampling*. (3) *DOE*: número de réplicas experimentales necesarias hasta observar el primer resultado exitoso, para planear el presupuesto de un experimento secuencial.
+
+> ⚠️ **Cuidado con la convención de "fallas" vs. "ensayos"**: no todas las fuentes parametrizan la Geométrica igual. `scipy.stats.geom.pmf(x, p)` da la probabilidad de que el **ensayo número $x$** sea el primer éxito (soporte $x \in \{1,2,3,\dots\}$, la convención de esta lección). Otra convención común (usada, por ejemplo, en el paquete `stats` de R con `dgeom(k, p)`) da la probabilidad de observar exactamente $k$ **fallas antes** del éxito (soporte $k \in \{0,1,2,\dots\}$). Ambas describen el mismo fenómeno, pero difieren en un desplazamiento de índice: $k_{\text{fallas}} = x_{\text{ensayo}} - 1$, de modo que para obtener el mismo valor numérico hay que convertir explícitamente: `geom.pmf(k_fallas + 1, p)`. Confundir ambas convenciones al traducir una fórmula o código de una fuente a otra es un error silencioso — el código corre sin errores, pero calcula la probabilidad de un evento distinto (desplazado en 1) al que se pretendía.
 
 #### 2.9.5 Distribución Binomial Negativa — Profundización
 
@@ -323,6 +357,38 @@ print(f"Esperanza por categoría: {esperanza}")
 ```
 
 **Aplicaciones**: (1) *Nanotecnología*: clasificación de un lote de $n$ nanopartículas en $k$ categorías de tamaño (pequeña/mediana/grande) según las probabilidades conocidas de un proceso de síntesis sol-gel. (2) *IA*: distribución de probabilidad de salida de un clasificador multiclase (capa *softmax*) sobre $k$ categorías — la Multinomial es la distribución muestral subyacente a los conteos de predicciones correctas por clase. (3) *DOE*: resultado de un experimento con más de dos desenlaces categóricos posibles por unidad experimental (p. ej., clasificar cada muestra en "aprobada", "reprocesable" o "rechazada"), base de las pruebas de bondad de ajuste $\chi^2$ sobre datos categóricos.
+
+**Más allá de un solo punto: enumerar y comparar todos los resultados posibles.** El código de 2.9.8 evalúa la PMF en un único conteo observado $(4,10,6)$. Con frecuencia interesa además saber **qué otros resultados** son igual o más probables que el observado — por ejemplo, para juzgar si el conteo real de un lote es consistente con el proceso esperado. Esto requiere enumerar todas las combinaciones $(x_1,x_2,x_3)$ con $x_1+x_2+x_3=n$ y ordenarlas por probabilidad:
+
+```python
+import numpy as np
+import pandas as pd
+from scipy.stats import multinomial
+
+## Nanoreactor de sintesis sol-gel: n=20 nanoparticulas, 3 categorias de
+## tamano con probabilidades del proceso (pequena, mediana, grande)
+n = 20
+probabilidades = [0.2, 0.5, 0.3]
+
+resultados_validos = []
+for x1 in range(n + 1):
+    for x2 in range(n - x1 + 1):
+        x3 = n - x1 - x2
+        resultados_validos.append([x1, x2, x3])
+
+resultados_array = np.array(resultados_validos)
+pmf_valores = multinomial.pmf(x=resultados_array, n=n, p=probabilidades)
+
+tabla = pd.DataFrame(resultados_array, columns=["pequeñas", "medianas", "grandes"])
+tabla["pmf"] = pmf_valores
+top_10 = tabla.sort_values(by="pmf", ascending=False).head(10)
+
+print(f"Total de combinaciones válidas con suma {n}: {len(tabla)}")
+print("\nTop 10 combinaciones más probables:")
+print(top_10.to_string(index=False))
+```
+
+El resultado confirma que la combinación $(4,10,6)$ evaluada en 2.9.8 —que coincide exactamente con el valor esperado por categoría, $n\cdot p_i = (4,10,6)$— es precisamente la **moda** de la distribución multinomial: la más probable de las 231 combinaciones válidas para $n=20$. Este patrón de enumeración exhaustiva es la técnica correcta para responder preguntas del tipo "¿qué tan inusual es este conteo observado?", en vez de solo reportar su probabilidad puntual sin contexto de las alternativas.
 
 ---
 
@@ -556,6 +622,16 @@ Un lote de $n=25$ nanotubos de carbono de pared simple (SWCNT) se inspecciona po
 3. Calcula $\mathbb{E}[X]$ y $\text{Var}(X)$. Dado que $n \cdot p = 2.0$ pero $p = 0.08$ no cumple estrictamente $p \le 0.05$, calcula también la aproximación Poisson de $P(X=3)$ y compárala numéricamente con el valor exacto del punto 1 para verificar si la aproximación sigue siendo razonable en este caso límite.
 
 Escribe tu solución en una celda de código nueva en tu notebook. La celda de autoevaluación de la siguiente sección verificará tu resultado.
+
+### Ejercicios Adicionales de Práctica
+
+Los siguientes tres ejercicios no forman parte del Ejercicio Propuesto que verifica la Autoevaluación, pero se recomienda resolverlos como práctica adicional:
+
+1. **(Hipergeométrica)** Un lote de nanotubos de carbono contiene $N=100$ unidades, de las cuales $K=10$ presentan defectos estructurales. Se extrae una muestra de inspección de $n=12$ nanotubos sin reemplazo. Calcula la probabilidad de que la muestra contenga exactamente $2$ nanotubos defectuosos, y compárala con la probabilidad que se obtendría si (incorrectamente) se modelara el muestreo como Binomial($n=12$, $p=0.10$) en vez de Hipergeométrica — ¿qué tan grande es la diferencia, y por qué ocurre?
+
+2. **(Binomial Negativa)** Un proceso de fabricación de transistores FinFET tiene una probabilidad $p=0.45$ de que cada unidad pase la prueba de continuidad eléctrica en el primer intento. ¿Cuál es la probabilidad de que se necesiten exactamente $10$ ensayos (es decir, $k=5$ fallos) para acumular $r=5$ transistores aprobados?
+
+3. **(Comparación Geométrica vs. Binomial Negativa)** Un proceso de impresión 3D a nanoescala tiene una probabilidad $p=0.6$ de producir una pieza dentro de tolerancia en cada intento. Calcula (a) el número esperado de **ensayos** hasta la primera pieza dentro de tolerancia, $\mathbb{E}[X_{\text{Geom}}] = 1/p$ (Sección 2.4, PMF definida sobre ensayos); y (b) el número esperado de **fracasos** antes de acumular $r=3$ piezas dentro de tolerancia, $\mathbb{E}[K_{\text{BinNeg}}] = r(1-p)/p$ (Sección 2.5, PMF definida sobre fracasos). Nota que ambas fórmulas cuentan cosas distintas (ensayos totales vs. fracasos previos al éxito) — súmale $r$ al resultado de (b) para obtener el número esperado de **ensayos totales** hasta el $r$-ésimo éxito, y compáralo con $r \cdot \mathbb{E}[X_{\text{Geom}}]$: ¿coinciden? Explica por qué debería (o no debería) ser así, dado que la Binomial Negativa es, conceptualmente, una suma de $r$ variables Geométricas independientes.
 
 ## Referencias
 
