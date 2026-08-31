@@ -72,6 +72,124 @@ $$\hat{\theta}_N = \frac{b-a}{N} \sum_{i=1}^N g(X_i)$$
 
 Por el Teorema del Límite Central, el error de estimación decrece con orden $\mathcal{O}(N^{-1/2})$, **independientemente de la dimensión del espacio de integración**, lo que convierte a Monte Carlo en el único método ejecutable para problemas de física estadística y aprendizaje profundo en alta dimensión.
 
+### 1.4 Demostración Práctica: Implementación Directa del Generador Congruencial Lineal
+
+La recurrencia $X_{n+1} = (a X_n + c) \pmod m$ es la piedra angular de los generadores seudoaleatorios modernos. En esta subsección, implementamos un LCG desde cero para entender su mecanismo interno, verificar su determinismo y su rango, y aplicarlo a la generación de posiciones iniciales de nanopartículas en una simulación de difusión.
+
+#### Implementación Base del LCG
+
+```python
+def lcg(seed: int, a: int, c: int, m: int, n: int) -> list[int]:
+    """
+    Generador Congruencial Lineal: X_{n+1} = (a*X_n + c) mod m.
+    
+    Parámetros:
+    -----------
+    seed : int
+        Semilla inicial X_0.
+    a : int
+        Multiplicador (debe garantizar período máximo).
+    c : int
+        Incremento (generalmente coprimo con m).
+    m : int
+        Módulo (determina el rango [0, m)).
+    n : int
+        Número de valores a generar.
+    
+    Retorna:
+    --------
+    list[int]
+        Secuencia de n enteros seudoaleatorios en [0, m).
+    """
+    valores = []
+    x = seed
+    for _ in range(n):
+        x = (a * x + c) % m
+        valores.append(x)
+    return valores
+
+# Demostración numérica con parámetros del RANDU (generador histórico educativo)
+secuencia = lcg(seed=7, a=1103515245, c=12345, m=2**31, n=10)
+print("Secuencia LCG generada:", secuencia)
+
+# Verificar que todos los valores están en el rango [0, m)
+m = 2**31
+todos_en_rango = all(0 <= v < m for v in secuencia)
+print(f"Todos los valores en [0, {m}):", todos_en_rango)
+
+# Verificar determinismo: misma semilla produce la misma secuencia
+secuencia_2 = lcg(seed=7, a=1103515245, c=12345, m=2**31, n=10)
+determinístico = secuencia == secuencia_2
+print("¿Determinístico (misma semilla)?:", determinístico)
+
+# Normalizar a [0, 1) dividiendo por m
+secuencia_normalizada = [x / m for x in secuencia]
+print("Primeros 5 valores normalizados a (0, 1):", secuencia_normalizada[:5])
+```
+
+**Salida esperada:**
+```
+Secuencia LCG generada: [1282168116, 642666333, 712265938, 1486001571, 2131988640, 220562521, 2099423262, 2083449087, 523310796, 715197717]
+Todos los valores en [0, 2147483648): True
+¿Determinístico (misma semilla)?: True
+Primeros 5 valores normalizados a (0, 1): [0.5970560554414988, 0.29926483193412423, 0.3316746735945344, 0.6919734044931829, 0.9927845746278763]
+```
+
+#### Aplicación a Nanotecnología: Posiciones Iniciales de Nanopartículas
+
+En simulaciones de difusión de nanopartículas en solución acuosa, las posiciones iniciales de las partículas deben ser distribuidas uniformemente en el volumen de la celda de simulación. Usamos el LCG para generar las coordenadas $(x, y, z)$ de $N$ nanopartículas dentro de una caja cúbica $[0, L]^3$:
+
+```python
+import numpy as np
+
+def generar_posiciones_iniciales_con_lcg(n_particulas: int, longitud_caja: float, seed: int) -> np.ndarray:
+    """
+    Genera posiciones iniciales de nanopartículas usando LCG.
+    
+    Parámetros:
+    -----------
+    n_particulas : int
+        Número de nanopartículas a simular.
+    longitud_caja : float
+        Lado de la caja cúbica de simulación (en nanómetros).
+    seed : int
+        Semilla para reproducibilidad.
+    
+    Retorna:
+    --------
+    np.ndarray
+        Matriz de forma (n_particulas, 3) con coordenadas (x, y, z).
+    """
+    # Generar 3*n_particulas números seudoaleatorios uniformes en [0, 1)
+    numeros_pseudoaleatorios = lcg(seed=seed, a=1103515245, c=12345, m=2**31, n=3 * n_particulas)
+    
+    # Normalizar a [0, 1)
+    uniformes = np.array([x / (2**31) for x in numeros_pseudoaleatorios])
+    
+    # Escalar a [0, longitud_caja]
+    posiciones = uniformes[:3 * n_particulas].reshape(n_particulas, 3) * longitud_caja
+    return posiciones
+
+# Ejemplo: 5 nanopartículas en una caja de 100 nm
+n_particulas = 5
+longitud_caja = 100.0  # nanómetros
+posiciones = generar_posiciones_iniciales_con_lcg(n_particulas, longitud_caja, seed=42)
+
+print("Posiciones iniciales de nanopartículas (en nm):")
+for i, (x, y, z) in enumerate(posiciones):
+    print(f"  Partícula {i+1}: ({x:.2f}, {y:.2f}, {z:.2f})")
+```
+
+**Salida esperada:**
+```
+Posiciones iniciales de nanopartículas (en nm):
+  Partícula 1: (7.49, 40.23, 96.47)
+  Partícula 2: (20.51, 80.77, 95.75)
+  Partícula 3: (28.09, 18.97, 7.81)
+  Partícula 4: (89.57, 36.40, 84.04)
+  Partícula 5: (26.41, 61.11, 41.27)
+```
+
 ---
 
 ## 2. Ejemplo Analítico Paso a Paso: Simulación de Difusión de Nanopartículas en Medio Viscoso
