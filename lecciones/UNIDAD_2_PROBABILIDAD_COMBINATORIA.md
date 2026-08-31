@@ -47,6 +47,32 @@ Las relaciones entre eventos se expresan mediante la teoría de conjuntos:
 Leyes de De Morgan:
 $$(A \cup B)^c = A^c \cap B^c, \quad (A \cap B)^c = A^c \cup B^c$$
 
+**Ejemplo verificando De Morgan (dos criterios de falla de un sensor)**: un lote de $10$ sensores nanoelectrónicos de gas, numerados $1$ a $10$, se somete a dos pruebas de falla independientes: $A$ = "falla por deriva de línea base" y $B$ = "falla por saturación del sensor". Supóngase que, tras la caracterización, $A = \{1,2,3,4\}$ y $B = \{3,4,5,6,7\}$ dentro del espacio muestral $\Omega = \{1,2,\dots,10\}$. Enumerando explícitamente cada conjunto:
+$$A^c = \{5,6,7,8,9,10\}, \quad B^c = \{1,2,8,9,10\}$$
+$$(A \cup B)^c = \Omega \setminus \{1,2,3,4,5,6,7\} = \boxed{\{8,9,10\}}$$
+$$A^c \cap B^c = \{5,6,7,8,9,10\} \cap \{1,2,8,9,10\} = \boxed{\{8,9,10\}}$$
+Ambos conjuntos coinciden elemento a elemento, verificando numéricamente $(A \cup B)^c = A^c \cap B^c$ sobre este espacio muestral discreto.
+
+```python
+## Verificacion de la Primera Ley de De Morgan con conteo explicito de sensores
+omega = set(range(1, 11))  # 10 sensores nanoelectronicos de gas
+
+A = {1, 2, 3, 4}       # sensores que fallan por deriva de linea base
+B = {3, 4, 5, 6, 7}    # sensores que fallan por saturacion
+
+A_c = omega - A
+B_c = omega - B
+
+complemento_union = omega - (A | B)
+interseccion_complementos = A_c & B_c
+
+primera_ley_de_morgan = complemento_union == interseccion_complementos
+
+print(f"(A U B)^c = {complemento_union}")
+print(f"A^c ∩ B^c = {interseccion_complementos}")
+print(f"¿Se cumple (A U B)^c = A^c ∩ B^c?: {primera_ley_de_morgan}")
+```
+
 ### 1.3 Axiomas de Kolmogorov
 Dado un espacio muestral $\Omega$, una función de probabilidad $P: \mathcal{F} \rightarrow [0, 1]$ asigna a cada evento $A$ un número real sujeto a tres axiomas universales:
 
@@ -60,12 +86,66 @@ Propiedades fundamentales derivadas:
 * $P(A^c) = 1 - P(A)$
 * Regla General de la Adición: $P(A \cup B) = P(A) + P(B) - P(A \cap B)$
 
+**Ejemplo verificando los 3 Axiomas de Kolmogorov**: un lote de nanopartículas de oro (AuNPs) se clasifica, según el diámetro medido por microscopía electrónica de transmisión (TEM), en tres categorías mutuamente excluyentes: pequeña ($<10\text{ nm}$), mediana ($10$–$20\text{ nm}$) y grande ($>20\text{ nm}$), con probabilidades asignadas $P(\text{pequeña})=0.25$, $P(\text{mediana})=0.45$, $P(\text{grande})=0.30$.
+* **Axioma 1 (no-negatividad)**: las tres probabilidades son $\ge 0$.
+* **Axioma 2 (normalización)**: $0.25 + 0.45 + 0.30 = \boxed{1.0}$, es decir $P(\Omega)=1$.
+* **Axioma 3 (aditividad)**: como "pequeña" y "mediana" son disjuntas, $P(\text{pequeña} \cup \text{mediana}) = P(\text{pequeña}) + P(\text{mediana}) = 0.25 + 0.45 = \boxed{0.70}$.
+
+```python
+## Verificacion de los 3 Axiomas de Kolmogorov sobre una clasificacion de AuNPs por tamano
+espacio_muestral = {"pequena_menor_10nm": 0.25, "mediana_10_20nm": 0.45, "grande_mayor_20nm": 0.30}
+
+## Axioma 1: no-negatividad
+axioma_1_no_negatividad = all(p >= 0 for p in espacio_muestral.values())
+
+## Axioma 2: normalizacion P(Omega) = 1
+axioma_2_normalizacion = abs(sum(espacio_muestral.values()) - 1.0) < 1e-9
+
+## Axioma 3: aditividad para eventos disjuntos (pequena U mediana)
+p_union_disjunta = espacio_muestral["pequena_menor_10nm"] + espacio_muestral["mediana_10_20nm"]
+
+print(f"Axioma 1 (no-negatividad): {axioma_1_no_negatividad}")
+print(f"Axioma 2 (normalizacion), suma = {sum(espacio_muestral.values())}: {axioma_2_normalizacion}")
+print(f"Axioma 3, P(pequena U mediana) = {p_union_disjunta}")
+```
+
 ---
 
 ## 2. Técnicas de Conteo y Combinatoria
 
 Cuando los resultados de un espacio muestral finito $\Omega$ son equiprobables (regla de Laplace), el cálculo de probabilidades se reduce a contar el número de elementos en eventos y espacios muestrales:
 $$P(A) = \frac{|A|}{|\Omega|}$$
+
+**Ejemplo dedicado de la Regla de Laplace (conteo explícito de $|\Omega|$ y $|A|$)**: un lote contiene $15$ nanotubos de carbono indistinguibles al tacto: $9$ de pared simple (SWCNT) y $6$ de pared múltiple (MWCNT). Se selecciona una muestra de $3$ nanotubos al azar para inspección por microscopía. Sea $A$ el evento "los 3 nanotubos seleccionados son SWCNT".
+
+Primero se cuenta el espacio muestral completo, **sin condicionar aún por tipo**: todas las formas de elegir $3$ nanotubos cualesquiera de los $15$ disponibles:
+$$|\Omega| = \binom{15}{3} = \boxed{455}$$
+Luego se cuenta el evento $A$ por separado: todas las formas de elegir $3$ SWCNT de los $9$ disponibles (sin tocar los MWCNT):
+$$|A| = \binom{9}{3} = \boxed{84}$$
+Solo ahora, con ambos conteos ya resueltos de forma independiente, se aplica la Regla de Laplace:
+$$P(A) = \frac{|A|}{|\Omega|} = \frac{84}{455} \approx \boxed{0.1846}$$
+
+```python
+import math
+
+## Regla de Laplace: conteo explicito de |Omega| y |A| antes de dividir
+n_total = 15
+n_swcnt = 9
+n_muestra = 3
+
+## Conteo de |Omega|: todas las formas de elegir 3 nanotubos cualesquiera de 15
+omega_tamano = math.comb(n_total, n_muestra)
+
+## Conteo de |A|: todas las formas de elegir 3 SWCNT de los 9 disponibles
+A_tamano = math.comb(n_swcnt, n_muestra)
+
+## Regla de Laplace
+p_A = A_tamano / omega_tamano
+
+print(f"|Omega| = C(15,3) = {omega_tamano}")
+print(f"|A| = C(9,3) = {A_tamano}")
+print(f"P(A) = |A|/|Omega| = {p_A:.4f}")
+```
 
 ### 2.1 Principios Fundamentales
 * **Principio Multiplicativo**: Si una operación consiste en $k$ pasos secuenciales con $n_1, n_2, \dots, n_k$ opciones respectivamente, el número total de formas es $n_1 \times n_2 \times \dots \times n_k$.
@@ -92,6 +172,26 @@ Propiedades del coeficiente binomial:
 * $\binom{n}{0} = \binom{n}{n} = 1$
 * $\binom{n}{r} = \binom{n}{n-r}$
 * Teorema del Binomio: $(x + y)^n = \sum_{k=0}^n \binom{n}{k} x^{n-k} y^k$
+
+**Ejemplo verificando el Teorema del Binomio**: un recubrimiento nanocompuesto se forma apilando $n=4$ capas, cada una elegida entre dos tipos de nanopartícula (tipo $X$: óxido de titanio, tipo $Y$: plata). Para verificar la identidad numéricamente (sin atarla a un conteo de capas específico), se evalúa $(x+y)^4$ con $x=2$, $y=3$ expandiendo término a término:
+$$(x+y)^4 = \sum_{k=0}^4 \binom{4}{k} x^{4-k} y^k = \binom{4}{0}x^4 + \binom{4}{1}x^3y + \binom{4}{2}x^2y^2 + \binom{4}{3}xy^3 + \binom{4}{4}y^4$$
+$$= 16 + 96 + 216 + 216 + 81 = \boxed{625}$$
+Comparando contra el cálculo directo $(2+3)^4 = 5^4 = \boxed{625}$: ambos coinciden, confirmando la identidad término a término.
+
+```python
+import math
+
+## Verificacion del Teorema del Binomio: expansion termino a termino vs calculo directo
+n = 4
+x, y = 2, 3
+
+suma_binomio = sum(math.comb(n, k) * (x ** (n - k)) * (y ** k) for k in range(n + 1))
+resultado_directo = (x + y) ** n
+
+print(f"Suma de terminos binomiales: {suma_binomio}")
+print(f"(x+y)^n calculado directo: {resultado_directo}")
+print(f"¿Coinciden?: {suma_binomio == resultado_directo}")
+```
 
 ### 2.4 Ejemplos Resueltos de Técnicas de Conteo Aplicadas a Nanotecnología
 
@@ -139,6 +239,31 @@ print(f"Ejemplo C — Selecciones de 4 AgNPs de un lote de 12: {seleccion_agnps}
 print(f"Ejemplo D — Grupos experimentales (2 SWCNT y 1 MWCNT): {grupos_experimentales}")
 ```
 
+**Verificación simbólica (SymPy) de los Ejemplos C y D**: antes de sustituir los valores concretos, se expresan ambas combinaciones simbólicamente con `sympy.binomial`, confirmando que la sustitución numérica reproduce los resultados ya publicados ($495$ y $60$).
+
+```python
+import sympy as sp
+
+## Formula simbolica del Ejemplo C: combinacion simple C(n, r)
+n_c, r_c = sp.symbols('n_C r_C', positive=True, integer=True)
+comb_simbolica_C = sp.binomial(n_c, r_c)
+
+## Formula simbolica del Ejemplo D: combinacion mixta de dos grupos disjuntos
+n_swcnt_s, r_swcnt_s, n_mwcnt_s, r_mwcnt_s = sp.symbols(
+    'n_SWCNT r_SWCNT n_MWCNT r_MWCNT', positive=True, integer=True
+)
+comb_simbolica_D = sp.binomial(n_swcnt_s, r_swcnt_s) * sp.binomial(n_mwcnt_s, r_mwcnt_s)
+
+## Sustitucion de los valores concretos de cada ejemplo
+resultado_C = comb_simbolica_C.subs({n_c: 12, r_c: 4})
+resultado_D = comb_simbolica_D.subs({n_swcnt_s: 6, r_swcnt_s: 2, n_mwcnt_s: 4, r_mwcnt_s: 1})
+
+print(f"Formula simbolica Ejemplo C: {comb_simbolica_C} -> evaluada: {resultado_C}")
+print(f"Formula simbolica Ejemplo D: {comb_simbolica_D} -> evaluada: {resultado_D}")
+print(f"¿Coincide con 495 publicado?: {resultado_C == 495}")
+print(f"¿Coincide con 60 publicado?: {resultado_D == 60}")
+```
+
 ---
 
 ## 3. Probabilidad Condicional e Independencia
@@ -150,6 +275,23 @@ $$P(A|B) = \frac{P(A \cap B)}{P(B)}$$
 
 Regla General del Producto:
 $$P(A \cap B) = P(B) \cdot P(A|B) = P(A) \cdot P(B|A)$$
+
+La regla se generaliza a $3$ o más eventos dependientes encadenados, condicionando cada evento nuevo a la ocurrencia de **todos** los anteriores:
+$$P(A \cap B \cap C) = P(A) \cdot P(B|A) \cdot P(C|A \cap B)$$
+
+**Ejemplo resuelto (Regla General del Producto para 3 eventos)**: la síntesis de nanopartículas de oro (AuNPs) por el método Turkevich ocurre en $3$ etapas secuenciales, cada una condicionada al éxito de la anterior: $A$ = "la etapa de reducción del precursor es exitosa" ($P(A)=0.90$), $B$ = "la etapa de nucleación controlada es exitosa dado que $A$ ocurrió" ($P(B|A)=0.85$), y $C$ = "la etapa de crecimiento y estabilización con citrato es exitosa dado que $A$ y $B$ ocurrieron" ($P(C|A\cap B)=0.80$). ¿Cuál es la probabilidad de que las 3 etapas se completen exitosamente?
+$$P(A \cap B \cap C) = P(A) \cdot P(B|A) \cdot P(C|A \cap B) = 0.90 \times 0.85 \times 0.80 = \boxed{0.612}$$
+
+```python
+## Regla General del Producto para 3 eventos dependientes encadenados
+p_A = 0.90          # P(A): reduccion exitosa del precursor
+p_B_dado_A = 0.85   # P(B|A): nucleacion exitosa, dado que la reduccion fue exitosa
+p_C_dado_AB = 0.80  # P(C|A∩B): estabilizacion exitosa, dado exito en las 2 etapas previas
+
+p_ABC = p_A * p_B_dado_A * p_C_dado_AB
+
+print(f"P(A ∩ B ∩ C) = P(A)*P(B|A)*P(C|A∩B) = {p_ABC:.4f}")
+```
 
 ### 3.2 Eventos Independientes
 Dos eventos $A$ y $B$ son **estocásticamente independientes** si y solo si la ocurrencia de uno no altera la probabilidad del otro:
@@ -193,6 +335,32 @@ son_independientes = abs(p_cara_dado_cargada - p_cara_total) < 1e-9
 print(f"Ejemplo E — P(Maquina A | Apta) = {p_a_dado_apta:.4f}")
 print(f"Ejemplo F — P(Cara) marginal = {p_cara_total:.4f} vs P(Cara | Cargada) = {p_cara_dado_cargada:.4f}")
 print(f"Ejemplo F — ¿A y B independientes?: {son_independientes}")
+```
+
+**Verificación simbólica (SymPy) del Ejemplo E**: se expresa $P(M|\text{Apta})$ simbólicamente a partir de la Regla General del Producto y la definición de probabilidad condicional, y solo después se sustituyen los valores concretos, confirmando el resultado $8/15 \approx 0.5333$ ya publicado.
+
+```python
+import sympy as sp
+
+## Formula simbolica de P(M|Apta) = P(M)*P(Apta|M) / P(Apta)
+p_m, p_apta_dado_m, p_apta = sp.symbols('P(M) P(Apta|M) P(Apta)', real=True, positive=True)
+
+interseccion_simbolica = p_m * p_apta_dado_m
+p_m_dado_apta_simbolico = interseccion_simbolica / p_apta
+
+## Sustitucion de los valores concretos del Ejemplo E
+valores = {
+    p_m: sp.Rational(40, 100),
+    p_apta_dado_m: sp.Rational(80, 100),
+    p_apta: sp.Rational(60, 100),
+}
+
+resultado_exacto = p_m_dado_apta_simbolico.subs(valores)
+resultado_decimal = float(resultado_exacto)
+
+print(f"Formula simbolica: {p_m_dado_apta_simbolico}")
+print(f"Resultado exacto en fraccion: {resultado_exacto}")
+print(f"Resultado numerico decimal: {resultado_decimal:.4f}")
 ```
 
 ---
@@ -333,6 +501,39 @@ p_c_dado_gb = (p_gb_dado_c * p_c) / p_gb
 print(f"P(G_B) = {p_gb:.4f}")
 print(f"P(A | G_B) = {p_a_dado_gb:.4f}  (antes de preguntar: {p_a:.4f}, no cambia)")
 print(f"P(C | G_B) = {p_c_dado_gb:.4f}  (antes de preguntar: {p_c:.4f}, se duplica)")
+```
+
+**Verificación simbólica (SymPy) del Problema de los Tres Prisioneros**: se expresa el Teorema de Bayes simbólicamente para $P(A|G_B)$ y $P(C|G_B)$ a partir de los priors y verosimilitudes genéricos, y solo después se sustituyen los valores concretos del problema, confirmando $P(A|G_B)=1/3$ y $P(C|G_B)=2/3$ ya publicados.
+
+```python
+import sympy as sp
+
+## Formulas simbolicas de Bayes para A y C dado el evento G_B
+p_a_s, p_b_s, p_c_s = sp.symbols('P(A) P(B) P(C)', real=True, positive=True)
+p_gb_a_s, p_gb_b_s, p_gb_c_s = sp.symbols('P(G_B|A) P(G_B|B) P(G_B|C)', real=True, nonnegative=True)
+
+## Probabilidad total simbolica de G_B (Teorema de la Probabilidad Total)
+p_gb_total_s = p_gb_a_s * p_a_s + p_gb_b_s * p_b_s + p_gb_c_s * p_c_s
+
+## Bayes simbolico para A y C dado G_B
+p_a_dado_gb_simbolico = (p_gb_a_s * p_a_s) / p_gb_total_s
+p_c_dado_gb_simbolico = (p_gb_c_s * p_c_s) / p_gb_total_s
+
+## Sustitucion de los valores concretos del problema
+valores = {
+    p_a_s: sp.Rational(1, 3),
+    p_b_s: sp.Rational(1, 3),
+    p_c_s: sp.Rational(1, 3),
+    p_gb_a_s: sp.Rational(1, 2),
+    p_gb_b_s: 0,
+    p_gb_c_s: 1,
+}
+
+resultado_a = p_a_dado_gb_simbolico.subs(valores)
+resultado_c = p_c_dado_gb_simbolico.subs(valores)
+
+print(f"P(A|G_B) simbolico evaluado: {resultado_a} (coincide con 1/3: {resultado_a == sp.Rational(1, 3)})")
+print(f"P(C|G_B) simbolico evaluado: {resultado_c} (coincide con 2/3: {resultado_c == sp.Rational(2, 3)})")
 ```
 
 ---
