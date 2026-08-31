@@ -65,6 +65,39 @@ Al decidir entre $H_0$ y $H_1$ con información parcial (una muestra), se pueden
 $$\alpha = P(X > 28 \mid \mu=20) = e^{-28/20} \approx \boxed{0.2466}$$
 $$\beta = P(X \le 28 \mid \mu=30) = 1 - e^{-28/30} \approx \boxed{0.6068}$$
 
+**Verificación computacional (contexto AgNPs)**: usando el mismo control de calidad de la Sección 2 ($H_0:\mu=50$ nm, $\sigma=4$ nm, $n=36$, $\alpha=0.05$ bilateral), se calculan $\alpha$, $\beta$ y la potencia $1-\beta$ para una alternativa concreta $\mu_1=48$ nm (una desviación real del proceso que se quiere poder detectar):
+
+```python
+from scipy.stats import norm
+
+## Reutiliza el contexto de la Seccion 2: AgNPs, sigma=4, n=36, alpha=0.05
+mu_0, sigma, n = 50, 4, 36
+alpha = 0.05
+error_estandar = sigma / n ** 0.5
+
+## Region critica bilateral: rechazar H0 si |z0| > z_{alpha/2}
+z_critico = norm.ppf(1 - alpha / 2)
+limite_inferior = mu_0 - z_critico * error_estandar
+limite_superior = mu_0 + z_critico * error_estandar
+
+## Hipotesis alternativa concreta: el proceso realmente se desvio a mu_1 = 48 nm
+mu_1 = 48
+
+## Error Tipo II: P(no rechazar H0 | H1 verdadera) = P(limite_inf < X_bar < limite_sup | mu=mu_1)
+beta = norm.cdf(limite_superior, loc=mu_1, scale=error_estandar) - norm.cdf(limite_inferior, loc=mu_1, scale=error_estandar)
+potencia = 1 - beta
+
+print(f"Region de no rechazo: ({limite_inferior:.4f}, {limite_superior:.4f}) nm")
+print(f"alpha={alpha}, beta={beta:.4f}, potencia={potencia:.4f}")
+```
+
+```text
+Region de no rechazo: (48.6934, 51.3066) nm
+alpha=0.05, beta=0.1492, potencia=0.8508
+```
+
+Con $\alpha=0.05$ fijo, el test detecta correctamente una desviación real a $\mu_1=48$ nm el $85.08\%$ de las veces ($\beta=0.1492$): si el proceso se desvía tan poco como 2 nm, todavía existe un $14.92\%$ de probabilidad de no detectarlo con este tamaño de muestra.
+
 ### 1.4 El Valor p (p-value)
 El **p-valor** es la probabilidad de obtener un resultado igual o más extremo que el observado, asumiendo que $H_0$ es verdadera. Es la métrica más usada en la práctica porque resume toda la evidencia contra $H_0$ en un solo número, sin necesidad de tabular valores críticos: se rechaza $H_0$ si $\text{p-valor} < \alpha$.
 
@@ -75,6 +108,52 @@ Para un nivel $\alpha$ fijo, la teoría de Neyman–Pearson busca minimizar $\be
 $$\varphi(x) = \begin{cases} 1 & \text{si } f_1(x)/f_0(x) > k \\ 0 & \text{si } f_1(x)/f_0(x) < k \end{cases}$$
 
 **Ejemplo**: con $f_0(x) = 2x$ y $f_1(x) = 2(1-x)$ en $(0,1)$, el cociente $f_1/f_0 = (1-x)/x$ lleva a rechazar $H_0$ si $X < 1/(1+k)$. Resolviendo $\alpha = \int_0^{1/(1+k)} 2t\,dt$ se obtiene $k = (1-\sqrt{\alpha})/\sqrt{\alpha}$, de modo que la región de rechazo óptima es $X < \sqrt{\alpha}$, con función de potencia $1-(1-\sqrt{\alpha})^2$.
+
+**Verificación computacional (razón de verosimilitud sobre la media de una Normal)**: usando de nuevo $H_0:\mu=50$ nm contra $H_1:\mu=48$ nm ($\sigma=4$ nm, $n=36$, $\alpha=0.05$, contexto AgNPs de la Sección 2), el cociente de verosimilitud entre dos Normales con la misma varianza es monótono en $\bar x$, así que la región de rechazo óptima de Neyman–Pearson es unilateral (cola izquierda, hacia $\mu_1<\mu_0$). Se construye esa región y se confirma numéricamente que ninguna otra región de tamaño $\le\alpha$ logra mayor potencia:
+
+```python
+import numpy as np
+from scipy.stats import norm
+
+## H0: mu = mu_0 = 50 nm  vs  H1: mu = mu_1 = 48 nm (mismo contexto AgNPs, sigma=4, n=36)
+mu_0, mu_1, sigma, n = 50, 48, 4, 36
+alpha = 0.05
+error_estandar = sigma / n ** 0.5
+
+## Neyman-Pearson: para mu_1 < mu_0, el cociente de verosimilitud f1/f0 > k
+## equivale a rechazar H0 para valores PEQUEnos de x_bar (cola izquierda),
+## consistente con el sentido de la desviacion bajo H1.
+z_critico = norm.ppf(1 - alpha)  # cola unilateral izquierda
+umbral_rechazo = mu_0 - z_critico * error_estandar
+
+## Potencia del test NP (region de rechazo: x_bar < umbral_rechazo)
+potencia_np = norm.cdf(umbral_rechazo, loc=mu_1, scale=error_estandar)
+
+## Confirmacion numerica de optimalidad: cualquier otra region del mismo
+## tamano alpha (desplazada) tiene potencia menor o igual bajo H1.
+desplazamientos = np.linspace(-2, 2, 401)
+potencias_alternativas = []
+for d in desplazamientos:
+    umbral_alt = umbral_rechazo + d
+    alpha_alt = norm.cdf(umbral_alt, loc=mu_0, scale=error_estandar)
+    if alpha_alt <= alpha:
+        pot_alt = norm.cdf(umbral_alt, loc=mu_1, scale=error_estandar)
+        potencias_alternativas.append(pot_alt)
+
+print(f"Umbral de rechazo (NP): x_bar < {umbral_rechazo:.4f} nm")
+print(f"Potencia del test NP: {potencia_np:.4f}")
+print(f"Maxima potencia entre regiones alternativas de tamano <= alpha: {max(potencias_alternativas):.4f}")
+print(f"El test NP es optimo: {potencia_np >= max(potencias_alternativas) - 1e-9}")
+```
+
+```text
+Umbral de rechazo (NP): x_bar < 48.9034 nm
+Potencia del test NP: 0.9123
+Maxima potencia entre regiones alternativas de tamano <= alpha: 0.9123
+El test NP es optimo: True
+```
+
+Ninguna región de rechazo alternativa con el mismo tamaño $\alpha=0.05$ supera la potencia de $0.9123$ obtenida por la región de Neyman–Pearson — confirmando numéricamente que la región basada en el cociente de verosimilitud es, en efecto, la más potente.
 
 ### 1.6 Prueba para la Media Poblacional (Z-test y t-test)
 Sea $X_1,\dots,X_n$ una muestra de $N(\mu, \sigma^2)$, con hipótesis $H_0:\mu=\mu_0$ contra $H_1:\mu\neq\mu_0$.
@@ -98,6 +177,34 @@ Se rechaza $H_0$ si $\chi^2_0 > \chi^2_{n-1,\alpha/2}$ o $\chi^2_0 < \chi^2_{n-1
 
 **Ejemplo resuelto**: $\sigma_0 = 0.4\%$ histórico, muestra de $n=24$ semanas con $s=0.38\%$, $\alpha=0.05$. $H_0:\sigma^2=0.16$ contra $H_1:\sigma^2\neq0.16$: se calcula $\chi^2_0 \approx 20.76$, con región crítica $\chi^2_0 < 11.689$ o $\chi^2_0 > 38.076$ (para $df=23$). Como $20.76$ cae dentro del intervalo, **no se rechaza $H_0$**.
 
+**Verificación computacional**: se reproduce el cálculo anterior con `scipy.stats.chi2`, confirmando el mismo estadístico y la misma decisión ya publicados en prosa.
+
+```python
+from scipy.stats import chi2
+
+## Contexto ya establecido en la Seccion 1.7: control de calidad del proceso,
+## sigma_0 = 0.4% (historico), muestra n=24 semanas con s=0.38%, alpha=0.05
+sigma_0, n, s, alpha = 0.4, 24, 0.38, 0.05
+df = n - 1
+
+chi2_0 = (df * s ** 2) / sigma_0 ** 2
+
+chi2_critico_superior = chi2.ppf(1 - alpha / 2, df)
+chi2_critico_inferior = chi2.ppf(alpha / 2, df)
+
+print(f"chi2_0 = {chi2_0:.4f}")
+print(f"Region critica: chi2_0 < {chi2_critico_inferior:.3f} o chi2_0 > {chi2_critico_superior:.3f}")
+print(f"Se rechaza H0: {chi2_0 < chi2_critico_inferior or chi2_0 > chi2_critico_superior}")
+```
+
+```text
+chi2_0 = 20.7575
+Region critica: chi2_0 < 11.689 o chi2_0 > 38.076
+Se rechaza H0: False
+```
+
+El valor $\chi^2_0=20.7575$ coincide con el $\approx20.76$ calculado a mano y confirma que cae dentro de la región de no rechazo.
+
 ### 1.8 Pruebas Chi-cuadrado de Bondad de Ajuste, Contingencia y Proporciones
 Además de la media y la varianza, la familia $\chi^2$ cubre tres pruebas no paramétricas de uso constante en control de calidad:
 
@@ -111,7 +218,84 @@ En los tres casos se rechaza $H_0$ cuando el estadístico supera el valor críti
 
 **Ejemplo — Tabla de Contingencia**: se desea evaluar si el **método de síntesis** de nanopartículas de oro (Turkevich vs. método alternativo) es independiente de la **presencia de agregación** observada por TEM. Con una tabla $2\times 2$ de frecuencias observadas y $\alpha=0.05$, el estadístico $D_0^2$ se compara contra $\chi^2_{1,\,0.05}$; el procedimiento sigue el mismo esquema de bondad de ajuste, sustituyendo las frecuencias esperadas por celda $e_{ij}=(r_i \cdot c_j)/N$.
 
+**Verificación computacional**: se evalúa un caso concreto de tabla de contingencia $3\times 3$ — **tipo de defecto** (agregación, subrecubrimiento, ninguno) observado por TEM vs. **lote de producción** (A, B, C) de AgNPs — usando `scipy.stats.chi2_contingency`, que calcula el estadístico, los grados de libertad, el p-valor y las frecuencias esperadas en un solo paso:
+
+```python
+import numpy as np
+from scipy.stats import chi2_contingency
+
+## Tabla de contingencia: tipo de defecto (agregacion, subrecubrimiento, ninguno)
+## vs. lote de produccion (Lote A, Lote B, Lote C) de AgNPs
+## Filas: tipo de defecto; Columnas: lote
+tabla = np.array([
+    [12,  8, 15],   # Agregacion
+    [ 7, 18,  9],   # Subrecubrimiento
+    [41, 34, 36],   # Ninguno
+])
+
+alpha = 0.05
+chi2_stat, p_valor, df, esperadas = chi2_contingency(tabla)
+
+print(f"Estadistico chi2 = {chi2_stat:.4f}")
+print(f"Grados de libertad = {df}")
+print(f"p-valor = {p_valor:.4f}")
+print("Frecuencias esperadas:")
+print(np.round(esperadas, 2))
+print(f"Se rechaza H0 (independencia): {p_valor < alpha}")
+```
+
+```text
+Estadistico chi2 = 8.8758
+Grados de libertad = 4
+p-valor = 0.0643
+Frecuencias esperadas:
+[[11.67 11.67 11.67]
+ [11.33 11.33 11.33]
+ [37.   37.   37.  ]]
+Se rechaza H0 (independencia): False
+```
+
+Con $p=0.0643 > \alpha=0.05$, **no se rechaza $H_0$**: la evidencia muestral no es suficiente para concluir que el tipo de defecto depende del lote de producción, aunque el p-valor está cerca del umbral y ameritaría vigilancia en lotes futuros.
+
 **Ejemplo — Igualdad de Proporciones**: se comparan las proporciones de nanopartículas defectuosas en $k=4$ lotes de síntesis de AgNPs ($H_0: p_1=p_2=p_3=p_4$ contra $H_1$: al menos una proporción difiere). Se estima la proporción común $\hat p$ a partir de los datos agregados, se calculan las frecuencias esperadas de "defectuoso"/"no defectuoso" por lote, y se aplica el estadístico $\chi^2$ con $k-1=3$ grados de libertad para decidir si el proceso de síntesis es consistente entre lotes.
+
+**Verificación computacional**: se compara la **tasa de rendimiento de síntesis** (proporción de partículas exitosas) entre el método Turkevich y un método alternativo de reducción química, usando la misma `scipy.stats.chi2_contingency` sobre una tabla $2\times 2$ de éxito/fracaso (equivalente a la prueba de igualdad de dos proporciones):
+
+```python
+import numpy as np
+from scipy.stats import chi2_contingency
+
+## Comparacion de tasa de rendimiento (sintesis exitosa) entre dos metodos
+## de sintesis de AgNPs: Turkevich vs. metodo alternativo (reduccion quimica)
+## Filas: exito/fracaso; Columnas: metodo
+exitos = np.array([171, 148])       # Turkevich, Alternativo
+n_total = np.array([200, 180])
+fracasos = n_total - exitos
+
+tabla = np.array([exitos, fracasos])
+
+alpha = 0.05
+chi2_stat, p_valor, df, esperadas = chi2_contingency(tabla)
+
+p1, p2 = exitos / n_total
+print(f"Proporcion de exito Turkevich: {p1:.4f}")
+print(f"Proporcion de exito Alternativo: {p2:.4f}")
+print(f"Estadistico chi2 = {chi2_stat:.4f}")
+print(f"Grados de libertad = {df}")
+print(f"p-valor = {p_valor:.4f}")
+print(f"Se rechaza H0 (p1 = p2): {p_valor < alpha}")
+```
+
+```text
+Proporcion de exito Turkevich: 0.8550
+Proporcion de exito Alternativo: 0.8222
+Estadistico chi2 = 0.5317
+Grados de libertad = 1
+p-valor = 0.4659
+Se rechaza H0 (p1 = p2): False
+```
+
+Con $p=0.4659 \gg \alpha=0.05$, **no se rechaza $H_0$**: no hay evidencia estadística de que la tasa de rendimiento difiera entre los dos métodos de síntesis.
 
 ---
 
@@ -932,6 +1116,34 @@ print(f"Error estandar analitico (TLC): {error_estandar:.4f}")
 
 **Interpretación**: los dos métodos producen intervalos muy similares ($[7.62, 14.86]$ Bootstrap vs. $[7.47, 14.75]$ Normal-TLC) porque $n=40$ ya es razonablemente grande para que el Teorema del Límite Central se cumpla bien sobre la media — pero el Bootstrap llegó a ese resultado **sin asumir** normalidad de $\bar X$ en ningún punto del cálculo, solo remuestreando los datos observados. Esta es la ventaja práctica del método: funciona igual de bien (y a veces mejor) cuando $n$ es pequeño, cuando el estimador de interés no es la media (p. ej. una mediana o un percentil, para los que no existe una fórmula analítica simple de error estándar), o cuando la forma de la distribución subyacente es incierta.
 
+**Verificación simbólica del IC analítico (TLC)**: a diferencia del Bootstrap (remuestreo, correctamente numérico y sin fórmula cerrada), el intervalo de confianza analítico $\bar{x} \pm z_{\alpha/2}\cdot s/\sqrt{n}$ sí tiene forma cerrada y puede verificarse simbólicamente con SymPy, sustituyendo los mismos valores muestrales ($\bar x$, $s$, $n$, $z_{0.025}$) obtenidos arriba:
+
+```python
+import sympy as sp
+from IPython.display import display, Math
+
+## 1. Definicion simbolica del IC analitico por TLC
+x_bar, s, n_sim, z = sp.symbols('bar_x s n z', positive=True)
+error_estandar_expr = s / sp.sqrt(n_sim)
+ic_inf_expr = x_bar - z * error_estandar_expr
+ic_sup_expr = x_bar + z * error_estandar_expr
+
+display(Math(fr"\text{{IC}} = \bar{{x}} \pm z_{{\alpha/2}}\cdot\frac{{s}}{{\sqrt{{n}}}} = {sp.latex(x_bar)} \pm {sp.latex(z * error_estandar_expr)}"))
+
+## 2. Sustitucion de los valores muestrales del ejemplo (tiempo hasta falla de nanosensores)
+valores = {x_bar: sp.Float(float(np.mean(muestra_exp))), s: sp.Float(float(np.std(muestra_exp, ddof=1))), n_sim: n, z: sp.Float(float(z_critico))}
+ic_inf_val = float(ic_inf_expr.subs(valores))
+ic_sup_val = float(ic_sup_expr.subs(valores))
+
+display(Math(fr"\text{{IC Normal (SymPy)}} = [{ic_inf_val:.4f},\ {ic_sup_val:.4f}]"))
+```
+
+```text
+IC Normal (SymPy) = [7.4715, 14.7529]
+```
+
+El resultado simbólico coincide con el IC Normal-TLC $[7.47, 14.75]$ ya calculado numéricamente arriba, confirmando la fórmula cerrada de comparación frente al Bootstrap.
+
 ---
 
 ### 6.2 Verificación Simbólica del Estimador MLE de la Media Normal
@@ -1017,6 +1229,36 @@ print(f"\nPosterior resultante: Beta(alpha={alpha_post}, beta={beta_post})")
 ```
 
 **Interpretación**: el MLE ($\hat\theta=0.700$) usa únicamente los 20 ensayos observados; el MAP ($\hat\theta=0.6818$) lo "encoge" ligeramente hacia el $0.5$ del prior, precisamente porque el prior aporta la equivalente de información previa moderada. A medida que $n\to\infty$, el término de los datos ($x$, $n-x$) domina sobre el prior fijo ($\alpha$, $\beta$) y $\hat\theta_{MAP}\to\hat\theta_{MLE}$ — el prior deja de importar cuando hay suficiente evidencia muestral, un comportamiento deseable de cualquier estimador bayesiano razonable.
+
+**Verificación simbólica de la moda de la posterior**: el estimador MAP es, por definición, la moda de la distribución posterior. Para una $\text{Beta}(\alpha,\beta)$ esa moda tiene forma cerrada, $\frac{\alpha-1}{\alpha+\beta-2}$, que puede derivarse simbólicamente maximizando la log-densidad y confirmarse sustituyendo $\alpha=16,\ \beta=8$ (la posterior de este ejemplo):
+
+```python
+import sympy as sp
+from IPython.display import display, Math
+
+## 1. Densidad Beta(alpha, beta) hasta la constante de normalizacion
+## (la constante no afecta la ubicacion del argmax)
+alpha_sim, beta_sim, theta = sp.symbols('alpha beta theta', positive=True)
+densidad = theta ** (alpha_sim - 1) * (1 - theta) ** (beta_sim - 1)
+
+## 2. Moda = argmax de la log-densidad: derivar e igualar a cero
+log_dens = sp.log(densidad)
+d_log_dens = sp.diff(log_dens, theta)
+moda_expr = sp.solve(sp.Eq(d_log_dens, 0), theta)[0]
+
+display(Math(fr"\text{{Moda}}(\text{{Beta}}(\alpha,\beta)) = {sp.latex(moda_expr)}"))
+
+## 3. Sustitucion con la posterior de este ejemplo: alpha_post=16, beta_post=8
+moda_val = moda_expr.subs({alpha_sim: alpha_post, beta_sim: beta_post})
+display(Math(fr"\hat\theta_{{MAP}} = {sp.latex(moda_val)} = \boxed{{{float(moda_val):.4f}}}"))
+```
+
+```text
+Moda(Beta(alpha,beta)) = (alpha - 1)/(alpha + beta - 2)
+theta_MAP = 15/22 = 0.6818
+```
+
+La derivación simbólica confirma la fórmula $\frac{\alpha-1}{\alpha+\beta-2}$ y el valor $\hat\theta_{MAP}=15/22\approx0.6818$ ya calculado numéricamente arriba.
 
 **Conexión con regularización (Ridge/Lasso)**: esta misma idea —"penalizar" la verosimilitud pura con una creencia previa— es la justificación probabilística exacta detrás de la regularización en regresión, ya usada en §1.18 de esta unidad para diagnosticar multicolinealidad (VIF) y que reaparece en el Proyecto Integrador (Unidad 8) al comparar Ridge, Lasso y Elastic Net: un prior **Normal** sobre los coeficientes $\beta$ de una regresión conduce a la penalización $L_2$ de **Ridge**; un prior **Laplace** conduce a la penalización $L_1$ de **Lasso**. En ambos casos, "MAP con ese prior" y "mínimos cuadrados con esa regularización" son **el mismo estimador** vistos desde dos lenguajes distintos (bayesiano vs. optimización penalizada).
 
