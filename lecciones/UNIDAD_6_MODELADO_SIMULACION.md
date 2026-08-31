@@ -183,11 +183,11 @@ for i, (x, y, z) in enumerate(posiciones):
 **Salida esperada:**
 ```
 Posiciones iniciales de nanopartículas (en nm):
-  Partícula 1: (7.49, 40.23, 96.47)
-  Partícula 2: (20.51, 80.77, 95.75)
-  Partícula 3: (28.09, 18.97, 7.81)
-  Partícula 4: (89.57, 36.40, 84.04)
-  Partícula 5: (26.41, 61.11, 41.27)
+  Partícula 1: (58.23, 51.98, 46.60)
+  Partícula 2: (77.70, 42.29, 3.34)
+  Partícula 3: (41.74, 80.87, 61.23)
+  Partícula 4: (71.49, 18.23, 51.62)
+  Partícula 5: (56.20, 24.87, 91.96)
 ```
 
 ---
