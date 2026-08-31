@@ -89,6 +89,40 @@ muestras = rng.uniform(a, b, size=500_000)
 print(f"\nE[X^2] simulado: {np.mean(muestras ** 2):.2f}  (teorico: {E_X2})")
 ```
 
+**Verificación simbólica (SymPy)**: en vez de sustituir $a=20,b=80$ desde el inicio, se puede integrar la densidad uniforme dejando $a,b$ como símbolos y sustituir al final, confirmando que la fórmula cerrada coincide con los valores numéricos ya publicados.
+
+```python
+import sympy as sp
+
+## 1. Definicion de simbolos
+x = sp.Symbol('x', real=True)
+a, b = sp.symbols('a b', real=True)
+a_val, b_val = 20, 80  # X ~ U(20, 80): temperatura del reactor en grados C
+
+## 2. Densidad uniforme simbolica f(x) = 1/(b-a) en [a, b]
+pdf_uniforme = 1 / (b - a)
+
+## 3. E[X] simbolico via integracion, luego sustitucion numerica
+E_X_simbolico = sp.simplify(sp.integrate(x * pdf_uniforme, (x, a, b)))
+E_X_num = E_X_simbolico.subs({a: a_val, b: b_val})
+print(f"E[X] simbolico = {E_X_simbolico}  ->  E[X] = {E_X_num}")
+
+## 4. g(E[X]) = (E[X])^2
+g_de_E_X = E_X_num ** 2
+print(f"g(E[X]) = {g_de_E_X}")
+
+## 5. E[X^2] simbolico via integracion, luego sustitucion numerica
+E_X2_simbolico = sp.simplify(sp.integrate(x**2 * pdf_uniforme, (x, a, b)))
+E_X2_num = E_X2_simbolico.subs({a: a_val, b: b_val})
+print(f"E[X^2] simbolico = {E_X2_simbolico}  ->  E[X^2] = {E_X2_num}")
+
+## 6. Diferencia = Var(X), confirmando Jensen para g(x) = x^2
+diferencia = sp.simplify(E_X2_num - g_de_E_X)
+print(f"E[X^2] - g(E[X]) = {diferencia}  (debe ser Var(X) = 300)")
+```
+
+La integración simbólica reproduce exactamente los valores ya calculados: $\mathbb{E}[X]=50$, $g(\mathbb{E}[X])=2500$, $\mathbb{E}[X^2]=2800$ y la diferencia $=300$, confirmando de forma independiente (sin depender de la fórmula atajo $\text{Var}(X)=\mathbb{E}[X^2]-(\mathbb{E}[X])^2$) que el resultado numérico es correcto.
+
 La diferencia de $300$ entre ambos valores **no es un error de cálculo**: es exactamente $\text{Var}(X)$, lo cual no es casualidad — reordenando la fórmula de la varianza, $\mathbb{E}[X^2]-(\mathbb{E}[X])^2=\text{Var}(X)\ge0$ siempre, que es precisamente la Desigualdad de Jensen aplicada al caso particular $g(x)=x^2$. En ingeniería de procesos, ignorar esta distinción al estimar consumo energético o cualquier magnitud que dependa de forma no lineal de una variable de proceso lleva a subestimar sistemáticamente el promedio real de esa magnitud.
 
 ---
@@ -112,6 +146,27 @@ Modela el tiempo continuo entre eventos estocásticos Poisson independientes.
 * CDF: $F(x) = 1 - e^{-\lambda x}$.
 * Esperanza: $\mathbb{E}[X] = \frac{1}{\lambda}$, Varianza: $\text{Var}(X) = \frac{1}{\lambda^2}$.
 * Propiedad de **Falta de Memoria**: $P(X > s + t | X > s) = P(X > t)$.
+
+**Ejemplo aplicado**: un nanosensor de gas basado en óxido de grafeno (mismo dispositivo de la Unidad 6, Sección de Modelado y Simulación) tiene un tiempo hasta la primera falla $X \sim \text{Exponencial}(\lambda=0.05)$ fallas/hora. Si el sensor ya lleva $s=20$ horas operando sin falla, ¿cambia la probabilidad de que sobreviva $t=15$ horas más respecto a un sensor recién instalado?
+
+```python
+from scipy.stats import expon
+
+## X ~ Exponencial(lambda=0.05 fallas/hora): tiempo hasta la primera falla de un
+## nanosensor de gas basado en oxido de grafeno (mismo escenario de U6)
+lam = 0.05  # tasa de fallas por hora
+s, t = 20, 15  # horas ya operando sin falla (s), horas adicionales de interes (t)
+
+## P(X > s+t | X > s) = P(X > s+t) / P(X > s)  vs  P(X > t)
+p_izquierda = expon.sf(s + t, scale=1/lam) / expon.sf(s, scale=1/lam)
+p_derecha = expon.sf(t, scale=1/lam)
+
+print(f"P(X > {s+t} | X > {s}) = {p_izquierda:.6f}")
+print(f"P(X > {t})          = {p_derecha:.6f}")
+print(f"¿Coinciden (falta de memoria)? {abs(p_izquierda - p_derecha) < 1e-9}")
+```
+
+Ambos lados dan $0.472367$: haber sobrevivido 20 horas sin falla **no informa nada** sobre cuánto durará el sensor a partir de ahora — la probabilidad de sobrevivir 15 horas más es idéntica a la de un sensor nuevo. Esto contrasta con dispositivos que sí envejecen (Weibull con $k>1$), donde la probabilidad de falla inminente sí depende del tiempo ya transcurrido en operación.
 
 ### 2.4 Distribución Gamma ($X \sim \text{Gamma}(k, \theta)$)
 Generalización de la distribución exponencial para el tiempo hasta observar $k$ eventos.
@@ -422,6 +477,30 @@ plt.show()
 
 **Aplicaciones**: (1) *Nanotecnología*: modelo estándar para el diámetro de nanopartículas obtenidas por nucleación y crecimiento (metálicas, óxidos, poliméricas), y para tamaño de grano en materiales policristalinos. (2) *Confiabilidad*: tiempo de vida de recubrimientos o películas delgadas sujetos a degradación multiplicativa (crecimiento de grietas por fatiga), donde la tasa de falla aumenta con el tiempo. (3) *IA*: variables de latencia o tiempo de respuesta en sistemas computacionales, positivas y sesgadas a la derecha — se recomienda transformación logarítmica antes de aplicar métodos que asumen normalidad.
 
+**Ejemplo aplicado**: el diámetro $X$ (en nm) de nanopartículas de oro obtenidas por síntesis coloidal (nucleación y crecimiento en fase líquida) sigue $X \sim \text{LogNormal}(\mu=2.0, \sigma=0.4)$, con $\mu,\sigma$ los parámetros de la Normal subyacente sobre $\ln X$. El control de calidad exige conocer qué fracción del lote excede el umbral de 10 nm y por debajo de qué diámetro cae el 95% de las partículas.
+
+```python
+from scipy.stats import lognorm
+import numpy as np
+
+## X ~ LogNormal(mu, sigma): diametro (nm) de nanoparticulas de oro obtenidas
+## por nucleacion y crecimiento en fase liquida (sintesis coloidal)
+mu, sigma = 2.0, 0.4  # parametros de la Normal subyacente sobre ln(X)
+
+## Probabilidad de que el diametro exceda el umbral de control de calidad (10 nm)
+umbral = 10
+p_excede = lognorm.sf(umbral, s=sigma, scale=np.exp(mu))
+print(f"E[X] teorico = exp(mu + sigma^2/2) = {np.exp(mu + sigma**2/2):.4f} nm")
+print(f"P(X > {umbral} nm) = {p_excede:.6f}")
+
+## Percentil 95 del diametro: por debajo de que tamano cae el 95% de las particulas
+percentil = 0.95
+x_95 = lognorm.ppf(percentil, s=sigma, scale=np.exp(mu))
+print(f"Percentil 95 (x tal que P(X <= x) = 0.95): {x_95:.4f} nm")
+```
+
+Con $\mathbb{E}[X]\approx 8.0045$ nm, la probabilidad de que una partícula exceda 10 nm es $0.224686$ (aproximadamente 1 de cada 4), y el percentil 95 es $14.2669$ nm — es decir, solo el 5% de las partículas del lote supera ese diámetro. El sesgo a la derecha explica por qué el percentil 95 está considerablemente más lejos de la media que lo que estaría en una Normal con la misma dispersión aparente.
+
 #### 2.12.10 Distribución Beta — Profundización
 
 * **CDF**: $F(x) = \int_0^x f(t)\,dt$, sin forma cerrada; se evalúa numéricamente (`scipy.stats.beta.cdf`).
@@ -449,6 +528,31 @@ plt.show()
 ```
 
 **Aplicaciones**: (1) *Nanotecnología*: rendimiento (yield) de funcionalización exitosa de nanotubos o nanocables en un lote de síntesis; pureza de un material tras un proceso de purificación, ambos naturalmente acotados en $[0,1]$. (2) *IA*: distribución conjugada a priori de la Binomial en inferencia bayesiana — usada en A/B testing (comparar tasas de conversión de dos algoritmos) y en el algoritmo Thompson Sampling para problemas de bandido multi-brazo. (3) *DOE*: modelar la incertidumbre sobre la fracción de área efectiva de poro en un filtro nanoporoso, tratando la porosidad como una probabilidad en vez de un valor fijo.
+
+**Ejemplo aplicado**: el rendimiento (yield) $X$ de la síntesis de nanotubos de carbono funcionalizados en un lote de producción sigue $X \sim \text{Beta}(\alpha=8, \beta=3)$, con los parámetros ajustados a partir de mediciones históricas del proceso. Control de calidad exige conocer la probabilidad de que el rendimiento caiga en el rango aceptable $[0.7, 0.9]$ y la probabilidad de un rendimiento inaceptablemente bajo (por debajo de $0.6$).
+
+```python
+from scipy.stats import beta
+
+## X ~ Beta(alpha, beta): rendimiento (yield) de la sintesis de nanotubos de
+## carbono funcionalizados en un lote de produccion, X en [0, 1]
+a, b = 8, 3  # parametros ajustados a partir de mediciones historicas del proceso
+
+E_X = a / (a + b)
+print(f"E[X] teorico = alpha/(alpha+beta) = {E_X:.4f}")
+
+## Probabilidad de que el rendimiento este en el rango aceptable [0.7, 0.9]
+lo, hi = 0.7, 0.9
+p_rango = beta.cdf(hi, a, b) - beta.cdf(lo, a, b)
+print(f"P({lo} <= X <= {hi}) = {p_rango:.6f}")
+
+## Probabilidad de rendimiento por debajo del minimo aceptable (0.6)
+minimo = 0.6
+p_bajo_minimo = beta.cdf(minimo, a, b)
+print(f"P(X < {minimo}) = {p_bajo_minimo:.6f}")
+```
+
+Con $\mathbb{E}[X]=0.7273$, la probabilidad de que el rendimiento caiga en el rango aceptable $[0.7, 0.9]$ es $0.547026$, mientras que la probabilidad de un rendimiento por debajo del mínimo aceptable de $0.6$ es $0.167290$ — información directamente accionable para decidir si un lote de síntesis pasa el control de calidad.
 
 #### 2.12.11 Distribución de Dirichlet — Profundización
 
@@ -497,14 +601,33 @@ Es **simétrica**: $B(x,y)=B(y,x)$. Por ejemplo, $B(2,3) = \dfrac{\Gamma(2)\Gamm
 ```python
 import math
 
+import sympy as sp
 from scipy.special import gamma, beta
 import numpy as np
 
-## Funcion Gamma: verifica que generaliza el factorial (Gamma(n) = (n-1)!)
+## 1. Definicion simbolica: Gamma(n) para n entero positivo
+n = sp.Symbol('n', positive=True, integer=True)
+gamma_simbolico = sp.gamma(n)
+print(f"Gamma(n) simbolico = {gamma_simbolico}")
+
+## 2. Sustitucion de valores concretos y evaluacion simbolica exacta
+for n_val in [2, 3, 5]:
+    gamma_exacto = gamma_simbolico.subs(n, n_val)
+    print(f"Gamma({n_val}) simbolico exacto = {gamma_exacto}  vs  (n-1)! = {math.factorial(n_val - 1)}")
+
+## 3. Funcion Beta simbolica: B(x,y) = Gamma(x)Gamma(y)/Gamma(x+y)
+x_sym, y_sym = sp.symbols('x y', positive=True)
+beta_simbolico = sp.beta(x_sym, y_sym)
+print(f"\nB(x,y) simbolico = {beta_simbolico}")
+
+beta_exacto = sp.nsimplify(beta_simbolico.subs({x_sym: 2, y_sym: 3}))
+print(f"B(2,3) simbolico exacto = {beta_exacto} = {float(beta_exacto):.6f}")
+
+## 4. Verificacion numerica cruzada con scipy.special (funciones no simbolicas)
 valores_z = np.array([2, 3, 5])
 gamma_valores = gamma(valores_z)
 factoriales_equivalentes = [math.factorial(z - 1) for z in valores_z]
-print(f"Gamma(2)={gamma_valores[0]:.1f}  Gamma(3)={gamma_valores[1]:.1f}  Gamma(5)={gamma_valores[2]:.1f}")
+print(f"\nGamma(2)={gamma_valores[0]:.1f}  Gamma(3)={gamma_valores[1]:.1f}  Gamma(5)={gamma_valores[2]:.1f}")
 print(f"Factoriales equivalentes (n-1)!: {factoriales_equivalentes}")
 
 ## Funcion Beta: verifica la relacion B(x,y) = Gamma(x)Gamma(y)/Gamma(x+y)
@@ -517,6 +640,8 @@ print(f"\nB(2,3) directa:        {beta_directa:.6f}")
 print(f"B(2,3) via Gamma:      {beta_via_gamma:.6f}")
 print(f"B(3,2) (simetria):     {beta_simetrica:.6f}")
 ```
+
+El paso simbólico confirma $\Gamma(2)=1$, $\Gamma(3)=2$, $\Gamma(5)=24$ y $B(2,3)=\frac{1}{12}\approx0.083333$ como expresiones exactas (no aproximaciones de punto flotante) antes de sustituir valores concretos — completando la cadena símbolo → sustitución → numérico y coincidiendo exactamente con la verificación numérica de `scipy.special` que sigue.
 
 **Por qué importa distinguirlas**: `scipy.special.gamma` y `scipy.special.beta` calculan las *funciones matemáticas* $\Gamma(z)$ y $B(x,y)$ — no confundir con `scipy.stats.gamma` y `scipy.stats.beta`, que son las *distribuciones de probabilidad* Gamma y Beta ya usadas en las Secciones 2.4/2.6/2.7/2.10/2.12.6/2.12.10 de esta unidad (mismo nombre de módulo, API completamente distinta: una da un número, la otra da un objeto de distribución con `.pdf()`, `.cdf()`, `.rvs()`, etc.).
 
