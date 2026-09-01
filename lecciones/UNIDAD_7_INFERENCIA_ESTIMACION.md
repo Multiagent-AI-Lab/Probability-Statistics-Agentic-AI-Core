@@ -32,6 +32,7 @@ if 'google.colab' in sys.modules:
 
 - **Distribuciones Muestrales: Chi-cuadrada, t-Student y F** (Unidad 5) — señaladas explícitamente en la Parte C de esa unidad como "prerequisito de Inferencia"; son la base de todas las pruebas paramétricas de esta unidad.
 - **Estadística Descriptiva y Medidas de Tendencia Central** (Unidad 1) — insumo directo para los estimadores puntuales (Método de Momentos, MLE) desarrollados aquí.
+- **Ciclo de Verificación Triple** (ver `GOVERNANCE.md`) — como en todas las unidades del curso, cada concepto con forma cerrada se verifica primero simbólicamente (SymPy) y luego se reproduce con las herramientas de producción (SciPy/statsmodels) antes de interpretarse.
 
 ---
 
@@ -901,6 +902,8 @@ ipytest.run("-vv")
 ---
 
 ## 3. Código de Verificación Simbólica (SymPy)
+
+Esta sección es la Fase 2 del Ciclo de Verificación Triple del curso (ver `GOVERNANCE.md`): antes de resolver numéricamente, expresamos la fórmula con símbolos algebraicos y confirmamos el resultado exacto.
 
 ```python
 import sympy as sp

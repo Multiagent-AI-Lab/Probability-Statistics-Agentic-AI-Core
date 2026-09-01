@@ -125,6 +125,8 @@ La integración simbólica reproduce exactamente los valores ya calculados: $\ma
 
 La diferencia de $300$ entre ambos valores **no es un error de cálculo**: es exactamente $\text{Var}(X)$, lo cual no es casualidad — reordenando la fórmula de la varianza, $\mathbb{E}[X^2]-(\mathbb{E}[X])^2=\text{Var}(X)\ge0$ siempre, que es precisamente la Desigualdad de Jensen aplicada al caso particular $g(x)=x^2$. En ingeniería de procesos, ignorar esta distinción al estimar consumo energético o cualquier magnitud que dependa de forma no lineal de una variable de proceso lleva a subestimar sistemáticamente el promedio real de esa magnitud.
 
+Esta unidad, como el resto del curso, sigue el **Ciclo de Verificación Triple** documentado en `GOVERNANCE.md`: Teoría → Verificación Simbólica (SymPy) → Solución Computacional (SciPy) → Interpretación. El ejemplo de Jensen anterior ya lo aplicó de forma inline; la Sección 4 lo repite de manera formal para la familia Normal.
+
 ---
 
 ## 2. Familias Principales de Distribuciones Continuas
@@ -709,6 +711,8 @@ ipytest.run("-vv")
 ---
 
 ## 4. Código de Verificación Simbólica (SymPy)
+
+Esta sección es la Fase 2 del Ciclo de Verificación Triple del curso (ver `GOVERNANCE.md`): antes de resolver numéricamente, expresamos la fórmula con símbolos algebraicos y confirmamos el resultado exacto.
 
 ```python
 import sympy as sp

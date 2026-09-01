@@ -31,6 +31,7 @@ if 'google.colab' in sys.modules:
 ## Prerequisitos de esta unidad
 
 - **Teorema de Bayes y Probabilidad Condicional** (Unidad 2) — se reutiliza al interpretar la PMF de una variable aleatoria condicionada a un evento observado.
+- **Ciclo de Verificación Triple** (ver `GOVERNANCE.md`) — como en todas las unidades del curso, cada concepto con forma cerrada se verifica primero simbólicamente (SymPy) y luego se reproduce con las herramientas de producción (SciPy/statsmodels) antes de interpretarse.
 
 ---
 
@@ -455,6 +456,8 @@ ipytest.run("-vv")
 ---
 
 ## 4. Código de Verificación Simbólica (SymPy)
+
+Esta sección es la Fase 2 del Ciclo de Verificación Triple del curso (ver `GOVERNANCE.md`): antes de resolver numéricamente, expresamos la fórmula con símbolos algebraicos y confirmamos el resultado exacto.
 
 ```python
 import sympy as sp

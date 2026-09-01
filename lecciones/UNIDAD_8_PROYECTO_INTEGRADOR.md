@@ -32,6 +32,7 @@ if 'google.colab' in sys.modules:
 
 - **Pruebas de Hipótesis e Inferencia Estadística** (Unidad 7) — la metodología completa (Z-test, t-test, no paramétricas) se aplica aquí al proyecto integrador.
 - **PCA y Whitening Gaussiano** (Unidad 4) — desarrollados en la §7 de esa unidad, reutilizados sin re-derivar en el cierre integrador de esta unidad (§9, Distancia de Mahalanobis).
+- **Ciclo de Verificación Triple** (ver `GOVERNANCE.md`) — como en todas las unidades del curso, cada concepto con forma cerrada se verifica primero simbólicamente (SymPy) y luego se reproduce con las herramientas de producción (SciPy/statsmodels) antes de interpretarse.
 
 ---
 
@@ -154,6 +155,8 @@ ipytest.run("-vv")
 ---
 
 ## 4. Código de Verificación Simbólica (SymPy)
+
+Esta sección es la Fase 2 del Ciclo de Verificación Triple del curso (ver `GOVERNANCE.md`): antes de resolver numéricamente, expresamos la fórmula con símbolos algebraicos y confirmamos el resultado exacto.
 
 ```python
 import sympy as sp

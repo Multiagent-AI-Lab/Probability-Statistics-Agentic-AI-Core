@@ -31,6 +31,7 @@ if 'google.colab' in sys.modules:
 ## Prerequisitos de esta unidad
 
 - **PMF de Variables Aleatorias Discretas** (Unidad 3) — base directa para construir la PMF conjunta $P(X=x, Y=y)$ de dos o más variables.
+- **Ciclo de Verificación Triple** (ver `GOVERNANCE.md`) — como en todas las unidades del curso, cada concepto con forma cerrada se verifica primero simbólicamente (SymPy) y luego se reproduce con las herramientas de producción (SciPy/statsmodels) antes de interpretarse.
 
 ---
 
@@ -839,6 +840,8 @@ print(f"\nUmbral chi2 (95%, gl=2): {umbral_chi2_95:.4f}")
 ---
 
 ## 8. Código de Verificación Simbólica (SymPy)
+
+Esta sección es la Fase 2 del Ciclo de Verificación Triple del curso (ver `GOVERNANCE.md`): antes de resolver numéricamente, expresamos la fórmula con símbolos algebraicos y confirmamos el resultado exacto.
 
 ```python
 import sympy as sp
