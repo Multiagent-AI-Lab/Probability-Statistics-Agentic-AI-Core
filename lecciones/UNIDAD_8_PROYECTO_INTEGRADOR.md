@@ -519,6 +519,15 @@ $$\boxed{p_{\text{BP}} \approx 0.005 \implies \text{se rechaza homocedasticidad}
 
 La regresión OLS minimiza la suma de errores al cuadrado, lo que la hace extremadamente sensible a **outliers**: un solo punto extremo puede dominar el ajuste completo (su punto de ruptura es 0%). **RANSAC** (*Random Sample Consensus*) ajusta el modelo de forma robusta probando repetidamente subconjuntos aleatorios de los datos y quedándose con el que produce más puntos consistentes (*inliers*) dentro de un umbral de residuo.
 
+**Algoritmo RANSAC, paso a paso:**
+1. Seleccionar aleatoriamente un subconjunto mínimo de puntos (`min_samples`) — el mínimo necesario para ajustar el modelo (2 para una recta).
+2. Ajustar el modelo candidato usando solo ese subconjunto.
+3. Calcular el residuo de cada punto **restante** respecto al modelo ajustado y contar cuántos caen dentro de la tolerancia `residual_threshold` — estos forman el **consenso** (inliers).
+4. Si el consenso de esta iteración es el mayor visto hasta ahora, guardar el modelo (reajustado sobre todos sus inliers) como mejor candidato.
+5. Repetir los pasos 1-4 un número de iteraciones fijado internamente por `sklearn` (`max_trials`, con valor por defecto 100) y devolver el modelo con mayor consenso.
+
+A diferencia de OLS, que usa el 100% de los puntos en un solo ajuste (y por eso un solo outlier puede arrastrar la recta), RANSAC nunca ajusta el modelo final con datos que sospecha corruptos — el resultado proviene solo del subconjunto de consenso encontrado.
+
 **Contexto aplicado**: la relación entre el radio de nanopartículas de plata (AgNP, medido por dispersión de luz dinámica DLS) y la posición de su pico de resonancia plasmónica superficial (SPR, medido por UV-Vis) es aproximadamente lineal. Pero un subconjunto de las mediciones sufre **agregación** (las nanopartículas se aglomeran y generan un segundo pico de SPR desplazado), produciendo outliers severos que no reflejan la relación física real.
 
 ```python
