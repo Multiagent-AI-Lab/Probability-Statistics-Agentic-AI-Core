@@ -109,6 +109,8 @@ print(f"Axioma 2 (normalizacion), suma = {sum(espacio_muestral.values())}: {axio
 print(f"Axioma 3, P(pequena U mediana) = {p_union_disjunta}")
 ```
 
+Esta unidad, como el resto del curso, sigue el **Ciclo de Verificación Triple** documentado en `GOVERNANCE.md`: Teoría → Verificación Simbólica (SymPy) → Solución Computacional (SciPy) → Interpretación. La Sección 5 desarrolla el ejemplo aplicado, la Sección 6 lo verifica simbólicamente, y la Sección 7 reproduce el resultado con las herramientas de producción.
+
 ---
 
 ## 2. Técnicas de Conteo y Combinatoria
@@ -539,6 +541,8 @@ print(f"P(C|G_B) simbolico evaluado: {resultado_c} (coincide con 2/3: {resultado
 ---
 
 ## 6. Código de Verificación Simbólica (SymPy)
+
+Esta sección es la Fase 2 del Ciclo de Verificación Triple del curso (ver `GOVERNANCE.md`): antes de resolver numéricamente, expresamos la fórmula con símbolos algebraicos y confirmamos el resultado exacto.
 
 ```python
 import sympy as sp
