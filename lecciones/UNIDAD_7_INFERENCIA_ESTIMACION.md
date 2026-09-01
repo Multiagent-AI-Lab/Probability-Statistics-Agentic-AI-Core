@@ -91,7 +91,7 @@ print(f"Region de no rechazo: ({limite_inferior:.4f}, {limite_superior:.4f}) nm"
 print(f"alpha={alpha}, beta={beta:.4f}, potencia={potencia:.4f}")
 ```
 
-```text
+```
 Region de no rechazo: (48.6934, 51.3066) nm
 alpha=0.05, beta=0.1492, potencia=0.8508
 ```
@@ -146,7 +146,7 @@ print(f"Maxima potencia entre regiones alternativas de tamano <= alpha: {max(pot
 print(f"El test NP es optimo: {potencia_np >= max(potencias_alternativas) - 1e-9}")
 ```
 
-```text
+```
 Umbral de rechazo (NP): x_bar < 48.9034 nm
 Potencia del test NP: 0.9123
 Maxima potencia entre regiones alternativas de tamano <= alpha: 0.9123
@@ -197,7 +197,7 @@ print(f"Region critica: chi2_0 < {chi2_critico_inferior:.3f} o chi2_0 > {chi2_cr
 print(f"Se rechaza H0: {chi2_0 < chi2_critico_inferior or chi2_0 > chi2_critico_superior}")
 ```
 
-```text
+```
 chi2_0 = 20.7575
 Region critica: chi2_0 < 11.689 o chi2_0 > 38.076
 Se rechaza H0: False
@@ -244,7 +244,7 @@ print(np.round(esperadas, 2))
 print(f"Se rechaza H0 (independencia): {p_valor < alpha}")
 ```
 
-```text
+```
 Estadistico chi2 = 8.8758
 Grados de libertad = 4
 p-valor = 0.0643
@@ -286,7 +286,7 @@ print(f"p-valor = {p_valor:.4f}")
 print(f"Se rechaza H0 (p1 = p2): {p_valor < alpha}")
 ```
 
-```text
+```
 Proporcion de exito Turkevich: 0.8550
 Proporcion de exito Alternativo: 0.8222
 Estadistico chi2 = 0.5317
@@ -1138,7 +1138,7 @@ ic_sup_val = float(ic_sup_expr.subs(valores))
 display(Math(fr"\text{{IC Normal (SymPy)}} = [{ic_inf_val:.4f},\ {ic_sup_val:.4f}]"))
 ```
 
-```text
+```
 IC Normal (SymPy) = [7.4715, 14.7529]
 ```
 
@@ -1253,7 +1253,7 @@ moda_val = moda_expr.subs({alpha_sim: alpha_post, beta_sim: beta_post})
 display(Math(fr"\hat\theta_{{MAP}} = {sp.latex(moda_val)} = \boxed{{{float(moda_val):.4f}}}"))
 ```
 
-```text
+```
 Moda(Beta(alpha,beta)) = (alpha - 1)/(alpha + beta - 2)
 theta_MAP = 15/22 = 0.6818
 ```
