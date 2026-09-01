@@ -109,21 +109,21 @@ def lcg(seed: int, a: int, c: int, m: int, n: int) -> list[int]:
         valores.append(x)
     return valores
 
-# Demostración numérica con parámetros del RANDU (generador histórico educativo)
+## Demostración numérica con parámetros del RANDU (generador histórico educativo)
 secuencia = lcg(seed=7, a=1103515245, c=12345, m=2**31, n=10)
 print("Secuencia LCG generada:", secuencia)
 
-# Verificar que todos los valores están en el rango [0, m)
+## Verificar que todos los valores están en el rango [0, m)
 m = 2**31
 todos_en_rango = all(0 <= v < m for v in secuencia)
 print(f"Todos los valores en [0, {m}):", todos_en_rango)
 
-# Verificar determinismo: misma semilla produce la misma secuencia
+## Verificar determinismo: misma semilla produce la misma secuencia
 secuencia_2 = lcg(seed=7, a=1103515245, c=12345, m=2**31, n=10)
 determinístico = secuencia == secuencia_2
 print("¿Determinístico (misma semilla)?:", determinístico)
 
-# Normalizar a [0, 1) dividiendo por m
+## Normalizar a [0, 1) dividiendo por m
 secuencia_normalizada = [x / m for x in secuencia]
 print("Primeros 5 valores normalizados a (0, 1):", secuencia_normalizada[:5])
 ```

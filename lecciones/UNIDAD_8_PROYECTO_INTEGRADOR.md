@@ -738,6 +738,8 @@ Coeficientes ElasticNet exactamente en cero: 5
 
 **Interpretación**: con `alpha=0.1` y `l1_ratio=0.7` (70% $L_1$, 30% $L_2$), Elastic Net anula **exactamente** los mismos 5 coeficientes irrelevantes que Lasso, pero frente a las dos variables de temperatura correlacionadas se comporta como Ridge: reparte el peso entre `temperatura` ($\approx1.21$) y `temp_redundante` ($\approx0.83$) de forma mucho más equilibrada que Lasso ($\approx1.35$ vs. $\approx0.49$), en vez de favorecer arbitrariamente a una sobre la otra. El $R^2\approx0.993$ queda entre el de Lasso ($\approx0.98$) y el de Ridge ($\approx0.996$) — el resultado intermedio esperado: la dispersión (sparsity) de Lasso sobre las variables genuinamente irrelevantes, combinada con la estabilidad de Ridge ante la colinealidad entre predictores redundantes.
 
+> **Nota técnica**: en la tabla anterior, `irrelevante_4` aparece como `-0.0000` en vez de `0.0000` bajo Lasso y Elastic Net. No es un error — es un cero negativo de punto flotante (estándar IEEE-754): el optimizador convergió a un valor extremadamente pequeño y negativo (del orden de $-10^{-17}$) que se redondea visualmente a `-0.0000` con 4 decimales. El criterio real de "coeficiente anulado" usado en esta unidad es `abs(coef) < 1e-8`, no la comparación textual con `0.0000` — bajo ese criterio, `irrelevante_4` sí cuenta como cero exacto.
+
 #### 7.8.3 Validación Cruzada: Eligiendo $\lambda$ (o el Grado del Polinomio) sin Trampa
 
 Tanto en §7.8.1 (grado del polinomio) como en §7.8.2 (fuerza de la penalización $\lambda$), la pregunta de fondo es la misma: ¿cómo elegir un hiperparámetro de complejidad sin usar el propio conjunto de prueba para decidir (lo cual invalidaría la evaluación honesta del modelo)? La **validación cruzada de $k$ particiones (k-fold)** resuelve esto dividiendo los datos de entrenamiento en $k$ partes, ajustando el modelo en $k-1$ de ellas y evaluando en la restante, rotando cuál parte se deja fuera — el hiperparámetro que en promedio predice mejor sobre las particiones "dejadas fuera" (nunca sobre el conjunto de prueba final) es el elegido.
@@ -905,6 +907,18 @@ Si el criterio de control de calidad exige que el diámetro esté en un rango es
 ### 10.4 Extensión con TensorFlow Probability: Entrenamiento Real de la Red Probabilística
 
 El ejemplo anterior (§10.2) usó valores de $\hat\mu$ y $\hat\sigma$ ya calculados, "como si vinieran del modelo". Esta sección entrena el modelo real con **TensorFlow Probability (TFP)**, la librería especializada para redes cuya capa de salida parametriza una distribución en vez de un valor puntual, sobre el mismo problema conceptual (diámetro de AuNP en función de la temperatura de síntesis), ahora con **heterocedasticidad real**: a mayor temperatura, mayor variabilidad del proceso de síntesis coloidal.
+
+### Derivación: por qué minimizar la NLL es Máxima Verosimilitud
+
+La red no produce una predicción puntual: produce los dos parámetros $\hat\mu(x;\theta)$ y $\hat\sigma(x;\theta)$ (con $\theta$ los pesos de la red) de una densidad Normal condicional $p(y \mid x) = \mathcal{N}\!\left(y;\, \hat\mu(x;\theta),\, \hat\sigma(x;\theta)^2\right)$. Igual que en la Unidad 7 (§6.2-6.3), donde se derivó el estimador de Máxima Verosimilitud $\hat{\mu}_{MLE}$ de una muestra Normal maximizando la verosimilitud conjunta $\prod_i f(x_i;\mu,\sigma)$, aquí buscamos los pesos $\theta$ que maximizan la verosimilitud de los datos observados $(x_i, y_i)$:
+
+$$\mathcal{L}(\theta) = \prod_{i=1}^n \frac{1}{\sqrt{2\pi}\,\hat\sigma(x_i;\theta)} \exp\left(-\frac{(y_i - \hat\mu(x_i;\theta))^2}{2\,\hat\sigma(x_i;\theta)^2}\right)$$
+
+Tomando el logaritmo negativo (la **Log-Verosimilitud Negativa**, NLL) y descartando constantes que no dependen de $\theta$, se obtiene exactamente la expresión que implementa la función `neg_log_likelihood` del código siguiente:
+
+$$\text{NLL}(\theta) = \sum_{i=1}^n \left[ \log \hat\sigma(x_i;\theta) + \frac{(y_i - \hat\mu(x_i;\theta))^2}{2\,\hat\sigma(x_i;\theta)^2} \right]$$
+
+Minimizar esta expresión respecto a los pesos $\theta$ **es exactamente el mismo principio de MLE** de la Unidad 7 — la única diferencia es que ahí se resolvió el máximo analíticamente (derivada = 0, §6.2), y aquí lo resuelve un optimizador iterativo (descenso de gradiente, vía `modelo.compile(optimizer=...)` más abajo) porque $\hat\mu(x;\theta)$ y $\hat\sigma(x;\theta)$ son funciones no lineales de $\theta$ sin solución cerrada.
 
 ```python
 ## En Google Colab, instalar la extensión TF de TFP si no está disponible:
