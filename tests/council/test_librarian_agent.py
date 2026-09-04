@@ -19,15 +19,18 @@ def test_falla_si_no_hay_ningun_doi_ni_palabra_clave_de_referencia():
     assert resultado["has_references"] is False
 
 
-def test_pasa_si_hay_palabra_clave_de_referencia_conocida_sin_doi():
+def test_la_palabra_clave_sin_doi_ya_no_basta_para_aprobar():
+    """H-01: mencionar 'Walpole' aprobaba la auditoría bibliográfica de
+    cualquier documento, incluida basura sintética. Una cita real se
+    verifica por DOI; un apellido suelto no es verificable."""
     agent = LibrarianAgent()
 
     resultado = agent.verify_references(
         "Según Walpole y Montgomery, la distribución normal..."
     )
 
-    assert resultado["has_references"] is True
-    assert resultado["passed"] is True
+    assert resultado["passed"] is False
+    assert resultado["dois_verificados"] == []
 
 
 def test_extrae_dois_del_texto_en_formato_markdown():
@@ -77,6 +80,16 @@ def test_no_llama_a_crossref_si_no_hay_ningun_doi_en_el_texto(mock_get):
     agent.verify_references("Según Walpole, la media muestral...")
 
     mock_get.assert_not_called()
+
+
+def test_documento_sin_bibliografia_no_aprueba():
+    """La basura sintética de H-01 no cita nada verificable."""
+    agent = LibrarianAgent()
+    basura = "El nanotubo azul come probabilidad de lunes cuadrado. " * 50
+
+    resultado = agent.verify_references(basura)
+
+    assert resultado["passed"] is False
 
 
 @patch("src.multiagent_core.council.librarian_agent.requests.get")

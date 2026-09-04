@@ -51,15 +51,18 @@ class LibrarianAgent:
 
     def verify_references(self, text: str) -> dict[str, Any]:
         """Verifica que el texto tenga soporte bibliográfico real: al menos
-        una palabra clave de referencia conocida, o DOIs citados que
-        resuelvan contra Crossref.
+        un DOI citado que resuelva contra Crossref.
 
-        Si el texto no cita ningún DOI, se aprueba con la sola presencia de
-        una palabra clave (no se llama a Crossref sin necesidad). Si cita
-        DOIs, cada uno debe resolver para que el reporte pase -- una palabra
-        clave presente no compensa un DOI roto, porque citar un DOI que no
-        existe es una afirmación bibliográfica más fuerte y verificable que
-        solo mencionar un autor de referencia.
+        H-01: antes bastaba con que apareciera la subcadena "walpole" (o
+        "scipy", o "mit") para aprobar la auditoría bibliográfica, de modo
+        que un documento de basura sintética con la palabra "Walpole"
+        pegada al final pasaba este control. Un apellido en el texto no es
+        una cita verificable; un DOI que resuelve, sí.
+
+        Las palabras clave conocidas se siguen reportando como metadato
+        (`has_keyword`) porque son señal útil en el reporte, pero ya no
+        deciden el veredicto. Cada unidad del curso cita al menos un DOI,
+        así que el criterio no penaliza contenido real.
         """
         text_lower = text.lower()
         has_keyword = any(kw in text_lower for kw in _REFERENCE_KEYWORDS)
@@ -67,8 +70,9 @@ class LibrarianAgent:
 
         if not dois:
             return {
-                "has_references": has_keyword,
-                "passed": has_keyword,
+                "has_references": False,
+                "has_keyword": has_keyword,
+                "passed": False,
                 "dois_verificados": [],
                 "dois_no_resueltos": [],
             }
@@ -78,7 +82,8 @@ class LibrarianAgent:
 
         return {
             "has_references": True,
-            "passed": len(dois_no_resueltos) == 0,
+            "has_keyword": has_keyword,
+            "passed": len(dois_no_resueltos) == 0 and bool(dois_verificados),
             "dois_verificados": dois_verificados,
             "dois_no_resueltos": dois_no_resueltos,
         }
