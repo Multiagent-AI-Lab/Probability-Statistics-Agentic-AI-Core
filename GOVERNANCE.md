@@ -21,6 +21,29 @@ Este ciclo es el análogo, en este curso, del "Hilo de Oro" (Pseudocódigo→Mer
 
 ---
 
+### 2.1 Qué verifica el Consejo automáticamente (y qué no)
+
+El Consejo de 8 Expertos (`src/multiagent_core/pipeline.py`) audita cada lección con verificación real, no con conteo de palabras clave:
+
+| Agente | Qué verifica | Cómo |
+|---|---|---|
+| `@Scientist` | Fórmulas LaTeX con estructura real, solución en `\boxed{}`, invariantes de dominio | Parseo de bloques LaTeX; comprueba $P\in[0,1]$, $\sigma^2\ge0$, $\lvert\rho\rvert\le1$, $\sum P(x_i)=1$ |
+| `@Engineer` | Que el código ejecutado reproduzca los valores `\boxed{}` del texto | Ejecuta la unidad completa en un subproceso aislado y contrasta su salida |
+| `@Analyst` | Interpretación **posterior** a la visualización y con una afirmación contrastable | Posición real en el documento + presencia de magnitudes |
+| `@Librarian` | Que cada DOI citado exista | Consulta a la API pública de Crossref |
+| `@Safety_Gate` | Supuestos estadísticos y secuencia curricular | Reglas por unidad |
+| `@Editor` | Maquetación y metadatos sueltos | Patrones de encabezado |
+| `@QA` | Veredicto final sobre hallazgos tipados `{tipo, severidad, agente, mensaje}` | Bloquea solo ante hallazgos bloqueantes |
+
+**Límites declarados** (lo que el Consejo NO puede afirmar):
+
+* **`@Architect` es advisory-only en el flujo por lección.** Audita la completitud del curso completo (¿existen las 8 `UNIDAD_*`?), no la validez de una lección individual, así que `process_content()` no le pasa `file_tree` y el agente se reporta como `skipped`. Conectarlo por defecto bloquearía la auditoría de UNIDAD 1 solo porque UNIDAD 5 aún no existe. Un caller que necesite auditar completitud curricular debe invocar `ArchitectAgent.validate_structure(file_tree)` directamente, fuera del pipeline por lección.
+* **No se verifica todo bloque de código.** Los que dependen del runtime de notebook (`ipytest`, magics `%pip`, escapes `!git`), de la red o de los propios agentes del repo se omiten deliberadamente; omitirlos no cuenta como error del contenido.
+* **No se contrasta todo `\boxed{}`.** Un ejemplo analítico autocontenido, cuyos datos de entrada no aparecen en la salida de ningún bloque, no se reporta: sin evidencia de que el código pretendiera reproducirlo, marcarlo sería un falso positivo. El Consejo prefiere callar a inventar un hallazgo.
+* **La verificación es numérica y estructural, no semántica.** El Consejo detecta que un número no cuadra o que un invariante se viola; no juzga si una explicación es pedagógicamente buena.
+
+---
+
 ## 3. El Gold Standard de Calidad
 
 Cada sección de contenido nuevo debe cumplir, verificable mediante `ContentAuditorAgent.audit_content()`:
@@ -43,4 +66,4 @@ Cada entrada del Diccionario de Variables debe corresponder a un símbolo o vari
 
 ---
 
-*Este documento describe el estado real del proceso de este repositorio — no un sistema de agentes en ejecución. Cualquier automatización futura del proceso de generación de contenido debe actualizarlo para reflejar exactamente lo que corre, no lo que se aspira a construir.*
+*Este documento describe el estado real del proceso de este repositorio. El contenido se escribe y revisa directamente (sesiones con el profesor, sin agentes orquestando la redacción); lo que sí corre como software es el Consejo de 8 Expertos que audita el resultado, con el alcance y los límites declarados en §2.1. Cualquier cambio en lo que esos agentes verifican debe actualizarse aquí para reflejar exactamente lo que corre, no lo que se aspira a construir.*
