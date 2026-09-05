@@ -222,6 +222,46 @@ def test_ejemplo_analitico_autocontenido_no_se_reporta():
     assert resultado["discrepancias"] == []
 
 
+def test_boxed_emitido_por_el_codigo_contradice_al_texto():
+    """H-05 real de UNIDAD 6: el texto afirma T=12.3957 y la celda SymPy
+    imprime su propio `\\boxed{6.8447}` para el mismo U=0.35. El `\\boxed{}`
+    que emite el código es la afirmación más fuerte disponible."""
+    agent = EngineerAgent()
+    texto = (
+        "### 2.3 Evaluación para $U = 0.35$\n\n"
+        r"$$\boxed{T = 12.0 \times 1.03297 \approx 12.3957 \text{ segundos}}$$"
+        "\n\n### 3. Verificación simbólica\n\n```python\n"
+        "from IPython.display import display, Math\n"
+        "t = 6.8447\n"
+        'display(Math(fr"Tiempo para U=0.35: \\boxed{{{t:.4f}}}"))\n'
+        "```\n"
+    )
+
+    resultado = agent.check_code_implementation(texto)
+
+    assert resultado["passed"] is False
+    assert any(d["valor_declarado"] == 12.3957 for d in resultado["discrepancias"])
+
+
+def test_display_math_no_queda_invisible_para_la_auditoria():
+    """IPython está instalado, así que `Math(...)` real imprime
+    '<IPython.core.display.Math object>' y el número quedaría fuera de
+    stdout: toda la fase de verificación simbólica sería invisible."""
+    agent = EngineerAgent()
+    texto = (
+        "## 1. Sección\n\n```python\n"
+        "from IPython.display import display, Math\n"
+        'display(Math(r"resultado = 7.5"))\n'
+        "```\n\n"
+        r"Por lo tanto $$\boxed{7.5}$$"
+        "\n"
+    )
+
+    resultado = agent.check_code_implementation(texto)
+
+    assert resultado["discrepancias"] == []
+
+
 def test_sintaxis_de_notebook_no_silencia_la_verificacion():
     """Una línea `%pip install` hace fallar la compilación del archivo
     entero: sin filtrarla, la unidad no produce salida y aprueba por

@@ -69,15 +69,45 @@ matplotlib.use("Agg")
 import matplotlib.pyplot
 matplotlib.pyplot.show = lambda *a, **k: None
 
+class Math:
+    def __init__(self, s="", *a, **k):
+        self.s = s
+    def __str__(self):
+        return str(self.s)
+    __repr__ = __str__
+
+class Latex(Math):
+    pass
+
 def display(*args, **kwargs):
     for _a in args:
         print(_a)
 
-class Math:
-    def __init__(self, s=""):
-        self.s = s
-    def __str__(self):
-        return str(self.s)
+# Las lecciones muestran resultados con `display(Math(fr"... \\boxed{{{v}}}"))`.
+# IPython está instalado en el entorno, así que esas clases son las reales y
+# su repr es "<IPython.core.display.Math object>": el número quedaría fuera
+# de stdout y toda la fase de verificación simbólica (GOVERNANCE §2, Fase 2)
+# sería invisible para la auditoría.
+#
+# Se parchean SOLO `display`, `Math` y `Latex` dentro del módulo real, en vez
+# de reemplazar el paquete entero: matplotlib importa IPython para instalar
+# su displayhook y consulta varios de sus atributos, así que un módulo falso
+# rompe la importación de pyplot.
+try:
+    import IPython.display as _ipd
+
+    _ipd.display = display
+    _ipd.Math = Math
+    _ipd.Latex = Latex
+except ImportError:
+    import sys as _sys
+    import types as _types
+
+    _mod = _types.ModuleType("IPython.display")
+    _mod.display = display
+    _mod.Math = Math
+    _mod.Latex = Latex
+    _sys.modules["IPython.display"] = _mod
 
 import builtins as _b
 _b.display = display
@@ -239,6 +269,12 @@ class EngineerAgent:
         if not numeros_de_la_unidad:
             return
 
+        # Un `\boxed{}` que el propio código imprime (las lecciones lo generan
+        # con `display(Math(fr"... \\boxed{{{valor:.4f}}}"))`) es la afirmación
+        # más fuerte disponible: el código declara ESE resultado. Si el texto
+        # encuadra otro, ambos hablan del mismo cálculo y no coinciden.
+        boxed_del_codigo = self._extraer_valores_boxed(salida_de_la_unidad)
+
         for valor_esperado, expresion in esperados:
             if self._es_valor_trivial(valor_esperado):
                 # 0, 1, 2, porcentajes redondos y demás aparecen en cualquier
@@ -247,14 +283,50 @@ class EngineerAgent:
                 continue
             if self._algun_valor_coincide(valor_esperado, numeros_de_la_unidad):
                 continue
-            if not self._los_datos_del_ejemplo_estan_en_el_codigo(
-                expresion, numeros_de_la_unidad
+            # Solo se comparan los `\boxed{}` del código que hablan del mismo
+            # cálculo: comparten al menos un dato de entrada con la fórmula
+            # del texto. Sin ese anclaje, el `\boxed{-2.83}` de un Z-test
+            # resuelto a mano (UNIDAD 7 §1.6) se contrastaría contra el
+            # `\boxed{}` de cualquier otro ejemplo de la unidad.
+            # El dato compartido puede estar en el enunciado de la sección y
+            # no en la línea del `\boxed{}` (UNIDAD 6 §2.3 fija U=0.35 en el
+            # título y el código lo repite al rotular su resultado), así que
+            # el contexto de la sección cuenta como parte de la expresión.
+            contexto = f"{titulo}\n{expresion}"
+            comparables = [
+                valor
+                for valor, expresion_codigo in boxed_del_codigo
+                if self._comparten_datos(contexto, expresion_codigo)
+            ]
+            if comparables and not self._algun_valor_coincide(
+                valor_esperado, comparables
             ):
-                # Ejemplo analítico autocontenido: sus datos de entrada no
-                # aparecen en ninguna salida de la unidad, así que el código
-                # nunca pretendió reproducirlo (UNIDAD 7 §1.6 resuelve a mano
-                # un Z-test de notas de examen mientras el código trabaja
-                # otro caso). Su ausencia no es evidencia de error.
+                discrepancias.append(
+                    {
+                        "seccion": titulo,
+                        "valor_declarado": valor_esperado,
+                        "valores_producidos": comparables[:10],
+                        "motivo": (
+                            "el código encuadra un resultado distinto del que "
+                            "declara el texto para el mismo cálculo"
+                        ),
+                    }
+                )
+                continue
+
+            # Última señal: el resultado intermedio del propio ejemplo está
+            # en la salida pero el resultado final no. En
+            # `T = 12.0 \times 1.03297 \approx 12.3957` el factor 1.03297 es
+            # un decimal calculado, no un dato redondo: si el código lo
+            # imprime, está ejecutando ESTE ejemplo, y que su resultado no
+            # aparezca indica que el texto quedó desincronizado.
+            #
+            # Se exige un operando decimal y no cualquier número compartido:
+            # un entero como `n=50` coincide por casualidad entre ejemplos
+            # distintos (UNIDAD 7 §1.6 resuelve a mano un Z-test de notas de
+            # examen mientras el código trabaja el caso AgNP) y reportarlo
+            # llenaría el informe de ruido sobre contenido correcto.
+            if not self._comparte_operando_calculado(expresion, numeros_de_la_unidad):
                 continue
             discrepancias.append(
                 {
@@ -262,16 +334,68 @@ class EngineerAgent:
                     "valor_declarado": valor_esperado,
                     "valores_producidos": numeros_de_la_unidad[:10],
                     "motivo": (
-                        "el valor declarado no aparece en la salida de ningún "
-                        "bloque de código de la unidad"
+                        "el código calcula los pasos intermedios de este "
+                        "ejemplo pero no produce el resultado declarado"
                     ),
                 }
             )
 
     @staticmethod
     def _es_valor_trivial(valor: float) -> bool:
-        """Valores que aparecen por casualidad en cualquier salida numérica."""
-        return abs(valor) <= 2 or (valor == int(valor) and abs(valor) <= 100)
+        """Valores que aparecen por casualidad en cualquier salida numérica
+        (índices, exponentes, conteos pequeños) y por tanto no sirven ni
+        como resultado a contrastar ni como evidencia de corroboración."""
+        return abs(valor) <= 2 or (valor == int(valor) and abs(valor) <= 10)
+
+    def _comparten_datos(self, expresion_texto: str, expresion_codigo: str) -> bool:
+        """¿Las dos expresiones hablan del mismo cálculo?
+
+        Se consideran el mismo si comparten algún dato de entrada no trivial
+        (el mismo λ, la misma μ, el mismo tamaño de muestra) o si el rótulo
+        de la cantidad coincide. Es el ancla que evita contrastar el
+        resultado de un ejemplo contra el `\\boxed{}` de otro.
+        """
+        # El rótulo NO se usa como ancla: las lecciones reutilizan los
+        # símbolos estándar del dominio (`z_0` nombra tanto el estadístico
+        # del ejemplo de notas de examen como el del caso AgNP en
+        # UNIDAD 7 §1.6), así que un nombre compartido no implica el mismo
+        # cálculo. Solo los datos de entrada identifican el ejemplo.
+        return bool(
+            self._operandos_distintivos(expresion_texto)
+            & self._operandos_distintivos(expresion_codigo)
+        )
+
+    def _operandos_distintivos(self, expresion: str) -> set[float]:
+        """Números que identifican un ejemplo concreto.
+
+        Aquí se descartan solo los enteros pequeños (índices, exponentes,
+        conteos), no los decimales: `0.35` es el dato de entrada que
+        distingue el ejemplo de UNIDAD 6 §2.3, aunque sea menor que 1.
+        """
+        return {
+            round(float(n), 4)
+            for n in _NUMERO.findall(self._limpiar_latex(expresion))
+            if not (float(n) == int(float(n)) and abs(float(n)) <= 10)
+        }
+
+    def _comparte_operando_calculado(
+        self, expresion: str, numeros_de_la_unidad: list[float]
+    ) -> bool:
+        """¿El código produce algún operando *calculado* de esta fórmula?
+
+        Solo cuentan los decimales con al menos 2 cifras tras el punto: son
+        resultados intermedios de un cálculo (`156.5` no, `76.81` y
+        `1.03297` sí), no enteros redondos que dos ejemplos distintos
+        pueden compartir por casualidad.
+        """
+        for texto_numero in _NUMERO.findall(self._limpiar_latex(expresion)):
+            if "." not in texto_numero:
+                continue
+            if len(texto_numero.split(".")[1]) < 2:
+                continue
+            if self._algun_valor_coincide(float(texto_numero), numeros_de_la_unidad):
+                return True
+        return False
 
     def _los_datos_del_ejemplo_estan_en_el_codigo(
         self, expresion: str, numeros_de_la_unidad: list[float]
