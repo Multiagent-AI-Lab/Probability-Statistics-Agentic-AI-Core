@@ -223,9 +223,9 @@ $$\boxed{T = \lambda \cdot (-\ln U)^{1/k}}$$
 Sustituyendo los parámetros $\lambda = 12.0$, $k = 1.5$ y $U = 0.35$:
 1. Logaritmo natural: $-\ln(0.35) \approx -(-1.049822) = 1.049822$
 2. Exponente $1/k = 1/1.5 = \frac{2}{3} \approx 0.666667$
-3. Potencia: $(1.049822)^{0.666667} \approx 1.03297$
+3. Potencia: $(1.049822)^{0.666667} \approx 1.032945$
 4. Tiempo final $T$:
-$$\boxed{T = 12.0 \times 1.03297 \approx 12.3957 \text{ segundos}}$$
+$$\boxed{T = 12.0 \times 1.032945 \approx 12.3953 \text{ segundos}}$$
 
 ### 2.4 Paso 3: Cálculo del Valor Esperado Teórico $\mathbb{E}[T]$
 $$\mathbb{E}[T] = \lambda \cdot \Gamma\left(1 + \frac{1}{k}\right) = 12.0 \cdot \Gamma(1 + 0.6667) = 12.0 \cdot \Gamma(1.6667) \approx 12.0 \times 0.902746 \approx 10.833 \text{ s}$$
@@ -285,12 +285,16 @@ lam = sp.Symbol('lambda', positive=True)
 k = sp.Symbol('k', positive=True)
 t = sp.Symbol('t', positive=True)
 
-## 2. Ecuación de CDF de Weibull F(t) = U
-cdf_weibull = 1 - sp.exp(-(t/lam)**k)
-ecuacion = sp.Eq(cdf_weibull, u)
+## 2. Ecuación de la forma simplificada de la Transformada Inversa: U = exp(-(t/lambda)^k).
+## Equivalente en distribución a partir de F(t) = 1 - exp(-(t/lambda)^k) = U, porque
+## U ~ Uniforme(0,1) implica (1-U) ~ Uniforme(0,1) -- pero esa equivalencia es solo
+## en distribución, no intercambiable para un valor puntual fijo de U. Se resuelve
+## esta forma para que el resultado numérico coincida con el `\boxed{}` de §2.3, que
+## evalúa T = lambda*(-ln U)^(1/k) directamente.
+ecuacion = sp.Eq(u, sp.exp(-(t/lam)**k))
 
 ## 3. Despeje simbólico de t (Transformada Inversa)
-solucion_t = sp.solve(sp.Eq(1 - u, sp.exp(-(t/lam)**k)), t)[0]
+solucion_t = sp.solve(ecuacion, t)[0]
 
 display(Math(fr"\text{{Expresión Simbólica de la Transformada Inversa Weibull: }} T = {sp.latex(solucion_t)}"))
 
