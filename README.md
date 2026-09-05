@@ -4,7 +4,7 @@
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Framework](https://img.shields.io/badge/Framework-Multi--Agent%20Council-orange.svg)](#sistema-de-agentes-y-gobernanza)
 [![Status](https://img.shields.io/badge/status-production--ready-brightgreen.svg)](#)
-[![Tests](https://img.shields.io/badge/tests-142%20passing-brightgreen.svg)](tests/)
+[![Tests](https://img.shields.io/badge/tests-226%20passing-brightgreen.svg)](tests/)
 
 Repositorio oficial y núcleo agéntico para la asignatura de **Probabilidad y Estadística Inferencial** de la **Ingeniería en Inteligencia Artificial y Nanotecnología** en la **Universidad de La Ciénega del Estado de Michoacán de Ocampo (UCEMICH)**.
 
@@ -65,7 +65,7 @@ Si una respuesta de IA (de cualquier herramienta) no coincide con al menos uno d
 ```
 PROBABILIDAD Y ESTADÍSTICA/
 ├── README.md                           ← Documento principal del repositorio
-├── GOVERNANCE.md                       ← Modelo de gobernanza del Consejo de 8 Expertos
+├── GOVERNANCE.md                       ← Estándar de contenido + qué audita realmente el Consejo de 8 Expertos (§2.1)
 ├── PROTOCOLO_MAESTRO.md                ← Estándar de calidad de 8 componentes obligatorios
 ├── CLAUDE.md                           ← Instrucciones de desarrollo para AI Assistants
 ├── RUBRICA_GENERAL.md                  ← Rúbrica cuantitativa de prácticas y laboratorios
@@ -140,7 +140,7 @@ PROBABILIDAD Y ESTADÍSTICA/
 
 ## 🏛️ Sistema de Agentes y Gobernanza (El Consejo de Expertos)
 
-El proyecto opera bajo la supervisión de un **Consejo de 8 Agentes** con 3 loops de retroalimentación (**L1, L2, L3**). Ver `GOVERNANCE.md` §4 para el detalle completo de qué reporte bloquea la publicación y por qué.
+El proyecto opera bajo la supervisión de un **Consejo de 8 Agentes** con 3 loops de retroalimentación (**L1, L2, L3**). Ver `GOVERNANCE.md` §2.1 para el detalle completo de qué reporte bloquea la publicación y por qué.
 
 ```mermaid
 graph TD
@@ -165,7 +165,7 @@ graph TD
     Gatekeeper -->|"✅ Compilar"| Done(("🏁 Notebook<br/>Maestro"))
 ```
 
-**Bloqueantes reales de publicación**: `@Safety_Gate`, `@Engineer`, `@Editor`, `@Scientist`, `@Analyst` (siempre), más `@Architect` (solo en `run_full_pipeline`, que conoce el curso completo). `@Librarian` y `@QA` son asesores — sus reportes se calculan y quedan disponibles, pero no bloquean el gate (detalle y motivo en `GOVERNANCE.md` §4).
+**Bloqueantes reales de publicación**: `@Safety_Gate`, `@Engineer`, `@Editor`, `@Scientist`, `@Analyst` (siempre), más `@Architect` (solo en `run_full_pipeline`, que conoce el curso completo). `@Librarian` y `@QA` son asesores — sus reportes se calculan y quedan disponibles, pero no bloquean el gate (detalle y motivo en `GOVERNANCE.md` §2.1).
 
 **Ejemplo ejecutable de uso**: `notebooks_extra/USO_SISTEMA_MULTIAGENTE.ipynb` corre `OrchestratorAgent.run_full_pipeline()` sobre las unidades reales del curso y `StatsTutorAgent.ask()` con una pregunta temática puntual, con salida real ya guardada. No es una unidad evaluada — vive fuera de `lecciones/` y no pasa por este mismo gate. A diferencia de las unidades del curso, es **solo para uso local** (repo clonado + entorno `ia_stats` activado): no tiene badge ni celda de setup para Google Colab.
 

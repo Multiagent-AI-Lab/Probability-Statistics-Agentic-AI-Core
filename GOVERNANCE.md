@@ -2,7 +2,7 @@
 
 ## 1. Propósito de este documento
 
-Este archivo documenta el patrón pedagógico central que estructura el contenido de "Probabilidad y Estadística Inferencial" y el estándar de calidad que cada unidad debe cumplir. A diferencia de un pipeline de generación automatizada, el contenido de este curso se escribe y revisa directamente (sesiones de trabajo con el profesor, sin agentes de IA orquestando la redacción) — este documento es una guía de convenciones para quien escribe o revisa contenido, no la descripción de un sistema de software que ejecute el proceso.
+Este archivo documenta el patrón pedagógico central que estructura el contenido de "Probabilidad y Estadística Inferencial", el estándar de calidad que cada unidad debe cumplir, y el modelo de gobernanza del Consejo de 8 Expertos (`src/multiagent_core/pipeline.py`) que audita ese contenido una vez escrito. La redacción del contenido en sí sigue sin ser generada por un pipeline automatizado — se escribe y revisa directamente (sesiones de trabajo con el profesor, sin agentes de IA orquestando la redacción) — pero la auditoría posterior sí es software real que corre y bloquea publicación: su alcance y límites exactos están en §2.1.
 
 ---
 

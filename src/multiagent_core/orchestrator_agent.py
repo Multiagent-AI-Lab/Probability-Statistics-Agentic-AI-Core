@@ -41,7 +41,7 @@ class OrchestratorAgent:
     # NO es la lista de lo que puede bloquear: el veredicto de publicacion lo
     # da `final_qa["approved"]` sobre los hallazgos tipados de los 8 agentes
     # (incluido @Librarian, que no aparece aqui). Esta tupla solo enriquece el
-    # mensaje. Ver GOVERNANCE.md #4.
+    # mensaje. Ver GOVERNANCE.md §2.1.
     _BLOCKING_REPORTS = ("engineer", "editor", "scientist", "analyst")
 
     # Cuantos hallazgos bloqueantes de @QA se citan en el motivo antes de
@@ -139,7 +139,7 @@ class OrchestratorAgent:
         Con `file_tree`, @Architect se vuelve bloqueante (completitud real
         del curso); sin él, `process_content` lo deja como advisory/opt-in
         (`{"passed": True, "skipped": True}`) para no bloquear una lección
-        válida solo porque se audita de forma aislada. Ver GOVERNANCE.md §4.
+        válida solo porque se audita de forma aislada. Ver GOVERNANCE.md §2.1.
 
         El veredicto de publicación es `final_qa["approved"]`: el juicio
         agregado de @QA sobre los hallazgos tipados de los 8 agentes, con su

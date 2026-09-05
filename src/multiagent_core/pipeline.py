@@ -45,7 +45,7 @@ class CouncilPipeline:
         subconjuntos de unidades) — un falso bloqueo sin relación con la
         calidad de la lección auditada. Por eso ningún caller de producción
         pasa `file_tree` hoy: @Architect queda deliberadamente como
-        advisory/opt-in en este flujo (ver GOVERNANCE.md §2), no conectado
+        advisory/opt-in en este flujo (ver GOVERNANCE.md §2.1), no conectado
         por defecto. Un caller que sí necesite auditar completitud curricular
         puede invocar `ArchitectAgent.validate_structure(file_tree)`
         directamente fuera de este pipeline por-lección.
