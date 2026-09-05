@@ -11,7 +11,10 @@ from typing import Any
 # anterior era `text.count("$") >= 10`, que aprobaba prosa con `$x$`
 # repetido -- un símbolo aislado no afirma nada verificable.
 _LATEX_INLINE = re.compile(r"\$([^$\n]+)\$")
-_LATEX_DISPLAY = re.compile(r"\$\$(.+?)\$\$|\\begin\{(?:align|equation|gather)\*?\}(.+?)\\end\{(?:align|equation|gather)\*?\}", re.DOTALL)
+_LATEX_DISPLAY = re.compile(
+    r"\$\$(.+?)\$\$|\\begin\{(?:align|equation|gather)\*?\}(.+?)\\end\{(?:align|equation|gather)\*?\}",
+    re.DOTALL,
+)
 _ESTRUCTURA_FORMULA = re.compile(
     r"=|\\leq|\\geq|\\le\b|\\ge\b|<|>|\\sim|\\approx|\\propto"
     r"|\\sum|\\int|\\prod|\\frac|\\sqrt|\^|_"
@@ -133,6 +136,7 @@ class ScientistAgent:
         Solo se aceptan cadenas de números y operadores tras normalizar
         `\\times`/`\\cdot`: nunca se evalúa contenido arbitrario del texto.
         """
+
         def _normalizar(expresion: str) -> str:
             limpio = re.sub(r"\\(?:times|cdot)", "*", expresion)
             limpio = re.sub(r"\\[a-zA-Z]+|[{}]", " ", limpio)
@@ -146,10 +150,10 @@ class ScientistAgent:
         try:
             # Entrada restringida por _ARITMETICA_SIMPLE a dígitos, espacios
             # y operadores aritméticos: no puede contener nombres ni llamadas.
-            divisor = eval(den, {"__builtins__": {}}, {})  # noqa: S307
+            divisor = eval(den, {"__builtins__": {}}, {})
             if divisor == 0:
                 return None
-            return eval(num, {"__builtins__": {}}, {}) / divisor  # noqa: S307
+            return eval(num, {"__builtins__": {}}, {}) / divisor
         except (SyntaxError, ValueError, ZeroDivisionError, TypeError):
             return None
 

@@ -9,8 +9,8 @@ gravedad, y que un aviso menor no bloquee igual que un error de contenido.
 """
 
 from src.multiagent_core.council.qa_agent import (
-    SEVERIDAD_BLOQUEANTE,
     SEVERIDAD_ADVERTENCIA,
+    SEVERIDAD_BLOQUEANTE,
     QAAgent,
 )
 
@@ -91,7 +91,9 @@ def test_invariante_violado_produce_hallazgo_tipado_bloqueante():
 
     resultado = agent.final_audit(reportes)
 
-    hallazgo = next(h for h in resultado["hallazgos"] if h["tipo"] == "invariante_violado")
+    hallazgo = next(
+        h for h in resultado["hallazgos"] if h["tipo"] == "invariante_violado"
+    )
     assert hallazgo["severidad"] == SEVERIDAD_BLOQUEANTE
     assert hallazgo["agente"] == "scientist"
     assert "1.75" in hallazgo["mensaje"]
@@ -144,9 +146,7 @@ def test_aritmetica_inconsistente_produce_hallazgo_tipado():
 
 def test_referencia_inexistente_produce_hallazgo_tipado():
     agent = QAAgent()
-    reportes = {
-        "librarian": {"passed": False, "dois_no_resueltos": ["10.9999/roto"]}
-    }
+    reportes = {"librarian": {"passed": False, "dois_no_resueltos": ["10.9999/roto"]}}
 
     resultado = agent.final_audit(reportes)
 
@@ -199,15 +199,16 @@ def test_interpretacion_ausente_produce_hallazgo_tipado():
 
     resultado = agent.final_audit(reportes)
 
-    assert any(
-        h["tipo"] == "interpretacion_ausente" for h in resultado["hallazgos"]
-    )
+    assert any(h["tipo"] == "interpretacion_ausente" for h in resultado["hallazgos"])
 
 
 def test_los_hallazgos_se_agrupan_por_severidad_en_el_resumen():
     agent = QAAgent()
     reportes = {
-        "scientist": {"passed": False, "invariantes_violados": ["varianza negativa: -4"]},
+        "scientist": {
+            "passed": False,
+            "invariantes_violados": ["varianza negativa: -4"],
+        },
         "safety_gate": {
             "passed": False,
             "critical": False,

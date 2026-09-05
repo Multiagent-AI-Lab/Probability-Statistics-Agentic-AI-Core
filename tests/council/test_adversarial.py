@@ -54,9 +54,14 @@ def council():
 def test_basura_sintetica_no_debe_aprobar(council):
     """Reproduce H-01: 1742 palabras de frase repetida sin contenido real aprobaba 100/100."""
     basura = (
-        "El nanotubo azul come probabilidad de lunes cuadrado sin sentido alguno "
-        "porque la varianza del queso mide $x$ colores. "
-    ) * 90 + _DECORACION_QUE_ENGANA_AL_CONSEJO + r"$\boxed{P = 99}$"
+        (
+            "El nanotubo azul come probabilidad de lunes cuadrado sin sentido alguno "
+            "porque la varianza del queso mide $x$ colores. "
+        )
+        * 90
+        + _DECORACION_QUE_ENGANA_AL_CONSEJO
+        + r"$\boxed{P = 99}$"
+    )
 
     resultado = council.process_content(basura)
 
@@ -160,6 +165,6 @@ def test_contenido_real_correcto_sigue_aprobando(council):
         pytest.skip("Crossref no accesible desde este entorno; control no aplicable")
 
     hallazgos = resultado["final_qa"]["hallazgos"]
-    assert resultado["approved"] is True, (
-        f"contenido real correcto no debe reprobarse; hallazgos: {hallazgos}"
-    )
+    assert (
+        resultado["approved"] is True
+    ), f"contenido real correcto no debe reprobarse; hallazgos: {hallazgos}"

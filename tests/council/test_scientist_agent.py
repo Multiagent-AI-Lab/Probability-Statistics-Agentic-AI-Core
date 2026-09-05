@@ -144,7 +144,10 @@ def test_suma_de_pmf_distinta_de_uno_viola_invariante():
         r"Verificamos que $\sum_{i} P(x_i) = 2$ para la función de masa."
     )
 
-    assert any("pmf" in v.lower() or "masa" in v.lower() for v in resultado["invariantes_violados"])
+    assert any(
+        "pmf" in v.lower() or "masa" in v.lower()
+        for v in resultado["invariantes_violados"]
+    )
 
 
 def test_suma_de_pmf_igual_a_uno_no_viola_invariante():
@@ -161,9 +164,7 @@ def test_aritmetica_inconsistente_dentro_del_boxed_se_detecta():
     debería ser 142.19) y se detecta sin ejecutar nada, comprobando que la
     fórmula encuadrada sea consistente consigo misma."""
     agent = ScientistAgent()
-    texto = (
-        r"$$\boxed{d_{\text{Cohen}} = \frac{145.19-125.37}{22.32} \approx 0.75}$$"
-    )
+    texto = r"$$\boxed{d_{\text{Cohen}} = \frac{145.19-125.37}{22.32} \approx 0.75}$$"
 
     resultado = agent.check_theory(texto)
 
@@ -174,9 +175,7 @@ def test_aritmetica_inconsistente_dentro_del_boxed_se_detecta():
 def test_aritmetica_consistente_dentro_del_boxed_no_se_reporta():
     """Control: la misma fórmula con la media correcta sí cierra."""
     agent = ScientistAgent()
-    texto = (
-        r"$$\boxed{d_{\text{Cohen}} = \frac{142.19-125.37}{22.32} \approx 0.75}$$"
-    )
+    texto = r"$$\boxed{d_{\text{Cohen}} = \frac{142.19-125.37}{22.32} \approx 0.75}$$"
 
     resultado = agent.check_theory(texto)
 

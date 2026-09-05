@@ -459,9 +459,7 @@ class EngineerAgent:
             secciones.append(("(preámbulo)", text[: encabezados[0].start()]))
 
         for i, match in enumerate(encabezados):
-            fin = (
-                encabezados[i + 1].start() if i + 1 < len(encabezados) else len(text)
-            )
+            fin = encabezados[i + 1].start() if i + 1 < len(encabezados) else len(text)
             secciones.append((match.group(0).strip(), text[match.start() : fin]))
         return secciones
 
@@ -588,6 +586,7 @@ class EngineerAgent:
                     [sys.executable, str(script)],
                     capture_output=True,
                     text=True,
+                    check=False,  # un exit != 0 es un hallazgo, no una excepción
                     timeout=_TIMEOUT_EJECUCION_SEGUNDOS,
                     cwd=tmp,
                     encoding="utf-8",
@@ -656,8 +655,7 @@ class EngineerAgent:
         # se reporta: esta auditoría prefiere callar a inventar un hallazgo.
         valores_rotulados = self._valores_junto_al_rotulo(nombre, salida)
         return any(
-            self._mismo_orden_de_magnitud(valor_declarado, v)
-            for v in valores_rotulados
+            self._mismo_orden_de_magnitud(valor_declarado, v) for v in valores_rotulados
         )
 
     @staticmethod
