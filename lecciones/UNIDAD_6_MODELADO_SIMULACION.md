@@ -631,23 +631,53 @@ import scipy.stats as stats
 lam = 0.05
 
 # TODO: deriva simbólicamente (o analíticamente) la función cuantil F^-1(u) de la
-#       Transformada Inversa para la Exponencial y evalúala en u=0.65
-# TODO: verifica tu resultado contra stats.expon.ppf(0.65, scale=1/lam)
+#       Transformada Inversa para la Exponencial y evalúala en u=0.65; guarda el
+#       resultado en `cuantil_065`
+# TODO: verifica tu resultado contra stats.expon.ppf(0.65, scale=1/lam) y guárdalo
+#       en `cuantil_scipy`
 # TODO: fija np.random.seed(6), genera 5 valores uniformes con np.random.rand(5),
-#       aplica la Transformada Inversa a cada uno y calcula la media de los 5 tiempos de falla
+#       aplica la Transformada Inversa a cada uno y calcula la media de los 5 tiempos
+#       de falla; guárdala en `media_muestral`
 ```
 
 ```python
 from src.multiagent_core.code_auditor_agent import CodeAuditorAgent
+from src.multiagent_core.exercise_verifier_agent import ExerciseVerifierAgent
 from external_skills.pedagogy.socratic_debugger import SocraticDebugger
 
 with open("solucion_ejercicio_u6.py", encoding="utf-8") as f:
     codigo_alumno = f.read()
 
+plantilla_original = """# Completa aquí tu solución al Ejercicio Propuesto de esta unidad.
+import numpy as np
+import scipy.stats as stats
+
+lam = 0.05
+
+# TODO: deriva simbólicamente (o analíticamente) la función cuantil F^-1(u) de la
+#       Transformada Inversa para la Exponencial y evalúala en u=0.65; guarda el
+#       resultado en `cuantil_065`
+# TODO: verifica tu resultado contra stats.expon.ppf(0.65, scale=1/lam) y guárdalo
+#       en `cuantil_scipy`
+# TODO: fija np.random.seed(6), genera 5 valores uniformes con np.random.rand(5),
+#       aplica la Transformada Inversa a cada uno y calcula la media de los 5 tiempos
+#       de falla; guárdala en `media_muestral`"""
+
 auditor = CodeAuditorAgent()
 resultado = auditor.audit_code(codigo_alumno)
 
-if resultado["issues"] or resultado["metrics"]["has_security_risk"]:
+verificador = ExerciseVerifierAgent(
+    variables_requeridas=["cuantil_065", "cuantil_scipy", "media_muestral"],
+    checks=[
+        "abs(cuantil_065 - stats.expon.ppf(0.65, scale=1/0.05)) < 1e-6",
+        "abs(cuantil_scipy - stats.expon.ppf(0.65, scale=1/0.05)) < 1e-6",
+        "abs(media_muestral - 18.060810781824333) < 1e-6",
+    ],
+    plantilla=plantilla_original,
+)
+resultado_ejercicio = verificador.verificar(codigo_alumno)
+
+if resultado["issues"] or resultado["metrics"]["has_security_risk"] or not resultado_ejercicio.aprueba:
     debugger = SocraticDebugger()
     for issue in resultado["issues"]:
         tipo_error = "syntax_error" if "SyntaxError" in issue else "generic"
@@ -655,9 +685,14 @@ if resultado["issues"] or resultado["metrics"]["has_security_risk"]:
     for issue in resultado["security_issues"]:
         print("🔒", debugger.generate_socratic_question("security_risk", "Unidad 6"))
         print("   ", issue)
+    for issue in resultado_ejercicio.issues:
+        print("❌", debugger.generate_socratic_question("generic", "Unidad 6"))
+        print("   ", issue)
     print("\n--- Detalle técnico ---")
     print(resultado)
+    print(resultado_ejercicio)
 else:
-    print("✅ Tu código pasa las verificaciones automáticas de estilo y seguridad.")
+    print("✅ Tu código pasa las verificaciones automáticas de estilo, seguridad y resultado.")
     print(resultado)
+    print(resultado_ejercicio)
 ```

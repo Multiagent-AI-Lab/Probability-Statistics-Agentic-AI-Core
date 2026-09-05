@@ -1085,24 +1085,64 @@ sno2 = np.array([3.58, 3.62, 3.55, 3.60, 3.57, 3.63, 3.59, 3.56])
 in2o3 = np.array([3.71, 3.68, 3.75, 3.70, 3.73, 3.69, 3.72, 3.74])
 alpha = 0.05
 
-# TODO: calcula la media y desviación estándar muestral de cada grupo
+# TODO: calcula la media y desviación estándar muestral de cada grupo y guárdalas en
+#       `media_sno2`, `std_sno2`, `media_in2o3`, `std_in2o3`
 # TODO: verifica el supuesto de homocedasticidad con la prueba de Levene (stats.levene)
-#       antes de elegir la variante de la prueba t
+#       antes de elegir la variante de la prueba t; guarda el estadístico y el p-valor
+#       en `levene_stat` y `levene_p`
 # TODO: ejecuta stats.ttest_ind(sno2, in2o3, equal_var=False) (Welch) y decide si se
-#       rechaza H0; interpreta el resultado sin usar la palabra "causa"
+#       rechaza H0; interpreta el resultado sin usar la palabra "causa"; guarda el
+#       estadístico y el p-valor en `t_stat` y `t_p`
 ```
 
 ```python
 from src.multiagent_core.code_auditor_agent import CodeAuditorAgent
+from src.multiagent_core.exercise_verifier_agent import ExerciseVerifierAgent
 from external_skills.pedagogy.socratic_debugger import SocraticDebugger
 
 with open("solucion_ejercicio_u8.py", encoding="utf-8") as f:
     codigo_alumno = f.read()
 
+plantilla_original = """# Completa aquí tu solución al Ejercicio Propuesto de esta unidad.
+import numpy as np
+import scipy.stats as stats
+
+sno2 = np.array([3.58, 3.62, 3.55, 3.60, 3.57, 3.63, 3.59, 3.56])
+in2o3 = np.array([3.71, 3.68, 3.75, 3.70, 3.73, 3.69, 3.72, 3.74])
+alpha = 0.05
+
+# TODO: calcula la media y desviación estándar muestral de cada grupo y guárdalas en
+#       `media_sno2`, `std_sno2`, `media_in2o3`, `std_in2o3`
+# TODO: verifica el supuesto de homocedasticidad con la prueba de Levene (stats.levene)
+#       antes de elegir la variante de la prueba t; guarda el estadístico y el p-valor
+#       en `levene_stat` y `levene_p`
+# TODO: ejecuta stats.ttest_ind(sno2, in2o3, equal_var=False) (Welch) y decide si se
+#       rechaza H0; interpreta el resultado sin usar la palabra "causa"; guarda el
+#       estadístico y el p-valor en `t_stat` y `t_p`"""
+
 auditor = CodeAuditorAgent()
 resultado = auditor.audit_code(codigo_alumno)
 
-if resultado["issues"] or resultado["metrics"]["has_security_risk"]:
+verificador = ExerciseVerifierAgent(
+    variables_requeridas=[
+        "media_sno2", "std_sno2", "media_in2o3", "std_in2o3",
+        "levene_stat", "levene_p", "t_stat", "t_p",
+    ],
+    checks=[
+        "abs(media_sno2 - np.mean(sno2)) < 1e-6",
+        "abs(std_sno2 - np.std(sno2, ddof=1)) < 1e-6",
+        "abs(media_in2o3 - np.mean(in2o3)) < 1e-6",
+        "abs(std_in2o3 - np.std(in2o3, ddof=1)) < 1e-6",
+        "abs(levene_stat - stats.levene(sno2, in2o3)[0]) < 1e-6",
+        "abs(levene_p - stats.levene(sno2, in2o3)[1]) < 1e-6",
+        "abs(t_stat - stats.ttest_ind(sno2, in2o3, equal_var=False)[0]) < 1e-6",
+        "abs(t_p - stats.ttest_ind(sno2, in2o3, equal_var=False)[1]) < 1e-6",
+    ],
+    plantilla=plantilla_original,
+)
+resultado_ejercicio = verificador.verificar(codigo_alumno)
+
+if resultado["issues"] or resultado["metrics"]["has_security_risk"] or not resultado_ejercicio.aprueba:
     debugger = SocraticDebugger()
     for issue in resultado["issues"]:
         tipo_error = "syntax_error" if "SyntaxError" in issue else "generic"
@@ -1110,9 +1150,14 @@ if resultado["issues"] or resultado["metrics"]["has_security_risk"]:
     for issue in resultado["security_issues"]:
         print("🔒", debugger.generate_socratic_question("security_risk", "Unidad 8"))
         print("   ", issue)
+    for issue in resultado_ejercicio.issues:
+        print("❌", debugger.generate_socratic_question("generic", "Unidad 8"))
+        print("   ", issue)
     print("\n--- Detalle técnico ---")
     print(resultado)
+    print(resultado_ejercicio)
 else:
-    print("✅ Tu código pasa las verificaciones automáticas de estilo y seguridad.")
+    print("✅ Tu código pasa las verificaciones automáticas de estilo, seguridad y resultado.")
     print(resultado)
+    print(resultado_ejercicio)
 ```

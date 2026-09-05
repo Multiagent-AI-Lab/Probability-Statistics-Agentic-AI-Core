@@ -704,22 +704,56 @@ n = 25
 p = 0.08
 
 # TODO: calcula P(X = 3) usando la fórmula exacta de la PMF binomial (stats.binom.pmf)
+#       y guárdala en `p_exacta`
 # TODO: calcula P(X <= 3) y P(X >= 1) usando la CDF (stats.binom.cdf), no la PMF
-# TODO: calcula E[X] y Var(X)
-# TODO: calcula la aproximación Poisson de P(X=3) con lambda = n*p y compárala con el valor exacto
+#       y guárdalas en `p_acumulada` y `p_al_menos_uno`
+# TODO: calcula E[X] y Var(X) y guárdalas en `esperanza` y `varianza`
+# TODO: calcula la aproximación Poisson de P(X=3) con lambda = n*p y compárala con el valor
+#       exacto; guarda la aproximación en `p_poisson_aprox`
 ```
 
 ```python
 from src.multiagent_core.code_auditor_agent import CodeAuditorAgent
+from src.multiagent_core.exercise_verifier_agent import ExerciseVerifierAgent
 from external_skills.pedagogy.socratic_debugger import SocraticDebugger
 
 with open("solucion_ejercicio_u3.py", encoding="utf-8") as f:
     codigo_alumno = f.read()
 
+plantilla_original = """# Completa aquí tu solución al Ejercicio Propuesto de esta unidad.
+import scipy.stats as stats
+
+n = 25
+p = 0.08
+
+# TODO: calcula P(X = 3) usando la fórmula exacta de la PMF binomial (stats.binom.pmf)
+#       y guárdala en `p_exacta`
+# TODO: calcula P(X <= 3) y P(X >= 1) usando la CDF (stats.binom.cdf), no la PMF
+#       y guárdalas en `p_acumulada` y `p_al_menos_uno`
+# TODO: calcula E[X] y Var(X) y guárdalas en `esperanza` y `varianza`
+# TODO: calcula la aproximación Poisson de P(X=3) con lambda = n*p y compárala con el valor
+#       exacto; guarda la aproximación en `p_poisson_aprox`"""
+
 auditor = CodeAuditorAgent()
 resultado = auditor.audit_code(codigo_alumno)
 
-if resultado["issues"] or resultado["metrics"]["has_security_risk"]:
+verificador = ExerciseVerifierAgent(
+    variables_requeridas=[
+        "p_exacta", "p_acumulada", "p_al_menos_uno", "esperanza", "varianza", "p_poisson_aprox",
+    ],
+    checks=[
+        "abs(p_exacta - stats.binom.pmf(3, 25, 0.08)) < 1e-6",
+        "abs(p_acumulada - stats.binom.cdf(3, 25, 0.08)) < 1e-6",
+        "abs(p_al_menos_uno - (1 - stats.binom.cdf(0, 25, 0.08))) < 1e-6",
+        "abs(esperanza - 25*0.08) < 1e-6",
+        "abs(varianza - 25*0.08*0.92) < 1e-6",
+        "abs(p_poisson_aprox - stats.poisson.pmf(3, 25*0.08)) < 1e-6",
+    ],
+    plantilla=plantilla_original,
+)
+resultado_ejercicio = verificador.verificar(codigo_alumno)
+
+if resultado["issues"] or resultado["metrics"]["has_security_risk"] or not resultado_ejercicio.aprueba:
     debugger = SocraticDebugger()
     for issue in resultado["issues"]:
         tipo_error = "syntax_error" if "SyntaxError" in issue else "generic"
@@ -727,10 +761,15 @@ if resultado["issues"] or resultado["metrics"]["has_security_risk"]:
     for issue in resultado["security_issues"]:
         print("🔒", debugger.generate_socratic_question("security_risk", "Unidad 3"))
         print("   ", issue)
+    for issue in resultado_ejercicio.issues:
+        print("❌", debugger.generate_socratic_question("generic", "Unidad 3"))
+        print("   ", issue)
     print("\n--- Detalle técnico ---")
     print(resultado)
+    print(resultado_ejercicio)
 else:
-    print("✅ Tu código pasa las verificaciones automáticas de estilo y seguridad.")
+    print("✅ Tu código pasa las verificaciones automáticas de estilo, seguridad y resultado.")
     print(resultado)
+    print(resultado_ejercicio)
 ```
 

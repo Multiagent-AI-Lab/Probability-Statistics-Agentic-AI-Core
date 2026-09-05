@@ -1037,23 +1037,54 @@ mu = np.array([30.0, 5.0])
 sigma = np.array([[9.0, 6.0], [6.0, 16.0]])
 
 # TODO: calcula el coeficiente de correlación rho_XY a partir de la matriz de covarianza sigma
-# TODO: calcula Var(X+Y) con la fórmula completa (incluyendo el término de covarianza)
-#       y compárala con el resultado que se obtendría omitiendo por error dicho término
+#       y guárdalo en `rho_xy`
+# TODO: calcula Var(X+Y) con la fórmula completa (incluyendo el término de covarianza) y
+#       guárdala en `var_suma_correcta`; calcula también el resultado que se obtendría
+#       omitiendo por error dicho término y guárdalo en `var_suma_incorrecta`
 # TODO: verifica que sigma es una matriz de covarianza válida obteniendo su descomposición
-#       de Cholesky con np.linalg.cholesky (si no lanza error, sigma es semidefinida positiva)
+#       de Cholesky con np.linalg.cholesky (si no lanza error, sigma es semidefinida
+#       positiva) y guárdala en `cholesky`
 ```
 
 ```python
 from src.multiagent_core.code_auditor_agent import CodeAuditorAgent
+from src.multiagent_core.exercise_verifier_agent import ExerciseVerifierAgent
 from external_skills.pedagogy.socratic_debugger import SocraticDebugger
 
 with open("solucion_ejercicio_u4.py", encoding="utf-8") as f:
     codigo_alumno = f.read()
 
+plantilla_original = """# Completa aquí tu solución al Ejercicio Propuesto de esta unidad.
+import numpy as np
+
+mu = np.array([30.0, 5.0])
+sigma = np.array([[9.0, 6.0], [6.0, 16.0]])
+
+# TODO: calcula el coeficiente de correlación rho_XY a partir de la matriz de covarianza sigma
+#       y guárdalo en `rho_xy`
+# TODO: calcula Var(X+Y) con la fórmula completa (incluyendo el término de covarianza) y
+#       guárdala en `var_suma_correcta`; calcula también el resultado que se obtendría
+#       omitiendo por error dicho término y guárdalo en `var_suma_incorrecta`
+# TODO: verifica que sigma es una matriz de covarianza válida obteniendo su descomposición
+#       de Cholesky con np.linalg.cholesky (si no lanza error, sigma es semidefinida
+#       positiva) y guárdala en `cholesky`"""
+
 auditor = CodeAuditorAgent()
 resultado = auditor.audit_code(codigo_alumno)
 
-if resultado["issues"] or resultado["metrics"]["has_security_risk"]:
+verificador = ExerciseVerifierAgent(
+    variables_requeridas=["rho_xy", "var_suma_correcta", "var_suma_incorrecta", "cholesky"],
+    checks=[
+        "abs(rho_xy - 0.5) < 1e-6",
+        "abs(var_suma_correcta - 37.0) < 1e-6",
+        "abs(var_suma_incorrecta - 25.0) < 1e-6",
+        "np.allclose(np.array(cholesky) @ np.array(cholesky).T, sigma, atol=1e-6)",
+    ],
+    plantilla=plantilla_original,
+)
+resultado_ejercicio = verificador.verificar(codigo_alumno)
+
+if resultado["issues"] or resultado["metrics"]["has_security_risk"] or not resultado_ejercicio.aprueba:
     debugger = SocraticDebugger()
     for issue in resultado["issues"]:
         tipo_error = "syntax_error" if "SyntaxError" in issue else "generic"
@@ -1061,9 +1092,14 @@ if resultado["issues"] or resultado["metrics"]["has_security_risk"]:
     for issue in resultado["security_issues"]:
         print("🔒", debugger.generate_socratic_question("security_risk", "Unidad 4"))
         print("   ", issue)
+    for issue in resultado_ejercicio.issues:
+        print("❌", debugger.generate_socratic_question("generic", "Unidad 4"))
+        print("   ", issue)
     print("\n--- Detalle técnico ---")
     print(resultado)
+    print(resultado_ejercicio)
 else:
-    print("✅ Tu código pasa las verificaciones automáticas de estilo y seguridad.")
+    print("✅ Tu código pasa las verificaciones automáticas de estilo, seguridad y resultado.")
     print(resultado)
+    print(resultado_ejercicio)
 ```

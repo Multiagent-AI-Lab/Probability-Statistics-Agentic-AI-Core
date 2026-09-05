@@ -788,21 +788,50 @@ p_linea = {"L1": 0.50, "L2": 0.30, "L3": 0.20}
 p_defecto_dado_linea = {"L1": 0.03, "L2": 0.06, "L3": 0.10}
 
 # TODO: calcula la probabilidad total P(D) de que un QD elegido al azar sea defectuoso
+#       y guárdala en `p_defecto`
 # TODO: aplica el Teorema de Bayes para calcular P(L2 | D) y P(L3 | D)
-# TODO: calcula C(15, 4), el número de combinaciones de 4 QDs de un lote de 15 para control de calidad
+#       y guárdalas en `p_l2_dado_d` y `p_l3_dado_d`
+# TODO: calcula C(15, 4), el número de combinaciones de 4 QDs de un lote de 15 para
+#       control de calidad, y guárdalo en `combinaciones`
 ```
 
 ```python
 from src.multiagent_core.code_auditor_agent import CodeAuditorAgent
+from src.multiagent_core.exercise_verifier_agent import ExerciseVerifierAgent
 from external_skills.pedagogy.socratic_debugger import SocraticDebugger
 
 with open("solucion_ejercicio_u2.py", encoding="utf-8") as f:
     codigo_alumno = f.read()
 
+plantilla_original = """# Completa aquí tu solución al Ejercicio Propuesto de esta unidad.
+from math import comb
+
+p_linea = {"L1": 0.50, "L2": 0.30, "L3": 0.20}
+p_defecto_dado_linea = {"L1": 0.03, "L2": 0.06, "L3": 0.10}
+
+# TODO: calcula la probabilidad total P(D) de que un QD elegido al azar sea defectuoso
+#       y guárdala en `p_defecto`
+# TODO: aplica el Teorema de Bayes para calcular P(L2 | D) y P(L3 | D)
+#       y guárdalas en `p_l2_dado_d` y `p_l3_dado_d`
+# TODO: calcula C(15, 4), el número de combinaciones de 4 QDs de un lote de 15 para
+#       control de calidad, y guárdalo en `combinaciones`"""
+
 auditor = CodeAuditorAgent()
 resultado = auditor.audit_code(codigo_alumno)
 
-if resultado["issues"] or resultado["metrics"]["has_security_risk"]:
+verificador = ExerciseVerifierAgent(
+    variables_requeridas=["p_defecto", "p_l2_dado_d", "p_l3_dado_d", "combinaciones"],
+    checks=[
+        "abs(p_defecto - 0.053) < 1e-6",
+        "abs(p_l2_dado_d - (0.30*0.06/0.053)) < 1e-6",
+        "abs(p_l3_dado_d - (0.20*0.10/0.053)) < 1e-6",
+        "combinaciones == 1365",
+    ],
+    plantilla=plantilla_original,
+)
+resultado_ejercicio = verificador.verificar(codigo_alumno)
+
+if resultado["issues"] or resultado["metrics"]["has_security_risk"] or not resultado_ejercicio.aprueba:
     debugger = SocraticDebugger()
     for issue in resultado["issues"]:
         tipo_error = "syntax_error" if "SyntaxError" in issue else "generic"
@@ -810,9 +839,14 @@ if resultado["issues"] or resultado["metrics"]["has_security_risk"]:
     for issue in resultado["security_issues"]:
         print("🔒", debugger.generate_socratic_question("security_risk", "Unidad 2"))
         print("   ", issue)
+    for issue in resultado_ejercicio.issues:
+        print("❌", debugger.generate_socratic_question("generic", "Unidad 2"))
+        print("   ", issue)
     print("\n--- Detalle técnico ---")
     print(resultado)
+    print(resultado_ejercicio)
 else:
-    print("✅ Tu código pasa las verificaciones automáticas de estilo y seguridad.")
+    print("✅ Tu código pasa las verificaciones automáticas de estilo, seguridad y resultado.")
     print(resultado)
+    print(resultado_ejercicio)
 ```

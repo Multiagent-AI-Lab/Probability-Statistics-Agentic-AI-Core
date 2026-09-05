@@ -991,23 +991,49 @@ mu = 15.0
 sigma = 0.8
 
 # TODO: calcula P(14.0 <= X <= 16.0), la probabilidad de que el espesor esté dentro
-#       de la ventana de tolerancia del proceso (usa stats.norm.cdf)
-# TODO: calcula el percentil 90 del espesor (usa stats.norm.ppf)
+#       de la ventana de tolerancia del proceso (usa stats.norm.cdf) y guárdala en `p_ventana`
+# TODO: calcula el percentil 90 del espesor (usa stats.norm.ppf) y guárdalo en `percentil_90`
 # TODO: calcula P(X > 17.0), la probabilidad de un espesor excesivo, y explica en un
-#       comentario por qué f(17) (la PDF evaluada en 17) no sería la respuesta correcta
+#       comentario por qué f(17) (la PDF evaluada en 17) no sería la respuesta correcta;
+#       guarda el resultado en `p_exceso`
 ```
 
 ```python
 from src.multiagent_core.code_auditor_agent import CodeAuditorAgent
+from src.multiagent_core.exercise_verifier_agent import ExerciseVerifierAgent
 from external_skills.pedagogy.socratic_debugger import SocraticDebugger
 
 with open("solucion_ejercicio_u5.py", encoding="utf-8") as f:
     codigo_alumno = f.read()
 
+plantilla_original = """# Completa aquí tu solución al Ejercicio Propuesto de esta unidad.
+import scipy.stats as stats
+
+mu = 15.0
+sigma = 0.8
+
+# TODO: calcula P(14.0 <= X <= 16.0), la probabilidad de que el espesor esté dentro
+#       de la ventana de tolerancia del proceso (usa stats.norm.cdf) y guárdala en `p_ventana`
+# TODO: calcula el percentil 90 del espesor (usa stats.norm.ppf) y guárdalo en `percentil_90`
+# TODO: calcula P(X > 17.0), la probabilidad de un espesor excesivo, y explica en un
+#       comentario por qué f(17) (la PDF evaluada en 17) no sería la respuesta correcta;
+#       guarda el resultado en `p_exceso`"""
+
 auditor = CodeAuditorAgent()
 resultado = auditor.audit_code(codigo_alumno)
 
-if resultado["issues"] or resultado["metrics"]["has_security_risk"]:
+verificador = ExerciseVerifierAgent(
+    variables_requeridas=["p_ventana", "percentil_90", "p_exceso"],
+    checks=[
+        "abs(p_ventana - (stats.norm.cdf(16, 15, 0.8) - stats.norm.cdf(14, 15, 0.8))) < 1e-6",
+        "abs(percentil_90 - stats.norm.ppf(0.9, 15, 0.8)) < 1e-6",
+        "abs(p_exceso - stats.norm.sf(17, 15, 0.8)) < 1e-6",
+    ],
+    plantilla=plantilla_original,
+)
+resultado_ejercicio = verificador.verificar(codigo_alumno)
+
+if resultado["issues"] or resultado["metrics"]["has_security_risk"] or not resultado_ejercicio.aprueba:
     debugger = SocraticDebugger()
     for issue in resultado["issues"]:
         tipo_error = "syntax_error" if "SyntaxError" in issue else "generic"
@@ -1015,9 +1041,14 @@ if resultado["issues"] or resultado["metrics"]["has_security_risk"]:
     for issue in resultado["security_issues"]:
         print("🔒", debugger.generate_socratic_question("security_risk", "Unidad 5"))
         print("   ", issue)
+    for issue in resultado_ejercicio.issues:
+        print("❌", debugger.generate_socratic_question("generic", "Unidad 5"))
+        print("   ", issue)
     print("\n--- Detalle técnico ---")
     print(resultado)
+    print(resultado_ejercicio)
 else:
-    print("✅ Tu código pasa las verificaciones automáticas de estilo y seguridad.")
+    print("✅ Tu código pasa las verificaciones automáticas de estilo, seguridad y resultado.")
     print(resultado)
+    print(resultado_ejercicio)
 ```

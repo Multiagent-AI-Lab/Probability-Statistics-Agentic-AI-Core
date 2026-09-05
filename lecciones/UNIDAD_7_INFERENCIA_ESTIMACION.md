@@ -1342,22 +1342,53 @@ x_bar = 26.2
 alpha = 0.05
 
 # TODO: calcula el estadístico Z de la prueba: Z = (x_bar - mu_0) / (sigma / sqrt(n))
-# TODO: calcula el p-valor de dos colas y compáralo contra alpha para decidir si se rechaza H0
+#       y guárdalo en `z_estadistico`
+# TODO: calcula el p-valor de dos colas y compáralo contra alpha para decidir si se rechaza
+#       H0; guarda el p-valor en `p_valor`
 # TODO: en un comentario, enuncia la conclusión correcta: qué significa el p-valor obtenido
 #       (no lo confundas con P(H0 verdadera)), y si "no rechazar H0" implicaría que mu=25.0 exactamente
 ```
 
 ```python
 from src.multiagent_core.code_auditor_agent import CodeAuditorAgent
+from src.multiagent_core.exercise_verifier_agent import ExerciseVerifierAgent
 from external_skills.pedagogy.socratic_debugger import SocraticDebugger
 
 with open("solucion_ejercicio_u7.py", encoding="utf-8") as f:
     codigo_alumno = f.read()
 
+plantilla_original = """# Completa aquí tu solución al Ejercicio Propuesto de esta unidad.
+import numpy as np
+import scipy.stats as stats
+
+n = 36
+sigma = 3.0
+mu_0 = 25.0
+x_bar = 26.2
+alpha = 0.05
+
+# TODO: calcula el estadístico Z de la prueba: Z = (x_bar - mu_0) / (sigma / sqrt(n))
+#       y guárdalo en `z_estadistico`
+# TODO: calcula el p-valor de dos colas y compáralo contra alpha para decidir si se rechaza
+#       H0; guarda el p-valor en `p_valor`
+# TODO: en un comentario, enuncia la conclusión correcta: qué significa el p-valor obtenido
+#       (no lo confundas con P(H0 verdadera)), y si "no rechazar H0" implicaría que mu=25.0 exactamente"""
+
 auditor = CodeAuditorAgent()
 resultado = auditor.audit_code(codigo_alumno)
 
-if resultado["issues"] or resultado["metrics"]["has_security_risk"]:
+verificador = ExerciseVerifierAgent(
+    variables_requeridas=["z_estadistico", "p_valor"],
+    checks=[
+        "abs(z_estadistico - (26.2 - 25.0) / (3.0 / np.sqrt(36))) < 1e-6",
+        "abs(p_valor - 2 * (1 - stats.norm.cdf(abs((26.2 - 25.0) / (3.0 / np.sqrt(36)))))) < 1e-6",
+        "0.0 <= p_valor <= 1.0",
+    ],
+    plantilla=plantilla_original,
+)
+resultado_ejercicio = verificador.verificar(codigo_alumno)
+
+if resultado["issues"] or resultado["metrics"]["has_security_risk"] or not resultado_ejercicio.aprueba:
     debugger = SocraticDebugger()
     for issue in resultado["issues"]:
         tipo_error = "syntax_error" if "SyntaxError" in issue else "generic"
@@ -1365,9 +1396,14 @@ if resultado["issues"] or resultado["metrics"]["has_security_risk"]:
     for issue in resultado["security_issues"]:
         print("🔒", debugger.generate_socratic_question("security_risk", "Unidad 7"))
         print("   ", issue)
+    for issue in resultado_ejercicio.issues:
+        print("❌", debugger.generate_socratic_question("generic", "Unidad 7"))
+        print("   ", issue)
     print("\n--- Detalle técnico ---")
     print(resultado)
+    print(resultado_ejercicio)
 else:
-    print("✅ Tu código pasa las verificaciones automáticas de estilo y seguridad.")
+    print("✅ Tu código pasa las verificaciones automáticas de estilo, seguridad y resultado.")
     print(resultado)
+    print(resultado_ejercicio)
 ```

@@ -843,21 +843,50 @@ import numpy as np
 datos = np.array([21.4, 22.1, 20.8, 23.3, 21.9, 22.5, 52.7, 21.2, 22.8, 21.1, 22.2, 21.6, 53.9, 22.0])
 
 # TODO: calcula media, mediana y desviación estándar muestral del lote de AgNPs
+#       y guárdalas en las variables `media`, `mediana`, `std`
 # TODO: aplica el criterio del IQR para detectar todos los valores atípicos (pueden ser más de uno)
-# TODO: recalcula la media excluyendo los atípicos detectados y compárala con la mediana del conjunto completo
+#       y guárdalos en la variable `outliers` (arreglo o lista)
+# TODO: recalcula la media excluyendo los atípicos detectados y compárala con la mediana del
+#       conjunto completo; guarda el resultado en `media_sin_outliers`
 ```
 
 ```python
 from src.multiagent_core.code_auditor_agent import CodeAuditorAgent
+from src.multiagent_core.exercise_verifier_agent import ExerciseVerifierAgent
 from external_skills.pedagogy.socratic_debugger import SocraticDebugger
 
 with open("solucion_ejercicio_u1.py", encoding="utf-8") as f:
     codigo_alumno = f.read()
 
+plantilla_original = """# Completa aquí tu solución al Ejercicio Propuesto de esta unidad.
+import numpy as np
+
+datos = np.array([21.4, 22.1, 20.8, 23.3, 21.9, 22.5, 52.7, 21.2, 22.8, 21.1, 22.2, 21.6, 53.9, 22.0])
+
+# TODO: calcula media, mediana y desviación estándar muestral del lote de AgNPs
+#       y guárdalas en las variables `media`, `mediana`, `std`
+# TODO: aplica el criterio del IQR para detectar todos los valores atípicos (pueden ser más de uno)
+#       y guárdalos en la variable `outliers` (arreglo o lista)
+# TODO: recalcula la media excluyendo los atípicos detectados y compárala con la mediana del
+#       conjunto completo; guarda el resultado en `media_sin_outliers`"""
+
 auditor = CodeAuditorAgent()
 resultado = auditor.audit_code(codigo_alumno)
 
-if resultado["issues"] or resultado["metrics"]["has_security_risk"]:
+verificador = ExerciseVerifierAgent(
+    variables_requeridas=["media", "mediana", "std", "outliers", "media_sin_outliers"],
+    checks=[
+        "abs(media - np.mean(datos)) < 1e-6",
+        "abs(mediana - np.median(datos)) < 1e-6",
+        "abs(std - np.std(datos, ddof=1)) < 1e-6",
+        "set(np.ravel(outliers).tolist()) == {52.7, 53.9}",
+        "abs(media_sin_outliers - np.mean([d for d in datos if d not in (52.7, 53.9)])) < 1e-6",
+    ],
+    plantilla=plantilla_original,
+)
+resultado_ejercicio = verificador.verificar(codigo_alumno)
+
+if resultado["issues"] or resultado["metrics"]["has_security_risk"] or not resultado_ejercicio.aprueba:
     debugger = SocraticDebugger()
     for issue in resultado["issues"]:
         tipo_error = "syntax_error" if "SyntaxError" in issue else "generic"
@@ -865,9 +894,14 @@ if resultado["issues"] or resultado["metrics"]["has_security_risk"]:
     for issue in resultado["security_issues"]:
         print("🔒", debugger.generate_socratic_question("security_risk", "Unidad 1"))
         print("   ", issue)
+    for issue in resultado_ejercicio.issues:
+        print("❌", debugger.generate_socratic_question("generic", "Unidad 1"))
+        print("   ", issue)
     print("\n--- Detalle técnico ---")
     print(resultado)
+    print(resultado_ejercicio)
 else:
-    print("✅ Tu código pasa las verificaciones automáticas de estilo y seguridad.")
+    print("✅ Tu código pasa las verificaciones automáticas de estilo, seguridad y resultado.")
     print(resultado)
+    print(resultado_ejercicio)
 ```
