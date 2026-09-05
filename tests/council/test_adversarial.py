@@ -19,7 +19,10 @@ import pytest
 from src.multiagent_core.pipeline import CouncilPipeline
 
 _RAIZ_REPO = Path(__file__).resolve().parents[2]
-_UNIDAD_1 = _RAIZ_REPO / "lecciones" / "UNIDAD_1_ESTADISTICA_DESCRIPTIVA.md"
+_LECCIONES = _RAIZ_REPO / "lecciones"
+_UNIDAD_1 = _LECCIONES / "UNIDAD_1_ESTADISTICA_DESCRIPTIVA.md"
+_UNIDAD_6 = _LECCIONES / "UNIDAD_6_MODELADO_SIMULACION.md"
+_UNIDAD_7 = _LECCIONES / "UNIDAD_7_INFERENCIA_ESTIMACION.md"
 
 # Los documentos adversariales de la auditoría llevaban las subcadenas que
 # cada agente buscaba (`scipy`, `plt.`, `sns.`, "Interpretación", "Walpole").
@@ -97,10 +100,66 @@ def test_probabilidad_fuera_de_rango_es_hallazgo_del_scientist(council):
     assert resultado["reports"]["scientist"]["invariantes_violados"]
 
 
+def test_detecta_el_bug_real_h05_de_unidad_6(council):
+    """H-05: el texto de §2.3 declara T=12.3957 pero la celda SymPy resuelve
+    la forma sin simplificar y produce 6.8447 para el mismo U=0.35.
+
+    Este test documenta la capacidad de detección, no el estado del
+    contenido: cuando Task 2 corrija UNIDAD 6, dejará de haber hallazgo y
+    el test deberá invertirse a `approved is True`.
+    """
+    resultado = council.process_content(
+        _UNIDAD_6.read_text(encoding="utf-8"), unit_name="UNIDAD 6"
+    )
+
+    desajustes = [
+        h
+        for h in resultado["final_qa"]["hallazgos"]
+        if h["tipo"] == "desajuste_ejemplo_salida"
+    ]
+    assert desajustes, "el Consejo debe detectar el desajuste texto/código de H-05"
+    assert any("12.3957" in h["mensaje"] for h in desajustes)
+
+
+def test_detecta_el_bug_real_h02_de_unidad_7(council):
+    """H-02: `\\boxed{(145.19-125.37)/22.32 ≈ 0.75}` no cierra — esa división
+    da 0.888 porque usa la media nominal (145.19) en vez de la muestral
+    (142.19).
+
+    Igual que el anterior: documenta la detección, y deberá invertirse
+    cuando Task 2 corrija UNIDAD 7.
+    """
+    resultado = council.process_content(
+        _UNIDAD_7.read_text(encoding="utf-8"), unit_name="UNIDAD 7"
+    )
+
+    inconsistencias = [
+        h
+        for h in resultado["final_qa"]["hallazgos"]
+        if h["tipo"] == "aritmetica_inconsistente"
+    ]
+    assert inconsistencias, "el Consejo debe detectar la aritmética rota de H-02"
+    assert any("145.19" in h["mensaje"] for h in inconsistencias)
+
+
 def test_contenido_real_correcto_sigue_aprobando(council):
-    """Control: una unidad real sin errores conocidos no debe verse penalizada por el fix."""
+    """Control: una unidad real sin errores conocidos no debe verse penalizada por el fix.
+
+    UNIDAD 1 no tiene ninguno de los bugs de contenido documentados
+    (H-02 vive en UNIDAD 7, H-05 en UNIDAD 6), así que debe aprobar limpia.
+    """
     contenido_u1 = _UNIDAD_1.read_text(encoding="utf-8")
 
     resultado = council.process_content(contenido_u1, unit_name="UNIDAD 1")
 
-    assert resultado["approved"] is True, "contenido real correcto no debe reprobarse"
+    # @Librarian consulta Crossref por red. Si el runner no tiene salida a
+    # internet, el DOI no resuelve y la unidad reprobaría por un motivo
+    # ajeno a lo que este test verifica; se distingue ese caso en vez de
+    # dejar un fallo intermitente que se lea como una regresión del Consejo.
+    if not resultado["reports"]["librarian"]["passed"]:
+        pytest.skip("Crossref no accesible desde este entorno; control no aplicable")
+
+    hallazgos = resultado["final_qa"]["hallazgos"]
+    assert resultado["approved"] is True, (
+        f"contenido real correcto no debe reprobarse; hallazgos: {hallazgos}"
+    )

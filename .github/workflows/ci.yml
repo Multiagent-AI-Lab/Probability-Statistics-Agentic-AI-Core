@@ -26,6 +26,15 @@ jobs:
         run: |
           pytest
 
+      # Gate explícito de H-01: el Consejo debe rechazar documentos sin
+      # contenido real. Se corre por separado —aunque `pytest` ya lo
+      # incluya— para que una regresión aquí se lea de inmediato en el log
+      # como "el Consejo volvió a aprobar basura", y no se pierda entre los
+      # demás fallos de la suite.
+      - name: Adversarial gate - el Consejo debe discriminar contenido real
+        run: |
+          pytest tests/council/test_adversarial.py -v
+
       - name: Verify Notebook Compilation Pipeline
         run: |
           python -c "from src.multiagent_core.orchestrator_agent import OrchestratorAgent; OrchestratorAgent().run_full_pipeline()"

@@ -59,8 +59,6 @@ UNIDAD_1_CONTENIDO_OK = (
     + ("teoría descriptiva " * 850)
     + """
 
-$$\\boxed{\\bar{x} = 10.0}$$
-
 $$\\mu = \\frac{1}{n}\\sum_{i=1}^{n} x_i$$
 
 $$\\sigma^2 = \\frac{1}{n}\\sum_{i=1}^{n} (x_i - \\mu)^2$$
@@ -69,16 +67,24 @@ $$\\sigma = \\sqrt{\\sigma^2}$$
 
 $$CV = \\frac{\\sigma}{\\mu}$$
 
+$$\\boxed{\\bar{x} = 10.0}$$
+
 ```python
 import scipy.stats as stats
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-plt.plot([1, 2, 3])
-sns.histplot([1, 2, 3])
+diametros = [8.0, 10.0, 12.0]
+print(f"Media: {sum(diametros) / len(diametros):.4f} nm")
+plt.plot(diametros)
+sns.histplot(diametros)
 ```
 
-Interpretación y diccionario de variables de nanotecnología con nanopartículas.
+Interpretación: el diámetro medio de las nanopartículas es de 10.0 nm con
+una dispersión de 2.0 nm, lo que confirma una síntesis homogénea dentro de
+la tolerancia del proceso.
+
+Referencia: DOI: [10.14356/kona.2020011](https://doi.org/10.14356/kona.2020011)
 """
 )
 
@@ -187,7 +193,11 @@ def test_orchestrator_uses_council_pipeline_internally():
     assert isinstance(orchestrator.council, CouncilPipeline)
 
 
-UNIDAD_SIN_SCIPY = (
+# El código de esta unidad calcula una media de 10.0 nm pero el texto
+# encuadra 99.0: es el desajuste texto/código que @Engineer debe atrapar.
+# (Antes esta fixture solo omitía la palabra "scipy", que era el criterio
+# del agente hasta H-01; ya no basta con mencionar una librería.)
+UNIDAD_CON_DESAJUSTE_DE_ENGINEER = (
     """# UNIDAD 1 ESTADISTICA DESCRIPTIVA
 ## Asignatura: Probabilidad y Estadística Inferencial
 
@@ -198,23 +208,37 @@ UNIDAD_SIN_SCIPY = (
     + ("teoría descriptiva " * 850)
     + """
 
-$$\\boxed{\\bar{x} = 10.0}$$
+$$\\mu = \\frac{1}{n}\\sum_{i=1}^{n} x_i$$
+
+$$\\sigma = \\sqrt{\\sigma^2}$$
+
+## 2. Solución Computacional
 
 ```python
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-plt.plot([1, 2, 3])
-sns.histplot([1, 2, 3])
+diametros = [8.0, 10.0, 12.0]
+print(f"Media: {sum(diametros) / len(diametros):.4f} nm")
+plt.plot(diametros)
+sns.histplot(diametros)
 ```
 
-Interpretación y diccionario de variables de nanotecnología con nanopartículas.
+El texto afirma un resultado que el código contradice:
+
+$$\\boxed{\\bar{x} = 99.0}$$
+
+Interpretación: el diámetro medio de las nanopartículas es de 10.0 nm con
+una dispersión de 2.0 nm, lo que confirma una síntesis homogénea dentro de
+la tolerancia del proceso.
+
+Referencia: DOI: [10.14356/kona.2020011](https://doi.org/10.14356/kona.2020011)
 """
 )
 
 
 @pytest.fixture
-def temp_lecciones_dir_sin_scipy():
+def temp_lecciones_dir_con_desajuste_de_engineer():
     tmp_dir = tempfile.mkdtemp()
     lecciones_dir = os.path.join(tmp_dir, "lecciones")
     notebooks_dir = os.path.join(tmp_dir, "notebooks")
@@ -225,21 +249,25 @@ def temp_lecciones_dir_sin_scipy():
         "w",
         encoding="utf-8",
     ) as f:
-        f.write(UNIDAD_SIN_SCIPY)
+        f.write(UNIDAD_CON_DESAJUSTE_DE_ENGINEER)
+    _completar_unidades_faltantes(lecciones_dir)
 
     yield lecciones_dir, notebooks_dir
     shutil.rmtree(tmp_dir)
 
 
-def test_enforce_gate_blocks_when_engineer_fails(temp_lecciones_dir_sin_scipy):
-    lecciones_dir, notebooks_dir = temp_lecciones_dir_sin_scipy
+def test_enforce_gate_blocks_when_engineer_fails(
+    temp_lecciones_dir_con_desajuste_de_engineer,
+):
+    lecciones_dir, notebooks_dir = temp_lecciones_dir_con_desajuste_de_engineer
     orchestrator = OrchestratorAgent(
         lecciones_dir=lecciones_dir, notebooks_dir=notebooks_dir
     )
 
     results = orchestrator.run_full_pipeline(enforce_gate=True)
 
-    u1_result = results[0]
+    by_file = {os.path.basename(r["md_filename"]): r for r in results}
+    u1_result = by_file["UNIDAD_1_ESTADISTICA_DESCRIPTIVA.md"]
     assert u1_result["gate_blocked"] is True
     assert "engineer" in u1_result["gate_reason"].lower()
     assert not os.path.exists(
@@ -441,20 +469,48 @@ def test_ninguna_leccion_real_del_curso_es_bloqueada_por_el_gate():
     deuda pendiente en GOVERNANCE.md §4 hasta ahora.
 
     Las rutas se anclan a este archivo (no a strings relativos al cwd de
-    pytest) para que el test sea robusto sin importar desde dónde se invoque."""
+    pytest) para que el test sea robusto sin importar desde dónde se invoque.
+
+    UNIDAD 6 y UNIDAD 7 quedan excluidas mientras arrastren los bugs de
+    contenido ya documentados (H-05: la celda SymPy de U6 resuelve la forma
+    sin simplificar y contradice el texto; H-02: la $d$ de Cohen de U7 usa
+    la media nominal en vez de la muestral y su `\\boxed{}` no cierra). El
+    Consejo reconstruido las detecta a propósito —esa es la prueba de que
+    discrimina— y `tests/council/test_adversarial.py` verifica justamente
+    que las siga detectando. Cuando Task 2 corrija ese contenido, ambas
+    deben volver a esta lista y las dos aserciones de detección del test
+    adversarial deben invertirse."""
     repo_root = Path(__file__).resolve().parent.parent
     orchestrator = OrchestratorAgent(
         lecciones_dir=str(repo_root / "lecciones"),
         notebooks_dir=str(repo_root / "notebooks"),
     )
 
+    unidades_con_bug_conocido = {
+        "UNIDAD_6_MODELADO_SIMULACION.md",
+        "UNIDAD_7_INFERENCIA_ESTIMACION.md",
+    }
+
     results = orchestrator.run_full_pipeline(enforce_gate=True)
 
     assert len(results) == 8, "Se esperan exactamente las 8 lecciones del curso"
 
     bloqueadas = [
-        (r["md_filename"], r["gate_reason"]) for r in results if r["gate_blocked"]
+        (r["md_filename"], r["gate_reason"])
+        for r in results
+        if r["gate_blocked"] and r["md_filename"] not in unidades_con_bug_conocido
     ]
     assert bloqueadas == [], (
         "El gate real bloquea contenido ya publicado del curso: " f"{bloqueadas}"
+    )
+
+    # Contraparte: las unidades con bug conocido deben seguir bloqueadas. Si
+    # dejan de estarlo sin que Task 2 haya corregido el contenido, el
+    # Consejo perdió capacidad de detección.
+    detectadas = {
+        r["md_filename"] for r in results if r["gate_blocked"]
+    } & unidades_con_bug_conocido
+    assert detectadas == unidades_con_bug_conocido, (
+        "El Consejo dejó de detectar los bugs de contenido conocidos de "
+        f"U6/U7; detectadas: {detectadas}"
     )

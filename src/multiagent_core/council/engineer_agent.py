@@ -214,10 +214,26 @@ class EngineerAgent:
                 # no emite un número que contrastar.
                 continue
 
+            # Una sección que trae SU código y SU `\boxed{}` empareja ambos
+            # sin ambigüedad: el bloque está ahí para producir ese resultado.
+            # Cuando además emite un único valor, la comparación es directa y
+            # no hace falta el desempate por rótulo que necesitan las
+            # secciones donde conviven varios ejemplos.
+            emparejamiento_inequivoco = len(esperados) == 1 and len(producidos) == 1
+
             for valor_esperado, expresion in esperados:
                 # Basta con que el valor aparezca en la salida de la sección:
                 # el código lo produjo, aunque el rótulo no sea idéntico.
                 if self._algun_valor_coincide(valor_esperado, producidos):
+                    continue
+                if emparejamiento_inequivoco:
+                    discrepancias.append(
+                        {
+                            "seccion": titulo,
+                            "valor_declarado": valor_esperado,
+                            "valores_producidos": producidos,
+                        }
+                    )
                     continue
                 if not self._el_codigo_apunta_al_valor(
                     expresion, salida, valor_esperado
@@ -666,11 +682,18 @@ class EngineerAgent:
 
     def _nombre_de_la_cantidad(self, expresion: str) -> str:
         """Nombre de la cantidad que el `\\boxed{}` reporta: lo que aparece
-        antes del primer `=` de la línea, sin delimitadores de fórmula."""
+        antes del primer `=` de la línea, sin delimitadores de fórmula.
+
+        `\\boxed` se descarta explícitamente: es el envoltorio, no el nombre
+        de la cantidad. Dejarlo convertiría `\\boxed{\\bar{x} = 99.0}` en la
+        etiqueta "boxedbarx", que nunca coincide con lo que imprime el
+        código y silenciaría la comparación.
+        """
         izquierda, sep, _ = expresion.partition("=")
         if not sep:
             return ""
-        return self._normalizar_identificador(izquierda.replace("$", " "))
+        sin_envoltorio = izquierda.replace("$", " ").replace(r"\boxed", " ")
+        return self._normalizar_identificador(sin_envoltorio)
 
     @staticmethod
     def _normalizar_identificador(texto: str) -> str:
