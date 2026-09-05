@@ -481,7 +481,7 @@ La varianza de $X$ es $\mathrm{Var}(X)=16\ \text{nm}^2$ ($\sigma_X=4\ \text{nm}$
 ### 5.3 Paso 2: Coeficiente de Correlación
 $$\rho_{X,Y} = \frac{\mathrm{Cov}(X,Y)}{\sigma_X \sigma_Y} = \frac{-18}{4 \times 6} = \boxed{-0.75}$$
 
-Una correlación de $-0.75$ indica una relación lineal inversa fuerte: lotes con nanopartículas de mayor diámetro promedio tienden sistemáticamente a un potencial zeta menos negativo (en valor absoluto), lo cual es relevante para el control de calidad, ya que un $|\zeta| < 30\ \text{mV}$ suele considerarse zona de riesgo de agregación coloidal.
+Una correlación de $-0.75$ indica una relación lineal inversa fuerte: lotes con nanopartículas de mayor diámetro promedio tienden sistemáticamente a un potencial zeta más negativo (en valor absoluto), lo cual es relevante para el control de calidad, ya que un $|\zeta| < 30\ \text{mV}$ suele considerarse zona de riesgo de agregación coloidal.
 
 ### 5.4 Paso 3: Simulación por Descomposición de Cholesky
 Para generar muestras correlacionadas de este vector bivariado, se factoriza $\Sigma = LL^T$ (descomposición de Cholesky) y se transforma ruido gaussiano independiente $Z\sim N(0,I_2)$:
