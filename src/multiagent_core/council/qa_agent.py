@@ -12,6 +12,7 @@ SEVERIDAD_ADVERTENCIA = "advertencia"
 # algún agente devolvió False.
 TIPO_DESAJUSTE_EJEMPLO_SALIDA = "desajuste_ejemplo_salida"
 TIPO_INVARIANTE_VIOLADO = "invariante_violado"
+TIPO_ARITMETICA_INCONSISTENTE = "aritmetica_inconsistente"
 TIPO_SUPUESTO_NO_VERIFICADO = "supuesto_no_verificado"
 TIPO_REFERENCIA_INEXISTENTE = "referencia_inexistente"
 TIPO_INTERPRETACION_AUSENTE = "interpretacion_ausente"
@@ -85,6 +86,16 @@ class QAAgent:
                     SEVERIDAD_BLOQUEANTE,
                     agente,
                     f"invariante estadístico violado: {invariante}",
+                )
+            )
+
+        for inconsistencia in reporte.get("aritmetica_inconsistente", []):
+            hallazgos.append(
+                self._hallazgo(
+                    TIPO_ARITMETICA_INCONSISTENTE,
+                    SEVERIDAD_BLOQUEANTE,
+                    agente,
+                    inconsistencia,
                 )
             )
 

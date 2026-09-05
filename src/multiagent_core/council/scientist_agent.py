@@ -46,6 +46,19 @@ _SUMA_PMF_DECLARADA = re.compile(
 _MIN_PALABRAS_TEORIA = 800
 _TOLERANCIA_PMF = 1e-6
 
+# Aritmética declarada dentro de un `\boxed{}`: una fracción de dos
+# expresiones numéricas seguida del resultado afirmado.
+#   \frac{145.19-125.37}{22.32} \approx 0.75
+_FRACCION_CON_RESULTADO = re.compile(
+    r"\\[dt]?frac\s*\{([^{}]+)\}\s*\{([^{}]+)\}\s*"
+    r"(?:=|\\approx|\\simeq)\s*(-?\d+(?:\.\d+)?)"
+)
+# Expresión aritmética simple: solo números, operadores y \times / \cdot.
+_ARITMETICA_SIMPLE = re.compile(r"^[\d\s.+\-*/()]+$")
+# El resultado se compara con la precisión que el propio texto declara: si
+# afirma 0.75, basta con que el cálculo redondee a 0.75.
+_TOLERANCIA_ARITMETICA = 0.51
+
 
 class ScientistAgent:
     """Agent responsible for checking mathematical rigor and LaTeX formatting."""
@@ -69,6 +82,7 @@ class ScientistAgent:
         tiene_formulas = len(formulas) >= 2
         has_boxed = r"\boxed" in text
         invariantes_violados = self._validar_invariantes_dominio(text)
+        aritmetica_inconsistente = self._validar_aritmetica_declarada(text)
 
         return {
             "word_count": words,
@@ -76,13 +90,68 @@ class ScientistAgent:
             "tiene_formulas_estructuradas": tiene_formulas,
             "has_boxed_solution": has_boxed,
             "invariantes_violados": invariantes_violados,
+            "aritmetica_inconsistente": aritmetica_inconsistente,
             "passed": (
                 words >= _MIN_PALABRAS_TEORIA
                 and tiene_formulas
                 and has_boxed
                 and not invariantes_violados
+                and not aritmetica_inconsistente
             ),
         }
+
+    def _validar_aritmetica_declarada(self, text: str) -> list[str]:
+        """Comprueba que una fórmula encuadrada cierre consigo misma.
+
+        `\\boxed{d = \\frac{145.19-125.37}{22.32} \\approx 0.75}` afirma a la
+        vez los operandos y el resultado: esa división da 0.888, así que uno
+        de los dos está mal (UNIDAD 7 usaba la media nominal 145 en vez de
+        la muestral 142.19). Es un error verificable sin ejecutar código ni
+        interpretar el enunciado — solo hay que hacer la cuenta.
+        """
+        violaciones: list[str] = []
+        for numerador, denominador, resultado in _FRACCION_CON_RESULTADO.findall(text):
+            calculado = self._evaluar_expresion(numerador, denominador)
+            if calculado is None:
+                continue
+            declarado = float(resultado)
+            # Se compara al número de decimales que el texto declara: 0.888
+            # frente a 0.75 no coincide ni redondeando.
+            decimales = len(resultado.split(".")[1]) if "." in resultado else 0
+            if round(calculado, decimales) != declarado:
+                violaciones.append(
+                    f"la fórmula encuadrada no cierra: "
+                    f"({numerador.strip()})/({denominador.strip()}) = "
+                    f"{calculado:.4f}, pero el texto declara {declarado}"
+                )
+        return violaciones
+
+    @staticmethod
+    def _evaluar_expresion(numerador: str, denominador: str) -> float | None:
+        """Evalúa una fracción cuyos dos lados son aritmética simple.
+
+        Solo se aceptan cadenas de números y operadores tras normalizar
+        `\\times`/`\\cdot`: nunca se evalúa contenido arbitrario del texto.
+        """
+        def _normalizar(expresion: str) -> str:
+            limpio = re.sub(r"\\(?:times|cdot)", "*", expresion)
+            limpio = re.sub(r"\\[a-zA-Z]+|[{}]", " ", limpio)
+            return limpio.strip()
+
+        num, den = _normalizar(numerador), _normalizar(denominador)
+        if not (_ARITMETICA_SIMPLE.match(num) and _ARITMETICA_SIMPLE.match(den)):
+            return None
+        if not (any(c.isdigit() for c in num) and any(c.isdigit() for c in den)):
+            return None
+        try:
+            # Entrada restringida por _ARITMETICA_SIMPLE a dígitos, espacios
+            # y operadores aritméticos: no puede contener nombres ni llamadas.
+            divisor = eval(den, {"__builtins__": {}}, {})  # noqa: S307
+            if divisor == 0:
+                return None
+            return eval(num, {"__builtins__": {}}, {}) / divisor  # noqa: S307
+        except (SyntaxError, ValueError, ZeroDivisionError, TypeError):
+            return None
 
     def _extraer_formulas_estructuradas(self, text: str) -> list[str]:
         """Devuelve los bloques LaTeX que realmente afirman una relación

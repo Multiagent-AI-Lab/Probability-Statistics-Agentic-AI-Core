@@ -122,6 +122,26 @@ def test_discrepancia_ejemplo_salida_produce_hallazgo_tipado():
     assert "19.99" in hallazgo["mensaje"]
 
 
+def test_aritmetica_inconsistente_produce_hallazgo_tipado():
+    agent = QAAgent()
+    reportes = {
+        "scientist": {
+            "passed": False,
+            "aritmetica_inconsistente": [
+                "la fórmula encuadrada no cierra: (145.19-125.37)/(22.32) = 0.8880"
+            ],
+        }
+    }
+
+    resultado = agent.final_audit(reportes)
+
+    hallazgo = next(
+        h for h in resultado["hallazgos"] if h["tipo"] == "aritmetica_inconsistente"
+    )
+    assert hallazgo["severidad"] == SEVERIDAD_BLOQUEANTE
+    assert "0.8880" in hallazgo["mensaje"]
+
+
 def test_referencia_inexistente_produce_hallazgo_tipado():
     agent = QAAgent()
     reportes = {

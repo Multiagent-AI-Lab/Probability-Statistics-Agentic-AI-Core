@@ -155,6 +155,51 @@ def test_suma_de_pmf_igual_a_uno_no_viola_invariante():
     assert resultado["invariantes_violados"] == []
 
 
+def test_aritmetica_inconsistente_dentro_del_boxed_se_detecta():
+    """H-02 real de UNIDAD 7: `\\boxed{(145.19-125.37)/22.32 ≈ 0.75}` no
+    cierra — esa división da 0.888. El error es la media muestral (145.19
+    debería ser 142.19) y se detecta sin ejecutar nada, comprobando que la
+    fórmula encuadrada sea consistente consigo misma."""
+    agent = ScientistAgent()
+    texto = (
+        r"$$\boxed{d_{\text{Cohen}} = \frac{145.19-125.37}{22.32} \approx 0.75}$$"
+    )
+
+    resultado = agent.check_theory(texto)
+
+    assert resultado["aritmetica_inconsistente"]
+    assert resultado["passed"] is False
+
+
+def test_aritmetica_consistente_dentro_del_boxed_no_se_reporta():
+    """Control: la misma fórmula con la media correcta sí cierra."""
+    agent = ScientistAgent()
+    texto = (
+        r"$$\boxed{d_{\text{Cohen}} = \frac{142.19-125.37}{22.32} \approx 0.75}$$"
+    )
+
+    resultado = agent.check_theory(texto)
+
+    assert resultado["aritmetica_inconsistente"] == []
+
+
+def test_fraccion_simple_inconsistente_se_detecta():
+    agent = ScientistAgent()
+
+    resultado = agent.check_theory(r"$$\boxed{\rho = \frac{-18}{4 \times 6} = -0.90}$$")
+
+    assert resultado["aritmetica_inconsistente"]
+
+
+def test_fraccion_simple_consistente_no_se_reporta():
+    """El caso real de UNIDAD 4 §5.3: -18/(4*6) = -0.75, correcto."""
+    agent = ScientistAgent()
+
+    resultado = agent.check_theory(r"$$\boxed{\rho = \frac{-18}{4 \times 6} = -0.75}$$")
+
+    assert resultado["aritmetica_inconsistente"] == []
+
+
 def test_probabilidad_expresada_como_fraccion_no_es_falso_positivo():
     """Regresión: `$P(C|G_B)=2/3$` (UNIDAD 2, Tres Prisioneros) leía "2"
     como la probabilidad declarada y reportaba un invariante violado
