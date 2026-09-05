@@ -2,6 +2,8 @@
 ScientistAgent (@Scientist): Owner of statistical theory, LaTeX notation, and formal proofs.
 """
 
+import ast
+import operator
 import re
 from typing import Any
 
@@ -57,10 +59,27 @@ _FRACCION_CON_RESULTADO = re.compile(
     r"(?:=|\\approx|\\simeq)\s*(-?\d+(?:\.\d+)?)"
 )
 # Expresión aritmética simple: solo números, operadores y \times / \cdot.
+# El filtro léxico es la primera barrera; la segunda (y la que de verdad
+# acota el costo) es `_evaluar_aritmetica`, que recorre el AST y rechaza
+# `ast.Pow` -- este regex por sí solo acepta `**`. Ver I-1.
 _ARITMETICA_SIMPLE = re.compile(r"^[\d\s.+\-*/()]+$")
 # El resultado se compara con la precisión que el propio texto declara: si
 # afirma 0.75, basta con que el cálculo redondee a 0.75.
 _TOLERANCIA_ARITMETICA = 0.51
+
+# Operaciones admitidas al evaluar aritmética simple. La potencia (ast.Pow)
+# queda deliberadamente fuera: es la única cuyo resultado puede crecer sin
+# relación con el tamaño de la entrada (`9**9**9**9`).
+_OPERACIONES_PERMITIDAS = {
+    ast.Add: operator.add,
+    ast.Sub: operator.sub,
+    ast.Mult: operator.mul,
+    ast.Div: operator.truediv,
+}
+
+
+class _AritmeticaNoPermitida(Exception):
+    """La expresión contiene un nodo u operador fuera de la aritmética simple."""
 
 
 class ScientistAgent:
@@ -129,8 +148,8 @@ class ScientistAgent:
                 )
         return violaciones
 
-    @staticmethod
-    def _evaluar_expresion(numerador: str, denominador: str) -> float | None:
+    @classmethod
+    def _evaluar_expresion(cls, numerador: str, denominador: str) -> float | None:
         """Evalúa una fracción cuyos dos lados son aritmética simple.
 
         Solo se aceptan cadenas de números y operadores tras normalizar
@@ -147,15 +166,65 @@ class ScientistAgent:
             return None
         if not (any(c.isdigit() for c in num) and any(c.isdigit() for c in den)):
             return None
-        try:
-            # Entrada restringida por _ARITMETICA_SIMPLE a dígitos, espacios
-            # y operadores aritméticos: no puede contener nombres ni llamadas.
-            divisor = eval(den, {"__builtins__": {}}, {})
-            if divisor == 0:
-                return None
-            return eval(num, {"__builtins__": {}}, {}) / divisor
-        except (SyntaxError, ValueError, ZeroDivisionError, TypeError):
+
+        divisor = cls._evaluar_aritmetica(den)
+        dividendo = cls._evaluar_aritmetica(num)
+        if divisor is None or dividendo is None or divisor == 0:
             return None
+        return dividendo / divisor
+
+    @classmethod
+    def _evaluar_aritmetica(cls, expresion: str) -> float | None:
+        """Evalúa una expresión aritmética simple recorriendo su AST.
+
+        I-1: antes esto era `eval(expresion, {"__builtins__": {}}, {})`.
+        Vaciar `__builtins__` impide alcanzar nombres y llamadas, pero no
+        acota el COSTO de la expresión: `_ARITMETICA_SIMPLE` acepta `*`, y
+        por tanto `**`, así que un `\\boxed{}` con `9**9**9**9` colgaba el
+        proceso construyendo un entero de miles de millones de dígitos —
+        un DoS trivial desde texto de lección, y esta ruta no corre en un
+        subproceso con timeout como la de @Engineer.
+
+        Se recorre el AST en vez de evaluar: solo constantes numéricas y las
+        cuatro operaciones (más el signo unario) están permitidas, y
+        `ast.Pow` se rechaza explícitamente. Ninguna operación admitida
+        puede crecer más allá del tamaño de sus operandos, así que el costo
+        queda acotado por la longitud del texto de entrada.
+        """
+        try:
+            arbol = ast.parse(expresion, mode="eval")
+        except SyntaxError:
+            return None
+        try:
+            return cls._evaluar_nodo(arbol.body)
+        except (_AritmeticaNoPermitida, ArithmeticError, TypeError, ValueError):
+            return None
+
+    @classmethod
+    def _evaluar_nodo(cls, nodo: ast.AST) -> float:
+        if isinstance(nodo, ast.Constant):
+            if isinstance(nodo.value, bool) or not isinstance(nodo.value, (int, float)):
+                raise _AritmeticaNoPermitida("solo se admiten constantes numéricas")
+            return float(nodo.value)
+
+        if isinstance(nodo, ast.UnaryOp) and isinstance(nodo.op, (ast.UAdd, ast.USub)):
+            valor = cls._evaluar_nodo(nodo.operand)
+            return -valor if isinstance(nodo.op, ast.USub) else valor
+
+        if isinstance(nodo, ast.BinOp):
+            operacion = _OPERACIONES_PERMITIDAS.get(type(nodo.op))
+            if operacion is None:
+                # Incluye ast.Pow: la potencia no se necesita para las
+                # fracciones que audita este agente, y es la única de estas
+                # operaciones cuyo resultado puede explotar en tamaño.
+                raise _AritmeticaNoPermitida(
+                    f"operador no permitido: {type(nodo.op).__name__}"
+                )
+            return operacion(
+                cls._evaluar_nodo(nodo.left), cls._evaluar_nodo(nodo.right)
+            )
+
+        raise _AritmeticaNoPermitida(f"nodo no permitido: {type(nodo).__name__}")
 
     def _extraer_formulas_estructuradas(self, text: str) -> list[str]:
         """Devuelve los bloques LaTeX que realmente afirman una relación

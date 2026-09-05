@@ -199,6 +199,39 @@ def test_fraccion_simple_consistente_no_se_reporta():
     assert resultado["aritmetica_inconsistente"] == []
 
 
+def test_potencia_no_se_evalua_nunca_para_evitar_dos():
+    """I-1: `_ARITMETICA_SIMPLE` aceptaba `*`, y por tanto `**`. Una fórmula
+    con `9**9**9**9` pasaba el guard y llegaba a evaluarse, colgando el
+    proceso al construir un entero de miles de millones de dígitos: DoS
+    trivial desde texto de lección, sin timeout en esta ruta (a diferencia
+    de @Engineer, que ejecuta en subproceso con `timeout=300`).
+
+    La aserción es sobre el GUARD, no sobre una ejecución con límite: el
+    evaluador debe RECHAZAR la potencia y devolver None antes de calcular
+    nada. Si el fix no funciona, el test no cuelga por diseño — la
+    expresión se rechaza o el test falla, nunca se evalúa.
+    """
+    agent = ScientistAgent()
+
+    assert agent._evaluar_expresion("9**9**9**9", "1") is None
+    assert agent._evaluar_expresion("1", "9**9**9**9") is None
+    # También la forma con un solo `**` y exponente moderado: la potencia no
+    # es una operación que este evaluador de "aritmética simple" necesite.
+    assert agent._evaluar_expresion("2**10", "1") is None
+
+
+def test_boxed_con_potencia_no_cuelga_ni_reporta_inconsistencia():
+    """Ruta completa: un `\\boxed{}` con una potencia enorme no debe colgar
+    `check_theory`. Al no poder evaluarse, la fracción simplemente se omite
+    (criterio "callar antes que inventar un hallazgo"), sin excepción."""
+    agent = ScientistAgent()
+    texto = r"$$\boxed{k = \frac{9**9**9**9}{2} = 5}$$"
+
+    resultado = agent.check_theory(texto)
+
+    assert resultado["aritmetica_inconsistente"] == []
+
+
 def test_probabilidad_expresada_como_fraccion_no_es_falso_positivo():
     """Regresión: `$P(C|G_B)=2/3$` (UNIDAD 2, Tres Prisioneros) leía "2"
     como la probabilidad declarada y reportaba un invariante violado
