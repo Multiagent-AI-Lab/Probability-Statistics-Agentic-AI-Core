@@ -465,54 +465,35 @@ def test_ninguna_leccion_real_del_curso_es_bloqueada_por_el_gate():
     las 8 lecciones reales del curso en lecciones/, no sobre fixtures
     sintéticas. Si una edición futura hace caer alguna lección por debajo de
     los umbrales de engineer/editor/scientist/analyst/safety_gate, este test
-    debe fallar antes de que el contenido se publique — documentado como
-    deuda pendiente en GOVERNANCE.md §4 hasta ahora.
+    debe fallar antes de que el contenido se publique — detalle en
+    GOVERNANCE.md §2.1.
 
     Las rutas se anclan a este archivo (no a strings relativos al cwd de
     pytest) para que el test sea robusto sin importar desde dónde se invoque.
 
-    UNIDAD 6 y UNIDAD 7 quedan excluidas mientras arrastren los bugs de
-    contenido ya documentados (H-05: la celda SymPy de U6 resuelve la forma
-    sin simplificar y contradice el texto; H-02: la $d$ de Cohen de U7 usa
-    la media nominal en vez de la muestral y su `\\boxed{}` no cierra). El
-    Consejo reconstruido las detecta a propósito —esa es la prueba de que
-    discrimina— y `tests/council/test_adversarial.py` verifica justamente
-    que las siga detectando. Cuando Task 2 corrija ese contenido, ambas
-    deben volver a esta lista y las dos aserciones de detección del test
-    adversarial deben invertirse."""
+    UNIDAD 6 y UNIDAD 7 ya no están excluidas: Task 2 corrigió los bugs de
+    contenido que las bloqueaban a propósito (H-05 en U6: la celda SymPy
+    ahora resuelve la forma simplificada consistente con el texto; H-02 en
+    U7: la $d$ de Cohen usa la media muestral real). Las 8 unidades deben
+    aprobar el gate por igual — `tests/council/test_adversarial.py` verifica
+    en cambio que el Consejo detectaba esos bugs mientras existieron (los
+    tests de detección ahí se invirtieron a `approved is True` junto con
+    este cambio)."""
     repo_root = Path(__file__).resolve().parent.parent
     orchestrator = OrchestratorAgent(
         lecciones_dir=str(repo_root / "lecciones"),
         notebooks_dir=str(repo_root / "notebooks"),
     )
 
-    unidades_con_bug_conocido = {
-        "UNIDAD_6_MODELADO_SIMULACION.md",
-        "UNIDAD_7_INFERENCIA_ESTIMACION.md",
-    }
-
     results = orchestrator.run_full_pipeline(enforce_gate=True)
 
     assert len(results) == 8, "Se esperan exactamente las 8 lecciones del curso"
 
     bloqueadas = [
-        (r["md_filename"], r["gate_reason"])
-        for r in results
-        if r["gate_blocked"] and r["md_filename"] not in unidades_con_bug_conocido
+        (r["md_filename"], r["gate_reason"]) for r in results if r["gate_blocked"]
     ]
     assert bloqueadas == [], (
         "El gate real bloquea contenido ya publicado del curso: " f"{bloqueadas}"
-    )
-
-    # Contraparte: las unidades con bug conocido deben seguir bloqueadas. Si
-    # dejan de estarlo sin que Task 2 haya corregido el contenido, el
-    # Consejo perdió capacidad de detección.
-    detectadas = {
-        r["md_filename"] for r in results if r["gate_blocked"]
-    } & unidades_con_bug_conocido
-    assert detectadas == unidades_con_bug_conocido, (
-        "El Consejo dejó de detectar los bugs de contenido conocidos de "
-        f"U6/U7; detectadas: {detectadas}"
     )
 
 
