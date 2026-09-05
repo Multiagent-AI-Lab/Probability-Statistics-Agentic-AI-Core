@@ -548,7 +548,7 @@ print(f"Cohen's d = {cohens_d:.4f}")
 
 **Interpretación**: el t-test confirma significancia estadística ($p=0.0105<0.05$), pero es la $d$ de Cohen la que cuantifica la magnitud práctica: $d=0.75$ es un efecto **grande** según la regla de Cohen — el dopaje con aluminio no solo produce una diferencia detectable, sino una mejora sustancial de la conductividad respecto a la variabilidad natural del proceso, relevante para decisiones de ingeniería más allá de la mera significancia estadística.
 
-$$\boxed{d_{\text{Cohen}} = \frac{145.19-125.37}{22.32} \approx 0.75\ (\text{efecto grande})}$$
+$$\boxed{d_{\text{Cohen}} = \frac{142.19-125.37}{22.32} \approx 0.75\ (\text{efecto grande})}$$
 
 ---
 
