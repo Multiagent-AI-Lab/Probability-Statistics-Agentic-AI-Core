@@ -8,6 +8,7 @@ from typing import Any
 
 from .code_auditor_agent import CodeAuditorAgent
 from .content_auditor_agent import ContentAuditorAgent
+from .council.qa_agent import SEVERIDAD_BLOQUEANTE
 from .curriculum_map_agent import CurriculumMapAgent
 from .evaluator_agent import EvaluatorAgent
 from .notebook_compiler_agent import NotebookCompilerAgent
@@ -35,10 +36,18 @@ class OrchestratorAgent:
             return f"UNIDAD {md_filename.split('_')[1]}"
         return md_filename
 
-    # Reportes del Consejo promovidos a bloqueantes ademas de safety_gate:
-    # los unicos 3 con logica real de deteccion de un defecto de publicacion
-    # (no un stub que siempre pasa, como librarian). Ver GOVERNANCE.md #4.
+    # Reportes del Consejo cuyo `passed` crudo se traduce a un motivo de
+    # bloqueo legible con detalle numerico (ver `_describe_failed_report`).
+    # NO es la lista de lo que puede bloquear: el veredicto de publicacion lo
+    # da `final_qa["approved"]` sobre los hallazgos tipados de los 8 agentes
+    # (incluido @Librarian, que no aparece aqui). Esta tupla solo enriquece el
+    # mensaje. Ver GOVERNANCE.md #4.
     _BLOCKING_REPORTS = ("engineer", "editor", "scientist", "analyst")
+
+    # Cuantos hallazgos bloqueantes de @QA se citan en el motivo antes de
+    # resumir el resto con un contador, para que el mensaje siga siendo
+    # legible en una unidad con muchos defectos.
+    _MAX_HALLAZGOS_EN_REASON = 5
 
     @staticmethod
     def _describe_failed_report(name: str, report: dict[str, Any]) -> str:
@@ -64,6 +73,60 @@ class OrchestratorAgent:
             return f"{name} (unidades faltantes={report['missing_units']})"
         return name
 
+    @staticmethod
+    def _hallazgos_bloqueantes(council_result: dict[str, Any]) -> list[dict[str, Any]]:
+        """Hallazgos de severidad bloqueante del veredicto agregado de @QA.
+
+        Se leen de `final_qa`, no de los reportes individuales: @QA es quien
+        tipa cada hallazgo y le asigna severidad, y quien conoce a los 8
+        agentes (no solo a los 4 de `_BLOCKING_REPORTS`). Si un Consejo de
+        prueba no expone `final_qa`, se degrada a lista vacía y el gate cae
+        en el criterio por-reporte de siempre, sin romper el caller.
+        """
+        final_qa = council_result.get("final_qa")
+        if not isinstance(final_qa, dict):
+            return []
+        return [
+            h
+            for h in final_qa.get("hallazgos", [])
+            if h.get("severidad") == SEVERIDAD_BLOQUEANTE
+        ]
+
+    @classmethod
+    def _compose_reason(
+        cls,
+        failed_reports: list[str],
+        hallazgos_bloqueantes: list[dict[str, Any]],
+        reports: dict[str, Any],
+    ) -> str:
+        """Motivo legible del bloqueo: los agentes que reprobaron con su
+        detalle numérico, más los hallazgos tipados de @QA (que incluyen los
+        de agentes fuera de `_BLOCKING_REPORTS`, como un DOI de @Librarian
+        que no resuelve)."""
+        partes: list[str] = []
+
+        if failed_reports:
+            detalles = [
+                cls._describe_failed_report(name, reports[name])
+                for name in failed_reports
+            ]
+            partes.append(f"El Consejo no aprobó la lección en: {', '.join(detalles)}.")
+
+        if hallazgos_bloqueantes:
+            citados = hallazgos_bloqueantes[: cls._MAX_HALLAZGOS_EN_REASON]
+            listado = "; ".join(
+                f"[{h.get('agente')}/{h.get('tipo')}] {h.get('mensaje')}"
+                for h in citados
+            )
+            restantes = len(hallazgos_bloqueantes) - len(citados)
+            if restantes > 0:
+                listado += f"; (+{restantes} hallazgo(s) más)"
+            partes.append(
+                f"@QA reportó {len(hallazgos_bloqueantes)} hallazgo(s) bloqueante(s): {listado}."
+            )
+
+        return " ".join(partes)
+
     def _check_gate(
         self,
         md_filename: str,
@@ -76,7 +139,16 @@ class OrchestratorAgent:
         Con `file_tree`, @Architect se vuelve bloqueante (completitud real
         del curso); sin él, `process_content` lo deja como advisory/opt-in
         (`{"passed": True, "skipped": True}`) para no bloquear una lección
-        válida solo porque se audita de forma aislada. Ver GOVERNANCE.md §4."""
+        válida solo porque se audita de forma aislada. Ver GOVERNANCE.md §4.
+
+        El veredicto de publicación es `final_qa["approved"]`: el juicio
+        agregado de @QA sobre los hallazgos tipados de los 8 agentes, con su
+        distinción de severidad (un aviso pedagógico no bloquea; un
+        invariante violado sí). Antes este gate leía `reports[name]["passed"]`
+        de solo 4 agentes y nunca consultaba @QA, de modo que la clasificación
+        por severidad y la verificación de DOIs de @Librarian —que no está en
+        `_BLOCKING_REPORTS`— no llegaban a decidir nada en producción.
+        """
         unit_name = self._unit_name_from_filename(md_filename)
 
         council_result = self.council.process_content(
@@ -94,17 +166,17 @@ class OrchestratorAgent:
             blocking_reports = blocking_reports + ("architect",)
 
         failed_reports = [
-            name for name in blocking_reports if not reports[name]["passed"]
+            name
+            for name in blocking_reports
+            if name in reports and not reports[name]["passed"]
         ]
-        if failed_reports:
-            detalles = [
-                self._describe_failed_report(name, reports[name])
-                for name in failed_reports
-            ]
+        hallazgos_bloqueantes = self._hallazgos_bloqueantes(council_result)
+
+        if failed_reports or hallazgos_bloqueantes:
             return {
                 "blocked": True,
-                "reason": (
-                    f"El Consejo no aprobó la lección en: {', '.join(detalles)}."
+                "reason": self._compose_reason(
+                    failed_reports, hallazgos_bloqueantes, reports
                 ),
             }
 

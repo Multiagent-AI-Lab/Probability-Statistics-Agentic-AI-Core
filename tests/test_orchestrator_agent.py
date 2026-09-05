@@ -514,3 +514,124 @@ def test_ninguna_leccion_real_del_curso_es_bloqueada_por_el_gate():
         "El Consejo dejó de detectar los bugs de contenido conocidos de "
         f"U6/U7; detectadas: {detectadas}"
     )
+
+
+# ---------------------------------------------------------------------------
+# C-1: el veredicto agregado de @QA debe gobernar el gate de producción.
+#
+# Antes de este fix, `_check_gate` leía `reports[name]["passed"]` de solo 4
+# agentes (_BLOCKING_REPORTS) y nunca consultaba `final_qa["approved"]`. Toda
+# la maquinaria de hallazgos tipados de @QA —y la reescritura completa de
+# @Librarian, que ni siquiera estaba en esa tupla— quedaba inerte para el
+# pipeline real: una unidad podía citar un DOI que no resuelve en Crossref y
+# publicarse igual.
+# ---------------------------------------------------------------------------
+
+
+class _StubCouncilConQA:
+    """Consejo de prueba que devuelve reportes fijos y delega el veredicto
+    agregado en el @QA real, igual que `CouncilPipeline.process_content`."""
+
+    def __init__(self, reports):
+        self._reports = reports
+        from src.multiagent_core.council.qa_agent import QAAgent
+
+        self._qa = QAAgent()
+
+    def process_content(self, md_text, unit_name="", file_tree=None):
+        final_qa = self._qa.final_audit(self._reports)
+        return {
+            "approved": final_qa["approved"],
+            "reports": self._reports,
+            "final_qa": final_qa,
+        }
+
+
+def _reportes_todos_ok():
+    ok = {"passed": True}
+    return {
+        "safety_gate": {"passed": True, "critical": False, "warnings": []},
+        "engineer": dict(ok),
+        "editor": dict(ok),
+        "scientist": dict(ok),
+        "analyst": dict(ok),
+        "librarian": {
+            "passed": True,
+            "has_references": True,
+            "dois_verificados": ["10.1000/valido"],
+            "dois_no_resueltos": [],
+        },
+    }
+
+
+def test_gate_bloquea_cuando_librarian_reporta_un_doi_que_no_resuelve():
+    """C-1 (RED antes del fix): `librarian` no está en _BLOCKING_REPORTS, así
+    que un DOI que no resuelve en Crossref no bloqueaba la publicación aunque
+    @QA lo clasificara como hallazgo bloqueante `referencia_inexistente`."""
+    orchestrator = OrchestratorAgent(
+        lecciones_dir="lecciones", notebooks_dir="notebooks"
+    )
+
+    reports = _reportes_todos_ok()
+    reports["librarian"] = {
+        "passed": False,
+        "has_references": True,
+        "dois_verificados": [],
+        "dois_no_resueltos": ["10.9999/doi-inexistente"],
+    }
+    orchestrator.council = _StubCouncilConQA(reports)
+
+    gate_decision = orchestrator._check_gate("UNIDAD_1.md", "texto", set())
+
+    assert gate_decision["blocked"] is True, (
+        "un DOI que no resuelve debe bloquear la publicación real, no solo "
+        "aparecer como metadato del reporte de @Librarian"
+    )
+    assert "10.9999/doi-inexistente" in gate_decision["reason"]
+
+
+def test_gate_bloquea_cuando_qa_reprueba_por_un_hallazgo_tipado():
+    """C-1 (RED antes del fix): un agente que SÍ está en _BLOCKING_REPORTS
+    puede devolver `passed: True` y aun así aportar un hallazgo bloqueante
+    tipado (invariante violado). El gate debe leer el veredicto agregado de
+    @QA, no el booleano crudo de cada agente."""
+    orchestrator = OrchestratorAgent(
+        lecciones_dir="lecciones", notebooks_dir="notebooks"
+    )
+
+    reports = _reportes_todos_ok()
+    reports["scientist"] = {
+        "passed": True,
+        "invariantes_violados": ["probabilidad fuera de [0,1]: 1.75"],
+    }
+    orchestrator.council = _StubCouncilConQA(reports)
+
+    gate_decision = orchestrator._check_gate("UNIDAD_1.md", "texto", set())
+
+    assert gate_decision["blocked"] is True, (
+        "@QA marcó approved=False por un hallazgo bloqueante; el gate de "
+        "producción debe bloquear igual que si fallara un _BLOCKING_REPORTS"
+    )
+    assert "1.75" in gate_decision["reason"]
+
+
+def test_gate_no_bloquea_por_advertencias_no_bloqueantes_de_qa():
+    """Contraparte: una advertencia (supuesto estadístico sin verificar) no
+    debe convertirse en un gate de publicación. El fix conecta el veredicto
+    de @QA, que ya distingue severidades — no endurece el gate a cualquier
+    hallazgo."""
+    orchestrator = OrchestratorAgent(
+        lecciones_dir="lecciones", notebooks_dir="notebooks"
+    )
+
+    reports = _reportes_todos_ok()
+    reports["safety_gate"] = {
+        "passed": True,
+        "critical": False,
+        "warnings": ["no se verificó normalidad antes de la prueba t"],
+    }
+    orchestrator.council = _StubCouncilConQA(reports)
+
+    gate_decision = orchestrator._check_gate("UNIDAD_1.md", "texto", set())
+
+    assert gate_decision["blocked"] is False, gate_decision["reason"]
