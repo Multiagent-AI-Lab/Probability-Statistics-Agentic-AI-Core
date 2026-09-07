@@ -13,28 +13,147 @@ orden, cortando en la primera que falla:
 
 1. **No trivial**: el código no puede estar vacío, ser solo comentarios, o
    reducirse a un cuerpo `pass`.
-2. **Plantilla completada**: no deben quedar marcadores `# TODO:` de la
-   plantilla original sin resolver.
-3. **Resultado correcto**: se ejecuta el código del alumno en un namespace
-   aislado y se evalúan `checks` (expresiones booleanas, típicamente
-   `assert`s de tolerancia contra un valor de referencia de SciPy) sobre las
-   variables que dicho namespace define.
+2. **Plantilla completada**: no deben quedar sin resolver los `# TODO:`
+   *literales de la plantilla original* (los comentarios `# TODO:` que el
+   alumno escriba por su cuenta no cuentan: son suyos, no del ejercicio).
+3. **Resultado correcto**: se ejecuta el código del alumno y se evalúan los
+   `checks` (expresiones booleanas, típicamente comparaciones de tolerancia
+   contra un valor de referencia fijo) sobre las variables que ese código
+   define.
 
-El código ejecutado es siempre la solución que el propio alumno escribió para
-un ejercicio del curso (nunca input de un tercero no confiable ni datos de
-producción): el `exec` corre en un namespace nuevo y aislado por invocación,
-sin acceso a builtins peligrosos más allá de los que scipy/numpy ya requieren
-para este uso pedagógico local.
+Aislamiento de la ejecución
+---------------------------
+El paso 3 corre en un **subproceso** con timeout, tempdir propio y entorno
+controlado — el mismo patrón que `council/engineer_agent.py._ejecutar`, y por
+las mismas razones. Una versión anterior de este agente usaba `exec()` sobre
+un dict de globals sin `__builtins__`, lo que **no** aísla nada: Python
+inyecta el módulo `builtins` completo cuando ese nombre falta, así que
+`import os` y `open()` quedaban disponibles, y un `while True: pass` colgaba
+el proceso del notebook indefinidamente porque `exec` no admite timeout.
+
+El subproceso no promete ser un sandbox de seguridad frente a un atacante —
+el alumno siempre puede correr lo que quiera en su propia máquina, con o sin
+este agente. Lo que sí garantiza es lo que el uso pedagógico necesita: que
+una entrega con un bucle infinito, una llamada a `sys.exit()`, o un cuelgue
+de E/S termine con un mensaje de error acotado en vez de tumbar la sesión del
+notebook, y que el estado del intérprete del alumno no quede contaminado por
+los nombres que su solución define.
 """
 
 import ast
+import json
+import os
 import re
+import subprocess
+import sys
+import tempfile
 from dataclasses import dataclass, field
+from pathlib import Path
+
+# Segundos que se le conceden a la solución del alumno. Un ejercicio del curso
+# resuelve en milisegundos; este margen cubre el arranque del intérprete y la
+# importación de numpy/scipy en el subproceso.
+TIMEOUT_EJECUCION_SEGUNDOS = 20
+
+# Marcador que separa el informe JSON del agente de cualquier `print` que la
+# solución del alumno haya dejado en stdout.
+_MARCADOR_INFORME = "___INFORME_VERIFICACION___"
+
+# `# TODO:` de la plantilla, para poder compararlos línea a línea contra el
+# código entregado. No se usa sobre el código del alumno: un `# TODO: repasar
+# esto antes del examen` suyo en una solución correcta no es un ejercicio sin
+# resolver.
+TODO_MARKER_PATTERN = re.compile(r"#\s*TODO:")
+
+_ARNES = """\
+import builtins as _builtins
+import json
+import sys
 
 import numpy as np
 from scipy import stats
 
-TODO_MARKER_PATTERN = re.compile(r"#\s*TODO:")
+_MARCADOR = {marcador!r}
+_CHECKS = {checks!r}
+_VARIABLES = {variables!r}
+
+# Módulos que la solución de un ejercicio de estadística puede necesitar. El
+# resto (os, sys, subprocess, shutil, socket, pathlib...) no tiene lugar en un
+# ejercicio del curso, y permitirlos deja al alumno tocar el disco desde una
+# celda que él cree que solo "califica" su respuesta.
+_MODULOS_PERMITIDOS = {{
+    "numpy", "scipy", "scipy.stats", "scipy.special", "scipy.optimize",
+    "scipy.integrate", "scipy.linalg", "math", "statistics", "random",
+    "itertools", "functools", "collections", "decimal", "fractions",
+    "pandas", "sympy",
+}}
+
+_import_real = _builtins.__import__
+
+
+def _import_restringido(nombre, globals=None, locals=None, fromlist=(), level=0):
+    raiz = nombre.split(".")[0]
+    if nombre in _MODULOS_PERMITIDOS or raiz in _MODULOS_PERMITIDOS:
+        return _import_real(nombre, globals, locals, fromlist, level)
+    raise ImportError(
+        "importar '{{}}' no está permitido en la autoevaluación: este ejercicio "
+        "se resuelve con numpy/scipy/math".format(nombre)
+    )
+
+
+# Builtins expuestos a la solución del alumno: los de cálculo y estructuras de
+# datos, sin los que tocan el sistema de archivos, el proceso o el intérprete
+# (`open`, `eval`, `exec`, `compile`, `input`, `exit`, `__loader__`...).
+_BUILTINS_PERMITIDOS = {{
+    nombre: getattr(_builtins, nombre)
+    for nombre in (
+        "abs", "all", "any", "bool", "callable", "chr", "complex", "dict",
+        "divmod", "enumerate", "filter", "float", "format", "frozenset",
+        "getattr", "hasattr", "hash", "int", "isinstance", "issubclass",
+        "iter", "len", "list", "map", "max", "min", "next", "object", "ord",
+        "pow", "print", "range", "repr", "reversed", "round", "set", "setattr",
+        "slice", "sorted", "str", "sum", "tuple", "type", "zip",
+        "True", "False", "None", "Exception", "ValueError", "TypeError",
+        "KeyError", "IndexError", "ZeroDivisionError", "ArithmeticError",
+        "AttributeError", "NameError", "RuntimeError", "StopIteration",
+        "ImportError", "AssertionError", "NotImplementedError",
+    )
+    if hasattr(_builtins, nombre)
+}}
+_BUILTINS_PERMITIDOS["__import__"] = _import_restringido
+_BUILTINS_PERMITIDOS["__build_class__"] = _builtins.__build_class__
+
+_namespace = {{
+    "stats": stats,
+    "np": np,
+    "__name__": "__main__",
+    "__builtins__": _BUILTINS_PERMITIDOS,
+}}
+
+_informe = {{"error": None, "faltantes": [], "fallidos": [], "no_evaluables": []}}
+
+with open({ruta_solucion!r}, encoding="utf-8") as _f:
+    _fuente = _f.read()
+
+try:
+    exec(compile(_fuente, "<solucion_alumno>", "exec"), _namespace)
+except BaseException as _exc:
+    _informe["error"] = "{{}}: {{}}".format(type(_exc).__name__, _exc)
+else:
+    _informe["faltantes"] = [v for v in _VARIABLES if v not in _namespace]
+    if not _informe["faltantes"]:
+        for _check in _CHECKS:
+            try:
+                _ok = bool(eval(_check, {{"stats": stats, "np": np}}, _namespace))
+            except BaseException as _exc:
+                _informe["no_evaluables"].append([_check, str(_exc)])
+                continue
+            if not _ok:
+                _informe["fallidos"].append(_check)
+
+sys.stdout.write("\\n" + _MARCADOR + json.dumps(_informe))
+sys.stdout.flush()
+"""
 
 
 @dataclass(frozen=True)
@@ -53,10 +172,12 @@ class ExerciseVerifierAgent:
         variables_requeridas: list[str],
         checks: list[str],
         plantilla: str | None = None,
+        timeout: int = TIMEOUT_EJECUCION_SEGUNDOS,
     ) -> None:
         self.variables_requeridas = variables_requeridas
         self.checks = checks
         self.plantilla = plantilla
+        self.timeout = timeout
 
     def _es_trivial(self, codigo: str) -> bool:
         """Detecta archivo vacío, solo comentarios, o cuerpo reducido a `pass`."""
@@ -79,13 +200,86 @@ class ExerciseVerifierAgent:
         ]
         return len(cuerpo_no_trivial) == 0
 
+    def _todos_de_la_plantilla(self) -> list[str]:
+        """Líneas `# TODO:` literales de la plantilla original.
+
+        Son las únicas que cuentan como ejercicio sin resolver. Un patrón
+        genérico sobre el código entregado reprobaba a quien dejara su propio
+        `# TODO: repasar` en una solución correcta, y encima le decía que el
+        TODO era "de la plantilla".
+        """
+        if self.plantilla is None:
+            return []
+        return [
+            linea.strip()
+            for linea in self.plantilla.splitlines()
+            if TODO_MARKER_PATTERN.search(linea)
+        ]
+
     def _tiene_todos_sin_resolver(self, codigo: str) -> bool:
-        return bool(TODO_MARKER_PATTERN.search(codigo))
+        pendientes = self._todos_de_la_plantilla()
+        if not pendientes:
+            return False
+        entregado = {linea.strip() for linea in codigo.splitlines()}
+        return any(todo in entregado for todo in pendientes)
 
     def _es_plantilla_sin_tocar(self, codigo: str) -> bool:
         if self.plantilla is None:
             return False
         return codigo.strip() == self.plantilla.strip()
+
+    def _ejecutar_y_evaluar(self, codigo: str) -> dict[str, object] | str:
+        """Corre la solución y sus `checks` en un subproceso con timeout.
+
+        Devuelve el informe del arnés, o un string con el motivo por el que no
+        hubo informe (timeout, proceso caído, salida ilegible).
+        """
+        entorno = {**os.environ, "PYTHONIOENCODING": "utf-8", "MPLBACKEND": "Agg"}
+
+        with tempfile.TemporaryDirectory() as tmp:
+            ruta_solucion = Path(tmp) / "solucion_alumno.py"
+            ruta_solucion.write_text(codigo, encoding="utf-8")
+
+            arnes = _ARNES.format(
+                marcador=_MARCADOR_INFORME,
+                checks=self.checks,
+                variables=self.variables_requeridas,
+                ruta_solucion=str(ruta_solucion),
+            )
+            ruta_arnes = Path(tmp) / "arnes_verificacion.py"
+            ruta_arnes.write_text(arnes, encoding="utf-8")
+
+            try:
+                proceso = subprocess.run(
+                    [sys.executable, str(ruta_arnes)],
+                    capture_output=True,
+                    text=True,
+                    check=False,  # un exit != 0 es un hallazgo, no una excepción
+                    timeout=self.timeout,
+                    cwd=tmp,
+                    encoding="utf-8",
+                    errors="replace",
+                    env=entorno,
+                )
+            except subprocess.TimeoutExpired:
+                return (
+                    f"El código no terminó en {self.timeout}s (timeout). "
+                    "¿Hay un bucle que nunca corta o una espera bloqueante?"
+                )
+            except OSError as exc:
+                return f"No se pudo ejecutar el código: {exc}"
+
+        salida = proceso.stdout or ""
+        _, marcador, informe_json = salida.partition(_MARCADOR_INFORME)
+        if not marcador:
+            detalle = (proceso.stderr or "").strip()[-300:] or "sin salida"
+            return f"El código terminó de forma anómala: {detalle}"
+
+        try:
+            informe = json.loads(informe_json.strip())
+        except json.JSONDecodeError:
+            return "No se pudo leer el informe de verificación."
+        return informe
 
     def verificar(self, codigo: str) -> ResultadoVerificacion:
         issues: list[str] = []
@@ -108,29 +302,28 @@ class ExerciseVerifierAgent:
                 issues=["Quedan marcadores '# TODO:' de la plantilla sin resolver."],
             )
 
-        namespace: dict[str, object] = {"stats": stats, "np": np}
-        try:
-            exec(compile(codigo, "<solucion_alumno>", "exec"), namespace)  # noqa: S102
-        except Exception as exc:  # noqa: BLE001 - se reporta como issue, no se relanza
+        informe = self._ejecutar_y_evaluar(codigo)
+        if isinstance(informe, str):
+            return ResultadoVerificacion(aprueba=False, issues=[informe])
+
+        if informe["error"]:
             return ResultadoVerificacion(
                 aprueba=False,
-                issues=[f"El código no ejecuta: {type(exc).__name__}: {exc}"],
+                issues=[f"El código no ejecuta: {informe['error']}"],
             )
 
-        faltantes = [v for v in self.variables_requeridas if v not in namespace]
+        faltantes = informe["faltantes"]
         if faltantes:
-            issues.append(
-                "No se definieron las variables requeridas: " + ", ".join(faltantes)
+            return ResultadoVerificacion(
+                aprueba=False,
+                issues=[
+                    "No se definieron las variables requeridas: " + ", ".join(faltantes)
+                ],
             )
-            return ResultadoVerificacion(aprueba=False, issues=issues)
 
-        for check in self.checks:
-            try:
-                ok = bool(eval(check, {"stats": stats, "np": np}, namespace))
-            except Exception as exc:  # noqa: BLE001 - se reporta como issue
-                issues.append(f"No se pudo evaluar '{check}': {exc}")
-                continue
-            if not ok:
-                issues.append(f"No se cumple: {check}")
+        for check, motivo in informe["no_evaluables"]:
+            issues.append(f"No se pudo evaluar '{check}': {motivo}")
+        for check in informe["fallidos"]:
+            issues.append(f"No se cumple: {check}")
 
         return ResultadoVerificacion(aprueba=len(issues) == 0, issues=issues)
