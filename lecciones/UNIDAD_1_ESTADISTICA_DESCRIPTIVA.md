@@ -875,12 +875,16 @@ resultado = auditor.audit_code(codigo_alumno)
 
 verificador = ExerciseVerifierAgent(
     variables_requeridas=["media", "mediana", "std", "outliers", "media_sin_outliers"],
+    # Valores de referencia FIJOS, precalculados sobre el lote de la plantilla.
+    # No se comparan contra `np.mean(datos)` porque `datos` es una variable que
+    # el alumno controla: redefinirla con tres números cualesquiera satisfaría
+    # un check auto-referencial sin haber hecho ningún análisis.
     checks=[
-        "abs(media - np.mean(datos)) < 1e-6",
-        "abs(mediana - np.median(datos)) < 1e-6",
-        "abs(std - np.std(datos, ddof=1)) < 1e-6",
+        "abs(media - 26.392857142857142) < 1e-6",
+        "abs(mediana - 22.05) < 1e-6",
+        "abs(std - 11.421940040365923) < 1e-6",
         "set(np.ravel(outliers).tolist()) == {52.7, 53.9}",
-        "abs(media_sin_outliers - np.mean([d for d in datos if d not in (52.7, 53.9)])) < 1e-6",
+        "abs(media_sin_outliers - 21.90833333333333) < 1e-6",
     ],
     plantilla=plantilla_original,
 )

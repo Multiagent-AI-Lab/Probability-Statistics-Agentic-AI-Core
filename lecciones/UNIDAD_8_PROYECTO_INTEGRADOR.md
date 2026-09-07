@@ -1128,15 +1128,22 @@ verificador = ExerciseVerifierAgent(
         "media_sno2", "std_sno2", "media_in2o3", "std_in2o3",
         "levene_stat", "levene_p", "t_stat", "t_p",
     ],
+    # Valores de referencia FIJOS, precalculados sobre los dos lotes de la
+    # plantilla. No se comparan contra `np.mean(sno2)` / `stats.levene(sno2,
+    # in2o3)` porque `sno2` e `in2o3` son variables que el alumno controla:
+    # redefinirlas con números cualesquiera satisfaría un check
+    # auto-referencial sin haber hecho ninguna prueba de hipótesis.
+    # `t_p` es del orden de 1e-07, así que se compara en términos relativos:
+    # una tolerancia absoluta de 1e-6 aprobaría cualquier valor cercano a cero.
     checks=[
-        "abs(media_sno2 - np.mean(sno2)) < 1e-6",
-        "abs(std_sno2 - np.std(sno2, ddof=1)) < 1e-6",
-        "abs(media_in2o3 - np.mean(in2o3)) < 1e-6",
-        "abs(std_in2o3 - np.std(in2o3, ddof=1)) < 1e-6",
-        "abs(levene_stat - stats.levene(sno2, in2o3)[0]) < 1e-6",
-        "abs(levene_p - stats.levene(sno2, in2o3)[1]) < 1e-6",
-        "abs(t_stat - stats.ttest_ind(sno2, in2o3, equal_var=False)[0]) < 1e-6",
-        "abs(t_p - stats.ttest_ind(sno2, in2o3, equal_var=False)[1]) < 1e-6",
+        "abs(media_sno2 - 3.5875) < 1e-6",
+        "abs(std_sno2 - 0.028157719063467212) < 1e-6",
+        "abs(media_in2o3 - 3.715) < 1e-6",
+        "abs(std_in2o3 - 0.02449489742783178) < 1e-6",
+        "abs(levene_stat - 0.13725490196078455) < 1e-6",
+        "abs(levene_p - 0.716570543365798) < 1e-6",
+        "abs(t_stat - (-9.662775520999643)) < 1e-6",
+        "abs(t_p / 1.6782057409835622e-07 - 1.0) < 1e-6",
     ],
     plantilla=plantilla_original,
 )
