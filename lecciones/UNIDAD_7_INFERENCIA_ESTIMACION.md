@@ -1341,8 +1341,10 @@ mu_0 = 25.0
 x_bar = 26.2
 alpha = 0.05
 
-# TODO: calcula el estadístico Z de la prueba: Z = (x_bar - mu_0) / (sigma / sqrt(n))
-#       y guárdalo en `z_estadistico`
+# TODO: calcula el error estándar de la media, sigma / sqrt(n), y guárdalo en
+#       `error_estandar`; guarda también la diferencia (x_bar - mu_0) en `diferencia`
+# TODO: calcula el estadístico Z de la prueba a partir de esas dos piezas:
+#       Z = diferencia / error_estandar, y guárdalo en `z_estadistico`
 # TODO: calcula el p-valor de dos colas y compáralo contra alpha para decidir si se rechaza
 #       H0; guarda el p-valor en `p_valor`
 # TODO: en un comentario, enuncia la conclusión correcta: qué significa el p-valor obtenido
@@ -1367,8 +1369,10 @@ mu_0 = 25.0
 x_bar = 26.2
 alpha = 0.05
 
-# TODO: calcula el estadístico Z de la prueba: Z = (x_bar - mu_0) / (sigma / sqrt(n))
-#       y guárdalo en `z_estadistico`
+# TODO: calcula el error estándar de la media, sigma / sqrt(n), y guárdalo en
+#       `error_estandar`; guarda también la diferencia (x_bar - mu_0) en `diferencia`
+# TODO: calcula el estadístico Z de la prueba a partir de esas dos piezas:
+#       Z = diferencia / error_estandar, y guárdalo en `z_estadistico`
 # TODO: calcula el p-valor de dos colas y compáralo contra alpha para decidir si se rechaza
 #       H0; guarda el p-valor en `p_valor`
 # TODO: en un comentario, enuncia la conclusión correcta: qué significa el p-valor obtenido
@@ -1378,10 +1382,16 @@ auditor = CodeAuditorAgent()
 resultado = auditor.audit_code(codigo_alumno)
 
 verificador = ExerciseVerifierAgent(
-    variables_requeridas=["z_estadistico", "p_valor"],
+    variables_requeridas=["error_estandar", "diferencia", "z_estadistico", "p_valor"],
+    # Se exigen las dos piezas intermedias además del resultado: `z = 2.4` es un
+    # número fácil de memorizar y escribir a mano, pero reproducir también el
+    # error estándar (0.5) y la diferencia (1.2) obliga a recorrer la fórmula.
     checks=[
-        "abs(z_estadistico - (26.2 - 25.0) / (3.0 / np.sqrt(36))) < 1e-6",
-        "abs(p_valor - 2 * (1 - stats.norm.cdf(abs((26.2 - 25.0) / (3.0 / np.sqrt(36)))))) < 1e-6",
+        "abs(error_estandar - 0.5) < 1e-6",
+        "abs(diferencia - 1.2) < 1e-6",
+        "abs(z_estadistico - diferencia / error_estandar) < 1e-6",
+        "abs(z_estadistico - 2.4) < 1e-6",
+        "abs(p_valor - 0.01639507184919231) < 1e-6",
         "0.0 <= p_valor <= 1.0",
     ],
     plantilla=plantilla_original,
