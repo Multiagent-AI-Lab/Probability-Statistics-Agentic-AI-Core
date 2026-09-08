@@ -794,6 +794,31 @@ $$x = \{21.4,\ 22.1,\ 20.8,\ 23.3,\ 21.9,\ 22.5,\ 52.7,\ 21.2,\ 22.8,\ 21.1,\ 22
 
 Escribe tu solución en una celda de código nueva en tu notebook. La celda de autoevaluación de la siguiente sección verificará tu resultado.
 
+### Ejercicio 2 (guiado)
+
+Un lote de nanopartículas de plata (AgNPs) fue sometido a sonicación para reducir su aglomeración. Se midió, vía DLS, el diámetro (en nm) de $n=12$ partículas:
+
+$$x = \{18.2,\ 19.1,\ 18.8,\ 19.4,\ 18.5,\ 19.0,\ 18.9,\ 19.3,\ 18.6,\ 19.2,\ 18.7,\ 19.0\}$$
+
+Calcula la media, la mediana, el rango y el coeficiente de variación (CV = desviación estándar muestral / media) de este lote. No hay valores atípicos que filtrar: el objetivo es practicar el cálculo directo de las cuatro cantidades.
+
+### Ejercicio 3 (intermedio)
+
+Dos laboratorios sintetizaron oro coloidal con métodos distintos y reportan el diámetro (nm) de sus lotes:
+
+* Lote A (reducción con citrato): $\{25.1,\ 24.8,\ 25.5,\ 24.9,\ 25.3,\ 25.0,\ 24.7,\ 25.2\}$
+* Lote B (reducción con borohidruro): $\{30.2,\ 22.1,\ 35.8,\ 18.4,\ 28.9,\ 33.1,\ 20.5,\ 27.6\}$
+
+Calcula la media y el coeficiente de variación (CV) de cada lote. Como los dos lotes tienen medias distintas, la desviación estándar en nm no permite comparar su dispersión de forma justa — el CV sí, porque es adimensional. Determina cuál de los dos métodos de síntesis produce un lote más disperso (menos uniforme) en términos relativos.
+
+### Ejercicio 4 (abierto)
+
+Un lote de nanopartículas de dióxido de titanio (TiO₂) fue caracterizado por DLS, obteniendo $n=13$ mediciones de diámetro (nm):
+
+$$x = \{45.2,\ 46.1,\ 45.8,\ 44.9,\ 46.3,\ 45.5,\ 3.1,\ 45.0,\ 46.5,\ 44.7,\ 45.9,\ 98.7,\ 45.3\}$$
+
+El equipo del laboratorio sospecha que el conjunto contiene **dos artefactos de medición de naturaleza distinta**: uno por agregación de partículas (lectura anormalmente alta) y otro por fragmentación o ruido del instrumento (lectura anormalmente baja). Aplica el criterio del IQR considerando **ambos límites** (inferior y superior) para identificar todos los valores atípicos, y calcula la media geométrica del lote ya depurado de outliers.
+
 ## Referencias
 
 * Bruce, P., Bruce, A. & Gedeck, P. (2020). *Practical Statistics for Data Scientists: 50+ Essential Concepts Using R and Python* (2nd ed.). O'Reilly Media. Capítulos sobre estadística descriptiva y exploración de datos.
@@ -901,7 +926,7 @@ if resultado["issues"] or resultado["metrics"]["has_security_risk"] or not resul
     for issue in resultado_ejercicio.issues:
         print("❌", debugger.generate_socratic_question("generic", "Unidad 1"))
         print("   ", issue)
-    print("\n--- Detalle técnico ---")
+    print("\n--- Detalle técnico (Ejercicio Propuesto) ---")
     print(resultado)
     print(resultado_ejercicio)
 else:
@@ -909,3 +934,198 @@ else:
     print(resultado)
     print(resultado_ejercicio)
 ```
+
+### Autoevaluación del Ejercicio 2
+
+```python
+%%writefile solucion_ejercicio2_u1.py
+# Completa aquí tu solución al Ejercicio 2 de esta unidad.
+import numpy as np
+
+datos = np.array([18.2, 19.1, 18.8, 19.4, 18.5, 19.0, 18.9, 19.3, 18.6, 19.2, 18.7, 19.0])
+
+# TODO: calcula la media, mediana, rango y coeficiente de variación (CV = std/media,
+#       con std muestral ddof=1) del lote de AgNPs sonicadas
+#       y guárdalos en las variables `media`, `mediana`, `rango`, `cv`
+```
+
+```python
+with open("solucion_ejercicio2_u1.py", encoding="utf-8") as f:
+    codigo_alumno = f.read()
+
+plantilla_original = """# Completa aquí tu solución al Ejercicio 2 de esta unidad.
+import numpy as np
+
+datos = np.array([18.2, 19.1, 18.8, 19.4, 18.5, 19.0, 18.9, 19.3, 18.6, 19.2, 18.7, 19.0])
+
+# TODO: calcula la media, mediana, rango y coeficiente de variación (CV = std/media,
+#       con std muestral ddof=1) del lote de AgNPs sonicadas
+#       y guárdalos en las variables `media`, `mediana`, `rango`, `cv`"""
+
+auditor = CodeAuditorAgent()
+resultado = auditor.audit_code(codigo_alumno)
+
+verificador = ExerciseVerifierAgent(
+    variables_requeridas=["media", "mediana", "rango", "cv"],
+    checks=[
+        "abs(media - 18.891666666666662) < 1e-6",
+        "abs(mediana - 18.95) < 1e-6",
+        "abs(rango - 1.1999999999999993) < 1e-6",
+        "abs(cv - 0.018538141155442972) < 1e-4",
+    ],
+    plantilla=plantilla_original,
+)
+resultado_ejercicio = verificador.verificar(codigo_alumno)
+
+if resultado["issues"] or resultado["metrics"]["has_security_risk"] or not resultado_ejercicio.aprueba:
+    debugger = SocraticDebugger()
+    for issue in resultado["issues"]:
+        tipo_error = "syntax_error" if "SyntaxError" in issue else "generic"
+        print("💡", debugger.generate_socratic_question(tipo_error, "Unidad 1"))
+    for issue in resultado["security_issues"]:
+        print("🔒", debugger.generate_socratic_question("security_risk", "Unidad 1"))
+        print("   ", issue)
+    for issue in resultado_ejercicio.issues:
+        print("❌", debugger.generate_socratic_question("generic", "Unidad 1"))
+        print("   ", issue)
+    print("\n--- Detalle técnico (Ejercicio 2) ---")
+    print(resultado)
+    print(resultado_ejercicio)
+else:
+    print("✅ Tu código pasa las verificaciones automáticas de estilo, seguridad y resultado.")
+    print(resultado)
+    print(resultado_ejercicio)
+```
+
+### Autoevaluación del Ejercicio 3
+
+```python
+%%writefile solucion_ejercicio3_u1.py
+# Completa aquí tu solución al Ejercicio 3 de esta unidad.
+import numpy as np
+
+lote_a = np.array([25.1, 24.8, 25.5, 24.9, 25.3, 25.0, 24.7, 25.2])
+lote_b = np.array([30.2, 22.1, 35.8, 18.4, 28.9, 33.1, 20.5, 27.6])
+
+# TODO: calcula la media y el coeficiente de variación (CV = std/media, con std muestral
+#       ddof=1) de cada lote, y guárdalos en `media_a`, `cv_a`, `media_b`, `cv_b`
+# TODO: determina cuál lote es más disperso en términos relativos (mayor CV) y guarda
+#       "A" o "B" en la variable `lote_mas_disperso`
+```
+
+```python
+with open("solucion_ejercicio3_u1.py", encoding="utf-8") as f:
+    codigo_alumno = f.read()
+
+plantilla_original = """# Completa aquí tu solución al Ejercicio 3 de esta unidad.
+import numpy as np
+
+lote_a = np.array([25.1, 24.8, 25.5, 24.9, 25.3, 25.0, 24.7, 25.2])
+lote_b = np.array([30.2, 22.1, 35.8, 18.4, 28.9, 33.1, 20.5, 27.6])
+
+# TODO: calcula la media y el coeficiente de variación (CV = std/media, con std muestral
+#       ddof=1) de cada lote, y guárdalos en `media_a`, `cv_a`, `media_b`, `cv_b`
+# TODO: determina cuál lote es más disperso en términos relativos (mayor CV) y guarda
+#       "A" o "B" en la variable `lote_mas_disperso`"""
+
+auditor = CodeAuditorAgent()
+resultado = auditor.audit_code(codigo_alumno)
+
+verificador = ExerciseVerifierAgent(
+    variables_requeridas=["media_a", "cv_a", "media_b", "cv_b", "lote_mas_disperso"],
+    checks=[
+        "abs(media_a - 25.0625) < 1e-6",
+        "abs(cv_a - 0.010650452121727003) < 1e-4",
+        "abs(media_b - 27.075) < 1e-6",
+        "abs(cv_b - 0.22897438763225206) < 1e-4",
+        "lote_mas_disperso == 'B'",
+    ],
+    plantilla=plantilla_original,
+)
+resultado_ejercicio = verificador.verificar(codigo_alumno)
+
+if resultado["issues"] or resultado["metrics"]["has_security_risk"] or not resultado_ejercicio.aprueba:
+    debugger = SocraticDebugger()
+    for issue in resultado["issues"]:
+        tipo_error = "syntax_error" if "SyntaxError" in issue else "generic"
+        print("💡", debugger.generate_socratic_question(tipo_error, "Unidad 1"))
+    for issue in resultado["security_issues"]:
+        print("🔒", debugger.generate_socratic_question("security_risk", "Unidad 1"))
+        print("   ", issue)
+    for issue in resultado_ejercicio.issues:
+        print("❌", debugger.generate_socratic_question("generic", "Unidad 1"))
+        print("   ", issue)
+    print("\n--- Detalle técnico (Ejercicio 3) ---")
+    print(resultado)
+    print(resultado_ejercicio)
+else:
+    print("✅ Tu código pasa las verificaciones automáticas de estilo, seguridad y resultado.")
+    print(resultado)
+    print(resultado_ejercicio)
+```
+
+### Autoevaluación del Ejercicio 4
+
+```python
+%%writefile solucion_ejercicio4_u1.py
+# Completa aquí tu solución al Ejercicio 4 de esta unidad.
+import numpy as np
+from scipy.stats import gmean
+
+datos = np.array([45.2, 46.1, 45.8, 44.9, 46.3, 45.5, 3.1, 45.0, 46.5, 44.7, 45.9, 98.7, 45.3])
+
+# TODO: aplica el criterio del IQR considerando AMBOS límites (inferior y superior) para
+#       detectar todos los valores atípicos y guárdalos en `outliers` (arreglo o lista)
+# TODO: calcula la media geométrica del lote ya depurado de outliers y guárdala en `media_geometrica`
+```
+
+```python
+with open("solucion_ejercicio4_u1.py", encoding="utf-8") as f:
+    codigo_alumno = f.read()
+
+plantilla_original = """# Completa aquí tu solución al Ejercicio 4 de esta unidad.
+import numpy as np
+from scipy.stats import gmean
+
+datos = np.array([45.2, 46.1, 45.8, 44.9, 46.3, 45.5, 3.1, 45.0, 46.5, 44.7, 45.9, 98.7, 45.3])
+
+# TODO: aplica el criterio del IQR considerando AMBOS límites (inferior y superior) para
+#       detectar todos los valores atípicos y guárdalos en `outliers` (arreglo o lista)
+# TODO: calcula la media geométrica del lote ya depurado de outliers y guárdala en `media_geometrica`"""
+
+auditor = CodeAuditorAgent()
+resultado = auditor.audit_code(codigo_alumno)
+
+verificador = ExerciseVerifierAgent(
+    variables_requeridas=["outliers", "media_geometrica"],
+    # El set esperado incluye el outlier bajo (3.1, ruido/fragmentación) Y el alto (98.7,
+    # agregación): un criterio que solo mire el límite superior (ingenuo pero plausible)
+    # detecta solo {98.7} y falla este check.
+    checks=[
+        "set(np.ravel(outliers).tolist()) == {3.1, 98.7}",
+        "abs(media_geometrica - 45.56006270273070) < 1e-4",
+    ],
+    plantilla=plantilla_original,
+)
+resultado_ejercicio = verificador.verificar(codigo_alumno)
+
+if resultado["issues"] or resultado["metrics"]["has_security_risk"] or not resultado_ejercicio.aprueba:
+    debugger = SocraticDebugger()
+    for issue in resultado["issues"]:
+        tipo_error = "syntax_error" if "SyntaxError" in issue else "generic"
+        print("💡", debugger.generate_socratic_question(tipo_error, "Unidad 1"))
+    for issue in resultado["security_issues"]:
+        print("🔒", debugger.generate_socratic_question("security_risk", "Unidad 1"))
+        print("   ", issue)
+    for issue in resultado_ejercicio.issues:
+        print("❌", debugger.generate_socratic_question("generic", "Unidad 1"))
+        print("   ", issue)
+    print("\n--- Detalle técnico (Ejercicio 4) ---")
+    print(resultado)
+    print(resultado_ejercicio)
+else:
+    print("✅ Tu código pasa las verificaciones automáticas de estilo, seguridad y resultado.")
+    print(resultado)
+    print(resultado_ejercicio)
+```
+

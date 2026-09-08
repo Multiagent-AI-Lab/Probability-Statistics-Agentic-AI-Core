@@ -644,15 +644,17 @@ Un lote de $n=25$ nanotubos de carbono de pared simple (SWCNT) se inspecciona po
 
 Escribe tu solución en una celda de código nueva en tu notebook. La celda de autoevaluación de la siguiente sección verificará tu resultado.
 
-### Ejercicios Adicionales de Práctica
+### Ejercicio 2 (guiado — Hipergeométrica vs. Binomial)
 
-Los siguientes tres ejercicios no forman parte del Ejercicio Propuesto que verifica la Autoevaluación, pero se recomienda resolverlos como práctica adicional:
+Un lote de nanotubos de carbono contiene $N=100$ unidades, de las cuales $K=10$ presentan defectos estructurales. Se extrae una muestra de inspección de $n=12$ nanotubos sin reemplazo. Calcula la probabilidad de que la muestra contenga exactamente $2$ nanotubos defectuosos usando la distribución Hipergeométrica exacta, y compárala con la probabilidad que se obtendría si (incorrectamente) se modelara el muestreo como Binomial($n=12$, $p=0.10$) — calcula ambas probabilidades y su diferencia absoluta.
 
-1. **(Hipergeométrica)** Un lote de nanotubos de carbono contiene $N=100$ unidades, de las cuales $K=10$ presentan defectos estructurales. Se extrae una muestra de inspección de $n=12$ nanotubos sin reemplazo. Calcula la probabilidad de que la muestra contenga exactamente $2$ nanotubos defectuosos, y compárala con la probabilidad que se obtendría si (incorrectamente) se modelara el muestreo como Binomial($n=12$, $p=0.10$) en vez de Hipergeométrica — ¿qué tan grande es la diferencia, y por qué ocurre?
+### Ejercicio 3 (intermedio — Binomial Negativa)
 
-2. **(Binomial Negativa)** Un proceso de fabricación de transistores FinFET tiene una probabilidad $p=0.45$ de que cada unidad pase la prueba de continuidad eléctrica en el primer intento. ¿Cuál es la probabilidad de que se necesiten exactamente $10$ ensayos (es decir, $k=5$ fallos) para acumular $r=5$ transistores aprobados?
+Un proceso de fabricación de transistores FinFET tiene una probabilidad $p=0.45$ de que cada unidad pase la prueba de continuidad eléctrica en el primer intento. Calcula la probabilidad de que se necesiten exactamente $10$ ensayos (es decir, $k=5$ fallos) para acumular $r=5$ transistores aprobados. Presta atención a si `scipy.stats.nbinom` parametriza la PMF sobre el número de fallos o sobre el número total de ensayos.
 
-3. **(Comparación Geométrica vs. Binomial Negativa)** Un proceso de impresión 3D a nanoescala tiene una probabilidad $p=0.6$ de producir una pieza dentro de tolerancia en cada intento. Calcula (a) el número esperado de **ensayos** hasta la primera pieza dentro de tolerancia, $\mathbb{E}[X_{\text{Geom}}] = 1/p$ (Sección 2.4, PMF definida sobre ensayos); y (b) el número esperado de **fracasos** antes de acumular $r=3$ piezas dentro de tolerancia, $\mathbb{E}[K_{\text{BinNeg}}] = r(1-p)/p$ (Sección 2.5, PMF definida sobre fracasos). Nota que ambas fórmulas cuentan cosas distintas (ensayos totales vs. fracasos previos al éxito) — súmale $r$ al resultado de (b) para obtener el número esperado de **ensayos totales** hasta el $r$-ésimo éxito, y compáralo con $r \cdot \mathbb{E}[X_{\text{Geom}}]$: ¿coinciden? Explica por qué debería (o no debería) ser así, dado que la Binomial Negativa es, conceptualmente, una suma de $r$ variables Geométricas independientes.
+### Ejercicio 4 (abierto — Comparación Geométrica vs. Binomial Negativa)
+
+Un proceso de impresión 3D a nanoescala tiene una probabilidad $p=0.6$ de producir una pieza dentro de tolerancia en cada intento. Calcula (a) el número esperado de **ensayos** hasta la primera pieza dentro de tolerancia, $\mathbb{E}[X_{\text{Geom}}] = 1/p$ (Sección 2.4, PMF definida sobre ensayos); y (b) el número esperado de **fracasos** antes de acumular $r=3$ piezas dentro de tolerancia, $\mathbb{E}[K_{\text{BinNeg}}] = r(1-p)/p$ (Sección 2.5, PMF definida sobre fracasos). Nota que ambas fórmulas cuentan cosas distintas (ensayos totales vs. fracasos previos al éxito) — súmale $r$ al resultado de (b) para obtener el número esperado de **ensayos totales** hasta el $r$-ésimo éxito, y compáralo con $r \cdot \mathbb{E}[X_{\text{Geom}}]$: verifica si coinciden numéricamente, dado que la Binomial Negativa es, conceptualmente, una suma de $r$ variables Geométricas independientes.
 
 ## Referencias
 
@@ -764,7 +766,210 @@ if resultado["issues"] or resultado["metrics"]["has_security_risk"] or not resul
     for issue in resultado_ejercicio.issues:
         print("❌", debugger.generate_socratic_question("generic", "Unidad 3"))
         print("   ", issue)
-    print("\n--- Detalle técnico ---")
+    print("\n--- Detalle técnico (Ejercicio Propuesto) ---")
+    print(resultado)
+    print(resultado_ejercicio)
+else:
+    print("✅ Tu código pasa las verificaciones automáticas de estilo, seguridad y resultado.")
+    print(resultado)
+    print(resultado_ejercicio)
+```
+
+### Autoevaluación del Ejercicio 2
+
+```python
+%%writefile solucion_ejercicio2_u3.py
+# Completa aquí tu solución al Ejercicio 2 de esta unidad.
+import scipy.stats as stats
+
+N, K, n = 100, 10, 12
+
+# TODO: calcula P(X = 2) con la Hipergeométrica exacta (stats.hypergeom.pmf)
+#       y guárdala en `p_hipergeometrica`
+# TODO: calcula P(X = 2) modelando (incorrectamente) el muestreo como Binomial(n=12, p=K/N)
+#       y guárdala en `p_binomial_aprox`
+# TODO: calcula la diferencia absoluta entre ambas y guárdala en `diferencia_absoluta`
+```
+
+```python
+with open("solucion_ejercicio2_u3.py", encoding="utf-8") as f:
+    codigo_alumno = f.read()
+
+plantilla_original = """# Completa aquí tu solución al Ejercicio 2 de esta unidad.
+import scipy.stats as stats
+
+N, K, n = 100, 10, 12
+
+# TODO: calcula P(X = 2) con la Hipergeométrica exacta (stats.hypergeom.pmf)
+#       y guárdala en `p_hipergeometrica`
+# TODO: calcula P(X = 2) modelando (incorrectamente) el muestreo como Binomial(n=12, p=K/N)
+#       y guárdala en `p_binomial_aprox`
+# TODO: calcula la diferencia absoluta entre ambas y guárdala en `diferencia_absoluta`"""
+
+auditor = CodeAuditorAgent()
+resultado = auditor.audit_code(codigo_alumno)
+
+verificador = ExerciseVerifierAgent(
+    variables_requeridas=["p_hipergeometrica", "p_binomial_aprox", "diferencia_absoluta"],
+    checks=[
+        "abs(p_hipergeometrica - 0.24507224642386358) < 1e-6",
+        "abs(p_binomial_aprox - 0.230127770466) < 1e-6",
+        "abs(diferencia_absoluta - 0.014944475957863579) < 1e-6",
+    ],
+    plantilla=plantilla_original,
+)
+resultado_ejercicio = verificador.verificar(codigo_alumno)
+
+if resultado["issues"] or resultado["metrics"]["has_security_risk"] or not resultado_ejercicio.aprueba:
+    debugger = SocraticDebugger()
+    for issue in resultado["issues"]:
+        tipo_error = "syntax_error" if "SyntaxError" in issue else "generic"
+        print("💡", debugger.generate_socratic_question(tipo_error, "Unidad 3"))
+    for issue in resultado["security_issues"]:
+        print("🔒", debugger.generate_socratic_question("security_risk", "Unidad 3"))
+        print("   ", issue)
+    for issue in resultado_ejercicio.issues:
+        print("❌", debugger.generate_socratic_question("generic", "Unidad 3"))
+        print("   ", issue)
+    print("\n--- Detalle técnico (Ejercicio 2) ---")
+    print(resultado)
+    print(resultado_ejercicio)
+else:
+    print("✅ Tu código pasa las verificaciones automáticas de estilo, seguridad y resultado.")
+    print(resultado)
+    print(resultado_ejercicio)
+```
+
+### Autoevaluación del Ejercicio 3
+
+```python
+%%writefile solucion_ejercicio3_u3.py
+# Completa aquí tu solución al Ejercicio 3 de esta unidad.
+import scipy.stats as stats
+
+r, p = 5, 0.45
+
+# TODO: calcula P(10 ensayos totales) para acumular r=5 éxitos con stats.nbinom.pmf.
+#       Recuerda que nbinom.pmf(k, r, p) parametriza sobre k = FALLOS, no ensayos totales:
+#       si se necesitan 10 ensayos totales para r=5 éxitos, hubo k=10-5=5 fallos.
+#       Guarda el resultado en `p_diez_ensayos`
+```
+
+```python
+with open("solucion_ejercicio3_u3.py", encoding="utf-8") as f:
+    codigo_alumno = f.read()
+
+plantilla_original = """# Completa aquí tu solución al Ejercicio 3 de esta unidad.
+import scipy.stats as stats
+
+r, p = 5, 0.45
+
+# TODO: calcula P(10 ensayos totales) para acumular r=5 éxitos con stats.nbinom.pmf.
+#       Recuerda que nbinom.pmf(k, r, p) parametriza sobre k = FALLOS, no ensayos totales:
+#       si se necesitan 10 ensayos totales para r=5 éxitos, hubo k=10-5=5 fallos.
+#       Guarda el resultado en `p_diez_ensayos`"""
+
+auditor = CodeAuditorAgent()
+resultado = auditor.audit_code(codigo_alumno)
+
+verificador = ExerciseVerifierAgent(
+    variables_requeridas=["p_diez_ensayos"],
+    # Un error común plausible es pasar k=10 (ensayos totales) directamente a nbinom.pmf
+    # en vez de k=5 (fallos); el valor de referencia distingue ambos casos.
+    checks=[
+        "abs(p_diez_ensayos - 0.11701635379628911) < 1e-6",
+    ],
+    plantilla=plantilla_original,
+)
+resultado_ejercicio = verificador.verificar(codigo_alumno)
+
+if resultado["issues"] or resultado["metrics"]["has_security_risk"] or not resultado_ejercicio.aprueba:
+    debugger = SocraticDebugger()
+    for issue in resultado["issues"]:
+        tipo_error = "syntax_error" if "SyntaxError" in issue else "generic"
+        print("💡", debugger.generate_socratic_question(tipo_error, "Unidad 3"))
+    for issue in resultado["security_issues"]:
+        print("🔒", debugger.generate_socratic_question("security_risk", "Unidad 3"))
+        print("   ", issue)
+    for issue in resultado_ejercicio.issues:
+        print("❌", debugger.generate_socratic_question("generic", "Unidad 3"))
+        print("   ", issue)
+    print("\n--- Detalle técnico (Ejercicio 3) ---")
+    print(resultado)
+    print(resultado_ejercicio)
+else:
+    print("✅ Tu código pasa las verificaciones automáticas de estilo, seguridad y resultado.")
+    print(resultado)
+    print(resultado_ejercicio)
+```
+
+### Autoevaluación del Ejercicio 4
+
+```python
+%%writefile solucion_ejercicio4_u3.py
+# Completa aquí tu solución al Ejercicio 4 de esta unidad.
+
+p = 0.6
+r = 3
+
+# TODO: calcula E[X_Geom] = 1/p (ensayos hasta el primer éxito) y guárdala en `esperanza_geometrica`
+# TODO: calcula E[K_BinNeg] = r*(1-p)/p (fracasos antes del r-ésimo éxito)
+#       y guárdala en `esperanza_fracasos_binneg`
+# TODO: calcula el número esperado de ENSAYOS TOTALES hasta el r-ésimo éxito
+#       (súmale r a `esperanza_fracasos_binneg`) y guárdalo en `esperanza_ensayos_totales_binneg`
+# TODO: calcula r * `esperanza_geometrica` y guárdalo en `r_por_esperanza_geometrica`
+```
+
+```python
+with open("solucion_ejercicio4_u3.py", encoding="utf-8") as f:
+    codigo_alumno = f.read()
+
+plantilla_original = """# Completa aquí tu solución al Ejercicio 4 de esta unidad.
+
+p = 0.6
+r = 3
+
+# TODO: calcula E[X_Geom] = 1/p (ensayos hasta el primer éxito) y guárdala en `esperanza_geometrica`
+# TODO: calcula E[K_BinNeg] = r*(1-p)/p (fracasos antes del r-ésimo éxito)
+#       y guárdala en `esperanza_fracasos_binneg`
+# TODO: calcula el número esperado de ENSAYOS TOTALES hasta el r-ésimo éxito
+#       (súmale r a `esperanza_fracasos_binneg`) y guárdalo en `esperanza_ensayos_totales_binneg`
+# TODO: calcula r * `esperanza_geometrica` y guárdalo en `r_por_esperanza_geometrica`"""
+
+auditor = CodeAuditorAgent()
+resultado = auditor.audit_code(codigo_alumno)
+
+verificador = ExerciseVerifierAgent(
+    variables_requeridas=[
+        "esperanza_geometrica",
+        "esperanza_fracasos_binneg",
+        "esperanza_ensayos_totales_binneg",
+        "r_por_esperanza_geometrica",
+    ],
+    # Un error común plausible es reportar `esperanza_fracasos_binneg` como si ya fuera
+    # el total de ensayos (olvidar sumar r); el valor de referencia (5.0) lo distingue de 2.0.
+    checks=[
+        "abs(esperanza_geometrica - 1.6666666666666667) < 1e-6",
+        "abs(esperanza_fracasos_binneg - 2.0000000000000004) < 1e-6",
+        "abs(esperanza_ensayos_totales_binneg - 5.0) < 1e-6",
+        "abs(r_por_esperanza_geometrica - 5.0) < 1e-6",
+    ],
+    plantilla=plantilla_original,
+)
+resultado_ejercicio = verificador.verificar(codigo_alumno)
+
+if resultado["issues"] or resultado["metrics"]["has_security_risk"] or not resultado_ejercicio.aprueba:
+    debugger = SocraticDebugger()
+    for issue in resultado["issues"]:
+        tipo_error = "syntax_error" if "SyntaxError" in issue else "generic"
+        print("💡", debugger.generate_socratic_question(tipo_error, "Unidad 3"))
+    for issue in resultado["security_issues"]:
+        print("🔒", debugger.generate_socratic_question("security_risk", "Unidad 3"))
+        print("   ", issue)
+    for issue in resultado_ejercicio.issues:
+        print("❌", debugger.generate_socratic_question("generic", "Unidad 3"))
+        print("   ", issue)
+    print("\n--- Detalle técnico (Ejercicio 4) ---")
     print(resultado)
     print(resultado_ejercicio)
 else:

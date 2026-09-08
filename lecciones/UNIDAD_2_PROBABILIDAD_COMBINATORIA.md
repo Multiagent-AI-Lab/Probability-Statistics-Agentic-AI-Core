@@ -726,17 +726,19 @@ Una planta de síntesis de puntos cuánticos (Quantum Dots, QDs) de CdSe produce
 
 Escribe tu solución en una celda de código nueva en tu notebook. La celda de autoevaluación de la siguiente sección verificará tu resultado.
 
-### Ejercicios Adicionales de Práctica
+### Ejercicio 2 (guiado — Regla de la Cadena con 3+ eventos)
 
-Los siguientes tres ejercicios no forman parte del Ejercicio Propuesto que verifica la Autoevaluación, pero se recomienda resolverlos como práctica adicional antes de continuar a la Unidad 3:
+De un mazo de $52$ cartas se extraen $3$ cartas **sin reemplazo**. ¿Cuál es la probabilidad de que las tres sean figuras (J, Q o K)? Generaliza la Regla General del Producto de la Sección 3.1 (que solo cubre 2 eventos) a tres eventos encadenados:
+$$P(A_1 \cap A_2 \cap A_3) = P(A_1) \cdot P(A_2|A_1) \cdot P(A_3|A_1 \cap A_2)$$
+donde cada factor refleja que el mazo tiene una carta menos, y una figura menos, tras cada extracción. Calcula cada una de las tres probabilidades condicionales de la cadena por separado antes de multiplicarlas.
 
-1. **(Regla de la Cadena con 3+ eventos)** De un mazo de $52$ cartas se extraen $3$ cartas **sin reemplazo**. ¿Cuál es la probabilidad de que las tres sean figuras (J, Q o K)? Generaliza la Regla General del Producto de la Sección 3.1 (que solo cubre 2 eventos) a tres eventos encadenados:
-   $$P(A_1 \cap A_2 \cap A_3) = P(A_1) \cdot P(A_2|A_1) \cdot P(A_3|A_1 \cap A_2)$$
-   donde cada factor refleja que el mazo tiene una carta menos, y una figura menos, tras cada extracción.
+### Ejercicio 3 (intermedio — Independencia con/sin reemplazo)
 
-2. **(Independencia con/sin reemplazo)** Una urna de control de calidad contiene $6$ canicas que representan nanopartículas conformes y $4$ que representan nanopartículas defectuosas. Se extraen dos canicas. Calcula $P(\text{ambas conformes})$ en dos escenarios: (a) con reemplazo, (b) sin reemplazo. ¿En cuál de los dos escenarios las extracciones son eventos independientes? Justifica en términos de si $P(\text{2da conforme} \mid \text{1ra conforme})$ cambia respecto a $P(\text{2da conforme})$.
+Una urna de control de calidad contiene $6$ canicas que representan nanopartículas conformes y $4$ que representan nanopartículas defectuosas. Se extraen dos canicas. Calcula $P(\text{ambas conformes})$ en dos escenarios: (a) con reemplazo, (b) sin reemplazo. Determina en cuál de los dos escenarios las extracciones son eventos independientes, en términos de si $P(\text{2da conforme} \mid \text{1ra conforme})$ cambia respecto a $P(\text{2da conforme})$.
 
-3. **(Partición de tres categorías, nanotecnología)** Un laboratorio de síntesis de nanopartículas lipídicas para liberación de fármacos produce partículas con carga superficial positiva ($40\%$), negativa ($35\%$) o neutra ($25\%$), medida por potencial zeta. La tasa de agregación no deseada (formación de agregados que invalidan el lote) es del $12\%$ para carga positiva, $5\%$ para carga negativa y $20\%$ para carga neutra. Si una nanopartícula elegida al azar del lote unificado presenta agregación, calcula la probabilidad de que su carga superficial haya sido neutra. Compara la estructura de este ejercicio con el ejemplo de los reactores de la Sección 5 — es la misma técnica (partición de 3 categorías + Bayes) aplicada a un dataset distinto.
+### Ejercicio 4 (abierto — Partición de tres categorías, nanotecnología)
+
+Un laboratorio de síntesis de nanopartículas lipídicas para liberación de fármacos produce partículas con carga superficial positiva ($40\%$), negativa ($35\%$) o neutra ($25\%$), medida por potencial zeta. La tasa de agregación no deseada (formación de agregados que invalidan el lote) es del $12\%$ para carga positiva, $5\%$ para carga negativa y $20\%$ para carga neutra. Si una nanopartícula elegida al azar del lote unificado presenta agregación, calcula la probabilidad total de agregación y la probabilidad de que su carga superficial haya sido neutra dado que presentó agregación. Compara la estructura de este ejercicio con el ejemplo de los reactores de la Sección 5 — es la misma técnica (partición de 3 categorías + Bayes) aplicada a un dataset distinto.
 
 ## Referencias
 
@@ -842,7 +844,198 @@ if resultado["issues"] or resultado["metrics"]["has_security_risk"] or not resul
     for issue in resultado_ejercicio.issues:
         print("❌", debugger.generate_socratic_question("generic", "Unidad 2"))
         print("   ", issue)
-    print("\n--- Detalle técnico ---")
+    print("\n--- Detalle técnico (Ejercicio Propuesto) ---")
+    print(resultado)
+    print(resultado_ejercicio)
+else:
+    print("✅ Tu código pasa las verificaciones automáticas de estilo, seguridad y resultado.")
+    print(resultado)
+    print(resultado_ejercicio)
+```
+
+### Autoevaluación del Ejercicio 2
+
+```python
+%%writefile solucion_ejercicio2_u2.py
+# Completa aquí tu solución al Ejercicio 2 de esta unidad.
+from fractions import Fraction
+
+# TODO: calcula, como Fraction, cada probabilidad condicional de la cadena de 3 extracciones
+#       sin reemplazo (12 figuras en 52 cartas) y guárdalas en `p1`, `p2`, `p3`
+# TODO: multiplica las tres para obtener la probabilidad de que las 3 cartas sean figuras
+#       y guárdala en `p_tres_figuras`
+```
+
+```python
+with open("solucion_ejercicio2_u2.py", encoding="utf-8") as f:
+    codigo_alumno = f.read()
+
+plantilla_original = """# Completa aquí tu solución al Ejercicio 2 de esta unidad.
+from fractions import Fraction
+
+# TODO: calcula, como Fraction, cada probabilidad condicional de la cadena de 3 extracciones
+#       sin reemplazo (12 figuras en 52 cartas) y guárdalas en `p1`, `p2`, `p3`
+# TODO: multiplica las tres para obtener la probabilidad de que las 3 cartas sean figuras
+#       y guárdala en `p_tres_figuras`"""
+
+auditor = CodeAuditorAgent()
+resultado = auditor.audit_code(codigo_alumno)
+
+verificador = ExerciseVerifierAgent(
+    variables_requeridas=["p1", "p2", "p3", "p_tres_figuras"],
+    checks=[
+        "abs(float(p1) - 12/52) < 1e-6",
+        "abs(float(p2) - 11/51) < 1e-6",
+        "abs(float(p3) - 10/50) < 1e-6",
+        "abs(float(p_tres_figuras) - 11/1105) < 1e-6",
+    ],
+    plantilla=plantilla_original,
+)
+resultado_ejercicio = verificador.verificar(codigo_alumno)
+
+if resultado["issues"] or resultado["metrics"]["has_security_risk"] or not resultado_ejercicio.aprueba:
+    debugger = SocraticDebugger()
+    for issue in resultado["issues"]:
+        tipo_error = "syntax_error" if "SyntaxError" in issue else "generic"
+        print("💡", debugger.generate_socratic_question(tipo_error, "Unidad 2"))
+    for issue in resultado["security_issues"]:
+        print("🔒", debugger.generate_socratic_question("security_risk", "Unidad 2"))
+        print("   ", issue)
+    for issue in resultado_ejercicio.issues:
+        print("❌", debugger.generate_socratic_question("generic", "Unidad 2"))
+        print("   ", issue)
+    print("\n--- Detalle técnico (Ejercicio 2) ---")
+    print(resultado)
+    print(resultado_ejercicio)
+else:
+    print("✅ Tu código pasa las verificaciones automáticas de estilo, seguridad y resultado.")
+    print(resultado)
+    print(resultado_ejercicio)
+```
+
+### Autoevaluación del Ejercicio 3
+
+```python
+%%writefile solucion_ejercicio3_u2.py
+# Completa aquí tu solución al Ejercicio 3 de esta unidad.
+
+# Urna: 6 nanopartículas conformes, 4 defectuosas (10 en total)
+
+# TODO: calcula P(ambas conformes) CON reemplazo y guárdala en `p_con_reemplazo`
+# TODO: calcula P(ambas conformes) SIN reemplazo y guárdala en `p_sin_reemplazo`
+# TODO: determina si las extracciones son independientes en cada escenario comparando
+#       P(2da conforme | 1ra conforme) contra P(2da conforme); guarda booleanos en
+#       `es_independiente_con_reemplazo` y `es_independiente_sin_reemplazo`
+```
+
+```python
+with open("solucion_ejercicio3_u2.py", encoding="utf-8") as f:
+    codigo_alumno = f.read()
+
+plantilla_original = """# Completa aquí tu solución al Ejercicio 3 de esta unidad.
+
+# Urna: 6 nanopartículas conformes, 4 defectuosas (10 en total)
+
+# TODO: calcula P(ambas conformes) CON reemplazo y guárdala en `p_con_reemplazo`
+# TODO: calcula P(ambas conformes) SIN reemplazo y guárdala en `p_sin_reemplazo`
+# TODO: determina si las extracciones son independientes en cada escenario comparando
+#       P(2da conforme | 1ra conforme) contra P(2da conforme); guarda booleanos en
+#       `es_independiente_con_reemplazo` y `es_independiente_sin_reemplazo`"""
+
+auditor = CodeAuditorAgent()
+resultado = auditor.audit_code(codigo_alumno)
+
+verificador = ExerciseVerifierAgent(
+    variables_requeridas=[
+        "p_con_reemplazo",
+        "p_sin_reemplazo",
+        "es_independiente_con_reemplazo",
+        "es_independiente_sin_reemplazo",
+    ],
+    # Un enfoque ingenuo plausible es tratar "sin reemplazo" igual que "con reemplazo"
+    # (olvidar que la urna pierde una canica): eso da 0.36 en vez de 1/3 y falla el check.
+    checks=[
+        "abs(p_con_reemplazo - 0.36) < 1e-6",
+        "abs(p_sin_reemplazo - 1/3) < 1e-6",
+        "es_independiente_con_reemplazo is True",
+        "es_independiente_sin_reemplazo is False",
+    ],
+    plantilla=plantilla_original,
+)
+resultado_ejercicio = verificador.verificar(codigo_alumno)
+
+if resultado["issues"] or resultado["metrics"]["has_security_risk"] or not resultado_ejercicio.aprueba:
+    debugger = SocraticDebugger()
+    for issue in resultado["issues"]:
+        tipo_error = "syntax_error" if "SyntaxError" in issue else "generic"
+        print("💡", debugger.generate_socratic_question(tipo_error, "Unidad 2"))
+    for issue in resultado["security_issues"]:
+        print("🔒", debugger.generate_socratic_question("security_risk", "Unidad 2"))
+        print("   ", issue)
+    for issue in resultado_ejercicio.issues:
+        print("❌", debugger.generate_socratic_question("generic", "Unidad 2"))
+        print("   ", issue)
+    print("\n--- Detalle técnico (Ejercicio 3) ---")
+    print(resultado)
+    print(resultado_ejercicio)
+else:
+    print("✅ Tu código pasa las verificaciones automáticas de estilo, seguridad y resultado.")
+    print(resultado)
+    print(resultado_ejercicio)
+```
+
+### Autoevaluación del Ejercicio 4
+
+```python
+%%writefile solucion_ejercicio4_u2.py
+# Completa aquí tu solución al Ejercicio 4 de esta unidad.
+
+p_carga = {"positiva": 0.40, "negativa": 0.35, "neutra": 0.25}
+p_agregacion_dado_carga = {"positiva": 0.12, "negativa": 0.05, "neutra": 0.20}
+
+# TODO: calcula la probabilidad total de agregación P(Agregación) y guárdala en `p_agregacion`
+# TODO: aplica Bayes para calcular P(neutra | Agregación) y guárdala en `p_neutra_dado_agregacion`
+```
+
+```python
+with open("solucion_ejercicio4_u2.py", encoding="utf-8") as f:
+    codigo_alumno = f.read()
+
+plantilla_original = """# Completa aquí tu solución al Ejercicio 4 de esta unidad.
+
+p_carga = {"positiva": 0.40, "negativa": 0.35, "neutra": 0.25}
+p_agregacion_dado_carga = {"positiva": 0.12, "negativa": 0.05, "neutra": 0.20}
+
+# TODO: calcula la probabilidad total de agregación P(Agregación) y guárdala en `p_agregacion`
+# TODO: aplica Bayes para calcular P(neutra | Agregación) y guárdala en `p_neutra_dado_agregacion`"""
+
+auditor = CodeAuditorAgent()
+resultado = auditor.audit_code(codigo_alumno)
+
+verificador = ExerciseVerifierAgent(
+    variables_requeridas=["p_agregacion", "p_neutra_dado_agregacion"],
+    # Un error común plausible es reportar el prior P(neutra)=0.25 en vez del posterior:
+    # el check con el valor de Bayes (0.4329...) distingue ambos casos.
+    checks=[
+        "abs(p_agregacion - 0.1155) < 1e-6",
+        "abs(p_neutra_dado_agregacion - 0.4329004329004329) < 1e-6",
+    ],
+    plantilla=plantilla_original,
+)
+resultado_ejercicio = verificador.verificar(codigo_alumno)
+
+if resultado["issues"] or resultado["metrics"]["has_security_risk"] or not resultado_ejercicio.aprueba:
+    debugger = SocraticDebugger()
+    for issue in resultado["issues"]:
+        tipo_error = "syntax_error" if "SyntaxError" in issue else "generic"
+        print("💡", debugger.generate_socratic_question(tipo_error, "Unidad 2"))
+    for issue in resultado["security_issues"]:
+        print("🔒", debugger.generate_socratic_question("security_risk", "Unidad 2"))
+        print("   ", issue)
+    for issue in resultado_ejercicio.issues:
+        print("❌", debugger.generate_socratic_question("generic", "Unidad 2"))
+        print("   ", issue)
+    print("\n--- Detalle técnico (Ejercicio 4) ---")
     print(resultado)
     print(resultado_ejercicio)
 else:
