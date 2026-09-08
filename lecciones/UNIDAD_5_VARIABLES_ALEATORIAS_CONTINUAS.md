@@ -941,6 +941,18 @@ Un proceso de recubrimiento por deposición de capas atómicas (ALD) produce pel
 
 Escribe tu solución en una celda de código nueva en tu notebook. La celda de autoevaluación de la siguiente sección verificará tu resultado.
 
+### Ejercicio 2 (guiado — Exponencial y falta de memoria)
+
+Un nanosensor de gas basado en óxido de grafeno tiene un tiempo hasta la primera falla $X \sim \text{Exponencial}(\lambda=0.02\ \text{fallas/hora})$. Calcula $P(X > 100)$ (probabilidad de operar más de 100 horas sin falla) y $P(X > 150 \mid X > 50)$ (probabilidad de 100 horas adicionales sin falla, dado que ya operó 50 horas sin fallar). Verifica numéricamente que ambas probabilidades coinciden — la propiedad de "falta de memoria" de la Exponencial vista en la Sección 2.9.1.
+
+### Ejercicio 3 (intermedio — Log-Normal)
+
+El diámetro (nm) de nanopartículas de oro obtenidas por nucleación y crecimiento en fase líquida sigue $X \sim \text{LogNormal}(\mu=2.3,\ \sigma=0.25)$ (parámetros de la normal subyacente en $\ln X$). Calcula la probabilidad de que el diámetro exceda $12\ \text{nm}$ y el percentil 10 del diámetro. Recuerda que en `scipy.stats.lognorm` el parámetro `scale` es $e^{\mu}$, no $\mu$ directamente.
+
+### Ejercicio 4 (abierto — Beta)
+
+El rendimiento (yield) de funcionalización exitosa de nanotubos de carbono en un lote de producción sigue $X \sim \text{Beta}(\alpha=8,\ \beta=2)$. Calcula la probabilidad de que el rendimiento esté en el rango $[0.80,\ 0.95]$ y la media teórica de la distribución.
+
 ## Referencias
 
 * Unpingco, J. (2019). *Python for Probability, Statistics, and Machine Learning* (2nd ed.). Springer. Capítulos sobre variables aleatorias continuas, distribuciones y su implementación con SciPy.
@@ -1044,7 +1056,193 @@ if resultado["issues"] or resultado["metrics"]["has_security_risk"] or not resul
     for issue in resultado_ejercicio.issues:
         print("❌", debugger.generate_socratic_question("generic", "Unidad 5"))
         print("   ", issue)
-    print("\n--- Detalle técnico ---")
+    print("\n--- Detalle técnico (Ejercicio Propuesto) ---")
+    print(resultado)
+    print(resultado_ejercicio)
+else:
+    print("✅ Tu código pasa las verificaciones automáticas de estilo, seguridad y resultado.")
+    print(resultado)
+    print(resultado_ejercicio)
+```
+
+### Autoevaluación del Ejercicio 2
+
+```python
+%%writefile solucion_ejercicio2_u5.py
+# Completa aquí tu solución al Ejercicio 2 de esta unidad.
+from scipy import stats
+
+lam = 0.02  # fallas/hora
+
+# TODO: calcula P(X > 100) con stats.expon (recuerda que scale = 1/lambda) y guárdala en
+#       `p_mayor_100`
+# TODO: calcula P(X > 150 | X > 50) = P(X > 100) que por falta de memoria coincide con
+#       P(X > 100 + 50 | X > 50), y guárdala en `p_condicional`
+```
+
+```python
+with open("solucion_ejercicio2_u5.py", encoding="utf-8") as f:
+    codigo_alumno = f.read()
+
+plantilla_original = """# Completa aquí tu solución al Ejercicio 2 de esta unidad.
+from scipy import stats
+
+lam = 0.02  # fallas/hora
+
+# TODO: calcula P(X > 100) con stats.expon (recuerda que scale = 1/lambda) y guárdala en
+#       `p_mayor_100`
+# TODO: calcula P(X > 150 | X > 50) = P(X > 100) que por falta de memoria coincide con
+#       P(X > 100 + 50 | X > 50), y guárdala en `p_condicional`"""
+
+auditor = CodeAuditorAgent()
+resultado = auditor.audit_code(codigo_alumno)
+
+verificador = ExerciseVerifierAgent(
+    variables_requeridas=["p_mayor_100", "p_condicional"],
+    checks=[
+        "abs(p_mayor_100 - 0.1353352832366127) < 1e-6",
+        "abs(p_condicional - 0.1353352832366127) < 1e-6",
+    ],
+    plantilla=plantilla_original,
+)
+resultado_ejercicio = verificador.verificar(codigo_alumno)
+
+if resultado["issues"] or resultado["metrics"]["has_security_risk"] or not resultado_ejercicio.aprueba:
+    debugger = SocraticDebugger()
+    for issue in resultado["issues"]:
+        tipo_error = "syntax_error" if "SyntaxError" in issue else "generic"
+        print("💡", debugger.generate_socratic_question(tipo_error, "Unidad 5"))
+    for issue in resultado["security_issues"]:
+        print("🔒", debugger.generate_socratic_question("security_risk", "Unidad 5"))
+        print("   ", issue)
+    for issue in resultado_ejercicio.issues:
+        print("❌", debugger.generate_socratic_question("generic", "Unidad 5"))
+        print("   ", issue)
+    print("\n--- Detalle técnico (Ejercicio 2) ---")
+    print(resultado)
+    print(resultado_ejercicio)
+else:
+    print("✅ Tu código pasa las verificaciones automáticas de estilo, seguridad y resultado.")
+    print(resultado)
+    print(resultado_ejercicio)
+```
+
+### Autoevaluación del Ejercicio 3
+
+```python
+%%writefile solucion_ejercicio3_u5.py
+# Completa aquí tu solución al Ejercicio 3 de esta unidad.
+import numpy as np
+from scipy import stats
+
+mu, sigma = 2.3, 0.25
+
+# TODO: calcula P(X > 12) con stats.lognorm (recuerda que scale = exp(mu), no mu)
+#       y guárdala en `p_excede_12`
+# TODO: calcula el percentil 10 del diámetro y guárdalo en `percentil_10`
+```
+
+```python
+with open("solucion_ejercicio3_u5.py", encoding="utf-8") as f:
+    codigo_alumno = f.read()
+
+plantilla_original = """# Completa aquí tu solución al Ejercicio 3 de esta unidad.
+import numpy as np
+from scipy import stats
+
+mu, sigma = 2.3, 0.25
+
+# TODO: calcula P(X > 12) con stats.lognorm (recuerda que scale = exp(mu), no mu)
+#       y guárdala en `p_excede_12`
+# TODO: calcula el percentil 10 del diámetro y guárdalo en `percentil_10`"""
+
+auditor = CodeAuditorAgent()
+resultado = auditor.audit_code(codigo_alumno)
+
+verificador = ExerciseVerifierAgent(
+    variables_requeridas=["p_excede_12", "percentil_10"],
+    checks=[
+        "abs(p_excede_12 - 0.22976329863080447) < 1e-6",
+        "abs(percentil_10 - 7.239934132345091) < 1e-4",
+    ],
+    plantilla=plantilla_original,
+)
+resultado_ejercicio = verificador.verificar(codigo_alumno)
+
+if resultado["issues"] or resultado["metrics"]["has_security_risk"] or not resultado_ejercicio.aprueba:
+    debugger = SocraticDebugger()
+    for issue in resultado["issues"]:
+        tipo_error = "syntax_error" if "SyntaxError" in issue else "generic"
+        print("💡", debugger.generate_socratic_question(tipo_error, "Unidad 5"))
+    for issue in resultado["security_issues"]:
+        print("🔒", debugger.generate_socratic_question("security_risk", "Unidad 5"))
+        print("   ", issue)
+    for issue in resultado_ejercicio.issues:
+        print("❌", debugger.generate_socratic_question("generic", "Unidad 5"))
+        print("   ", issue)
+    print("\n--- Detalle técnico (Ejercicio 3) ---")
+    print(resultado)
+    print(resultado_ejercicio)
+else:
+    print("✅ Tu código pasa las verificaciones automáticas de estilo, seguridad y resultado.")
+    print(resultado)
+    print(resultado_ejercicio)
+```
+
+### Autoevaluación del Ejercicio 4
+
+```python
+%%writefile solucion_ejercicio4_u5.py
+# Completa aquí tu solución al Ejercicio 4 de esta unidad.
+from scipy import stats
+
+alpha, beta = 8, 2
+
+# TODO: calcula P(0.80 <= X <= 0.95) con stats.beta y guárdala en `p_rango`
+# TODO: calcula la media teórica de Beta(alpha, beta) = alpha / (alpha + beta)
+#       y guárdala en `media_beta`
+```
+
+```python
+with open("solucion_ejercicio4_u5.py", encoding="utf-8") as f:
+    codigo_alumno = f.read()
+
+plantilla_original = """# Completa aquí tu solución al Ejercicio 4 de esta unidad.
+from scipy import stats
+
+alpha, beta = 8, 2
+
+# TODO: calcula P(0.80 <= X <= 0.95) con stats.beta y guárdala en `p_rango`
+# TODO: calcula la media teórica de Beta(alpha, beta) = alpha / (alpha + beta)
+#       y guárdala en `media_beta`"""
+
+auditor = CodeAuditorAgent()
+resultado = auditor.audit_code(codigo_alumno)
+
+verificador = ExerciseVerifierAgent(
+    variables_requeridas=["p_rango", "media_beta"],
+    # Un error plausible es calcular la media como (alpha+beta)/2 en vez de alpha/(alpha+beta);
+    # el valor de referencia (0.8) distingue ambos casos de (5.0).
+    checks=[
+        "abs(p_rango - 0.4925809878046872) < 1e-6",
+        "abs(media_beta - 0.8) < 1e-6",
+    ],
+    plantilla=plantilla_original,
+)
+resultado_ejercicio = verificador.verificar(codigo_alumno)
+
+if resultado["issues"] or resultado["metrics"]["has_security_risk"] or not resultado_ejercicio.aprueba:
+    debugger = SocraticDebugger()
+    for issue in resultado["issues"]:
+        tipo_error = "syntax_error" if "SyntaxError" in issue else "generic"
+        print("💡", debugger.generate_socratic_question(tipo_error, "Unidad 5"))
+    for issue in resultado["security_issues"]:
+        print("🔒", debugger.generate_socratic_question("security_risk", "Unidad 5"))
+        print("   ", issue)
+    for issue in resultado_ejercicio.issues:
+        print("❌", debugger.generate_socratic_question("generic", "Unidad 5"))
+        print("   ", issue)
+    print("\n--- Detalle técnico (Ejercicio 4) ---")
     print(resultado)
     print(resultado_ejercicio)
 else:

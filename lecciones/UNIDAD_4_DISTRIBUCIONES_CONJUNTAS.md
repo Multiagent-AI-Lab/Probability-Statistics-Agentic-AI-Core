@@ -987,6 +987,30 @@ $$\Sigma = \begin{pmatrix} 9.0 & 6.0 \\ 6.0 & 16.0 \end{pmatrix}$$
 
 Escribe tu solución en una celda de código nueva en tu notebook. La celda de autoevaluación de la siguiente sección verificará tu resultado.
 
+### Ejercicio 2 (guiado)
+
+Un lote de nanocompuestos de SiO₂ presenta dos propiedades correlacionadas: el diámetro de poro $X$ (nm) y la conductividad iónica $Y$ (mS/cm), con $\sigma_X = 5.0$, $\sigma_Y = 3.0$ y matriz de covarianza:
+
+$$\Sigma = \begin{pmatrix} 25.0 & -10.0 \\ -10.0 & 9.0 \end{pmatrix}$$
+
+Extrae $\text{Cov}(X,Y)$ directamente de $\Sigma$ y calcula el coeficiente de correlación $\rho_{X,Y}$.
+
+### Ejercicio 3 (intermedio)
+
+El diámetro de una nanopartícula de oro (AuNP) $X$ (nm) y su rugosidad superficial $Y$ (nm) tienen matriz de covarianza:
+
+$$\Sigma = \begin{pmatrix} 4.0 & 3.0 \\ 3.0 & 9.0 \end{pmatrix}$$
+
+Calcula $\text{Var}(2X - Y)$ usando la fórmula general para una combinación lineal $\text{Var}(aX+bY) = a^2\text{Var}(X) + b^2\text{Var}(Y) + 2ab\,\text{Cov}(X,Y)$, y compárala con el resultado que se obtendría omitiendo por error el término de covarianza.
+
+### Ejercicio 4 (abierto)
+
+Un proceso de sinterizado cerámico a nanoescala tiene temperatura $X$ (°C) y tiempo $Y$ (min) modelados como un vector aleatorio bivariado con $\mu = (850.0,\ 45.0)$ y:
+
+$$\Sigma = \begin{pmatrix} 400.0 & -60.0 \\ -60.0 & 25.0 \end{pmatrix}$$
+
+Calcula el coeficiente de correlación $\rho_{X,Y}$ y, usando la marginal de $Y$, la probabilidad de que el tiempo de sinterizado exceda los $50$ minutos.
+
 ## Referencias
 
 * Agresti, A. & Kateri, M. (2022). *Foundations of Statistics for Data Scientists: With R and Python*. Chapman & Hall/CRC (Texts in Statistical Science). Capítulos sobre distribuciones multivariadas y dependencia entre variables aleatorias.
@@ -1095,7 +1119,195 @@ if resultado["issues"] or resultado["metrics"]["has_security_risk"] or not resul
     for issue in resultado_ejercicio.issues:
         print("❌", debugger.generate_socratic_question("generic", "Unidad 4"))
         print("   ", issue)
-    print("\n--- Detalle técnico ---")
+    print("\n--- Detalle técnico (Ejercicio Propuesto) ---")
+    print(resultado)
+    print(resultado_ejercicio)
+else:
+    print("✅ Tu código pasa las verificaciones automáticas de estilo, seguridad y resultado.")
+    print(resultado)
+    print(resultado_ejercicio)
+```
+
+### Autoevaluación del Ejercicio 2
+
+```python
+%%writefile solucion_ejercicio2_u4.py
+# Completa aquí tu solución al Ejercicio 2 de esta unidad.
+import numpy as np
+
+sigma = np.array([[25.0, -10.0], [-10.0, 9.0]])
+sigma_x, sigma_y = 5.0, 3.0
+
+# TODO: extrae Cov(X, Y) de la matriz sigma y guárdala en `cov_xy`
+# TODO: calcula el coeficiente de correlación rho_XY = Cov(X,Y) / (sigma_x * sigma_y)
+#       y guárdalo en `rho_xy`
+```
+
+```python
+with open("solucion_ejercicio2_u4.py", encoding="utf-8") as f:
+    codigo_alumno = f.read()
+
+plantilla_original = """# Completa aquí tu solución al Ejercicio 2 de esta unidad.
+import numpy as np
+
+sigma = np.array([[25.0, -10.0], [-10.0, 9.0]])
+sigma_x, sigma_y = 5.0, 3.0
+
+# TODO: extrae Cov(X, Y) de la matriz sigma y guárdala en `cov_xy`
+# TODO: calcula el coeficiente de correlación rho_XY = Cov(X,Y) / (sigma_x * sigma_y)
+#       y guárdalo en `rho_xy`"""
+
+auditor = CodeAuditorAgent()
+resultado = auditor.audit_code(codigo_alumno)
+
+verificador = ExerciseVerifierAgent(
+    variables_requeridas=["cov_xy", "rho_xy"],
+    checks=[
+        "abs(cov_xy - (-10.0)) < 1e-6",
+        "abs(rho_xy - (-0.6666666666666666)) < 1e-6",
+    ],
+    plantilla=plantilla_original,
+)
+resultado_ejercicio = verificador.verificar(codigo_alumno)
+
+if resultado["issues"] or resultado["metrics"]["has_security_risk"] or not resultado_ejercicio.aprueba:
+    debugger = SocraticDebugger()
+    for issue in resultado["issues"]:
+        tipo_error = "syntax_error" if "SyntaxError" in issue else "generic"
+        print("💡", debugger.generate_socratic_question(tipo_error, "Unidad 4"))
+    for issue in resultado["security_issues"]:
+        print("🔒", debugger.generate_socratic_question("security_risk", "Unidad 4"))
+        print("   ", issue)
+    for issue in resultado_ejercicio.issues:
+        print("❌", debugger.generate_socratic_question("generic", "Unidad 4"))
+        print("   ", issue)
+    print("\n--- Detalle técnico (Ejercicio 2) ---")
+    print(resultado)
+    print(resultado_ejercicio)
+else:
+    print("✅ Tu código pasa las verificaciones automáticas de estilo, seguridad y resultado.")
+    print(resultado)
+    print(resultado_ejercicio)
+```
+
+### Autoevaluación del Ejercicio 3
+
+```python
+%%writefile solucion_ejercicio3_u4.py
+# Completa aquí tu solución al Ejercicio 3 de esta unidad.
+
+var_x, var_y, cov_xy = 4.0, 9.0, 3.0
+a, b = 2, -1
+
+# TODO: calcula Var(2X - Y) con la fórmula completa (incluyendo el término de covarianza)
+#       y guárdala en `var_combinacion_correcta`
+# TODO: calcula el resultado que se obtendría omitiendo por error el término de covarianza
+#       y guárdalo en `var_combinacion_incorrecta`
+```
+
+```python
+with open("solucion_ejercicio3_u4.py", encoding="utf-8") as f:
+    codigo_alumno = f.read()
+
+plantilla_original = """# Completa aquí tu solución al Ejercicio 3 de esta unidad.
+
+var_x, var_y, cov_xy = 4.0, 9.0, 3.0
+a, b = 2, -1
+
+# TODO: calcula Var(2X - Y) con la fórmula completa (incluyendo el término de covarianza)
+#       y guárdala en `var_combinacion_correcta`
+# TODO: calcula el resultado que se obtendría omitiendo por error el término de covarianza
+#       y guárdalo en `var_combinacion_incorrecta`"""
+
+auditor = CodeAuditorAgent()
+resultado = auditor.audit_code(codigo_alumno)
+
+verificador = ExerciseVerifierAgent(
+    variables_requeridas=["var_combinacion_correcta", "var_combinacion_incorrecta"],
+    checks=[
+        "abs(var_combinacion_correcta - 13.0) < 1e-6",
+        "abs(var_combinacion_incorrecta - 25.0) < 1e-6",
+    ],
+    plantilla=plantilla_original,
+)
+resultado_ejercicio = verificador.verificar(codigo_alumno)
+
+if resultado["issues"] or resultado["metrics"]["has_security_risk"] or not resultado_ejercicio.aprueba:
+    debugger = SocraticDebugger()
+    for issue in resultado["issues"]:
+        tipo_error = "syntax_error" if "SyntaxError" in issue else "generic"
+        print("💡", debugger.generate_socratic_question(tipo_error, "Unidad 4"))
+    for issue in resultado["security_issues"]:
+        print("🔒", debugger.generate_socratic_question("security_risk", "Unidad 4"))
+        print("   ", issue)
+    for issue in resultado_ejercicio.issues:
+        print("❌", debugger.generate_socratic_question("generic", "Unidad 4"))
+        print("   ", issue)
+    print("\n--- Detalle técnico (Ejercicio 3) ---")
+    print(resultado)
+    print(resultado_ejercicio)
+else:
+    print("✅ Tu código pasa las verificaciones automáticas de estilo, seguridad y resultado.")
+    print(resultado)
+    print(resultado_ejercicio)
+```
+
+### Autoevaluación del Ejercicio 4
+
+```python
+%%writefile solucion_ejercicio4_u4.py
+# Completa aquí tu solución al Ejercicio 4 de esta unidad.
+import numpy as np
+from scipy.stats import norm
+
+mu = np.array([850.0, 45.0])
+sigma = np.array([[400.0, -60.0], [-60.0, 25.0]])
+
+# TODO: calcula el coeficiente de correlación rho_XY a partir de sigma y guárdalo en `rho_xy`
+# TODO: usando la marginal de Y ~ N(45.0, 25.0), calcula P(Y > 50) y guárdala en
+#       `p_tiempo_mayor_50`
+```
+
+```python
+with open("solucion_ejercicio4_u4.py", encoding="utf-8") as f:
+    codigo_alumno = f.read()
+
+plantilla_original = """# Completa aquí tu solución al Ejercicio 4 de esta unidad.
+import numpy as np
+from scipy.stats import norm
+
+mu = np.array([850.0, 45.0])
+sigma = np.array([[400.0, -60.0], [-60.0, 25.0]])
+
+# TODO: calcula el coeficiente de correlación rho_XY a partir de sigma y guárdalo en `rho_xy`
+# TODO: usando la marginal de Y ~ N(45.0, 25.0), calcula P(Y > 50) y guárdala en
+#       `p_tiempo_mayor_50`"""
+
+auditor = CodeAuditorAgent()
+resultado = auditor.audit_code(codigo_alumno)
+
+verificador = ExerciseVerifierAgent(
+    variables_requeridas=["rho_xy", "p_tiempo_mayor_50"],
+    checks=[
+        "abs(rho_xy - (-0.6)) < 1e-6",
+        "abs(p_tiempo_mayor_50 - 0.15865525393145707) < 1e-6",
+    ],
+    plantilla=plantilla_original,
+)
+resultado_ejercicio = verificador.verificar(codigo_alumno)
+
+if resultado["issues"] or resultado["metrics"]["has_security_risk"] or not resultado_ejercicio.aprueba:
+    debugger = SocraticDebugger()
+    for issue in resultado["issues"]:
+        tipo_error = "syntax_error" if "SyntaxError" in issue else "generic"
+        print("💡", debugger.generate_socratic_question(tipo_error, "Unidad 4"))
+    for issue in resultado["security_issues"]:
+        print("🔒", debugger.generate_socratic_question("security_risk", "Unidad 4"))
+        print("   ", issue)
+    for issue in resultado_ejercicio.issues:
+        print("❌", debugger.generate_socratic_question("generic", "Unidad 4"))
+        print("   ", issue)
+    print("\n--- Detalle técnico (Ejercicio 4) ---")
     print(resultado)
     print(resultado_ejercicio)
 else:

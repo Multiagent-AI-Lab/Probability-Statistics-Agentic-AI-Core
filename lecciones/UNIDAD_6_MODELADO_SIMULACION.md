@@ -581,6 +581,18 @@ El tiempo hasta la primera falla de un nanosensor de gas basado en óxido de gra
 
 Escribe tu solución en una celda de código nueva en tu notebook. La celda de autoevaluación de la siguiente sección verificará tu resultado.
 
+### Ejercicio 2 (guiado — Monte Carlo con semilla fija)
+
+El tiempo de crecimiento de un nanocristal en múltiples etapas de nucleación sigue $X \sim \text{Gamma}(k=3.0,\ \theta=2.0)$. Fija `np.random.seed(42)` y genera $N=10\,000$ muestras con `np.random.gamma(3.0, 2.0, 10000)`. Estima $P(X > 8)$ como la proporción de muestras que superan el umbral.
+
+### Ejercicio 3 (intermedio — Transformada Inversa, Weibull)
+
+La vida útil (horas) de un recubrimiento protector de nanopartículas de plata sigue $X \sim \text{Weibull}(k=2.0,\ \lambda=10.0)$, cuya función cuantil por Transformada Inversa es $F^{-1}(u) = \lambda(-\ln(1-u))^{1/k}$. Fija `np.random.seed(7)` y genera 5 valores uniformes con `np.random.rand(5)`. Aplica la Transformada Inversa a cada uno (usando $1-u$, no $u$, para que coincida exactamente con la derivación de la CDF $F(t)=1-e^{-(t/\lambda)^k}$) para obtener 5 tiempos de vida simulados, y calcula su media.
+
+### Ejercicio 4 (abierto — Precisión del estimador Monte Carlo)
+
+Para $X \sim \text{Exponencial}(\lambda=0.05)$, fija `np.random.seed(123)` y estima $P(X > 30)$ dos veces por Monte Carlo: una con $N_1=1\,000$ muestras (genera primero estas) y otra con $N_2=100\,000$ muestras adicionales (genera estas después, sin volver a fijar la semilla). Calcula el error estándar de cada estimador, $SE = \sqrt{\hat{p}(1-\hat{p})/N}$, y verifica que el estimador con más muestras tiene menor error estándar.
+
 ## Referencias
 
 * Johansson, R. (2019). *Numerical Python: Scientific Computing and Data Science Applications with Numpy, SciPy and Matplotlib* (2nd ed.). Apress. Capítulos sobre simulación numérica y generación de números aleatorios con SciPy.
@@ -688,7 +700,202 @@ if resultado["issues"] or resultado["metrics"]["has_security_risk"] or not resul
     for issue in resultado_ejercicio.issues:
         print("❌", debugger.generate_socratic_question("generic", "Unidad 6"))
         print("   ", issue)
-    print("\n--- Detalle técnico ---")
+    print("\n--- Detalle técnico (Ejercicio Propuesto) ---")
+    print(resultado)
+    print(resultado_ejercicio)
+else:
+    print("✅ Tu código pasa las verificaciones automáticas de estilo, seguridad y resultado.")
+    print(resultado)
+    print(resultado_ejercicio)
+```
+
+### Autoevaluación del Ejercicio 2
+
+```python
+%%writefile solucion_ejercicio2_u6.py
+# Completa aquí tu solución al Ejercicio 2 de esta unidad.
+import numpy as np
+
+# TODO: fija np.random.seed(42), genera N=10000 muestras de Gamma(k=3.0, theta=2.0) con
+#       np.random.gamma(3.0, 2.0, 10000), y guárdalas en `muestras`
+# TODO: estima P(X > 8) como la proporción de `muestras` que superan 8, y guárdala en
+#       `p_estimada`
+```
+
+```python
+with open("solucion_ejercicio2_u6.py", encoding="utf-8") as f:
+    codigo_alumno = f.read()
+
+plantilla_original = """# Completa aquí tu solución al Ejercicio 2 de esta unidad.
+import numpy as np
+
+# TODO: fija np.random.seed(42), genera N=10000 muestras de Gamma(k=3.0, theta=2.0) con
+#       np.random.gamma(3.0, 2.0, 10000), y guárdalas en `muestras`
+# TODO: estima P(X > 8) como la proporción de `muestras` que superan 8, y guárdala en
+#       `p_estimada`"""
+
+auditor = CodeAuditorAgent()
+resultado = auditor.audit_code(codigo_alumno)
+
+verificador = ExerciseVerifierAgent(
+    variables_requeridas=["muestras", "p_estimada"],
+    # Valor de referencia obtenido con la semilla EXACTA pedida (42); una semilla distinta
+    # u olvidada produce una secuencia distinta y falla este check con tolerancia estrecha.
+    checks=[
+        "len(muestras) == 10000",
+        "abs(p_estimada - 0.2381) < 1e-9",
+    ],
+    plantilla=plantilla_original,
+)
+resultado_ejercicio = verificador.verificar(codigo_alumno)
+
+if resultado["issues"] or resultado["metrics"]["has_security_risk"] or not resultado_ejercicio.aprueba:
+    debugger = SocraticDebugger()
+    for issue in resultado["issues"]:
+        tipo_error = "syntax_error" if "SyntaxError" in issue else "generic"
+        print("💡", debugger.generate_socratic_question(tipo_error, "Unidad 6"))
+    for issue in resultado["security_issues"]:
+        print("🔒", debugger.generate_socratic_question("security_risk", "Unidad 6"))
+        print("   ", issue)
+    for issue in resultado_ejercicio.issues:
+        print("❌", debugger.generate_socratic_question("generic", "Unidad 6"))
+        print("   ", issue)
+    print("\n--- Detalle técnico (Ejercicio 2) ---")
+    print(resultado)
+    print(resultado_ejercicio)
+else:
+    print("✅ Tu código pasa las verificaciones automáticas de estilo, seguridad y resultado.")
+    print(resultado)
+    print(resultado_ejercicio)
+```
+
+### Autoevaluación del Ejercicio 3
+
+```python
+%%writefile solucion_ejercicio3_u6.py
+# Completa aquí tu solución al Ejercicio 3 de esta unidad.
+import numpy as np
+
+k, lam = 2.0, 10.0
+
+# TODO: fija np.random.seed(7), genera 5 valores uniformes con np.random.rand(5)
+# TODO: aplica la Transformada Inversa F^-1(u) = lam * (-ln(1-u))**(1/k) a cada valor
+#       (usa 1-u, NO u) y guarda el arreglo resultante en `t_simulados`
+# TODO: calcula la media de `t_simulados` y guárdala en `media_simulada`
+```
+
+```python
+with open("solucion_ejercicio3_u6.py", encoding="utf-8") as f:
+    codigo_alumno = f.read()
+
+plantilla_original = """# Completa aquí tu solución al Ejercicio 3 de esta unidad.
+import numpy as np
+
+k, lam = 2.0, 10.0
+
+# TODO: fija np.random.seed(7), genera 5 valores uniformes con np.random.rand(5)
+# TODO: aplica la Transformada Inversa F^-1(u) = lam * (-ln(1-u))**(1/k) a cada valor
+#       (usa 1-u, NO u) y guarda el arreglo resultante en `t_simulados`
+# TODO: calcula la media de `t_simulados` y guárdala en `media_simulada`"""
+
+auditor = CodeAuditorAgent()
+resultado = auditor.audit_code(codigo_alumno)
+
+verificador = ExerciseVerifierAgent(
+    variables_requeridas=["t_simulados", "media_simulada"],
+    # Un error plausible es usar u en vez de 1-u: es equivalente EN DISTRIBUCIÓN pero no
+    # puntualmente para una secuencia de semilla fija, así que produce valores distintos.
+    checks=[
+        "len(t_simulados) == 5",
+        "abs(media_simulada - 10.717926466369004) < 1e-4",
+    ],
+    plantilla=plantilla_original,
+)
+resultado_ejercicio = verificador.verificar(codigo_alumno)
+
+if resultado["issues"] or resultado["metrics"]["has_security_risk"] or not resultado_ejercicio.aprueba:
+    debugger = SocraticDebugger()
+    for issue in resultado["issues"]:
+        tipo_error = "syntax_error" if "SyntaxError" in issue else "generic"
+        print("💡", debugger.generate_socratic_question(tipo_error, "Unidad 6"))
+    for issue in resultado["security_issues"]:
+        print("🔒", debugger.generate_socratic_question("security_risk", "Unidad 6"))
+        print("   ", issue)
+    for issue in resultado_ejercicio.issues:
+        print("❌", debugger.generate_socratic_question("generic", "Unidad 6"))
+        print("   ", issue)
+    print("\n--- Detalle técnico (Ejercicio 3) ---")
+    print(resultado)
+    print(resultado_ejercicio)
+else:
+    print("✅ Tu código pasa las verificaciones automáticas de estilo, seguridad y resultado.")
+    print(resultado)
+    print(resultado_ejercicio)
+```
+
+### Autoevaluación del Ejercicio 4
+
+```python
+%%writefile solucion_ejercicio4_u6.py
+# Completa aquí tu solución al Ejercicio 4 de esta unidad.
+import numpy as np
+
+lam = 0.05
+
+# TODO: fija np.random.seed(123), genera N1=1000 muestras con
+#       np.random.exponential(1/lam, 1000) y guárdalas en `muestras1`
+# TODO: sin volver a fijar semilla, genera N2=100000 muestras adicionales con
+#       np.random.exponential(1/lam, 100000) y guárdalas en `muestras2`
+# TODO: estima p1 = P(muestras1 > 30) y p2 = P(muestras2 > 30), y guárdalas en `p1`, `p2`
+# TODO: calcula el error estándar SE = sqrt(p*(1-p)/N) de cada estimador y guárdalos en
+#       `se1` y `se2`
+```
+
+```python
+with open("solucion_ejercicio4_u6.py", encoding="utf-8") as f:
+    codigo_alumno = f.read()
+
+plantilla_original = """# Completa aquí tu solución al Ejercicio 4 de esta unidad.
+import numpy as np
+
+lam = 0.05
+
+# TODO: fija np.random.seed(123), genera N1=1000 muestras con
+#       np.random.exponential(1/lam, 1000) y guárdalas en `muestras1`
+# TODO: sin volver a fijar semilla, genera N2=100000 muestras adicionales con
+#       np.random.exponential(1/lam, 100000) y guárdalas en `muestras2`
+# TODO: estima p1 = P(muestras1 > 30) y p2 = P(muestras2 > 30), y guárdalas en `p1`, `p2`
+# TODO: calcula el error estándar SE = sqrt(p*(1-p)/N) de cada estimador y guárdalos en
+#       `se1` y `se2`"""
+
+auditor = CodeAuditorAgent()
+resultado = auditor.audit_code(codigo_alumno)
+
+verificador = ExerciseVerifierAgent(
+    variables_requeridas=["muestras1", "muestras2", "p1", "p2", "se1", "se2"],
+    checks=[
+        "len(muestras1) == 1000",
+        "len(muestras2) == 100000",
+        "abs(p1 - 0.211) < 1e-9",
+        "abs(p2 - 0.22328) < 1e-9",
+        "se2 < se1",
+    ],
+    plantilla=plantilla_original,
+)
+resultado_ejercicio = verificador.verificar(codigo_alumno)
+
+if resultado["issues"] or resultado["metrics"]["has_security_risk"] or not resultado_ejercicio.aprueba:
+    debugger = SocraticDebugger()
+    for issue in resultado["issues"]:
+        tipo_error = "syntax_error" if "SyntaxError" in issue else "generic"
+        print("💡", debugger.generate_socratic_question(tipo_error, "Unidad 6"))
+    for issue in resultado["security_issues"]:
+        print("🔒", debugger.generate_socratic_question("security_risk", "Unidad 6"))
+        print("   ", issue)
+    for issue in resultado_ejercicio.issues:
+        print("❌", debugger.generate_socratic_question("generic", "Unidad 6"))
+        print("   ", issue)
+    print("\n--- Detalle técnico (Ejercicio 4) ---")
     print(resultado)
     print(resultado_ejercicio)
 else:
