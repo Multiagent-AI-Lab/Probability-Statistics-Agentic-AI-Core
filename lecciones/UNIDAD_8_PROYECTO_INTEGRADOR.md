@@ -1034,6 +1034,33 @@ Se quiere probar $H_0: \mu_{\text{SnO}_2} = \mu_{\text{In}_2\text{O}_3}$ contra 
 
 Escribe tu solución en una celda de código nueva en tu notebook. La celda de autoevaluación de la siguiente sección verificará tu resultado.
 
+### Ejercicio 2 (guiado — Regresión Lineal)
+
+Una curva de calibración de espectrofotometría UV-Vis (Ley de Beer-Lambert) para nanopartículas en suspensión relaciona la concentración (mM, variable independiente $X$) con la absorbancia medida (variable dependiente $Y$):
+
+$$X = \{0.1,\ 0.2,\ 0.3,\ 0.4,\ 0.5,\ 0.6\}, \qquad Y = \{0.052,\ 0.098,\ 0.153,\ 0.201,\ 0.248,\ 0.301\}$$
+
+Ajusta una regresión lineal de $Y$ sobre $X$ (no al revés) con `scipy.stats.linregress` y reporta la pendiente, el intercepto y el coeficiente de determinación $R^2$.
+
+### Ejercicio 3 (intermedio — Correlación de Pearson)
+
+Se midió el diámetro (nm) de puntos cuánticos de CdSe y su energía de banda prohibida (eV, efecto de confinamiento cuántico):
+
+$$\text{Diámetro} = \{2.1,\ 2.5,\ 3.0,\ 3.4,\ 3.9,\ 4.3,\ 4.8,\ 5.2\}$$
+$$\text{Band gap} = \{3.85,\ 3.62,\ 3.40,\ 3.21,\ 3.02,\ 2.88,\ 2.71,\ 2.58\}$$
+
+Calcula el coeficiente de correlación de Pearson (no Spearman — la relación es monótona pero se pide específicamente la correlación lineal) y su p-valor asociado con `scipy.stats.pearsonr`.
+
+### Ejercicio 4 (abierto — ANOVA de un factor)
+
+Se comparan tres métodos de síntesis de nanopartículas de plata por su diámetro resultante (nm), con $n=5$ mediciones por método:
+
+$$\text{Método A} = \{25.1,\ 24.8,\ 25.5,\ 24.9,\ 25.3\}$$
+$$\text{Método B} = \{27.2,\ 26.9,\ 27.5,\ 27.0,\ 27.3\}$$
+$$\text{Método C} = \{25.0,\ 24.7,\ 25.2,\ 24.9,\ 25.1\}$$
+
+Prueba $H_0: \mu_A = \mu_B = \mu_C$ contra $H_1:$ al menos una media difiere, usando ANOVA de un factor (`scipy.stats.f_oneway`) sobre **los tres grupos simultáneamente** (una serie de pruebas t por pares no controla la tasa de error global de la misma forma).
+
 ## Referencias
 
 * García, J., Molina, J. M., Berlanga, A., Patricio, M. Á., Bustamante, Á. L. & Padilla, W. R. (2018). *Ciencia de Datos: Técnicas Analíticas y Aprendizaje Estadístico en un Enfoque Práctico*. Alfaomega/Publicaciones Altaria. Capítulos sobre inferencia estadística aplicada y aprendizaje estadístico como cierre integrador del curso.
@@ -1160,7 +1187,202 @@ if resultado["issues"] or resultado["metrics"]["has_security_risk"] or not resul
     for issue in resultado_ejercicio.issues:
         print("❌", debugger.generate_socratic_question("generic", "Unidad 8"))
         print("   ", issue)
-    print("\n--- Detalle técnico ---")
+    print("\n--- Detalle técnico (Ejercicio Propuesto) ---")
+    print(resultado)
+    print(resultado_ejercicio)
+else:
+    print("✅ Tu código pasa las verificaciones automáticas de estilo, seguridad y resultado.")
+    print(resultado)
+    print(resultado_ejercicio)
+```
+
+### Autoevaluación del Ejercicio 2
+
+```python
+%%writefile solucion_ejercicio2_u8.py
+# Completa aquí tu solución al Ejercicio 2 de esta unidad.
+import numpy as np
+from scipy import stats
+
+concentracion = np.array([0.1, 0.2, 0.3, 0.4, 0.5, 0.6])
+absorbancia = np.array([0.052, 0.098, 0.153, 0.201, 0.248, 0.301])
+
+# TODO: ajusta stats.linregress(concentracion, absorbancia) (X primero, Y segundo)
+#       y guarda la pendiente, el intercepto y R^2 en `pendiente`, `intercepto`, `r_cuadrada`
+```
+
+```python
+with open("solucion_ejercicio2_u8.py", encoding="utf-8") as f:
+    codigo_alumno = f.read()
+
+plantilla_original = """# Completa aquí tu solución al Ejercicio 2 de esta unidad.
+import numpy as np
+from scipy import stats
+
+concentracion = np.array([0.1, 0.2, 0.3, 0.4, 0.5, 0.6])
+absorbancia = np.array([0.052, 0.098, 0.153, 0.201, 0.248, 0.301])
+
+# TODO: ajusta stats.linregress(concentracion, absorbancia) (X primero, Y segundo)
+#       y guarda la pendiente, el intercepto y R^2 en `pendiente`, `intercepto`, `r_cuadrada`"""
+
+auditor = CodeAuditorAgent()
+resultado = auditor.audit_code(codigo_alumno)
+
+verificador = ExerciseVerifierAgent(
+    variables_requeridas=["pendiente", "intercepto", "r_cuadrada"],
+    # Un error plausible es invertir X e Y en linregress; el valor de referencia de la
+    # pendiente (0.498) es muy distinto al que resultaría de esa inversión (~2.0).
+    checks=[
+        "abs(pendiente - 0.49799999999999994) < 1e-6",
+        "abs(intercepto - 0.0012000000000000066) < 1e-6",
+        "abs(r_cuadrada - 0.9995209746323821) < 1e-6",
+    ],
+    plantilla=plantilla_original,
+)
+resultado_ejercicio = verificador.verificar(codigo_alumno)
+
+if resultado["issues"] or resultado["metrics"]["has_security_risk"] or not resultado_ejercicio.aprueba:
+    debugger = SocraticDebugger()
+    for issue in resultado["issues"]:
+        tipo_error = "syntax_error" if "SyntaxError" in issue else "generic"
+        print("💡", debugger.generate_socratic_question(tipo_error, "Unidad 8"))
+    for issue in resultado["security_issues"]:
+        print("🔒", debugger.generate_socratic_question("security_risk", "Unidad 8"))
+        print("   ", issue)
+    for issue in resultado_ejercicio.issues:
+        print("❌", debugger.generate_socratic_question("generic", "Unidad 8"))
+        print("   ", issue)
+    print("\n--- Detalle técnico (Ejercicio 2) ---")
+    print(resultado)
+    print(resultado_ejercicio)
+else:
+    print("✅ Tu código pasa las verificaciones automáticas de estilo, seguridad y resultado.")
+    print(resultado)
+    print(resultado_ejercicio)
+```
+
+### Autoevaluación del Ejercicio 3
+
+```python
+%%writefile solucion_ejercicio3_u8.py
+# Completa aquí tu solución al Ejercicio 3 de esta unidad.
+import numpy as np
+from scipy import stats
+
+diametro = np.array([2.1, 2.5, 3.0, 3.4, 3.9, 4.3, 4.8, 5.2])
+band_gap = np.array([3.85, 3.62, 3.40, 3.21, 3.02, 2.88, 2.71, 2.58])
+
+# TODO: calcula el coeficiente de correlación de PEARSON (no Spearman) y su p-valor con
+#       stats.pearsonr, y guárdalos en `r_pearson` y `p_valor`
+```
+
+```python
+with open("solucion_ejercicio3_u8.py", encoding="utf-8") as f:
+    codigo_alumno = f.read()
+
+plantilla_original = """# Completa aquí tu solución al Ejercicio 3 de esta unidad.
+import numpy as np
+from scipy import stats
+
+diametro = np.array([2.1, 2.5, 3.0, 3.4, 3.9, 4.3, 4.8, 5.2])
+band_gap = np.array([3.85, 3.62, 3.40, 3.21, 3.02, 2.88, 2.71, 2.58])
+
+# TODO: calcula el coeficiente de correlación de PEARSON (no Spearman) y su p-valor con
+#       stats.pearsonr, y guárdalos en `r_pearson` y `p_valor`"""
+
+auditor = CodeAuditorAgent()
+resultado = auditor.audit_code(codigo_alumno)
+
+verificador = ExerciseVerifierAgent(
+    variables_requeridas=["r_pearson", "p_valor"],
+    # Un error plausible es usar Spearman (rho=-1.0 exacto, porque la relación es
+    # monótona) en vez de Pearson (r=-0.9959, sensible a la linealidad exacta).
+    checks=[
+        "abs(r_pearson - (-0.9958887985235262)) < 1e-6",
+        "abs(p_valor - 1.7318338429886984e-07) < 1e-9",
+    ],
+    plantilla=plantilla_original,
+)
+resultado_ejercicio = verificador.verificar(codigo_alumno)
+
+if resultado["issues"] or resultado["metrics"]["has_security_risk"] or not resultado_ejercicio.aprueba:
+    debugger = SocraticDebugger()
+    for issue in resultado["issues"]:
+        tipo_error = "syntax_error" if "SyntaxError" in issue else "generic"
+        print("💡", debugger.generate_socratic_question(tipo_error, "Unidad 8"))
+    for issue in resultado["security_issues"]:
+        print("🔒", debugger.generate_socratic_question("security_risk", "Unidad 8"))
+        print("   ", issue)
+    for issue in resultado_ejercicio.issues:
+        print("❌", debugger.generate_socratic_question("generic", "Unidad 8"))
+        print("   ", issue)
+    print("\n--- Detalle técnico (Ejercicio 3) ---")
+    print(resultado)
+    print(resultado_ejercicio)
+else:
+    print("✅ Tu código pasa las verificaciones automáticas de estilo, seguridad y resultado.")
+    print(resultado)
+    print(resultado_ejercicio)
+```
+
+### Autoevaluación del Ejercicio 4
+
+```python
+%%writefile solucion_ejercicio4_u8.py
+# Completa aquí tu solución al Ejercicio 4 de esta unidad.
+import numpy as np
+from scipy import stats
+
+metodo_a = np.array([25.1, 24.8, 25.5, 24.9, 25.3])
+metodo_b = np.array([27.2, 26.9, 27.5, 27.0, 27.3])
+metodo_c = np.array([25.0, 24.7, 25.2, 24.9, 25.1])
+
+# TODO: aplica ANOVA de un factor con stats.f_oneway sobre LOS TRES grupos simultáneamente
+#       y guarda el estadístico F y el p-valor en `f_stat` y `p_valor`
+```
+
+```python
+with open("solucion_ejercicio4_u8.py", encoding="utf-8") as f:
+    codigo_alumno = f.read()
+
+plantilla_original = """# Completa aquí tu solución al Ejercicio 4 de esta unidad.
+import numpy as np
+from scipy import stats
+
+metodo_a = np.array([25.1, 24.8, 25.5, 24.9, 25.3])
+metodo_b = np.array([27.2, 26.9, 27.5, 27.0, 27.3])
+metodo_c = np.array([25.0, 24.7, 25.2, 24.9, 25.1])
+
+# TODO: aplica ANOVA de un factor con stats.f_oneway sobre LOS TRES grupos simultáneamente
+#       y guarda el estadístico F y el p-valor en `f_stat` y `p_valor`"""
+
+auditor = CodeAuditorAgent()
+resultado = auditor.audit_code(codigo_alumno)
+
+verificador = ExerciseVerifierAgent(
+    variables_requeridas=["f_stat", "p_valor"],
+    # Un error plausible es comparar solo A vs B con una prueba t e ignorar C: el p-valor
+    # de esa comparación parcial (~1.7e-6) difiere del p-valor del ANOVA de los 3 grupos.
+    checks=[
+        "abs(f_stat - 129.3068181818177) < 1e-4",
+        "abs(p_valor - 7.603077431099928e-09) < 1e-11",
+    ],
+    plantilla=plantilla_original,
+)
+resultado_ejercicio = verificador.verificar(codigo_alumno)
+
+if resultado["issues"] or resultado["metrics"]["has_security_risk"] or not resultado_ejercicio.aprueba:
+    debugger = SocraticDebugger()
+    for issue in resultado["issues"]:
+        tipo_error = "syntax_error" if "SyntaxError" in issue else "generic"
+        print("💡", debugger.generate_socratic_question(tipo_error, "Unidad 8"))
+    for issue in resultado["security_issues"]:
+        print("🔒", debugger.generate_socratic_question("security_risk", "Unidad 8"))
+        print("   ", issue)
+    for issue in resultado_ejercicio.issues:
+        print("❌", debugger.generate_socratic_question("generic", "Unidad 8"))
+        print("   ", issue)
+    print("\n--- Detalle técnico (Ejercicio 4) ---")
     print(resultado)
     print(resultado_ejercicio)
 else:

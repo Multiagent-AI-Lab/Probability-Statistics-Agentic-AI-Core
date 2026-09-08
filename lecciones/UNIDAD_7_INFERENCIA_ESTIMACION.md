@@ -1288,6 +1288,18 @@ Un nuevo protocolo de síntesis de AgNPs afirma producir un diámetro medio de $
 
 Escribe tu solución en una celda de código nueva en tu notebook. La celda de autoevaluación de la siguiente sección verificará tu resultado.
 
+### Ejercicio 2 (guiado — t-test de una muestra, $\sigma$ desconocida)
+
+Un lote de nanopartículas de oro (AuNPs) debe tener diámetro medio $\mu_0=15.0\text{ nm}$. Se toma una muestra de $n=20$ partículas con media muestral $\bar{x}=15.8\text{ nm}$ y desviación estándar **muestral** $s=2.1\text{ nm}$ (la poblacional no se conoce, a diferencia del ejemplo de la Sección 2). Calcula el estadístico $t$ y el p-valor de dos colas para $H_0: \mu=15.0$ contra $H_1: \mu \ne 15.0$, usando la distribución $t$ de Student con $n-1$ grados de libertad (no la Normal).
+
+### Ejercicio 3 (intermedio — Intervalo de Confianza, TLC)
+
+Se midió el tiempo hasta la falla (horas) de $n=49$ nanosensores, con media muestral $\bar{x}=12.5$ y desviación estándar muestral $s=1.4$. Calcula el error estándar de la media ($s/\sqrt{n}$) y el intervalo de confianza del 95% para $\mu$ usando el Teorema del Límite Central (válido para $n$ grande): $\bar{x} \pm z_{\alpha/2} \cdot (s/\sqrt{n})$.
+
+### Ejercicio 4 (abierto — Prueba de dos proporciones)
+
+Dos métodos de síntesis de AgNPs se comparan por su tasa de éxito (partículas dentro de especificación): el Lote A tuvo $45$ éxitos de $50$ intentos, y el Lote B tuvo $38$ éxitos de $50$ intentos. Realiza una prueba $Z$ de dos proporciones con la proporción combinada (pooled) $\hat{p} = (x_1+x_2)/(n_1+n_2)$ para el error estándar bajo $H_0: p_1=p_2$, y calcula el p-valor de dos colas.
+
 ## Referencias
 
 * Agresti, A. & Kateri, M. (2022). *Foundations of Statistics for Data Scientists: With R and Python*. Chapman & Hall/CRC (Texts in Statistical Science). Capítulos sobre estimación puntual, máxima verosimilitud, intervalos de confianza y pruebas de hipótesis.
@@ -1409,7 +1421,220 @@ if resultado["issues"] or resultado["metrics"]["has_security_risk"] or not resul
     for issue in resultado_ejercicio.issues:
         print("❌", debugger.generate_socratic_question("generic", "Unidad 7"))
         print("   ", issue)
-    print("\n--- Detalle técnico ---")
+    print("\n--- Detalle técnico (Ejercicio Propuesto) ---")
+    print(resultado)
+    print(resultado_ejercicio)
+else:
+    print("✅ Tu código pasa las verificaciones automáticas de estilo, seguridad y resultado.")
+    print(resultado)
+    print(resultado_ejercicio)
+```
+
+### Autoevaluación del Ejercicio 2
+
+```python
+%%writefile solucion_ejercicio2_u7.py
+# Completa aquí tu solución al Ejercicio 2 de esta unidad.
+import numpy as np
+from scipy import stats
+
+n, mu0 = 20, 15.0
+x_bar, s = 15.8, 2.1
+
+# TODO: calcula el estadístico t = (x_bar - mu0) / (s / sqrt(n)) y guárdalo en `t_stat`
+# TODO: calcula el p-valor de dos colas usando stats.t (NO stats.norm, porque sigma es
+#       desconocida) con df=n-1, y guárdalo en `p_valor`
+```
+
+```python
+with open("solucion_ejercicio2_u7.py", encoding="utf-8") as f:
+    codigo_alumno = f.read()
+
+plantilla_original = """# Completa aquí tu solución al Ejercicio 2 de esta unidad.
+import numpy as np
+from scipy import stats
+
+n, mu0 = 20, 15.0
+x_bar, s = 15.8, 2.1
+
+# TODO: calcula el estadístico t = (x_bar - mu0) / (s / sqrt(n)) y guárdalo en `t_stat`
+# TODO: calcula el p-valor de dos colas usando stats.t (NO stats.norm, porque sigma es
+#       desconocida) con df=n-1, y guárdalo en `p_valor`"""
+
+auditor = CodeAuditorAgent()
+resultado = auditor.audit_code(codigo_alumno)
+
+verificador = ExerciseVerifierAgent(
+    variables_requeridas=["t_stat", "p_valor"],
+    # Un error plausible es usar stats.norm en vez de stats.t (tratar sigma como si fuera
+    # conocida); el valor de referencia con t de Student difiere del que daría la Normal.
+    checks=[
+        "abs(t_stat - 1.7036708399998413) < 1e-6",
+        "abs(p_valor - 0.10474369207176348) < 1e-6",
+    ],
+    plantilla=plantilla_original,
+)
+resultado_ejercicio = verificador.verificar(codigo_alumno)
+
+if resultado["issues"] or resultado["metrics"]["has_security_risk"] or not resultado_ejercicio.aprueba:
+    debugger = SocraticDebugger()
+    for issue in resultado["issues"]:
+        tipo_error = "syntax_error" if "SyntaxError" in issue else "generic"
+        print("💡", debugger.generate_socratic_question(tipo_error, "Unidad 7"))
+    for issue in resultado["security_issues"]:
+        print("🔒", debugger.generate_socratic_question("security_risk", "Unidad 7"))
+        print("   ", issue)
+    for issue in resultado_ejercicio.issues:
+        print("❌", debugger.generate_socratic_question("generic", "Unidad 7"))
+        print("   ", issue)
+    print("\n--- Detalle técnico (Ejercicio 2) ---")
+    print(resultado)
+    print(resultado_ejercicio)
+else:
+    print("✅ Tu código pasa las verificaciones automáticas de estilo, seguridad y resultado.")
+    print(resultado)
+    print(resultado_ejercicio)
+```
+
+### Autoevaluación del Ejercicio 3
+
+```python
+%%writefile solucion_ejercicio3_u7.py
+# Completa aquí tu solución al Ejercicio 3 de esta unidad.
+import numpy as np
+from scipy import stats
+
+n, x_bar, s = 49, 12.5, 1.4
+alpha = 0.05
+
+# TODO: calcula el error estándar de la media (s / sqrt(n)) y guárdalo en `error_estandar`
+# TODO: calcula el valor crítico z para un IC del 95% (stats.norm.ppf(1 - alpha/2))
+#       y guárdalo en `z_critico`
+# TODO: calcula los límites del IC y guárdalos en `limite_inferior` y `limite_superior`
+```
+
+```python
+with open("solucion_ejercicio3_u7.py", encoding="utf-8") as f:
+    codigo_alumno = f.read()
+
+plantilla_original = """# Completa aquí tu solución al Ejercicio 3 de esta unidad.
+import numpy as np
+from scipy import stats
+
+n, x_bar, s = 49, 12.5, 1.4
+alpha = 0.05
+
+# TODO: calcula el error estándar de la media (s / sqrt(n)) y guárdalo en `error_estandar`
+# TODO: calcula el valor crítico z para un IC del 95% (stats.norm.ppf(1 - alpha/2))
+#       y guárdalo en `z_critico`
+# TODO: calcula los límites del IC y guárdalos en `limite_inferior` y `limite_superior`"""
+
+auditor = CodeAuditorAgent()
+resultado = auditor.audit_code(codigo_alumno)
+
+verificador = ExerciseVerifierAgent(
+    variables_requeridas=["error_estandar", "z_critico", "limite_inferior", "limite_superior"],
+    # Un error plausible es usar s directamente como error estándar, sin dividir por sqrt(n).
+    checks=[
+        "abs(error_estandar - 0.19999999999999998) < 1e-6",
+        "abs(z_critico - 1.959963984540054) < 1e-6",
+        "abs(limite_inferior - 12.10800720309199) < 1e-4",
+        "abs(limite_superior - 12.89199279690801) < 1e-4",
+    ],
+    plantilla=plantilla_original,
+)
+resultado_ejercicio = verificador.verificar(codigo_alumno)
+
+if resultado["issues"] or resultado["metrics"]["has_security_risk"] or not resultado_ejercicio.aprueba:
+    debugger = SocraticDebugger()
+    for issue in resultado["issues"]:
+        tipo_error = "syntax_error" if "SyntaxError" in issue else "generic"
+        print("💡", debugger.generate_socratic_question(tipo_error, "Unidad 7"))
+    for issue in resultado["security_issues"]:
+        print("🔒", debugger.generate_socratic_question("security_risk", "Unidad 7"))
+        print("   ", issue)
+    for issue in resultado_ejercicio.issues:
+        print("❌", debugger.generate_socratic_question("generic", "Unidad 7"))
+        print("   ", issue)
+    print("\n--- Detalle técnico (Ejercicio 3) ---")
+    print(resultado)
+    print(resultado_ejercicio)
+else:
+    print("✅ Tu código pasa las verificaciones automáticas de estilo, seguridad y resultado.")
+    print(resultado)
+    print(resultado_ejercicio)
+```
+
+### Autoevaluación del Ejercicio 4
+
+```python
+%%writefile solucion_ejercicio4_u7.py
+# Completa aquí tu solución al Ejercicio 4 de esta unidad.
+import numpy as np
+from scipy import stats
+
+x1, n1 = 45, 50  # Lote A
+x2, n2 = 38, 50  # Lote B
+
+# TODO: calcula p1 = x1/n1 y p2 = x2/n2, y guárdalas en `p1`, `p2`
+# TODO: calcula la proporción combinada (pooled) p_pool = (x1+x2)/(n1+n2) y guárdala en
+#       `p_pool`
+# TODO: calcula el error estándar bajo H0 con la proporción combinada:
+#       se_pool = sqrt(p_pool*(1-p_pool)*(1/n1 + 1/n2)), y guárdalo en `se_pool`
+# TODO: calcula el estadístico z = (p1-p2)/se_pool y el p-valor de dos colas, y guárdalos
+#       en `z_stat` y `p_valor`
+```
+
+```python
+with open("solucion_ejercicio4_u7.py", encoding="utf-8") as f:
+    codigo_alumno = f.read()
+
+plantilla_original = """# Completa aquí tu solución al Ejercicio 4 de esta unidad.
+import numpy as np
+from scipy import stats
+
+x1, n1 = 45, 50  # Lote A
+x2, n2 = 38, 50  # Lote B
+
+# TODO: calcula p1 = x1/n1 y p2 = x2/n2, y guárdalas en `p1`, `p2`
+# TODO: calcula la proporción combinada (pooled) p_pool = (x1+x2)/(n1+n2) y guárdala en
+#       `p_pool`
+# TODO: calcula el error estándar bajo H0 con la proporción combinada:
+#       se_pool = sqrt(p_pool*(1-p_pool)*(1/n1 + 1/n2)), y guárdalo en `se_pool`
+# TODO: calcula el estadístico z = (p1-p2)/se_pool y el p-valor de dos colas, y guárdalos
+#       en `z_stat` y `p_valor`"""
+
+auditor = CodeAuditorAgent()
+resultado = auditor.audit_code(codigo_alumno)
+
+verificador = ExerciseVerifierAgent(
+    variables_requeridas=["p1", "p2", "p_pool", "se_pool", "z_stat", "p_valor"],
+    # Un error plausible es usar el error estándar NO combinado (sqrt(p1(1-p1)/n1 +
+    # p2(1-p2)/n2)) en vez del pooled bajo H0: el valor de referencia distingue ambos.
+    checks=[
+        "abs(p1 - 0.9) < 1e-9",
+        "abs(p2 - 0.76) < 1e-9",
+        "abs(p_pool - 0.83) < 1e-9",
+        "abs(se_pool - 0.07512655988397181) < 1e-6",
+        "abs(z_stat - 1.863522038227507) < 1e-6",
+        "abs(p_valor - 0.06238885487025292) < 1e-6",
+    ],
+    plantilla=plantilla_original,
+)
+resultado_ejercicio = verificador.verificar(codigo_alumno)
+
+if resultado["issues"] or resultado["metrics"]["has_security_risk"] or not resultado_ejercicio.aprueba:
+    debugger = SocraticDebugger()
+    for issue in resultado["issues"]:
+        tipo_error = "syntax_error" if "SyntaxError" in issue else "generic"
+        print("💡", debugger.generate_socratic_question(tipo_error, "Unidad 7"))
+    for issue in resultado["security_issues"]:
+        print("🔒", debugger.generate_socratic_question("security_risk", "Unidad 7"))
+        print("   ", issue)
+    for issue in resultado_ejercicio.issues:
+        print("❌", debugger.generate_socratic_question("generic", "Unidad 7"))
+        print("   ", issue)
+    print("\n--- Detalle técnico (Ejercicio 4) ---")
     print(resultado)
     print(resultado_ejercicio)
 else:
