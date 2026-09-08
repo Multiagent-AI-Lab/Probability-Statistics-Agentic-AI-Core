@@ -5,6 +5,8 @@ ContentAuditorAgent: Audits lessons and notebooks against the 9 mandatory compon
 import re
 from typing import Any, ClassVar
 
+from .curriculum_map_agent import extract_fenced_blocks
+
 
 class ContentAuditorAgent:
     """Auditor for content completeness according to the 9 Protocolo Maestro components."""
@@ -34,6 +36,52 @@ class ContentAuditorAgent:
     NANO_MIN_WORDS = 150
     DICCIONARIO_MIN_ENTRADAS = 2
     _DICCIONARIO_ENTRADA_PATTERN = re.compile(r"^\s*\*\s*\$[^$]+\$\s*:", re.MULTILINE)
+    _SYMPY_SYMBOL_PATTERN = re.compile(r"\b(?:sp\.Symbol|sp\.symbols|sympy\.symbols)\b")
+    _SYMPY_SUBS_PATTERN = re.compile(r"\.subs\(")
+    _INTERPRETACION_PATTERN = re.compile(r"interpret", re.IGNORECASE)
+    _PLOT_CALL_PATTERN = re.compile(r"plt\.|sns\.")
+
+    def _strip_code_blocks(self, markdown_text: str) -> str:
+        """Elimina el contenido de los bloques de código fenced, dejando el
+        resto del texto teórico para contarlo o buscarlo sin ruido de código."""
+        theory_text = markdown_text
+        for full_match, _lang, _code in extract_fenced_blocks(markdown_text):
+            theory_text = theory_text.replace(full_match, "")
+        return theory_text
+
+    def _has_real_sympy_usage(self, markdown_text: str) -> bool:
+        """Detecta uso real de SymPy: sp.Symbol/sp.symbols/sympy.symbols
+        seguido de un .subs( posterior, dentro del mismo bloque de código."""
+        for full_match, _lang, code in extract_fenced_blocks(markdown_text):
+            symbol_match = self._SYMPY_SYMBOL_PATTERN.search(code)
+            if symbol_match is None:
+                continue
+            subs_match = self._SYMPY_SUBS_PATTERN.search(code, symbol_match.end())
+            if subs_match is not None:
+                return True
+        return False
+
+    def _interpretacion_va_despues_del_grafico(self, markdown_text: str) -> bool:
+        """Verifica que exista al menos una mención de interpretación que
+        aparezca, en el texto, después del bloque de código con plt./sns.
+        más cercano anterior a ella (no basta con que la palabra aparezca
+        en cualquier parte del documento, p. ej. en una descripción del
+        ciclo de trabajo previa al primer gráfico)."""
+        fines_de_grafico = []
+        for full_match, _lang, code in extract_fenced_blocks(markdown_text):
+            if self._PLOT_CALL_PATTERN.search(code) is None:
+                continue
+            inicio_bloque = markdown_text.find(full_match)
+            fines_de_grafico.append(inicio_bloque + len(full_match))
+
+        if not fines_de_grafico:
+            return False
+
+        return any(
+            match.start() > fin_de_grafico
+            for match in self._INTERPRETACION_PATTERN.finditer(markdown_text)
+            for fin_de_grafico in fines_de_grafico
+        )
 
     def _count_nano_context_words(self, markdown_text: str) -> int:
         """Cuenta las palabras de los parrafos que mencionan terminologia
@@ -54,9 +102,10 @@ class ContentAuditorAgent:
         return len(matches) >= self.DICCIONARIO_MIN_ENTRADAS
 
     def audit_content(self, markdown_text: str) -> dict[str, Any]:
-        words = len(markdown_text.split())
+        theory_text = self._strip_code_blocks(markdown_text)
+        words = len(theory_text.split())
         latex_boxed = r"\boxed" in markdown_text or r"\boxed{" in markdown_text
-        has_sympy = "sympy" in markdown_text.lower()
+        has_sympy = self._has_real_sympy_usage(markdown_text)
         has_scipy = (
             "scipy" in markdown_text.lower() or "statsmodels" in markdown_text.lower()
         )
@@ -79,7 +128,9 @@ class ContentAuditorAgent:
             "Solución en \\boxed{}": latex_boxed,
             "Solución Computacional SciPy": has_scipy,
             "Visualización Profesional": plot_count >= 2,
-            "Interpretación Post-Gráfico": "interpret" in markdown_text.lower(),
+            "Interpretación Post-Gráfico": self._interpretacion_va_despues_del_grafico(
+                markdown_text
+            ),
             "Diccionario de Variables": self._has_diccionario_variables(markdown_text),
         }
 

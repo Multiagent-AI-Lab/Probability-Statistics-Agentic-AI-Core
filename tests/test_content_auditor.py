@@ -136,3 +136,56 @@ def test_component_checks_pasa_diccionario_si_tiene_formato_correcto():
     )
     result = auditor.audit_content(texto_con_diccionario)
     assert result["component_checks"]["Diccionario de Variables"] is True
+
+
+def test_verificacion_sympy_exige_uso_real_no_solo_la_palabra():
+    """H-08: hoy 'sympy' in text.lower() basta, sin usar sp.Symbol/subs de verdad."""
+    auditor = ContentAuditorAgent()
+    texto_falso = "# esto menciona sympy pero no lo usa"
+    resultado = auditor.audit_content(texto_falso)
+    assert resultado["component_checks"]["Verificación SymPy"] is False
+
+
+def test_verificacion_sympy_pasa_con_symbol_y_subs_reales():
+    """Caso positivo: symbols(...) y .subs( en el mismo bloque de codigo."""
+    auditor = ContentAuditorAgent()
+    texto_real = (
+        "Desarrollo teórico.\n\n"
+        "```python\n"
+        "import sympy as sp\n"
+        "x = sp.symbols('x')\n"
+        "expr = x ** 2\n"
+        "resultado = expr.subs(x, 3)\n"
+        "```\n"
+    )
+    resultado = auditor.audit_content(texto_real)
+    assert resultado["component_checks"]["Verificación SymPy"] is True
+
+
+def test_interpretacion_debe_ir_despues_del_grafico():
+    """H-08: hoy la posicion relativa no se verifica, solo la presencia de la palabra."""
+    auditor = ContentAuditorAgent()
+    texto_interpretacion_antes = (
+        "Interpretación: esto es alto.\n```python\nplt.plot(x, y)\n```"
+    )
+    resultado = auditor.audit_content(texto_interpretacion_antes)
+    assert resultado["component_checks"]["Interpretación Post-Gráfico"] is False
+
+
+def test_interpretacion_pasa_cuando_va_despues_del_grafico():
+    """Caso positivo: el parrafo de interpretacion aparece tras el bloque con plt."""
+    auditor = ContentAuditorAgent()
+    texto_ok = (
+        "```python\nplt.plot(x, y)\n```\n\n"
+        "Interpretación: el diámetro promedio aumenta con la concentración."
+    )
+    resultado = auditor.audit_content(texto_ok)
+    assert resultado["component_checks"]["Interpretación Post-Gráfico"] is True
+
+
+def test_conteo_de_palabras_excluye_bloques_de_codigo():
+    """H-08: hoy cuenta el documento entero, incluido codigo y tablas."""
+    auditor = ContentAuditorAgent()
+    texto_con_codigo_largo = "Teoria breve.\n```python\n" + "x = 1\n" * 500 + "```"
+    resultado = auditor.audit_content(texto_con_codigo_largo)
+    assert resultado["total_words"] < 800
