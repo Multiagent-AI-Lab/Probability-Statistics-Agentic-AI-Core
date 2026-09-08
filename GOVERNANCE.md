@@ -48,14 +48,14 @@ El Consejo de 8 Expertos (`src/multiagent_core/pipeline.py`) audita cada lecció
 
 Cada sección de contenido nuevo debe cumplir, verificable mediante `ContentAuditorAgent.audit_content()`:
 
-1. **Teoría Completa**: al menos 800 palabras de desarrollo teórico formal.
+1. **Teoría Completa**: al menos 800 palabras de desarrollo teórico formal (el conteo excluye el contenido de bloques de código fenced — no se cuentan líneas de código ni de tablas como prosa teórica).
 2. **Ejemplo Analítico**: la sección contiene ejemplos desarrollados paso a paso con explicación.
-3. **Verificación SymPy**: manipulación simbólica de fórmulas con `sympy.symbols` antes de sustituir valores numéricos.
+3. **Verificación SymPy**: manipulación simbólica de fórmulas con `sp.Symbol`/`sp.symbols`/`sympy.symbols` seguida de un `.subs(` dentro del mismo bloque de código. **Límite conocido**: este patrón no reconoce otras formas legítimas de verificación simbólica en SymPy que no pasan por `Symbol`/`subs` — p. ej. aritmética exacta con `sp.Rational`/`sp.Add`/`sp.nsimplify` (como en UNIDAD 1) se audita como "False" pese a ser SymPy real. El chequeo automático es un piso conservador, no un juicio definitivo sobre si la unidad usa SymPy correctamente: un fallo en este punto debe revisarse manualmente antes de asumir que la unidad tiene una brecha real.
 4. **Contexto Nanotecnológico**: todo ejemplo usa datos o problemas de nanotecnología reales o realistas (nunca ejemplos genéricos de estadística).
 5. **Solución en `\boxed{}`**: cualquier valor numérico final de un ejemplo analítico se resalta con `\boxed{...}`.
 6. **Solución Computacional SciPy**: reproducción del resultado mediante `scipy.stats` o `statsmodels` ejecutado.
 7. **Visualización Profesional**: al menos 2 gráficos (matplotlib/seaborn) por sección aplicada relevante.
-8. **Interpretación Post-Gráfico**: explicación de qué significa el resultado en el contexto de nanotecnología, posterior a cualquier visualización.
+8. **Interpretación Post-Gráfico**: existe al menos un párrafo con la palabra "interpret..." que aparece, en el documento, después del cierre de algún bloque de código con `plt.`/`sns.`. **Límite conocido**: la verificación es posicional por texto plano (`str.find()` del bloque completo), no por AST ni por vínculo semántico real entre el párrafo y el gráfico que interpreta; si el mismo bloque de código apareciera repetido de forma textualmente idéntica más de una vez en el documento, la posición usada sería la de su primera aparición. No se ha observado este caso en las 8 unidades reales (0 bloques de código duplicados textualmente en cualquiera de ellas a la fecha de este documento), pero no está estructuralmente descartado por el código.
 9. **Diccionario de Variables**: cada unidad cierra con la notación completa usada, verificada contra el código/ejemplo real de la unidad.
 
 ---
