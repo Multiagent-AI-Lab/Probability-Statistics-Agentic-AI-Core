@@ -442,7 +442,7 @@ def test_run_full_pipeline_bloquea_por_architect_cuando_faltan_unidades(
     """run_full_pipeline conoce el listado completo de .md del directorio,
     a diferencia de process_content() invocado aislado por lección -- por
     eso es el único caller que puede pasarle file_tree real a @Architect
-    sin el falso-bloqueo que describe GOVERNANCE.md §4 (una unidad válida
+    sin el falso-bloqueo que describe GOVERNANCE.md §2.1 (una unidad válida
     bloqueada solo porque otra no está presente en ese momento: aquí SÍ
     faltan de verdad, así que el bloqueo es la señal correcta)."""
     lecciones_dir, notebooks_dir = temp_lecciones_dir_incompleto
