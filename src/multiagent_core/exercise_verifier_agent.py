@@ -327,3 +327,52 @@ class ExerciseVerifierAgent:
             issues.append(f"No se cumple: {check}")
 
         return ResultadoVerificacion(aprueba=len(issues) == 0, issues=issues)
+
+
+def reportar_resultado_ejercicio(
+    resultado: dict[str, object],
+    resultado_ejercicio: ResultadoVerificacion,
+    nombre_ejercicio: str,
+    unidad: str,
+    debugger: object,
+) -> None:
+    """Imprime el veredicto de una celda de Autoevaluación.
+
+    Único punto de mantenimiento del bloque que antes se repetía, idéntico
+    salvo `nombre_ejercicio`/`unidad`, en las 32 celdas de Autoevaluación de
+    las 8 unidades (`CodeAuditorAgent` + `ExerciseVerifierAgent` +
+    `SocraticDebugger`). No importa `SocraticDebugger` directamente porque
+    vive en `external_skills/pedagogy/` -- un paquete de dominio pedagógico
+    separado de `src/multiagent_core/` -- así que la celda se lo pasa ya
+    instanciado; `debugger` solo necesita exponer
+    `generate_socratic_question(error_type, context)`.
+
+    Reproduce EXACTAMENTE el output del bloque original: mismo texto, mismo
+    orden, mismos emojis, para que el refactor sea puro (sin cambio de
+    comportamiento observable por el alumno).
+    """
+    hay_hallazgos = (
+        resultado["issues"]
+        or resultado["metrics"]["has_security_risk"]
+        or not resultado_ejercicio.aprueba
+    )
+    if not hay_hallazgos:
+        print(
+            "✅ Tu código pasa las verificaciones automáticas de estilo, seguridad y resultado."
+        )
+        print(resultado)
+        print(resultado_ejercicio)
+        return
+
+    for issue in resultado["issues"]:
+        tipo_error = "syntax_error" if "SyntaxError" in issue else "generic"
+        print("💡", debugger.generate_socratic_question(tipo_error, unidad))
+    for issue in resultado["security_issues"]:
+        print("🔒", debugger.generate_socratic_question("security_risk", unidad))
+        print("   ", issue)
+    for issue in resultado_ejercicio.issues:
+        print("❌", debugger.generate_socratic_question("generic", unidad))
+        print("   ", issue)
+    print(f"\n--- Detalle técnico ({nombre_ejercicio}) ---")
+    print(resultado)
+    print(resultado_ejercicio)

@@ -17,7 +17,11 @@ import time
 
 import pytest
 
-from src.multiagent_core.exercise_verifier_agent import ExerciseVerifierAgent
+from src.multiagent_core.exercise_verifier_agent import (
+    ExerciseVerifierAgent,
+    ResultadoVerificacion,
+    reportar_resultado_ejercicio,
+)
 
 UNIDAD_5_PATH = "lecciones/UNIDAD_5_VARIABLES_ALEATORIAS_CONTINUAS.md"
 UNIDAD_1_PATH = "lecciones/UNIDAD_1_ESTADISTICA_DESCRIPTIVA.md"
@@ -372,3 +376,132 @@ p_valor = 2 * (1 - stats.norm.cdf(abs(z_estadistico)))
 """
     resultado = verificador.verificar(solucion)
     assert resultado.aprueba is True, resultado.issues
+
+
+# --------------------------------------------------------------------------
+# Menor (Task 6, cierre de brechas): boilerplate de las 32 celdas de
+# autoevaluación extraído a `reportar_resultado_ejercicio`. Estos tests de
+# caracterización comparan el output de la función nueva contra una copia
+# literal del bloque de ~18 líneas que se repetía en las 32 celdas -- deben
+# imprimir EXACTAMENTE lo mismo para que el refactor sea puro (sin cambio de
+# comportamiento observable por el alumno).
+# --------------------------------------------------------------------------
+
+
+class _DebuggerFalso:
+    """Doble determinista de SocraticDebugger: devuelve el `error_type` que
+    recibió en vez de una pregunta socrática real, para que las aserciones no
+    dependan del texto pedagógico (que puede cambiar) sino de qué parámetros
+    recibió la función bajo prueba."""
+
+    def generate_socratic_question(self, error_type: str, context: str) -> str:
+        return f"[{error_type}|{context}]"
+
+
+def _bloque_original(resultado, resultado_ejercicio, nombre_ejercicio, unidad):
+    """Copia literal del bloque que aparecía en las 32 celdas de
+    autoevaluación, previa al refactor. Sirve como oráculo del test."""
+    if (
+        resultado["issues"]
+        or resultado["metrics"]["has_security_risk"]
+        or not resultado_ejercicio.aprueba
+    ):
+        debugger = _DebuggerFalso()
+        for issue in resultado["issues"]:
+            tipo_error = "syntax_error" if "SyntaxError" in issue else "generic"
+            print("💡", debugger.generate_socratic_question(tipo_error, unidad))
+        for issue in resultado["security_issues"]:
+            print("🔒", debugger.generate_socratic_question("security_risk", unidad))
+            print("   ", issue)
+        for issue in resultado_ejercicio.issues:
+            print("❌", debugger.generate_socratic_question("generic", unidad))
+            print("   ", issue)
+        print(f"\n--- Detalle técnico ({nombre_ejercicio}) ---")
+        print(resultado)
+        print(resultado_ejercicio)
+    else:
+        print(
+            "✅ Tu código pasa las verificaciones automáticas de estilo, seguridad y resultado."
+        )
+        print(resultado)
+        print(resultado_ejercicio)
+
+
+def _resultado_auditor(issues=None, security_issues=None, has_security_risk=None):
+    issues = issues or []
+    security_issues = security_issues or []
+    if has_security_risk is None:
+        has_security_risk = bool(security_issues)
+    return {
+        "issues": issues,
+        "security_issues": security_issues,
+        "metrics": {"has_security_risk": has_security_risk},
+    }
+
+
+@pytest.mark.parametrize(
+    "resultado, resultado_ejercicio",
+    [
+        pytest.param(
+            _resultado_auditor(),
+            ResultadoVerificacion(aprueba=True, issues=[]),
+            id="camino_feliz_aprueba",
+        ),
+        pytest.param(
+            _resultado_auditor(issues=["SyntaxError: algo mal en la línea 3"]),
+            ResultadoVerificacion(aprueba=True, issues=[]),
+            id="issue_de_estilo_syntax_error",
+        ),
+        pytest.param(
+            _resultado_auditor(issues=["nombre de variable poco descriptivo"]),
+            ResultadoVerificacion(aprueba=True, issues=[]),
+            id="issue_de_estilo_generico",
+        ),
+        pytest.param(
+            _resultado_auditor(security_issues=["uso de eval() sobre entrada externa"]),
+            ResultadoVerificacion(aprueba=True, issues=[]),
+            id="hallazgo_de_seguridad",
+        ),
+        pytest.param(
+            _resultado_auditor(),
+            ResultadoVerificacion(
+                aprueba=False, issues=["No se cumple: abs(media - 1.0) < 1e-6"]
+            ),
+            id="ejercicio_no_aprueba",
+        ),
+        pytest.param(
+            _resultado_auditor(
+                issues=["SyntaxError: paréntesis sin cerrar"],
+                security_issues=["riesgo de path traversal"],
+            ),
+            ResultadoVerificacion(
+                aprueba=False,
+                issues=["No se definieron las variables requeridas: media"],
+            ),
+            id="todos_los_hallazgos_a_la_vez",
+        ),
+    ],
+)
+def test_reportar_resultado_ejercicio_replica_el_bloque_original(
+    capsys, resultado, resultado_ejercicio
+):
+    """La función nueva debe imprimir carácter por carácter lo mismo que el
+    bloque duplicado que reemplaza, para las combinaciones de hallazgos que
+    aparecen en las 32 celdas reales (sin issues, con issues de estilo, con
+    riesgo de seguridad, con ejercicio reprobado, y con todo a la vez)."""
+    nombre_ejercicio = "Ejercicio 2"
+    unidad = "Unidad 3"
+
+    _bloque_original(resultado, resultado_ejercicio, nombre_ejercicio, unidad)
+    esperado = capsys.readouterr().out
+
+    reportar_resultado_ejercicio(
+        resultado,
+        resultado_ejercicio,
+        nombre_ejercicio=nombre_ejercicio,
+        unidad=unidad,
+        debugger=_DebuggerFalso(),
+    )
+    obtenido = capsys.readouterr().out
+
+    assert obtenido == esperado

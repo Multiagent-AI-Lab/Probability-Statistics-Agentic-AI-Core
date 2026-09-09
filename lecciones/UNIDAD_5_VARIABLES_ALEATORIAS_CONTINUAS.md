@@ -1012,7 +1012,10 @@ sigma = 0.8
 
 ```python
 from src.multiagent_core.code_auditor_agent import CodeAuditorAgent
-from src.multiagent_core.exercise_verifier_agent import ExerciseVerifierAgent
+from src.multiagent_core.exercise_verifier_agent import (
+    ExerciseVerifierAgent,
+    reportar_resultado_ejercicio,
+)
 from external_skills.pedagogy.socratic_debugger import SocraticDebugger
 
 with open("solucion_ejercicio_u5.py", encoding="utf-8") as f:
@@ -1045,24 +1048,13 @@ verificador = ExerciseVerifierAgent(
 )
 resultado_ejercicio = verificador.verificar(codigo_alumno)
 
-if resultado["issues"] or resultado["metrics"]["has_security_risk"] or not resultado_ejercicio.aprueba:
-    debugger = SocraticDebugger()
-    for issue in resultado["issues"]:
-        tipo_error = "syntax_error" if "SyntaxError" in issue else "generic"
-        print("💡", debugger.generate_socratic_question(tipo_error, "Unidad 5"))
-    for issue in resultado["security_issues"]:
-        print("🔒", debugger.generate_socratic_question("security_risk", "Unidad 5"))
-        print("   ", issue)
-    for issue in resultado_ejercicio.issues:
-        print("❌", debugger.generate_socratic_question("generic", "Unidad 5"))
-        print("   ", issue)
-    print("\n--- Detalle técnico (Ejercicio Propuesto) ---")
-    print(resultado)
-    print(resultado_ejercicio)
-else:
-    print("✅ Tu código pasa las verificaciones automáticas de estilo, seguridad y resultado.")
-    print(resultado)
-    print(resultado_ejercicio)
+reportar_resultado_ejercicio(
+    resultado,
+    resultado_ejercicio,
+    nombre_ejercicio="Ejercicio Propuesto",
+    unidad="Unidad 5",
+    debugger=SocraticDebugger(),
+)
 ```
 
 ### Autoevaluación del Ejercicio 2
@@ -1107,24 +1099,13 @@ verificador = ExerciseVerifierAgent(
 )
 resultado_ejercicio = verificador.verificar(codigo_alumno)
 
-if resultado["issues"] or resultado["metrics"]["has_security_risk"] or not resultado_ejercicio.aprueba:
-    debugger = SocraticDebugger()
-    for issue in resultado["issues"]:
-        tipo_error = "syntax_error" if "SyntaxError" in issue else "generic"
-        print("💡", debugger.generate_socratic_question(tipo_error, "Unidad 5"))
-    for issue in resultado["security_issues"]:
-        print("🔒", debugger.generate_socratic_question("security_risk", "Unidad 5"))
-        print("   ", issue)
-    for issue in resultado_ejercicio.issues:
-        print("❌", debugger.generate_socratic_question("generic", "Unidad 5"))
-        print("   ", issue)
-    print("\n--- Detalle técnico (Ejercicio 2) ---")
-    print(resultado)
-    print(resultado_ejercicio)
-else:
-    print("✅ Tu código pasa las verificaciones automáticas de estilo, seguridad y resultado.")
-    print(resultado)
-    print(resultado_ejercicio)
+reportar_resultado_ejercicio(
+    resultado,
+    resultado_ejercicio,
+    nombre_ejercicio="Ejercicio 2",
+    unidad="Unidad 5",
+    debugger=SocraticDebugger(),
+)
 ```
 
 ### Autoevaluación del Ejercicio 3
@@ -1169,24 +1150,13 @@ verificador = ExerciseVerifierAgent(
 )
 resultado_ejercicio = verificador.verificar(codigo_alumno)
 
-if resultado["issues"] or resultado["metrics"]["has_security_risk"] or not resultado_ejercicio.aprueba:
-    debugger = SocraticDebugger()
-    for issue in resultado["issues"]:
-        tipo_error = "syntax_error" if "SyntaxError" in issue else "generic"
-        print("💡", debugger.generate_socratic_question(tipo_error, "Unidad 5"))
-    for issue in resultado["security_issues"]:
-        print("🔒", debugger.generate_socratic_question("security_risk", "Unidad 5"))
-        print("   ", issue)
-    for issue in resultado_ejercicio.issues:
-        print("❌", debugger.generate_socratic_question("generic", "Unidad 5"))
-        print("   ", issue)
-    print("\n--- Detalle técnico (Ejercicio 3) ---")
-    print(resultado)
-    print(resultado_ejercicio)
-else:
-    print("✅ Tu código pasa las verificaciones automáticas de estilo, seguridad y resultado.")
-    print(resultado)
-    print(resultado_ejercicio)
+reportar_resultado_ejercicio(
+    resultado,
+    resultado_ejercicio,
+    nombre_ejercicio="Ejercicio 3",
+    unidad="Unidad 5",
+    debugger=SocraticDebugger(),
+)
 ```
 
 ### Autoevaluación del Ejercicio 4
@@ -1231,22 +1201,11 @@ verificador = ExerciseVerifierAgent(
 )
 resultado_ejercicio = verificador.verificar(codigo_alumno)
 
-if resultado["issues"] or resultado["metrics"]["has_security_risk"] or not resultado_ejercicio.aprueba:
-    debugger = SocraticDebugger()
-    for issue in resultado["issues"]:
-        tipo_error = "syntax_error" if "SyntaxError" in issue else "generic"
-        print("💡", debugger.generate_socratic_question(tipo_error, "Unidad 5"))
-    for issue in resultado["security_issues"]:
-        print("🔒", debugger.generate_socratic_question("security_risk", "Unidad 5"))
-        print("   ", issue)
-    for issue in resultado_ejercicio.issues:
-        print("❌", debugger.generate_socratic_question("generic", "Unidad 5"))
-        print("   ", issue)
-    print("\n--- Detalle técnico (Ejercicio 4) ---")
-    print(resultado)
-    print(resultado_ejercicio)
-else:
-    print("✅ Tu código pasa las verificaciones automáticas de estilo, seguridad y resultado.")
-    print(resultado)
-    print(resultado_ejercicio)
+reportar_resultado_ejercicio(
+    resultado,
+    resultado_ejercicio,
+    nombre_ejercicio="Ejercicio 4",
+    unidad="Unidad 5",
+    debugger=SocraticDebugger(),
+)
 ```
