@@ -585,13 +585,19 @@ Escribe tu solución en una celda de código nueva en tu notebook. La celda de a
 
 El tiempo de crecimiento de un nanocristal en múltiples etapas de nucleación sigue $X \sim \text{Gamma}(k=3.0,\ \theta=2.0)$. Fija `np.random.seed(42)` y genera $N=10\,000$ muestras con `np.random.gamma(3.0, 2.0, 10000)`. Estima $P(X > 8)$ como la proporción de muestras que superan el umbral.
 
+> **Nota de API**: usa explícitamente `np.random.seed(...)` (la API legacy), no `np.random.default_rng(...)` (la API moderna recomendada por NumPy para código nuevo). El valor de referencia de la autoevaluación se calculó con la secuencia de `np.random.seed`; `default_rng` es un generador distinto y produce una secuencia distinta con la misma semilla numérica, así que un enfoque correcto con `default_rng` fallaría el check por una razón ajena al análisis estadístico.
+
 ### Ejercicio 3 (intermedio — Transformada Inversa, Weibull)
 
 La vida útil (horas) de un recubrimiento protector de nanopartículas de plata sigue $X \sim \text{Weibull}(k=2.0,\ \lambda=10.0)$, cuya función cuantil por Transformada Inversa es $F^{-1}(u) = \lambda(-\ln(1-u))^{1/k}$. Fija `np.random.seed(7)` y genera 5 valores uniformes con `np.random.rand(5)`. Aplica la Transformada Inversa a cada uno (usando $1-u$, no $u$, para que coincida exactamente con la derivación de la CDF $F(t)=1-e^{-(t/\lambda)^k}$) para obtener 5 tiempos de vida simulados, y calcula su media.
 
+> **Nota de API**: igual que en el Ejercicio 2, usa `np.random.seed(...)` y no `np.random.default_rng(...)` — el valor de referencia depende de la secuencia legacy.
+
 ### Ejercicio 4 (abierto — Precisión del estimador Monte Carlo)
 
 Para $X \sim \text{Exponencial}(\lambda=0.05)$, fija `np.random.seed(123)` y estima $P(X > 30)$ dos veces por Monte Carlo: una con $N_1=1\,000$ muestras (genera primero estas) y otra con $N_2=100\,000$ muestras adicionales (genera estas después, sin volver a fijar la semilla). Calcula el error estándar de cada estimador, $SE = \sqrt{\hat{p}(1-\hat{p})/N}$, y verifica que el estimador con más muestras tiene menor error estándar.
+
+> **Nota de API**: igual que en los Ejercicios 2 y 3, usa `np.random.seed(...)` y no `np.random.default_rng(...)` — el valor de referencia depende de la secuencia legacy.
 
 ## Referencias
 
