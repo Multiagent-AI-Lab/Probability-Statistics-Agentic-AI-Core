@@ -728,9 +728,9 @@ Escribe tu solución en una celda de código nueva en tu notebook. La celda de a
 
 ### Ejercicio 2 (guiado — Regla de la Cadena con 3+ eventos)
 
-De un mazo de $52$ cartas se extraen $3$ cartas **sin reemplazo**. ¿Cuál es la probabilidad de que las tres sean figuras (J, Q o K)? Generaliza la Regla General del Producto de la Sección 3.1 (que solo cubre 2 eventos) a tres eventos encadenados:
+Un lote de control de calidad contiene $52$ nanopartículas de oro (AuNPs) recién sintetizadas, de las cuales $12$ presentan aglomeración fuera de especificación (detectada por microscopía TEM previa). Se extraen $3$ nanopartículas **sin reemplazo** para inspección destructiva. ¿Cuál es la probabilidad de que las tres extraídas estén aglomeradas? Generaliza la Regla General del Producto de la Sección 3.1 (que solo cubre 2 eventos) a tres eventos encadenados:
 $$P(A_1 \cap A_2 \cap A_3) = P(A_1) \cdot P(A_2|A_1) \cdot P(A_3|A_1 \cap A_2)$$
-donde cada factor refleja que el mazo tiene una carta menos, y una figura menos, tras cada extracción. Calcula cada una de las tres probabilidades condicionales de la cadena por separado antes de multiplicarlas.
+donde cada factor refleja que el lote tiene una nanopartícula menos, y una aglomerada menos, tras cada extracción. Calcula cada una de las tres probabilidades condicionales de la cadena por separado antes de multiplicarlas.
 
 ### Ejercicio 3 (intermedio — Independencia con/sin reemplazo)
 
@@ -853,9 +853,9 @@ reportar_resultado_ejercicio(
 from fractions import Fraction
 
 # TODO: calcula, como Fraction, cada probabilidad condicional de la cadena de 3 extracciones
-#       sin reemplazo (12 figuras en 52 cartas) y guárdalas en `p1`, `p2`, `p3`
-# TODO: multiplica las tres para obtener la probabilidad de que las 3 cartas sean figuras
-#       y guárdala en `p_tres_figuras`
+#       sin reemplazo (12 AuNPs aglomeradas en un lote de 52) y guárdalas en `p1`, `p2`, `p3`
+# TODO: multiplica las tres para obtener la probabilidad de que las 3 AuNPs extraídas estén
+#       aglomeradas y guárdala en `p_tres_aglomeradas`
 ```
 
 ```python
@@ -866,20 +866,20 @@ plantilla_original = """# Completa aquí tu solución al Ejercicio 2 de esta uni
 from fractions import Fraction
 
 # TODO: calcula, como Fraction, cada probabilidad condicional de la cadena de 3 extracciones
-#       sin reemplazo (12 figuras en 52 cartas) y guárdalas en `p1`, `p2`, `p3`
-# TODO: multiplica las tres para obtener la probabilidad de que las 3 cartas sean figuras
-#       y guárdala en `p_tres_figuras`"""
+#       sin reemplazo (12 AuNPs aglomeradas en un lote de 52) y guárdalas en `p1`, `p2`, `p3`
+# TODO: multiplica las tres para obtener la probabilidad de que las 3 AuNPs extraídas estén
+#       aglomeradas y guárdala en `p_tres_aglomeradas`"""
 
 auditor = CodeAuditorAgent()
 resultado = auditor.audit_code(codigo_alumno)
 
 verificador = ExerciseVerifierAgent(
-    variables_requeridas=["p1", "p2", "p3", "p_tres_figuras"],
+    variables_requeridas=["p1", "p2", "p3", "p_tres_aglomeradas"],
     checks=[
         "abs(float(p1) - 12/52) < 1e-6",
         "abs(float(p2) - 11/51) < 1e-6",
         "abs(float(p3) - 10/50) < 1e-6",
-        "abs(float(p_tres_figuras) - 11/1105) < 1e-6",
+        "abs(float(p_tres_aglomeradas) - 11/1105) < 1e-6",
     ],
     plantilla=plantilla_original,
 )
@@ -904,6 +904,8 @@ reportar_resultado_ejercicio(
 
 # TODO: calcula P(ambas conformes) CON reemplazo y guárdala en `p_con_reemplazo`
 # TODO: calcula P(ambas conformes) SIN reemplazo y guárdala en `p_sin_reemplazo`
+# TODO: calcula P(2da conforme | 1ra conforme) SIN reemplazo y guárdala en
+#       `p_condicional_sin_reemplazo`
 # TODO: determina si las extracciones son independientes en cada escenario comparando
 #       P(2da conforme | 1ra conforme) contra P(2da conforme); guarda booleanos en
 #       `es_independiente_con_reemplazo` y `es_independiente_sin_reemplazo`
@@ -919,6 +921,8 @@ plantilla_original = """# Completa aquí tu solución al Ejercicio 3 de esta uni
 
 # TODO: calcula P(ambas conformes) CON reemplazo y guárdala en `p_con_reemplazo`
 # TODO: calcula P(ambas conformes) SIN reemplazo y guárdala en `p_sin_reemplazo`
+# TODO: calcula P(2da conforme | 1ra conforme) SIN reemplazo y guárdala en
+#       `p_condicional_sin_reemplazo`
 # TODO: determina si las extracciones son independientes en cada escenario comparando
 #       P(2da conforme | 1ra conforme) contra P(2da conforme); guarda booleanos en
 #       `es_independiente_con_reemplazo` y `es_independiente_sin_reemplazo`"""
@@ -930,14 +934,18 @@ verificador = ExerciseVerifierAgent(
     variables_requeridas=[
         "p_con_reemplazo",
         "p_sin_reemplazo",
+        "p_condicional_sin_reemplazo",
         "es_independiente_con_reemplazo",
         "es_independiente_sin_reemplazo",
     ],
     # Un enfoque ingenuo plausible es tratar "sin reemplazo" igual que "con reemplazo"
     # (olvidar que la urna pierde una canica): eso da 0.36 en vez de 1/3 y falla el check.
+    # `p_condicional_sin_reemplazo` (5/9 ≈ 0.5556) exige el cálculo real que sustenta el
+    # booleano de independencia: adivinar True/False sin resolverlo ya no basta.
     checks=[
         "abs(p_con_reemplazo - 0.36) < 1e-6",
         "abs(p_sin_reemplazo - 1/3) < 1e-6",
+        "abs(p_condicional_sin_reemplazo - 5/9) < 1e-6",
         "es_independiente_con_reemplazo is True",
         "es_independiente_sin_reemplazo is False",
     ],
