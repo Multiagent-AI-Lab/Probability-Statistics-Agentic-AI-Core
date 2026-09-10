@@ -275,18 +275,27 @@ sns.stripplot(data=df_exp, x='Método Síntesis', y='Diámetro (nm)', color='bla
 axes[0].set_title("Comparación Muestral de Diámetros TiO2 por Método", fontsize=12, fontweight="bold")
 
 ## Gráfico 2: Simulación de Potencia de la Prueba mediante Monte Carlo
+## Simulación VECTORIZADA: en vez de un doble bucle Python con N_sim llamadas
+## a stats.ttest_ind por punto de efecto (decenas de miles de llamadas), se
+## genera un tensor (N_efectos, N_sim, n) de una sola vez y se aplica el
+## t-test sobre el eje de las muestras. Mismo resultado estadístico, ~1000x
+## más rápido.
 efectos = np.linspace(0, 5, 50)
-potencias = []
 N_sim = 2000
+n_muestra = 15
 
-for eff in efectos:
-    rechazos = 0
-    for _ in range(N_sim):
-        s_a_sim = np.random.normal(loc=24.5 + eff, scale=2.1, size=15)
-        s_b_sim = np.random.normal(loc=24.5, scale=1.8, size=15)
-        if stats.ttest_ind(s_a_sim, s_b_sim).pvalue < 0.05:
-            rechazos += 1
-    potencias.append(rechazos / N_sim)
+## Tensores de muestras: forma (N_efectos, N_sim, n_muestra)
+muestras_a = np.random.normal(
+    loc=24.5 + efectos[:, None, None], scale=2.1, size=(len(efectos), N_sim, n_muestra)
+)
+muestras_b = np.random.normal(
+    loc=24.5, scale=1.8, size=(len(efectos), N_sim, n_muestra)
+)
+
+## t-test independiente sobre el eje de la muestra: devuelve p-valores de
+## forma (N_efectos, N_sim). La potencia es la fracción de p < 0.05.
+_, pvals = stats.ttest_ind(muestras_a, muestras_b, axis=2)
+potencias = (pvals < 0.05).mean(axis=1)
 
 axes[1].plot(efectos, potencias, color='purple', lw=2.5, label='Curva de Potencia Simulada (1-β)')
 axes[1].axhline(y=0.80, color='red', linestyle='--', label='Potencia Objetivo (80%)')

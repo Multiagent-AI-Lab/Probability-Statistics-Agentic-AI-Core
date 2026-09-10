@@ -90,8 +90,16 @@ class LayoutEditorialAgent:
         return fixed_text
 
     def detect_duplicate_blocks(self, lessons: dict[str, str]) -> list[dict[str, Any]]:
-        """Detecta bloques de texto (>=40 palabras) repetidos entre unidades o dentro
-        de la misma unidad, via hash normalizado (whitespace colapsado, minusculas)."""
+        """Detecta bloques de PROSA (>=40 palabras) repetidos entre unidades o
+        dentro de la misma unidad, via hash normalizado (whitespace colapsado,
+        minusculas).
+
+        El objetivo es el plagio de contenido pedagogico: un parrafo
+        explicativo copiado igual en dos unidades. Los bloques de codigo se
+        excluyen: la celda de setup de Colab, el helper `verificar_*` de la
+        autoevaluacion y otras utilidades de andamiaje son legitimamente
+        identicas en las 8 unidades por diseno, no son texto duplicado.
+        """
         import hashlib
 
         block_locations: dict[str, list[Any]] = {}
@@ -99,6 +107,8 @@ class LayoutEditorialAgent:
         for unit_name, text in lessons.items():
             raw_blocks = re.split(r"\n\s*\n", text)
             for block_index, raw_block in enumerate(raw_blocks):
+                if self._es_bloque_de_codigo(raw_block):
+                    continue
                 words = raw_block.split()
                 if len(words) < 40:
                     continue
@@ -114,3 +124,41 @@ class LayoutEditorialAgent:
             if len(locations) >= 2
         ]
         return duplicates
+
+    @staticmethod
+    def _es_bloque_de_codigo(raw_block: str) -> bool:
+        """¿El bloque es codigo (o su fence), no prosa pedagogica?
+
+        Un bloque separado por linea en blanco que abre/cierra un fence, o
+        cuyas primeras lineas no vacias son sintaxis Python inequivoca
+        (import, def, class, un decorador, una asignacion o un comentario de
+        codigo), es andamiaje: se comparte igual entre unidades por diseno.
+        """
+        lineas = [ln for ln in raw_block.splitlines() if ln.strip()]
+        if not lineas:
+            return False
+        primera = lineas[0].lstrip()
+        if primera.startswith("```"):
+            return True
+        senales_inicio = (
+            "import ",
+            "from ",
+            "def ",
+            "class ",
+            "@",
+            "%%writefile",
+            "if __name__",
+            "if 'google.colab'",
+            'if "google.colab"',
+        )
+        if primera.startswith(senales_inicio):
+            return True
+        # El bloque puede abrir con un comentario de codigo (el curso usa `##`
+        # para comentar dentro de las celdas). Si alguna linea posterior es
+        # sintaxis Python inequivoca -o esta indentada, como el cuerpo de una
+        # funcion- el bloque entero es codigo, no prosa.
+        senales_cuerpo = ("def ", "import ", "for ", "while ", "return ", "print(")
+        return any(
+            ln.startswith("    ") or ln.lstrip().startswith(senales_cuerpo)
+            for ln in lineas[1:]
+        )
