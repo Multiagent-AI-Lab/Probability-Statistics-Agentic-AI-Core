@@ -3,18 +3,14 @@ LibrarianAgent (@Librarian): Verification agent against statistical textbooks (W
 """
 
 import logging
-import re
 from typing import Any
 
 import requests
 
+from .._doi_utils import extraer_dois
+
 logger = logging.getLogger(__name__)
 
-# Excluye espacios del sufijo del DOI -- un DOI real con paréntesis o espacio
-# en el sufijo (raro, pero existen en algunos DOIs de libros) no matchearía
-# y el texto se trataría como "sin DOI" (degrada a validación por palabra
-# clave, sin lanzar error). No se ha visto este caso en el curso.
-_DOI_PATTERN = re.compile(r"DOI:\s*\[(10\.\d{4,9}/[^\]\s?#]{1,300})\]", re.IGNORECASE)
 _REFERENCE_KEYWORDS = ("walpole", "montgomery", "scipy", "mit", "meta-analysis")
 CROSSREF_API_BASE = "https://api.crossref.org/works"
 CROSSREF_TIMEOUT_SECONDS = 10
@@ -25,8 +21,11 @@ class LibrarianAgent:
 
     def _extract_dois(self, text: str) -> list[str]:
         """Extrae los DOI citados en el texto (formato `DOI: [10.xxxx/yyyy](url)`),
-        deduplicados y en orden de aparición."""
-        return list(dict.fromkeys(_DOI_PATTERN.findall(text)))
+        deduplicados y en orden de aparición.
+
+        Delega en `_doi_utils.extraer_dois`, la fuente de verdad compartida con
+        `StatsTutorAgent` (ver ese módulo para el detalle del patrón)."""
+        return extraer_dois(text)
 
     def _doi_resuelve(self, doi: str) -> bool:
         """Confirma que un DOI existe consultando la API pública de Crossref.

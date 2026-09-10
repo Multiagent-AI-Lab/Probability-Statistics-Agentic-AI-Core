@@ -6,6 +6,17 @@ import ast
 import re
 from typing import Any
 
+# Librería (subcadena buscada en el nombre del módulo importado) -> clave de
+# `metrics` que se marca cuando aparece.
+_LIBRERIAS_RASTREADAS = {
+    "scipy": "uses_scipy",
+    "statsmodels": "uses_statsmodels",
+    "sympy": "uses_sympy",
+}
+
+# Marcas que delatan LaTeX crudo dentro de un `print()`.
+_MARCAS_LATEX = (r"\frac", r"\mu", r"\sigma")
+
 
 class CodeAuditorAgent:
     """Agent that audits Python statistical code blocks."""
@@ -53,13 +64,9 @@ class CodeAuditorAgent:
 
         return issues
 
-    def audit_code(self, code_str: str) -> dict[str, Any]:
-        blocks = self.extract_python_code_blocks(code_str)
-
-        issues = []
-        warnings = []
-        security_issues: list[str] = []
-        metrics = {
+    @staticmethod
+    def _empty_metrics() -> dict[str, bool]:
+        return {
             "uses_scipy": False,
             "uses_statsmodels": False,
             "uses_sympy": False,
@@ -67,6 +74,90 @@ class CodeAuditorAgent:
             "uses_raw_print_latex": False,
             "has_security_risk": False,
         }
+
+    @staticmethod
+    def _record_library_usage(module_name: str, metrics: dict[str, bool]) -> None:
+        """Marca en `metrics` las librerías estadísticas presentes en un import."""
+        for libreria, clave in _LIBRERIAS_RASTREADAS.items():
+            if libreria in module_name:
+                metrics[clave] = True
+
+    @staticmethod
+    def _called_func_name(node: ast.Call) -> str:
+        """Nombre de la función invocada: `f()` -> "f", `obj.f()` -> "f"."""
+        if isinstance(node.func, ast.Name):
+            return node.func.id
+        if isinstance(node.func, ast.Attribute):
+            return node.func.attr
+        return ""
+
+    @staticmethod
+    def _args_con_latex_crudo(node: ast.Call) -> int:
+        """Cuenta los literales de un `print()` que contienen LaTeX crudo."""
+        return sum(
+            1
+            for arg in node.args
+            if isinstance(arg, ast.Constant)
+            and isinstance(arg.value, str)
+            and any(marca in arg.value for marca in _MARCAS_LATEX)
+        )
+
+    def _check_imports(self, node: ast.AST, metrics: dict[str, bool]) -> None:
+        """Registra el uso de scipy/statsmodels/sympy en un nodo de import."""
+        if isinstance(node, ast.Import):
+            for alias in node.names:
+                self._record_library_usage(alias.name, metrics)
+            return
+
+        if isinstance(node, ast.ImportFrom) and node.module:
+            self._record_library_usage(node.module, metrics)
+
+    def _check_display_usage(
+        self, node: ast.AST, metrics: dict[str, bool], warnings: list[str]
+    ) -> None:
+        """Distingue `display(Math(...))` de un `print()` con LaTeX crudo."""
+        if not isinstance(node, ast.Call):
+            return
+
+        func_name = self._called_func_name(node)
+        if func_name == "display":
+            metrics["uses_display_math"] = True
+            return
+
+        if func_name != "print":
+            return
+
+        # Una advertencia por argumento con LaTeX crudo (no una por llamada):
+        # se conserva el conteo del comportamiento original.
+        for _ in range(self._args_con_latex_crudo(node)):
+            metrics["uses_raw_print_latex"] = True
+            warnings.append(
+                "Avoid print() for LaTeX equations; use display(Math()) instead."
+            )
+
+    def _audit_block(
+        self,
+        cleaned: str,
+        metrics: dict[str, bool],
+        warnings: list[str],
+        security_issues: list[str],
+    ) -> bool:
+        """Audita un bloque ya limpio de magics. Devuelve True si parseó bien.
+
+        Acumula sus hallazgos en `metrics`, `warnings` y `security_issues`.
+        """
+        tree = ast.parse(cleaned)
+        security_issues.extend(self._check_security(cleaned, tree))
+
+        for node in ast.walk(tree):
+            self._check_imports(node, metrics)
+            self._check_display_usage(node, metrics, warnings)
+
+        return True
+
+    def audit_code(self, code_str: str) -> dict[str, Any]:
+        blocks = self.extract_python_code_blocks(code_str)
+        metrics = self._empty_metrics()
 
         if not blocks:
             return {
@@ -78,57 +169,20 @@ class CodeAuditorAgent:
                 "metrics": metrics,
             }
 
+        issues: list[str] = []
+        warnings: list[str] = []
+        security_issues: list[str] = []
         valid_blocks = 0
+
         for block in blocks:
             cleaned = self.clean_ipython_magics(block)
             if not cleaned.strip():
                 continue
 
             try:
-                tree = ast.parse(cleaned)
-                valid_blocks += 1
-                security_issues.extend(self._check_security(cleaned, tree))
-                for node in ast.walk(tree):
-                    if isinstance(node, ast.Import):
-                        for alias in node.names:
-                            if "scipy" in alias.name:
-                                metrics["uses_scipy"] = True
-                            if "statsmodels" in alias.name:
-                                metrics["uses_statsmodels"] = True
-                            if "sympy" in alias.name:
-                                metrics["uses_sympy"] = True
-                    elif isinstance(node, ast.ImportFrom) and node.module:
-                        if "scipy" in node.module:
-                            metrics["uses_scipy"] = True
-                        if "statsmodels" in node.module:
-                            metrics["uses_statsmodels"] = True
-                        if "sympy" in node.module:
-                            metrics["uses_sympy"] = True
-
-                    if isinstance(node, ast.Call):
-                        func_name = ""
-                        if isinstance(node.func, ast.Name):
-                            func_name = node.func.id
-                        elif isinstance(node.func, ast.Attribute):
-                            func_name = node.func.attr
-
-                        if func_name == "display":
-                            metrics["uses_display_math"] = True
-                        elif func_name == "print":
-                            for arg in node.args:
-                                if (
-                                    isinstance(arg, ast.Constant)
-                                    and isinstance(arg.value, str)
-                                    and (
-                                        r"\frac" in arg.value
-                                        or r"\mu" in arg.value
-                                        or r"\sigma" in arg.value
-                                    )
-                                ):
-                                    metrics["uses_raw_print_latex"] = True
-                                    warnings.append(
-                                        "Avoid print() for LaTeX equations; use display(Math()) instead."
-                                    )
+                valid_blocks += self._audit_block(
+                    cleaned, metrics, warnings, security_issues
+                )
             except SyntaxError as e:
                 issues.append(f"SyntaxError in code block: {e.msg} at line {e.lineno}")
 

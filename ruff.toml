@@ -1,0 +1,10 @@
+# Configuración de ruff para el repositorio.
+
+# scripts de un solo uso ya ejecutados, se conservan como historial de
+# construcción del contenido; fuera del alcance de linting
+extend-exclude = ["scripts/legacy"]
+
+# Respetar la exclusión incluso cuando la ruta se pasa explícitamente en la
+# línea de comandos (`ruff check scripts/legacy/`) o la invoca un pre-commit,
+# no solo cuando ruff descubre los archivos por su cuenta.
+force-exclude = true

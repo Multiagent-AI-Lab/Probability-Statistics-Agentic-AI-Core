@@ -497,7 +497,7 @@ ipytest.run("-vv")
 
 ---
 
-## 5.6 Estudio de Caso: El Problema de los Tres Prisioneros
+### 5.6 Estudio de Caso: El Problema de los Tres Prisioneros
 
 El ejemplo de los reactores (Sección 5) resuelve Bayes en un caso donde la intuición y el cálculo coinciden. El siguiente caso clásico —isomorfo al problema de Monty Hall— es célebre precisamente porque la intuición falla: sirve para poner a prueba si el Teorema de Bayes se aplicó por comprensión o solo por sustitución mecánica en una fórmula.
 

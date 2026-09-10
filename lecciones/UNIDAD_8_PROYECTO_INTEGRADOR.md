@@ -683,7 +683,7 @@ Un modelo de grado bajo tiene sesgo alto (no puede representar la curva real, si
 
 #### 7.8.2 Regularización: Ridge (L2) y Lasso (L1)
 
-Cuando el número de predictores es grande (o están correlacionados entre sí, como en el VIF de §1.18), la regresión OLS clásica puede sobreajustar de la misma forma que el polinomio de grado alto de arriba. La **regularización** añade a la función de pérdida un término que penaliza coeficientes grandes, controlando la complejidad efectiva del modelo sin reducir manualmente el número de predictores:
+Cuando el número de predictores es grande (o están correlacionados entre sí, como en el VIF de la Unidad 7, §1.18), la regresión OLS clásica puede sobreajustar de la misma forma que el polinomio de grado alto de arriba. La **regularización** añade a la función de pérdida un término que penaliza coeficientes grandes, controlando la complejidad efectiva del modelo sin reducir manualmente el número de predictores:
 
 * **Ridge (penalización $L_2$)**: minimiza $\sum_i (y_i-\hat y_i)^2 + \lambda\sum_j \beta_j^2$. Encoge todos los coeficientes hacia cero de forma proporcional, pero **nunca los anula exactamente**.
 * **Lasso (penalización $L_1$)**: minimiza $\sum_i (y_i-\hat y_i)^2 + \lambda\sum_j |\beta_j|$. Puede llevar coeficientes **exactamente a cero**, realizando selección automática de variables.

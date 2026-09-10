@@ -23,6 +23,7 @@ from chromadb.utils.embedding_functions import SentenceTransformerEmbeddingFunct
 from dotenv import load_dotenv
 from google import genai
 
+from ._doi_utils import extraer_dois
 from .pdf_indexer import index_pdf
 
 load_dotenv()
@@ -50,7 +51,6 @@ EMBEDDING_MODEL_NAME = "paraphrase-multilingual-MiniLM-L12-v2"
 MODEL_NAME = os.environ.get("STATS_TUTOR_MODEL", "gemini-2.5-flash")
 BIBLIOGRAFIA_COLLECTION_NAME = "bibliografia_pdfs"
 BIBLIOGRAFIA_MAX_CHARS_POR_CHUNK = 1000
-_DOI_PATTERN = re.compile(r"DOI:\s*\[(10\.\d{4,9}/[^\]\s?#]+)\]", re.IGNORECASE)
 CROSSREF_API_BASE = "https://api.crossref.org/works"
 CROSSREF_TIMEOUT_SECONDS = 10
 
@@ -229,9 +229,8 @@ class StatsTutorAgent:
     def _extract_dois(self, content: str) -> list[str]:
         """Extrae los identificadores DOI citados en el texto de una lección.
 
-        Extrae del texto del link Markdown (`[10.xxxx/yyyy]`), no de la URL —
-        algunos DOI reales contienen paréntesis en su propio identificador,
-        lo que rompería un regex que delimite por ')' en la URL.
+        Delega en `_doi_utils.extraer_dois`, la fuente de verdad compartida con
+        `LibrarianAgent` (ver ese módulo para el detalle del patrón).
 
         Args:
             content: Texto completo de un archivo Markdown de lección.
@@ -239,7 +238,7 @@ class StatsTutorAgent:
         Returns:
             Lista de DOI únicos, en el orden en que aparecen en el texto.
         """
-        return list(dict.fromkeys(_DOI_PATTERN.findall(content)))
+        return extraer_dois(content)
 
     def _fetch_abstract(self, doi: str) -> str | None:
         """Consulta el abstract público de un DOI vía la API de Crossref.

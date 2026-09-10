@@ -22,6 +22,15 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      # Formato y lint del código de agentes. `scripts/legacy/` queda fuera
+      # del alcance por configuración (ver ruff.toml): son scripts de un solo
+      # uso ya ejecutados, conservados como historial.
+      - name: Check formatting and lint (ruff / black / isort)
+        run: |
+          ruff check src/multiagent_core/
+          black --check src/multiagent_core/
+          isort --check-only src/multiagent_core/
+
       - name: Run pytest test suite
         run: |
           pytest
