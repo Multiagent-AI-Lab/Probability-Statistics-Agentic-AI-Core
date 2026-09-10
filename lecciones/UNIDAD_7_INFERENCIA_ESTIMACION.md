@@ -381,6 +381,27 @@ $$\boxed{\hat{\lambda}_{MoM} = \frac{1}{\bar{x}} = 0.0532\ \text{h}^{-1} \qquad 
 
 Las pruebas vistas hasta §1.8 (Z, t, $\chi^2$) son **paramétricas**: asumen una forma funcional conocida (típicamente Normal) para la distribución subyacente. Cuando esta suposición no se cumple —distribuciones asimétricas, muestras pequeñas, o presencia de outliers—, las pruebas **no paramétricas** (basadas en rangos u órdenes, no en los valores originales) ofrecen alternativas más robustas.
 
+**Mapa de decisión (§1.8-1.12)**. El diagrama resume qué prueba aplicar según se cumplan o no los supuestos de normalidad y homocedasticidad. La rama paramétrica cubre lo visto hasta §1.8; la no paramétrica, §1.10-1.11. La prueba de Levene (§1.12) es la que decide la bifurcación de homocedasticidad antes de un ANOVA.
+
+```mermaid
+graph TD
+    Inicio["Comparar 2 o mas grupos"]
+    Inicio --> Q1{"Normalidad en cada grupo? (Shapiro-Wilk)"}
+    Q1 -->|"No"| NoParam["Rama no parametrica (basada en rangos)"]
+    Q1 -->|"Si"| Q2{"Homocedasticidad? (Levene, seccion 1.12)"}
+    Q2 -->|"No"| NoParam
+    Q2 -->|"Si"| Param["Rama parametrica"]
+    Param --> P1["1 media vs valor: Z-test o t de una muestra"]
+    Param --> P2["2 medias independientes: t de dos muestras"]
+    Param --> P3["3+ medias: ANOVA de una via"]
+    Param --> P4["Varianzas o frecuencias: prueba chi-cuadrada"]
+    NoParam --> N1["2 grupos independientes: Mann-Whitney U"]
+    NoParam --> N2["3+ grupos independientes: Kruskal-Wallis H"]
+    NoParam --> N3["Datos apareados: Wilcoxon de rangos con signo"]
+    NoParam --> N4["Solo orden o mediana vs valor: prueba de signos"]
+    NoParam --> N5["Misma distribucion entre 2 muestras: KS de dos muestras"]
+```
+
 **Kolmogorov-Smirnov (KS) de dos muestras**: a diferencia del KS de una muestra ya usado en §6.3 (bondad de ajuste contra una distribución teórica), el KS de dos muestras evalúa si dos conjuntos de datos independientes provienen de la **misma distribución**, sin asumir ninguna forma específica. El estadístico compara las funciones de distribución empíricas (CDF) de ambas muestras:
 $$D_{n,m} = \sup_x |F_n(x) - F_m(x)|$$
 donde $F_n$ y $F_m$ son las CDF empíricas de cada muestra. Valores grandes de $D$ indican que las distribuciones difieren.

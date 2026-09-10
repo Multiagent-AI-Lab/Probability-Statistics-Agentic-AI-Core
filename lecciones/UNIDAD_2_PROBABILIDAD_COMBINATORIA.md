@@ -40,6 +40,14 @@ else:
 
 ---
 
+## Prerequisitos de esta unidad
+
+- **Estadística Descriptiva y EDA** (Unidad 1) — las frecuencias relativas de una muestra son la antesala empírica del concepto de probabilidad; aquí se formaliza ese límite.
+- **Teoría de conjuntos básica** — unión, intersección, complemento y diferencia, para manipular eventos como subconjuntos del espacio muestral y aplicar las leyes de De Morgan.
+- **Ciclo de Verificación Triple** (ver `GOVERNANCE.md`) — como en todas las unidades del curso, cada concepto con forma cerrada se verifica primero simbólicamente (SymPy) y luego se reproduce con las herramientas de producción (SciPy/statsmodels) antes de interpretarse.
+
+---
+
 ## 1. Fundamentación Teórica y Conceptos Clave
 
 La **Teoría de la Probabilidad** proporciona el marco matemático formal para cuantificar la incertidumbre y razonar bajo información incompleta. En la Ingeniería en Inteligencia Artificial y Nanotecnología, la probabilidad permite desde modelar la fluctuación térmica de nanopartículas en suspensión coloidal hasta calcular la probabilidad posterior en clasificadores bayesianos de imágenes microscópicas.
@@ -429,6 +437,23 @@ $$P(D) = 0.0180 + 0.0070 + 0.0160 = 0.0410 \quad (4.1\%)$$
 $$\boxed{P(R_3|D) = \frac{P(D|R_3)P(R_3)}{P(D)} = \frac{0.08 \times 0.20}{0.0410} = \frac{0.0160}{0.0410} = \frac{16}{41} \approx 0.39024}$$
 
 **Interpretación**: Aunque el reactor $R_3$ solo sintetiza el $20\%$ del volumen total de nanopartículas, si descubrimos que una nanopartícula está defectuosa, la probabilidad de que provenga de $R_3$ se duplica casi al $39.02\%$ debido a su mayor tasa individual de defectos ($8\%$).
+
+**Árbol de probabilidad total e inversión bayesiana**. El siguiente diagrama traza el flujo del ejemplo: desde las probabilidades a priori de cada reactor, pasando por las verosimilitudes de defecto, hasta la probabilidad total $P(D)$ que actúa como factor de normalización y la posterior $P(R_3|D)$.
+
+```mermaid
+graph TD
+    Lote["Nanoparticula del lote unificado"]
+    Lote -->|"P(R1) = 0.45"| R1["Reactor R1"]
+    Lote -->|"P(R2) = 0.35"| R2["Reactor R2"]
+    Lote -->|"P(R3) = 0.20"| R3["Reactor R3"]
+    R1 -->|"P(D dado R1) = 0.04"| C1["Aporte a P(D): 0.0180"]
+    R2 -->|"P(D dado R2) = 0.02"| C2["Aporte a P(D): 0.0070"]
+    R3 -->|"P(D dado R3) = 0.08"| C3["Aporte a P(D): 0.0160"]
+    C1 --> PD["Probabilidad total P(D) = 0.0410"]
+    C2 --> PD
+    C3 --> PD
+    PD -->|"Bayes: 0.0160 / 0.0410"| Post["Posterior P(R3 dado D) = 16/41 = 0.3902"]
+```
 
 ### 5.5 Prueba Unitaria con pytest
 

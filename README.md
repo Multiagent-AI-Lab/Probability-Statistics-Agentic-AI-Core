@@ -202,6 +202,18 @@ falla, verifica que abriste Jupyter dentro del árbol del repo clonado.
 
 ---
 
+## 🧰 ¿Por qué este stack?
+
+Las tres decisiones tecnológicas de fondo del proyecto, con su justificación honesta:
+
+**Python + SciPy/SymPy sobre R.** El curso pertenece a la Ingeniería en IA y Nanotecnología, donde todo el resto del programa (álgebra lineal, ML, simulación) se imparte en Python; usar R aquí obligaría al alumno a mantener dos ecosistemas en paralelo. Además, SymPy aporta verificación simbólica exacta —resolver una integral o una esperanza en forma cerrada y compararla contra el resultado numérico— que R no ofrece de forma nativa. El contenido probabilístico se integra así directamente con el resto del stack de IA que el estudiante ya usa.
+
+**ChromaDB sobre FAISS o pgvector.** El RAG del `StatsTutorAgent` indexa apenas ~8 unidades de lecciones: un corpus pequeño para el que la diferencia de rendimiento entre motores es irrelevante. ChromaDB es embebido (cero configuración, sin servidor) y persiste en un directorio local, lo que encaja con un repo de curso que se clona y se ejecuta sin infraestructura. FAISS exige plomería adicional para almacenar metadatos y persistir el índice; pgvector requiere levantar y administrar un Postgres. Su API de alto nivel cubre sin sobra lo que este RAG necesita.
+
+**Gemini sobre otro proveedor.** El tier gratuito de Gemini es generoso para uso educativo (un curso completo cabe dentro de las cuotas sin costo), ofrece ventana de contexto larga para pasar varias secciones de lección como contexto, y tiene buen soporte multilingüe —importante porque todo el material está en español. El SDK `google-genai` es el vigente (reemplaza al obsoleto `google-generativeai`). La variable de entorno `STATS_TUTOR_MODEL` permite cambiar el modelo concreto sin tocar código, de modo que la elección de proveedor no queda cementada.
+
+---
+
 ## 📄 Licencia y Créditos
 
 Desarrollado para la **UCEMICH**.  

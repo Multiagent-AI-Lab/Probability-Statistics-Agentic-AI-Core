@@ -40,6 +40,16 @@ else:
 
 ---
 
+## Prerequisitos de esta unidad
+
+Esta unidad abre el curso; los prerequisitos son mínimos:
+
+- **Notación matemática básica** — sumatoria ($\sum$), subíndices y fracciones, para leer las fórmulas de media, varianza y momentos.
+- **Python básico** — variables, listas, funciones y ejecución de celdas en un notebook; no se requiere experiencia previa con NumPy, Pandas ni SciPy (se introducen aquí).
+- **Ciclo de Verificación Triple** (ver `GOVERNANCE.md`) — como en todas las unidades del curso, cada concepto con forma cerrada se verifica primero simbólicamente (SymPy) y luego se reproduce con las herramientas de producción (SciPy/statsmodels) antes de interpretarse.
+
+---
+
 ## 1. Fundamentación Teórica y Conceptos Clave
 
 La **Estadística Descriptiva** y el **Análisis Exploratorio de Datos (EDA)** constituyen los cimientos fundamentales para caracterizar e interpretar conjuntos de datos experimentales en ciencias e ingeniería, particularmente en el estudio de sistemas nanotecnológicos y modelos de Inteligencia Artificial. El análisis descriptivo permite resumir la tendencia central, dispersión, simetría y forma de una distribución muestral mediante medidas numéricas y representaciones gráficas cuantitativas, antes de intentar cualquier modelo probabilístico o inferencia sobre la población de origen.
