@@ -571,6 +571,60 @@ print(f"Diferencia absoluta: {abs(prob_montecarlo - prob_exacta):.5f}")
 * **Error**: Tratar los números generados por `numpy.random` (o cualquier generador pseudoaleatorio) como verdaderamente aleatorios e impredecibles.
   **Correcto**: son deterministas — dado el mismo `seed`, la secuencia completa se reproduce exactamente. Esto es una ventaja para la reproducibilidad de experimentos computacionales, pero implica que no son adecuados para aplicaciones criptográficas que requieren aleatoriedad genuina.
 
+## Preguntas de Concepto
+
+**Pregunta 1.** Si se cuadruplica el número de iteraciones $N$ en una simulación Monte Carlo, ¿en qué factor se reduce aproximadamente el error estándar de la estimación?
+
+A) Se reduce a la cuarta parte (factor de 4).
+B) No cambia; el error estándar es independiente de $N$.
+C) Se reduce a la mitad (factor de 2), porque el error estándar converge como $O(1/\sqrt{N})$.
+D) Se reduce proporcionalmente, en factor de 4, igual que $N$.
+
+**Pregunta 2.** En el bootstrap no paramétrico, ¿cómo se remuestrea a partir de la muestra original?
+
+A) Sin reemplazo, tomando subconjuntos distintos cada vez.
+B) Con reemplazo, permitiendo que algunos datos se repitan y otros queden fuera de una réplica dada — así se puede estimar la variabilidad del estadístico.
+C) Ordenando los datos y tomando siempre los mismos percentiles.
+D) Generando datos completamente nuevos con una distribución teórica distinta a la original.
+
+**Pregunta 3.** Dos ejecuciones de una simulación en `numpy.random` usan exactamente el mismo `seed`. ¿Qué se puede esperar de los resultados?
+
+A) Resultados distintos cada vez, porque los generadores son verdaderamente aleatorios.
+B) Resultados similares pero no idénticos, con pequeñas variaciones.
+C) Depende del sistema operativo utilizado.
+D) Resultados idénticos, porque los generadores pseudoaleatorios son deterministas dado el mismo `seed`.
+
+**Pregunta 4.** ¿Por qué los generadores pseudoaleatorios de `numpy.random` no son adecuados para aplicaciones criptográficas?
+
+A) Porque son deterministas y predecibles conociendo el `seed` y el algoritmo, mientras que la criptografía requiere aleatoriedad genuina e impredecible.
+B) Porque son demasiado lentos computacionalmente.
+C) Porque solo generan números enteros.
+D) Porque no pueden generar más de 1000 números por segundo.
+
+A continuación, verifica tus respuestas ejecutando la siguiente celda (asigna tu respuesta a cada pregunta en el diccionario `mis_respuestas` antes de correrla):
+
+```python
+## Diccionario de referencia con las respuestas correctas de esta unidad
+respuestas_correctas = {1: "C", 2: "B", 3: "D", 4: "A"}
+
+## Completa aquí tus respuestas (reemplaza los "?" por "A", "B", "C" o "D")
+mis_respuestas = {1: "?", 2: "?", 3: "?", 4: "?"}
+
+## Comparación local: no requiere ejecutar código externo ni conexión a internet
+def verificar_preguntas_concepto(mis_respuestas, respuestas_correctas):
+    aciertos = 0
+    for numero, correcta in respuestas_correctas.items():
+        respuesta_alumno = mis_respuestas.get(numero, "?")
+        if respuesta_alumno == correcta:
+            print(f"Pregunta {numero}: correcto ({respuesta_alumno})")
+            aciertos += 1
+        else:
+            print(f"Pregunta {numero}: incorrecto (tu respuesta: {respuesta_alumno}, revisa la sección de Errores Comunes)")
+    print(f"\nTotal: {aciertos}/{len(respuestas_correctas)} preguntas correctas")
+
+verificar_preguntas_concepto(mis_respuestas, respuestas_correctas)
+```
+
 ## Ejercicio Propuesto
 
 El tiempo hasta la primera falla de un nanosensor de gas basado en óxido de grafeno sigue una distribución Exponencial con tasa $\lambda = 0.05$ fallas/hora ($X \sim \text{Exponencial}(\lambda = 0.05)$).

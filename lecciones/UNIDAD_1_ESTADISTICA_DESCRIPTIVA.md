@@ -782,6 +782,60 @@ $$\boxed{\text{Mejor ajuste (distfit)} = \texttt{dweibull}, \quad RSS \approx 0.
 * **Error**: Asumir que "media > mediana implica asimetría positiva" (y viceversa) como regla universal.
   **Correcto**: esa relación es válida solo como heurística para distribuciones unimodales razonablemente regulares. En distribuciones multimodales o con outliers extremos la relación puede romperse; el diagnóstico correcto de asimetría es el coeficiente de asimetría (skewness) o la inspección visual del histograma.
 
+## Preguntas de Concepto
+
+**Pregunta 1.** Al calcular la desviación estándar de una muestra (no de la población completa), ¿qué denominador se debe usar y por qué?
+
+A) $n-1$, porque produce un estimador insesgado de la varianza poblacional (corrección de Bessel).
+B) $n$, porque siempre se divide entre el número total de datos.
+C) $n+1$, para compensar el sesgo de submuestreo.
+D) Es indistinto usar $n$ o $n-1$; el resultado no cambia de forma relevante.
+
+**Pregunta 2.** Un conjunto de datos contiene un valor atípico extremo. ¿Qué afirmación es correcta respecto a la media y la mediana?
+
+A) Ambas son igualmente robustas ante outliers.
+B) La mediana se desplaza más que la media porque depende del orden de los datos.
+C) La media puede desplazarse arbitrariamente hacia el outlier, mientras que la mediana permanece prácticamente inalterada.
+D) El outlier afecta únicamente a la varianza, nunca a la media ni a la mediana.
+
+**Pregunta 3.** Se observa que, en un conjunto de datos, la media es mayor que la mediana. ¿Qué se puede concluir con certeza?
+
+A) La distribución es necesariamente asimétrica positiva (sesgada a la derecha).
+B) La distribución es necesariamente simétrica.
+C) La varianza de los datos debe ser cero.
+D) Es una heurística válida solo para distribuciones unimodales razonablemente regulares; en general no es una regla universal (puede fallar con multimodalidad u outliers).
+
+**Pregunta 4.** ¿Cuál es la razón principal para reportar el coeficiente de variación (CV) en lugar de la desviación estándar al comparar la dispersión de dos muestras con medias muy distintas?
+
+A) El CV siempre da un valor menor que la desviación estándar.
+B) La desviación estándar no puede calcularse cuando las medias son distintas.
+C) El CV es adimensional y permite comparar dispersión relativa entre muestras con escalas o medias distintas.
+D) No hay ninguna razón; ambas medidas son intercambiables en cualquier contexto.
+
+A continuación, verifica tus respuestas ejecutando la siguiente celda (asigna tu respuesta a cada pregunta en el diccionario `mis_respuestas` antes de correrla):
+
+```python
+## Diccionario de referencia con las respuestas correctas de esta unidad
+respuestas_correctas = {1: "A", 2: "C", 3: "D", 4: "C"}
+
+## Completa aquí tus respuestas (reemplaza los "?" por "A", "B", "C" o "D")
+mis_respuestas = {1: "?", 2: "?", 3: "?", 4: "?"}
+
+## Comparación local: no requiere ejecutar código externo ni conexión a internet
+def verificar_preguntas_concepto(mis_respuestas, respuestas_correctas):
+    aciertos = 0
+    for numero, correcta in respuestas_correctas.items():
+        respuesta_alumno = mis_respuestas.get(numero, "?")
+        if respuesta_alumno == correcta:
+            print(f"Pregunta {numero}: correcto ({respuesta_alumno})")
+            aciertos += 1
+        else:
+            print(f"Pregunta {numero}: incorrecto (tu respuesta: {respuesta_alumno}, revisa la sección de Errores Comunes)")
+    print(f"\nTotal: {aciertos}/{len(respuestas_correctas)} preguntas correctas")
+
+verificar_preguntas_concepto(mis_respuestas, respuestas_correctas)
+```
+
 ## Ejercicio Propuesto
 
 Un laboratorio de caracterización sintetizó un tercer lote de nanopartículas de plata (AgNPs) con un método de reducción química modificado y midió, vía DLS, el diámetro (en nm) de $n=14$ partículas:

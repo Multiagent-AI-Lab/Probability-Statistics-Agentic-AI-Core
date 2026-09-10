@@ -710,6 +710,60 @@ Notación general introducida en las Secciones 1-4 y 5.6, independiente del ejem
 * **Error**: Asumir que, al descartar una de $k$ opciones igualmente probables mediante evidencia adicional, la probabilidad restante se reparte equitativamente entre las opciones sobrevivientes (falacia del "50/50 automático").
   **Correcto**: como demuestra el Problema de los Tres Prisioneros (§5.6), la forma en que se genera la evidencia determina cómo se redistribuye la probabilidad — si la evidencia es más probable bajo una hipótesis que bajo otra ($P(G_B|C)=1$ vs. $P(G_B|A)=1/2$), la redistribución es asimétrica. Repartir siempre por igual ignora la verosimilitud de la evidencia bajo cada hipótesis.
 
+## Preguntas de Concepto
+
+**Pregunta 1.** Se sabe que $P(A) = 0.4$ y $P(B) = 0.3$, pero no se sabe si $A$ y $B$ son independientes. ¿Es correcto afirmar que $P(A \cap B) = 0.4 \times 0.3 = 0.12$?
+
+A) Sí, la regla del producto simple siempre aplica entre dos eventos cualesquiera.
+B) Sí, porque $P(A) + P(B) < 1$.
+C) No, porque $P(A \cap B)$ siempre debe ser mayor que $P(A)$ y $P(B)$.
+D) No, la regla $P(A \cap B) = P(A)P(B)$ solo es válida si $A$ y $B$ son independientes; en general se necesita $P(A)P(B|A)$.
+
+**Pregunta 2.** En el Teorema de Bayes, ¿bajo qué condición $P(A|B)$ es igual a $P(B|A)$?
+
+A) Siempre, son la misma cantidad expresada de dos formas.
+B) Nunca, son conceptos incompatibles.
+C) Solo cuando $P(A) = P(B)$.
+D) Solo cuando $A$ y $B$ son mutuamente excluyentes.
+
+**Pregunta 3.** Si $A$ y $B$ son eventos mutuamente excluyentes (es decir, $A \cap B = \emptyset$) y ambos tienen probabilidad positiva, ¿qué se puede afirmar sobre su independencia?
+
+A) Son necesariamente dependientes, porque $P(A \cap B) = 0 \neq P(A)P(B)$.
+B) Son necesariamente independientes, porque no comparten resultados.
+C) No se puede determinar sin más información.
+D) Son independientes solo si $P(A) = P(B)$.
+
+**Pregunta 4.** Un problema tipo "Tres Prisioneros": de tres opciones igualmente probables se descarta una mediante evidencia adicional. ¿Es correcto asumir que la probabilidad restante se reparte automáticamente por igual entre las dos opciones sobrevivientes?
+
+A) Sí, siempre que se descarte una opción el 50/50 es la única distribución posible.
+B) Sí, porque la probabilidad total siempre debe sumar 1.
+C) No necesariamente — depende de cómo se generó la evidencia; si la evidencia es más verosímil bajo una hipótesis que bajo otra, la redistribución es asimétrica.
+D) No, la probabilidad de las opciones sobrevivientes siempre baja a cero.
+
+A continuación, verifica tus respuestas ejecutando la siguiente celda (asigna tu respuesta a cada pregunta en el diccionario `mis_respuestas` antes de correrla):
+
+```python
+## Diccionario de referencia con las respuestas correctas de esta unidad
+respuestas_correctas = {1: "D", 2: "C", 3: "A", 4: "C"}
+
+## Completa aquí tus respuestas (reemplaza los "?" por "A", "B", "C" o "D")
+mis_respuestas = {1: "?", 2: "?", 3: "?", 4: "?"}
+
+## Comparación local: no requiere ejecutar código externo ni conexión a internet
+def verificar_preguntas_concepto(mis_respuestas, respuestas_correctas):
+    aciertos = 0
+    for numero, correcta in respuestas_correctas.items():
+        respuesta_alumno = mis_respuestas.get(numero, "?")
+        if respuesta_alumno == correcta:
+            print(f"Pregunta {numero}: correcto ({respuesta_alumno})")
+            aciertos += 1
+        else:
+            print(f"Pregunta {numero}: incorrecto (tu respuesta: {respuesta_alumno}, revisa la sección de Errores Comunes)")
+    print(f"\nTotal: {aciertos}/{len(respuestas_correctas)} preguntas correctas")
+
+verificar_preguntas_concepto(mis_respuestas, respuestas_correctas)
+```
+
 ## Ejercicio Propuesto
 
 Una planta de síntesis de puntos cuánticos (Quantum Dots, QDs) de CdSe produce su lote diario en tres líneas de reacción, $L_1$, $L_2$ y $L_3$, con las siguientes proporciones de producción y tasas de defecto (fuera de especificación de emisión fotoluminiscente):

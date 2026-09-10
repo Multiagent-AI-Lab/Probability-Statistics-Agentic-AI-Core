@@ -931,6 +931,60 @@ Este curso (tercer semestre) trata a las variables aleatorias continuas con herr
 * **Error**: Confundir el parámetro de tasa $\lambda$ de la distribución Exponencial con su media.
   **Correcto**: si $X \sim \text{Exponencial}(\lambda)$, entonces $\mathbb{E}[X] = 1/\lambda$, no $\lambda$. Un $\lambda$ grande (tasa alta de ocurrencia) corresponde a una media *pequeña* (tiempos de espera cortos), relación inversa que se olvida con frecuencia.
 
+## Preguntas de Concepto
+
+**Pregunta 1.** Para una variable aleatoria continua $X$, ¿cuál es el valor de $P(X = 5)$ para un punto específico?
+
+A) Depende del valor de la densidad $f(5)$: si $f(5) > 0$, entonces $P(X=5) > 0$.
+B) Siempre es cero, porque la probabilidad se obtiene integrando la densidad sobre un intervalo, no evaluándola en un punto.
+C) Siempre es igual a $f(5)$.
+D) Es indeterminado sin más información sobre la distribución.
+
+**Pregunta 2.** ¿Es válido afirmar que la propiedad de "falta de memoria" ($P(X > s+t \mid X > s) = P(X > t)$) aplica a cualquier distribución continua, como la Normal o la Gamma?
+
+A) No, entre las distribuciones continuas es exclusiva de la Exponencial; aplicarla a una Normal, Gamma o Weibull con forma $k \neq 1$ produce resultados incorrectos.
+B) Sí, todas las distribuciones continuas la cumplen.
+C) Sí, pero solo si la media es igual a la varianza.
+D) No, ninguna distribución continua ni discreta la cumple.
+
+**Pregunta 3.** Si $X \sim \text{Exponencial}(\lambda)$ y $\lambda$ es un valor grande, ¿qué implica esto sobre $\mathbb{E}[X]$?
+
+A) $\mathbb{E}[X] = \lambda$, por lo que también es grande.
+B) $\mathbb{E}[X]$ no depende de $\lambda$.
+C) $\mathbb{E}[X] = 1/\lambda$, por lo que es pequeña (tiempos de espera cortos), una relación inversa a la tasa.
+D) $\mathbb{E}[X] = \lambda^2$.
+
+**Pregunta 4.** Si en un cálculo se obtiene que la densidad $f(x)$ evaluada en cierto punto vale 1.8, ¿implica esto un error?
+
+A) Sí, ninguna densidad de probabilidad puede superar el valor 1.
+B) Sí, porque toda probabilidad debe estar entre 0 y 1.
+C) No, pero solo es válido para la distribución Uniforme.
+D) No necesariamente — $f(x)$ es una densidad, no una probabilidad, y puede superar 1 (lo que debe integrar a 1 es el área bajo toda la curva, no el valor puntual).
+
+A continuación, verifica tus respuestas ejecutando la siguiente celda (asigna tu respuesta a cada pregunta en el diccionario `mis_respuestas` antes de correrla):
+
+```python
+## Diccionario de referencia con las respuestas correctas de esta unidad
+respuestas_correctas = {1: "B", 2: "A", 3: "C", 4: "D"}
+
+## Completa aquí tus respuestas (reemplaza los "?" por "A", "B", "C" o "D")
+mis_respuestas = {1: "?", 2: "?", 3: "?", 4: "?"}
+
+## Comparación local: no requiere ejecutar código externo ni conexión a internet
+def verificar_preguntas_concepto(mis_respuestas, respuestas_correctas):
+    aciertos = 0
+    for numero, correcta in respuestas_correctas.items():
+        respuesta_alumno = mis_respuestas.get(numero, "?")
+        if respuesta_alumno == correcta:
+            print(f"Pregunta {numero}: correcto ({respuesta_alumno})")
+            aciertos += 1
+        else:
+            print(f"Pregunta {numero}: incorrecto (tu respuesta: {respuesta_alumno}, revisa la sección de Errores Comunes)")
+    print(f"\nTotal: {aciertos}/{len(respuestas_correctas)} preguntas correctas")
+
+verificar_preguntas_concepto(mis_respuestas, respuestas_correctas)
+```
+
 ## Ejercicio Propuesto
 
 Un proceso de recubrimiento por deposición de capas atómicas (ALD) produce películas de $\text{Al}_2\text{O}_3$ cuyo espesor $X$ (en nm) sigue $X \sim \mathcal{N}(\mu=15.0,\ \sigma=0.8)$.

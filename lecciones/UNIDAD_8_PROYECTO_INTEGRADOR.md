@@ -1044,6 +1044,60 @@ print(f"Potencia Empírica Simulada de la Prueba: {potencia_est * 100:.2f}%")
 * **Error**: Concluir, a partir de una prueba de hipótesis no significativa, que "se demostró que no hay efecto" o "los dos grupos son iguales".
   **Correcto**: una prueba no significativa (p. ej. $p > 0.05$) indica falta de evidencia suficiente para rechazar $H_0$, que puede deberse a un efecto real ausente o a potencia insuficiente (muestra pequeña). Para argumentar ausencia de efecto con rigor se requiere un análisis de potencia post-hoc o pruebas de equivalencia diseñadas para ese propósito.
 
+## Preguntas de Concepto
+
+**Pregunta 1.** Una regresión lineal entre dos variables produce un $R^2 = 0.92$. ¿Qué se puede concluir con certeza?
+
+A) $X$ causa $Y$, dado que la asociación es muy fuerte.
+B) $Y$ causa $X$.
+C) El modelo no tiene ningún error de predicción.
+D) El 92% de la varianza de $Y$ es explicada linealmente por $X$; esto es una medida de asociación estadística, no de causalidad (podría deberse a una variable confusora, causalidad inversa o coincidencia).
+
+**Pregunta 2.** Antes de aplicar una prueba t o ANOVA, ¿qué se debe verificar?
+
+A) Nada; estas pruebas son válidas sin importar la forma de los datos.
+B) Los supuestos de normalidad y homocedasticidad (varianzas iguales entre grupos), mediante pruebas formales (Shapiro-Wilk, Levene) o inspección gráfica.
+C) Únicamente que el tamaño de muestra sea mayor a 1000.
+D) Que la media y la mediana sean iguales.
+
+**Pregunta 3.** Una prueba de hipótesis de dos muestras no resulta significativa ($p = 0.42$). ¿Es correcto concluir que "se demostró que los dos grupos son iguales"?
+
+A) Sí, un p-valor alto demuestra igualdad entre los grupos.
+B) Sí, porque $p > 0.05$ siempre implica que $H_0$ es verdadera.
+C) No, solo indica falta de evidencia suficiente para rechazar $H_0$; puede deberse a ausencia real de efecto o a potencia insuficiente. Concluir "sin efecto" con rigor requiere análisis de potencia o pruebas de equivalencia.
+D) No se puede interpretar el resultado sin conocer el tamaño de la muestra.
+
+**Pregunta 4.** Si los supuestos de normalidad u homocedasticidad fallan de forma severa al comparar dos grupos, ¿qué alternativa es más apropiada que una prueba t estándar?
+
+A) Usar una alternativa robusta o no paramétrica, como Welch's t-test (varianzas desiguales) o Mann-Whitney U (no normalidad).
+B) Ignorar la violación y reportar el resultado de la prueba t igualmente.
+C) Aumentar arbitrariamente el nivel de significancia $\alpha$.
+D) Eliminar datos hasta que los supuestos se cumplan.
+
+A continuación, verifica tus respuestas ejecutando la siguiente celda (asigna tu respuesta a cada pregunta en el diccionario `mis_respuestas` antes de correrla):
+
+```python
+## Diccionario de referencia con las respuestas correctas de esta unidad
+respuestas_correctas = {1: "D", 2: "B", 3: "C", 4: "A"}
+
+## Completa aquí tus respuestas (reemplaza los "?" por "A", "B", "C" o "D")
+mis_respuestas = {1: "?", 2: "?", 3: "?", 4: "?"}
+
+## Comparación local: no requiere ejecutar código externo ni conexión a internet
+def verificar_preguntas_concepto(mis_respuestas, respuestas_correctas):
+    aciertos = 0
+    for numero, correcta in respuestas_correctas.items():
+        respuesta_alumno = mis_respuestas.get(numero, "?")
+        if respuesta_alumno == correcta:
+            print(f"Pregunta {numero}: correcto ({respuesta_alumno})")
+            aciertos += 1
+        else:
+            print(f"Pregunta {numero}: incorrecto (tu respuesta: {respuesta_alumno}, revisa la sección de Errores Comunes)")
+    print(f"\nTotal: {aciertos}/{len(respuestas_correctas)} preguntas correctas")
+
+verificar_preguntas_concepto(mis_respuestas, respuestas_correctas)
+```
+
 ## Ejercicio Propuesto
 
 Se midió el band gap $E_g$ (en eV) de dos óxidos semiconductores nanoestructurados sintetizados por dos rutas distintas, con $n=8$ mediciones independientes por grupo:

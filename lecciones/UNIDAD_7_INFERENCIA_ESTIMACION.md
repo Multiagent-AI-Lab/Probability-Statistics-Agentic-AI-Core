@@ -1278,6 +1278,67 @@ La derivación simbólica confirma la fórmula $\frac{\alpha-1}{\alpha+\beta-2}$
 * **Error**: Igualar significancia estadística ($p < \alpha$) con relevancia práctica o magnitud del efecto.
   **Correcto**: con un tamaño de muestra $n$ suficientemente grande, incluso diferencias triviales (sin importancia práctica) resultan estadísticamente significativas. El p-valor no mide el tamaño del efecto — para eso se reporta el tamaño de efecto (p. ej. $d$ de Cohen) y el intervalo de confianza correspondiente.
 
+## Preguntas de Concepto
+
+**Pregunta 1.** ¿Cuál es la interpretación correcta del p-valor obtenido en una prueba de hipótesis?
+
+A) Es la probabilidad de que $H_0$ sea verdadera dado los datos observados.
+B) Es $P(\text{observar un estadístico igual o más extremo que el obtenido} \mid H_0 \text{ es verdadera})$ — una probabilidad condicional sobre los datos, no sobre la hipótesis.
+C) Es la probabilidad de que $H_1$ sea falsa.
+D) Es el nivel de significancia $\alpha$ elegido de antemano.
+
+**Pregunta 2.** Una prueba de hipótesis no logra rechazar $H_0$ (p. ej. $p = 0.35$ con $\alpha = 0.05$). ¿Qué se puede concluir correctamente?
+
+A) La evidencia muestral no fue suficiente para rechazar $H_0$ al nivel elegido; puede deberse a que $H_0$ es cierta o a que la prueba tuvo poca potencia.
+B) Se demostró que $H_0$ es verdadera.
+C) $H_1$ queda descartada definitivamente.
+D) El experimento debe repetirse porque el resultado no es válido.
+
+**Pregunta 3.** Un estudio con una muestra muy grande encuentra una diferencia estadísticamente significativa ($p < 0.001$) pero el tamaño del efecto (p. ej. $d$ de Cohen) es trivial. ¿Qué implica esto?
+
+A) La significancia estadística garantiza que el efecto es importante en la práctica.
+B) El resultado es inválido si el efecto es pequeño.
+C) Con $n$ grande, incluso diferencias triviales pueden ser estadísticamente significativas; el p-valor no mide la magnitud del efecto, por lo que hay que reportar también el tamaño de efecto.
+D) Un p-valor tan bajo implica que el tamaño de efecto también debe ser grande.
+
+**Pregunta 4.** En una prueba de hipótesis, el Error Tipo II se define como:
+
+A) Rechazar $H_0$ cuando en realidad es verdadera.
+B) No rechazar $H_0$ cuando en realidad es falsa (la alternativa $H_1$ es cierta).
+C) Rechazar $H_1$ cuando es verdadera.
+D) Elegir un nivel de significancia $\alpha$ incorrecto.
+
+**Pregunta 5.** La potencia de una prueba estadística se define como:
+
+A) $P(\text{rechazar } H_0 \mid H_0 \text{ verdadera})$, es decir, el nivel de significancia $\alpha$.
+B) La probabilidad de que $H_0$ sea verdadera.
+C) El valor del estadístico de prueba observado.
+D) $1 - \beta$, donde $\beta$ es la probabilidad de Error Tipo II — es decir, la capacidad de la prueba de detectar un efecto real cuando $H_1$ es verdadera.
+
+A continuación, verifica tus respuestas ejecutando la siguiente celda (asigna tu respuesta a cada pregunta en el diccionario `mis_respuestas` antes de correrla):
+
+```python
+## Diccionario de referencia con las respuestas correctas de esta unidad
+respuestas_correctas = {1: "B", 2: "A", 3: "C", 4: "B", 5: "D"}
+
+## Completa aquí tus respuestas (reemplaza los "?" por "A", "B", "C" o "D")
+mis_respuestas = {1: "?", 2: "?", 3: "?", 4: "?", 5: "?"}
+
+## Comparación local: no requiere ejecutar código externo ni conexión a internet
+def verificar_preguntas_concepto(mis_respuestas, respuestas_correctas):
+    aciertos = 0
+    for numero, correcta in respuestas_correctas.items():
+        respuesta_alumno = mis_respuestas.get(numero, "?")
+        if respuesta_alumno == correcta:
+            print(f"Pregunta {numero}: correcto ({respuesta_alumno})")
+            aciertos += 1
+        else:
+            print(f"Pregunta {numero}: incorrecto (tu respuesta: {respuesta_alumno}, revisa la sección de Errores Comunes)")
+    print(f"\nTotal: {aciertos}/{len(respuestas_correctas)} preguntas correctas")
+
+verificar_preguntas_concepto(mis_respuestas, respuestas_correctas)
+```
+
 ## Ejercicio Propuesto
 
 Un nuevo protocolo de síntesis de AgNPs afirma producir un diámetro medio de $\mu_0 = 25.0\text{ nm}$, con desviación estándar poblacional conocida $\sigma = 3.0\text{ nm}$ (a partir de control histórico del proceso). Se toma una muestra de $n=36$ nanopartículas y se mide un diámetro medio muestral $\bar{x} = 26.2\text{ nm}$. Se plantea $H_0: \mu = 25.0$ contra $H_1: \mu \ne 25.0$, con $\alpha = 0.05$.

@@ -975,6 +975,60 @@ Notación general introducida en las Secciones 1-7, independiente del ejemplo ap
 * **Error**: Calcular la varianza de la suma $X+Y$ como $\text{Var}(X) + \text{Var}(Y)$ sin verificar independencia (o covarianza nula).
   **Correcto**: en general $\text{Var}(X+Y) = \text{Var}(X) + \text{Var}(Y) + 2\,\text{Cov}(X,Y)$. Omitir el término de covarianza subestima la varianza real cuando las variables están correlacionadas positivamente (y la sobrestima si la correlación es negativa).
 
+## Preguntas de Concepto
+
+**Pregunta 1.** Se calcula $\text{Cov}(X,Y) = 0$ para dos variables aleatorias. ¿Se puede concluir que $X$ y $Y$ son independientes?
+
+A) Sí, covarianza cero es equivalente a independencia en todos los casos.
+B) No necesariamente — covarianza cero solo descarta dependencia *lineal*; puede existir dependencia no lineal (p. ej. $Y = X^2$) con covarianza nula.
+C) No, covarianza cero implica que $X$ y $Y$ son perfectamente dependientes.
+D) Sí, pero solo si ambas variables son discretas.
+
+**Pregunta 2.** ¿Cuál es la diferencia conceptual entre la distribución marginal $f_X(x)$ y la distribución condicional $f_{X|Y}(x|y)$?
+
+A) Son siempre idénticas, sin importar la relación entre $X$ y $Y$.
+B) La marginal solo existe para variables discretas.
+C) La condicional siempre integra a un valor distinto de 1.
+D) La marginal ignora (integra/suma sobre) $Y$; la condicional describe a $X$ una vez fijado un valor específico de $Y$. Coinciden solo si $X$ y $Y$ son independientes.
+
+**Pregunta 3.** Al calcular $\text{Var}(X+Y)$ sin saber si $X$ y $Y$ son independientes, ¿qué fórmula es correcta en general?
+
+A) $\text{Var}(X+Y) = \text{Var}(X) + \text{Var}(Y) + 2\,\text{Cov}(X,Y)$, y el término de covarianza solo se anula si son independientes (o al menos incorrelacionadas).
+B) $\text{Var}(X+Y) = \text{Var}(X) + \text{Var}(Y)$, siempre.
+C) $\text{Var}(X+Y) = \text{Var}(X) \times \text{Var}(Y)$.
+D) $\text{Var}(X+Y)$ no puede calcularse sin conocer la distribución conjunta exacta.
+
+**Pregunta 4.** En una Normal bivariada específicamente, ¿qué relación especial existe entre covarianza cero e independencia?
+
+A) Ninguna relación especial; el caso Normal bivariado se comporta igual que el caso general.
+B) En la Normal bivariada la covarianza nunca puede ser cero.
+C) En la Normal bivariada, covarianza cero SÍ implica independencia — es un caso particular donde la equivalencia se sostiene, a diferencia del caso general.
+D) La independencia en la Normal bivariada depende únicamente de las medias, no de la covarianza.
+
+A continuación, verifica tus respuestas ejecutando la siguiente celda (asigna tu respuesta a cada pregunta en el diccionario `mis_respuestas` antes de correrla):
+
+```python
+## Diccionario de referencia con las respuestas correctas de esta unidad
+respuestas_correctas = {1: "B", 2: "D", 3: "A", 4: "C"}
+
+## Completa aquí tus respuestas (reemplaza los "?" por "A", "B", "C" o "D")
+mis_respuestas = {1: "?", 2: "?", 3: "?", 4: "?"}
+
+## Comparación local: no requiere ejecutar código externo ni conexión a internet
+def verificar_preguntas_concepto(mis_respuestas, respuestas_correctas):
+    aciertos = 0
+    for numero, correcta in respuestas_correctas.items():
+        respuesta_alumno = mis_respuestas.get(numero, "?")
+        if respuesta_alumno == correcta:
+            print(f"Pregunta {numero}: correcto ({respuesta_alumno})")
+            aciertos += 1
+        else:
+            print(f"Pregunta {numero}: incorrecto (tu respuesta: {respuesta_alumno}, revisa la sección de Errores Comunes)")
+    print(f"\nTotal: {aciertos}/{len(respuestas_correctas)} preguntas correctas")
+
+verificar_preguntas_concepto(mis_respuestas, respuestas_correctas)
+```
+
 ## Ejercicio Propuesto
 
 Un nanocompuesto polimérico reforzado con nanopartículas cerámicas tiene dos propiedades correlacionadas: el diámetro de partícula $X$ (nm) y la conductividad térmica del compuesto $Y$ (W/m·K), con vector de medias $\mu = (30.0,\ 5.0)$ y matriz de covarianza:

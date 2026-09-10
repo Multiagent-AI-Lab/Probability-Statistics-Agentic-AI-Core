@@ -634,6 +634,60 @@ Este curso (tercer semestre) trata a las variables aleatorias discretas con herr
 * **Error**: Usar la aproximación Poisson de la Binomial ($\lambda = np$) en cualquier caso, sin verificar las condiciones de validez.
   **Correcto**: la aproximación solo es razonable cuando $n$ es grande, $p$ es pequeño y $np$ es moderado (regla práctica: $n \ge 20$ y $p \le 0.05$, o $np < 10$); fuera de ese régimen la Binomial y la Poisson difieren de forma apreciable, especialmente en las colas.
 
+## Preguntas de Concepto
+
+**Pregunta 1.** Un problema pide calcular la probabilidad de que una variable discreta $X$ tome "a lo más" el valor $k$. ¿Qué función se debe usar?
+
+A) La PMF, $P(X = k)$, evaluada en $k$.
+B) Cualquiera de las dos, dan el mismo resultado.
+C) Ninguna; se necesita la función generadora de momentos.
+D) La CDF, $F(k) = P(X \le k)$, que acumula las probabilidades hasta $k$.
+
+**Pregunta 2.** Para un dado justo de 6 caras (valores 1 a 6), $\mathbb{E}[X] = 3.5$. ¿Qué implica esto sobre la esperanza de una variable aleatoria discreta?
+
+A) Es un error de cálculo, la esperanza debe ser un valor posible de la variable.
+B) La esperanza es un promedio ponderado por probabilidades y puede caer entre los valores posibles, sin ser en sí misma un resultado alcanzable.
+C) Significa que el dado está cargado.
+D) La esperanza solo puede tomar valores enteros en variables discretas.
+
+**Pregunta 3.** ¿En qué condiciones es razonable aproximar una distribución Binomial mediante una Poisson con $\lambda = np$?
+
+A) Siempre, sin importar los valores de $n$ y $p$.
+B) Solo cuando $n$ es pequeño y $p$ es grande.
+C) Cuando $n$ es grande, $p$ es pequeño y $np$ es moderado (p. ej. $n \ge 20$, $p \le 0.05$).
+D) Nunca; Binomial y Poisson son incompatibles matemáticamente.
+
+**Pregunta 4.** Una variable aleatoria Geométrica modela el número de intentos hasta el primer éxito. ¿Qué la distingue conceptualmente de una Binomial?
+
+A) La Binomial cuenta éxitos en un número fijo de ensayos; la Geométrica cuenta ensayos hasta obtener el primer éxito (número de ensayos es la variable aleatoria).
+B) Son exactamente la misma distribución con distinto nombre.
+C) La Geométrica solo aplica a eventos continuos.
+D) La Binomial no tiene un número fijo de ensayos, a diferencia de la Geométrica.
+
+A continuación, verifica tus respuestas ejecutando la siguiente celda (asigna tu respuesta a cada pregunta en el diccionario `mis_respuestas` antes de correrla):
+
+```python
+## Diccionario de referencia con las respuestas correctas de esta unidad
+respuestas_correctas = {1: "D", 2: "B", 3: "C", 4: "A"}
+
+## Completa aquí tus respuestas (reemplaza los "?" por "A", "B", "C" o "D")
+mis_respuestas = {1: "?", 2: "?", 3: "?", 4: "?"}
+
+## Comparación local: no requiere ejecutar código externo ni conexión a internet
+def verificar_preguntas_concepto(mis_respuestas, respuestas_correctas):
+    aciertos = 0
+    for numero, correcta in respuestas_correctas.items():
+        respuesta_alumno = mis_respuestas.get(numero, "?")
+        if respuesta_alumno == correcta:
+            print(f"Pregunta {numero}: correcto ({respuesta_alumno})")
+            aciertos += 1
+        else:
+            print(f"Pregunta {numero}: incorrecto (tu respuesta: {respuesta_alumno}, revisa la sección de Errores Comunes)")
+    print(f"\nTotal: {aciertos}/{len(respuestas_correctas)} preguntas correctas")
+
+verificar_preguntas_concepto(mis_respuestas, respuestas_correctas)
+```
+
 ## Ejercicio Propuesto
 
 Un lote de $n=25$ nanotubos de carbono de pared simple (SWCNT) se inspecciona por espectroscopía Raman; cada nanotubo tiene una probabilidad $p=0.08$ de presentar un defecto estructural (vacancia en la red), de forma independiente entre nanotubos: $X \sim \text{Binomial}(n=25,\ p=0.08)$.
