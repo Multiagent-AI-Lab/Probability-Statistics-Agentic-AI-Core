@@ -381,25 +381,27 @@ $$\boxed{\hat{\lambda}_{MoM} = \frac{1}{\bar{x}} = 0.0532\ \text{h}^{-1} \qquad 
 
 Las pruebas vistas hasta §1.8 (Z, t, $\chi^2$) son **paramétricas**: asumen una forma funcional conocida (típicamente Normal) para la distribución subyacente. Cuando esta suposición no se cumple —distribuciones asimétricas, muestras pequeñas, o presencia de outliers—, las pruebas **no paramétricas** (basadas en rangos u órdenes, no en los valores originales) ofrecen alternativas más robustas.
 
-**Mapa de decisión (§1.8-1.12)**. El diagrama resume qué prueba aplicar según se cumplan o no los supuestos de normalidad y homocedasticidad. La rama paramétrica cubre lo visto hasta §1.8; la no paramétrica, §1.10-1.11. La prueba de Levene (§1.12) es la que decide la bifurcación de homocedasticidad antes de un ANOVA.
+**Mapa de decisión de la familia de pruebas**. El diagrama es un panorama general para ubicar cada prueba. Esta unidad desarrolla en detalle P1 (§1.6), la familia χ² de conteos (§1.8) y las no paramétricas N1, N2, N4 y N5 (§1.10-1.11); P2, P3 y N3 se incluyen como mapa de referencia y se desarrollan en cursos posteriores. La primera bifurcación distingue el **tipo de dato**: las pruebas χ² de bondad de ajuste, contingencia y proporciones operan sobre conteos/categorías y no requieren normalidad ni homocedasticidad. Para datos de medición continua, la prueba de Levene (§1.12) decide la bifurcación de homocedasticidad; si falla, Welch es la alternativa paramétrica robusta antes de pasar a rangos.
 
 ```mermaid
 graph TD
-    Inicio["Comparar 2 o mas grupos"]
-    Inicio --> Q1{"Normalidad en cada grupo? (Shapiro-Wilk)"}
+    Inicio["Contrastar una hipotesis sobre datos"]
+    Inicio --> Q0{"Tipo de dato: medicion continua o conteos/categorias?"}
+    Q0 -->|"Conteos / categorias"| Chi["Familia chi-cuadrada (1.8): bondad de ajuste, contingencia, proporciones -- sin supuesto de normalidad"]
+    Q0 -->|"Medicion continua"| Q1{"Normalidad en cada grupo? (Shapiro-Wilk)"}
     Q1 -->|"No"| NoParam["Rama no parametrica (basada en rangos)"]
     Q1 -->|"Si"| Q2{"Homocedasticidad? (Levene, seccion 1.12)"}
-    Q2 -->|"No"| NoParam
-    Q2 -->|"Si"| Param["Rama parametrica"]
-    Param --> P1["1 media vs valor: Z-test o t de una muestra"]
-    Param --> P2["2 medias independientes: t de dos muestras"]
-    Param --> P3["3+ medias: ANOVA de una via"]
-    Param --> P4["Varianzas o frecuencias: prueba chi-cuadrada"]
-    NoParam --> N1["2 grupos independientes: Mann-Whitney U"]
-    NoParam --> N2["3+ grupos independientes: Kruskal-Wallis H"]
-    NoParam --> N3["Datos apareados: Wilcoxon de rangos con signo"]
-    NoParam --> N4["Solo orden o mediana vs valor: prueba de signos"]
-    NoParam --> N5["Misma distribucion entre 2 muestras: KS de dos muestras"]
+    Q2 -->|"No"| Welch["Welch (t o ANOVA) como alternativa robusta; si tampoco basta, rama no parametrica"]
+    Q2 -->|"Si"| Param["Rama parametrica clasica"]
+    Welch --> NoParam
+    Param --> P1["1 media vs valor: Z-test o t de una muestra (1.6)"]
+    Param --> P2["2 medias independientes: t de dos muestras (mapa de referencia)"]
+    Param --> P3["3+ medias: ANOVA de una via (mapa de referencia)"]
+    NoParam --> N1["2 grupos independientes: Mann-Whitney U (1.10)"]
+    NoParam --> N2["3+ grupos independientes: Kruskal-Wallis H (1.10)"]
+    NoParam --> N3["Datos apareados: Wilcoxon de rangos con signo (mapa de referencia)"]
+    NoParam --> N4["Solo orden o mediana vs valor: prueba de signos (1.11)"]
+    NoParam --> N5["Misma distribucion entre 2 muestras: KS de dos muestras (1.10)"]
 ```
 
 **Kolmogorov-Smirnov (KS) de dos muestras**: a diferencia del KS de una muestra ya usado en §6.3 (bondad de ajuste contra una distribución teórica), el KS de dos muestras evalúa si dos conjuntos de datos independientes provienen de la **misma distribución**, sin asumir ninguna forma específica. El estadístico compara las funciones de distribución empíricas (CDF) de ambas muestras:
