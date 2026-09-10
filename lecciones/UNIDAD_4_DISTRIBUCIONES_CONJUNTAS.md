@@ -1167,11 +1167,16 @@ resultado = auditor.audit_code(codigo_alumno)
 
 verificador = ExerciseVerifierAgent(
     variables_requeridas=["rho_xy", "var_suma_correcta", "var_suma_incorrecta", "cholesky"],
+    # Valores de referencia FIJOS, precalculados sobre la sigma de la plantilla.
+    # El factor de Cholesky se compara contra su matriz esperada, no contra
+    # `cholesky @ cholesky.T == sigma`: `sigma` es una variable que el alumno
+    # controla, y un check auto-referencial lo satisfaría redefiniendo `sigma`
+    # (p. ej. a la identidad) sin haber descompuesto la matriz original.
     checks=[
         "abs(rho_xy - 0.5) < 1e-6",
         "abs(var_suma_correcta - 37.0) < 1e-6",
         "abs(var_suma_incorrecta - 25.0) < 1e-6",
-        "np.allclose(np.array(cholesky) @ np.array(cholesky).T, sigma, atol=1e-6)",
+        "np.allclose(np.array(cholesky), [[3.0, 0.0], [2.0, 3.4641016151377544]], atol=1e-6)",
     ],
     plantilla=plantilla_original,
 )

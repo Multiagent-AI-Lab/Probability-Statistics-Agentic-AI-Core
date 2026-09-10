@@ -413,29 +413,6 @@ class EngineerAgent:
                 return True
         return False
 
-    def _los_datos_del_ejemplo_estan_en_el_codigo(
-        self, expresion: str, numeros_de_la_unidad: list[float]
-    ) -> bool:
-        """¿El código trabaja sobre los mismos datos que este ejemplo?
-
-        La fórmula encuadrada arrastra sus operandos
-        (`z_0 = \\frac{7.8-8}{0.5/\\sqrt{50}}`): si ninguno de esos números
-        aparece en la salida de la unidad, el ejemplo es autocontenido y su
-        resultado no debía salir del código. Si varios sí aparecen, el
-        código está reproduciendo el mismo caso y un resultado ausente sí
-        indica desincronización.
-        """
-        operandos = [
-            float(n)
-            for n in _NUMERO.findall(self._limpiar_latex(expresion))
-            if not self._es_valor_trivial(float(n))
-        ]
-        if not operandos:
-            return False
-        return any(
-            self._algun_valor_coincide(op, numeros_de_la_unidad) for op in operandos
-        )
-
     def _dividir_en_secciones(self, text: str) -> list[tuple[str, str]]:
         """Parte el documento por encabezados Markdown. El contraste es
         por sección para no comparar un `\\boxed{}` contra el código de un
