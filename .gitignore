@@ -85,3 +85,7 @@ lecciones/.backup/
 # .claude/settings.json     # Team settings (official Claude Code)
 # .claude/commands/         # Team slash commands (official Claude Code)
 # .claude/.plans/           # Project documentation (extension-specific)
+
+# Archivos de solucion generados por las celdas %%writefile de autoevaluacion
+# al ejecutar los notebooks localmente (no son fuente, se regeneran).
+notebooks/solucion_ejercicio*.py

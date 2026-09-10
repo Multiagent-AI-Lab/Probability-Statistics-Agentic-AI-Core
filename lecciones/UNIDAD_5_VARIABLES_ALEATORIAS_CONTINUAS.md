@@ -17,6 +17,7 @@
 ```python
 import os
 import sys
+from pathlib import Path
 
 if 'google.colab' in sys.modules:
     repo_dir = "Probability-Statistics-Agentic-AI-Core"
@@ -24,6 +25,17 @@ if 'google.colab' in sys.modules:
         !git clone -q https://github.com/Multiagent-AI-Lab/{repo_dir}.git
     os.chdir(repo_dir)
     %pip install -q -r requirements.txt
+else:
+    # Entorno local: ubicar la raiz del repo subiendo desde el cwd
+    # (donde se lanzo Jupyter) y ponerla en sys.path para que
+    # `from src.multiagent_core...` resuelva sin importar la carpeta actual.
+    _raiz = next(
+        (p for p in (Path.cwd(), *Path.cwd().parents)
+         if (p / "src" / "multiagent_core").is_dir()),
+        Path.cwd(),
+    )
+    if str(_raiz) not in sys.path:
+        sys.path.insert(0, str(_raiz))
 ```
 
 ---

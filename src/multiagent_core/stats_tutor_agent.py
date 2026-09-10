@@ -46,6 +46,8 @@ DEFAULT_MEMORY_FILENAME = ".tutor_memory.json"
 MAX_EPISODIOS = 50
 PREFIJO_LONGITUD = 5
 EMBEDDING_MODEL_NAME = "paraphrase-multilingual-MiniLM-L12-v2"
+# actualizar el default antes del retiro de gemini-2.5-flash (16-oct-2026)
+MODEL_NAME = os.environ.get("STATS_TUTOR_MODEL", "gemini-2.5-flash")
 BIBLIOGRAFIA_COLLECTION_NAME = "bibliografia_pdfs"
 BIBLIOGRAFIA_MAX_CHARS_POR_CHUNK = 1000
 _DOI_PATTERN = re.compile(r"DOI:\s*\[(10\.\d{4,9}/[^\]\s?#]+)\]", re.IGNORECASE)
@@ -152,7 +154,7 @@ class StatsTutorAgent:
         bibliografia_dir: Path | None = None,
     ) -> None:
         self.course_dir = Path(course_dir)
-        self.model_name = "gemini-2.5-flash"
+        self.model_name = MODEL_NAME
         self.chroma_path = resolver_chroma_path_seguro(
             Path(chroma_path)
             if chroma_path

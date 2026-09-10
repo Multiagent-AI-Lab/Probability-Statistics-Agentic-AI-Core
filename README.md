@@ -187,6 +187,19 @@ conda activate ia_stats
 pytest
 ```
 
+### 3. Abrir los notebooks localmente
+Lanza Jupyter **desde la raíz del repositorio** (la carpeta que contiene `src/`),
+no desde `notebooks/`:
+```bash
+conda activate ia_stats
+jupyter lab        # o: jupyter notebook
+```
+La celda de setup de cada unidad detecta que no está en Google Colab y agrega la
+raíz del repo a `sys.path` automáticamente —subiendo desde el directorio de
+lanzamiento hasta encontrar `src/multiagent_core/`—, de modo que
+`from src.multiagent_core...` resuelve sin `ModuleNotFoundError`. Si aun así
+falla, verifica que abriste Jupyter dentro del árbol del repo clonado.
+
 ---
 
 ## 📄 Licencia y Créditos
