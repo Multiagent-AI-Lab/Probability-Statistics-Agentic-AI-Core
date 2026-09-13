@@ -236,7 +236,10 @@ class EngineerAgent:
                     )
                     continue
                 if not self._el_codigo_apunta_al_valor(
-                    expresion, salida, valor_esperado
+                    expresion,
+                    salida,
+                    valor_esperado,
+                    seccion_tiene_un_solo_boxed=len(esperados) == 1,
                 ):
                     # El `\boxed{}` proviene de un ejemplo analítico distinto
                     # del que ejecuta el código de la sección (patrón real de
@@ -594,7 +597,11 @@ class EngineerAgent:
         )
 
     def _el_codigo_apunta_al_valor(
-        self, expresion_boxed: str, salida: str, valor_declarado: float
+        self,
+        expresion_boxed: str,
+        salida: str,
+        valor_declarado: float,
+        seccion_tiene_un_solo_boxed: bool,
     ) -> bool:
         """¿El código dice estar calculando la misma cantidad que el `\\boxed{}`?
 
@@ -620,17 +627,29 @@ class EngineerAgent:
         if not self._normalizar_identificador(salida):
             return False
 
-        # No basta que el nombre aparezca en la salida: `alpha` rotula tanto
-        # el `\boxed{0.2466}` del ejemplo exponencial de UNIDAD 7 §1.3 como
-        # el `alpha=0.05` que imprime el bloque AgNP de la misma sección —
-        # dos cantidades distintas que comparten letra griega.
-        #
-        # Un desajuste real es el mismo cálculo mal transcrito (el código da
-        # 7.5, el texto afirma 9.9): los dos valores quedan en el mismo orden
-        # de magnitud. Una diferencia de varias veces indica que el rótulo
-        # coincidió por homonimia y que se trata de otro ejemplo, así que no
-        # se reporta: esta auditoría prefiere callar a inventar un hallazgo.
         valores_rotulados = self._valores_junto_al_rotulo(nombre, salida)
+        if not valores_rotulados:
+            return False
+
+        # Cuando la sección declara UN SOLO `\boxed{}`, no hay ambigüedad
+        # sobre a cuál pertenece el rótulo que coincide por nombre: el
+        # patrón de "homonimia entre dos escenarios" (UNIDAD 7 §1.3) exige
+        # por definición un segundo `\boxed{}` en la misma sección con el
+        # mismo nombre. Sin ese segundo `\boxed{}`, exigir además "mismo
+        # orden de magnitud" callaba precisamente la desincronización que
+        # se busca detectar (N-01: `\boxed{p=0.42}` con rótulo `p=0.1281`
+        # en la misma sección aprobaba por diferir en más de 2x).
+        if seccion_tiene_un_solo_boxed:
+            return True
+
+        # Con varios `\boxed{}` en la sección sí hace falta el desempate:
+        # `alpha` rotula tanto el ejemplo analítico como el bloque AgNP de
+        # la misma sección — dos cantidades distintas que comparten letra
+        # griega. Un desajuste real es el mismo cálculo mal transcrito (el
+        # código da 7.5, el texto afirma 9.9): los dos valores quedan en el
+        # mismo orden de magnitud. Una diferencia de varias veces indica
+        # que el rótulo coincidió por homonimia y que se trata de otro
+        # ejemplo, así que no se reporta.
         return any(
             self._mismo_orden_de_magnitud(valor_declarado, v) for v in valores_rotulados
         )
@@ -641,18 +660,49 @@ class EngineerAgent:
             return a == b
         return 0.5 <= abs(a / b) <= 2.0
 
+    # Un rótulo dentro de una línea con varias asignaciones (patrón real del
+    # curso: `print(f"alpha={alpha}, beta={beta:.4f}, potencia={potencia:.4f}")`
+    # imprime "alpha=0.05, beta=0.1492, potencia=0.8508" en una sola línea).
+    # Cada segmento es un identificador corto (letras/dígitos/paréntesis,
+    # sin espacios) seguido de `=` y un número; el separador es el propio
+    # `=` que abre el segmento siguiente, una coma, o el fin de línea.
+    #
+    # Seguridad (hallazgo CRITICAL de @security-reviewer, con dos rondas
+    # de medición propia): la primera versión (`[\w().]+\s*=\s*...`)
+    # permitía que `[\w().]+` y `\s*` se solaparan sobre la misma racha
+    # de espacios. Quitar el `\s*` (`[\w().]+?=...`) rompió el caso real
+    # `z = -1.5216, p = 0.1281` (espacios alrededor del `=`, patrón
+    # habitual de un `print(f"... {a} = {b}, ...")`) y seguía escalando
+    # cuadrático -medido, 0.13s con solo 2000 caracteres sin `=`- porque
+    # el identificador no tenía cota superior. La versión final acota el
+    # identificador a `{1,40}` (ningún nombre de variable real del curso
+    # se acerca a esa longitud) y permite hasta 2 espacios -acotados, no
+    # `\s*`- a cada lado del `=`, sin que ese espacio pueda solaparse con
+    # el identificador (ambos tienen cota fija, no hay ambigüedad de
+    # partición): medido, 200 000 caracteres sin `=` corren en 0.76s y
+    # 100 000 repeticiones de "a " sin `=` en 0.04s (ambos lineales).
+    _ROTULO_INLINE = re.compile(
+        r"([\w().]{1,40}?)\s{0,2}=\s{0,2}(-?\d+(?:\.\d+)?(?:[eE][-+]?\d+)?)"
+    )
+
+    # Cota defensiva adicional (segunda capa): aunque el regex ya es
+    # lineal, una línea de decenas de miles de caracteres sigue siendo
+    # trabajo desperdiciado sobre una salida que ningún `print` real del
+    # curso produce tan larga.
+    _MAX_CHARS_POR_LINEA_ROTULO = 2000
+
     def _valores_junto_al_rotulo(self, nombre: str, salida: str) -> list[float]:
         """Números que el código imprime inmediatamente después de un rótulo
-        cuyo nombre normalizado coincide con `nombre`."""
+        cuyo nombre normalizado coincide con `nombre`, sin importar si
+        comparten línea con otras asignaciones."""
         valores: list[float] = []
         for linea in salida.splitlines():
-            izquierda, sep, derecha = linea.partition("=")
-            if not sep:
+            if "=" not in linea:
                 continue
-            if self._normalizar_identificador(izquierda).endswith(nombre):
-                numeros = _NUMERO.findall(self._limpiar_latex(derecha))
-                if numeros:
-                    valores.append(float(numeros[0]))
+            linea = linea[: self._MAX_CHARS_POR_LINEA_ROTULO]
+            for rotulo, numero in self._ROTULO_INLINE.findall(linea):
+                if self._normalizar_identificador(rotulo).endswith(nombre):
+                    valores.append(float(numero))
         return valores
 
     def _nombre_de_la_cantidad(self, expresion: str) -> str:

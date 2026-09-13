@@ -8,7 +8,12 @@ Standard §3.8 dice "posterior a cualquier visualización") y afirmar algo
 verificable, no ser un rótulo vacío.
 """
 
-from src.multiagent_core.council.analyst_agent import AnalystAgent
+import time
+
+from src.multiagent_core.council.analyst_agent import (
+    _AFIRMACION_VERIFICABLE,
+    AnalystAgent,
+)
 
 _INTERPRETACION_REAL = (
     "Interpretación: el histograma muestra que el diámetro medio de las "
@@ -102,3 +107,50 @@ def test_reporta_la_posicion_del_ultimo_grafico():
     resultado = agent.audit_visualizations(_con_graficos(_INTERPRETACION_REAL))
 
     assert resultado["posicion_ultimo_grafico"] > 0
+
+
+# --------------------------------------------------------------------------
+# Regresión de ReDoS en `_AFIRMACION_VERIFICABLE` (hallazgo CRITICAL de
+# @security-reviewer sobre el fix de N-02, cerrado con `\d{1,15}` acotado
+# en vez de `\d+`). El párrafo real ya está acotado por
+# `_MAX_CHARS_PARRAFO_AFIRMACION`, pero estos tests ejercitan el regex
+# directamente -sin esa cota externa- para que una futura edición que
+# reintroduzca un cuantificador sin límite se detecte aunque la cota de
+# longitud también se toque en el mismo cambio.
+# --------------------------------------------------------------------------
+
+_TECHO_SEGUNDOS_REDOS = 2.0
+
+
+def test_afirmacion_verificable_no_escala_cuadratico_con_digitos_sueltos():
+    """Una racha larga de dígitos sin unidad reconocida no debe colgar ni
+    degradar cuadráticamente."""
+    texto = "9" * 50_000
+
+    t0 = time.perf_counter()
+    resultado = _AFIRMACION_VERIFICABLE.search(texto)
+    duracion = time.perf_counter() - t0
+
+    assert resultado is None
+    assert duracion < _TECHO_SEGUNDOS_REDOS, (
+        f"_AFIRMACION_VERIFICABLE tardo {duracion:.2f}s sobre 50_000 "
+        "digitos sueltos -- posible regresion de ReDoS"
+    )
+
+
+def test_afirmacion_verificable_no_escala_cuadratico_con_digitos_y_puntos():
+    """Dígitos con puntos intercalados (p. ej. una cita bibliográfica o un
+    número mal formateado) es el adversario con la constante de tiempo más
+    alta encontrada para este regex -- ver el comentario junto a
+    `_AFIRMACION_VERIFICABLE` en `analyst_agent.py`."""
+    texto = "123456789012345." * 5_000
+
+    t0 = time.perf_counter()
+    resultado = _AFIRMACION_VERIFICABLE.search(texto)
+    duracion = time.perf_counter() - t0
+
+    assert resultado is None
+    assert duracion < _TECHO_SEGUNDOS_REDOS, (
+        f"_AFIRMACION_VERIFICABLE tardo {duracion:.2f}s sobre digitos y "
+        "puntos intercalados -- posible regresion de ReDoS"
+    )

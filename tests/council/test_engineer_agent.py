@@ -8,6 +8,7 @@ Cubre dos responsabilidades:
 """
 
 import textwrap
+import time
 
 from src.multiagent_core.council.engineer_agent import EngineerAgent
 
@@ -371,3 +372,51 @@ spr_pico = 2.3 * radio_nm.ravel() + np.random.normal(0, 3, n_samples)
     result = agent.check_monte_carlo_convergence(code)
     assert result["critical"] is False
     assert result["warnings"] == []
+
+
+# --------------------------------------------------------------------------
+# Regresión de ReDoS en `_ROTULO_INLINE` (hallazgo CRITICAL de
+# @security-reviewer sobre el fix de N-01, cerrado con cuantificadores
+# acotados). `_valores_junto_al_rotulo` ya corta cada línea a
+# `_MAX_CHARS_POR_LINEA_ROTULO` antes de aplicar el regex, así que estos
+# tests ejercitan `_ROTULO_INLINE` directamente -sin esa cota externa-
+# para que una futura edición que reintroduzca un cuantificador sin
+# límite (`+`/`*` en vez de `{1,40}`) se detecte aunque la cota de línea
+# también se toque en el mismo cambio.
+# --------------------------------------------------------------------------
+
+_TECHO_SEGUNDOS_REDOS = 2.0
+
+
+def test_rotulo_inline_no_escala_cuadratico_sin_signo_igual():
+    """Una linea larga sin ningun '=' no debe colgar ni degradar
+    cuadraticamente: es exactamente el caso real de un traceback largo o
+    un repr() de un array de NumPy sin saltos de linea."""
+    salida = "a" * 100_000
+
+    t0 = time.perf_counter()
+    resultado = EngineerAgent._ROTULO_INLINE.findall(salida)
+    duracion = time.perf_counter() - t0
+
+    assert resultado == []
+    assert duracion < _TECHO_SEGUNDOS_REDOS, (
+        f"_ROTULO_INLINE tardo {duracion:.2f}s sobre 100_000 "
+        "caracteres sin '=' -- posible regresion de ReDoS"
+    )
+
+
+def test_rotulo_inline_no_escala_cuadratico_con_muchos_signos_igual():
+    """Muchos '=' seguidos sin un numero valido detras tampoco debe
+    degradar: agota la otra rama del backtracking (el identificador, no
+    el numero)."""
+    salida = "a=" * 50_000
+
+    t0 = time.perf_counter()
+    resultado = EngineerAgent._ROTULO_INLINE.findall(salida)
+    duracion = time.perf_counter() - t0
+
+    assert resultado == []
+    assert duracion < _TECHO_SEGUNDOS_REDOS, (
+        f"_ROTULO_INLINE tardo {duracion:.2f}s sobre 50_000 "
+        "repeticiones de 'a=' -- posible regresion de ReDoS"
+    )

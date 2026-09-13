@@ -16,13 +16,49 @@ _ROTULO_INTERPRETACION = re.compile(
 
 # Marcas de una afirmación verificable: una magnitud numérica, un símbolo
 # con valor, o una comparación explícita entre cantidades.
+#
+# N-02 (auditoría post-cierre 2026-09-11): la última alternativa
+# (`\d+(?:[.,]\d+)?` suelto, sin exigir unidad ni comparación) hacía que
+# CUALQUIER número bastara -exactamente lo que este regex existe para
+# descartar-, y el intento de quitarla (M-2, Task 1 de esta ronda)
+# bloqueaba U2 §8.1 y U4 §10.1 pese a que sus interpretaciones SÍ traen
+# magnitudes reales ($45\%$, $\rho=-0.75$): el regex estricto no
+# reconocía el `%` escapado en LaTeX (`\%`, con la barra invertida entre
+# el número y el símbolo) ni un signo negativo tras `=` (`\rho=-0.75`).
+# Se corrigen esos dos huecos y se retira la alternativa laxa: la mejora
+# real no era el contenido, era el regex.
+#
+# Seguridad (hallazgo CRITICAL de @security-reviewer, con una segunda
+# ronda de medición propia tras el primer intento de fix): la versión
+# original con `\d+` sin cota escala cuadrático sobre una racha larga de
+# dígitos sin unidad reconocida -medido, 2.9s con solo 3000 dígitos-,
+# porque el motor reintenta la alternativa completa en cada una de las N
+# posiciones de inicio, y cada intento retrocede sobre un `\d+` que puede
+# llegar a consumir el string entero. Acotar cada `\d+` a `\d{1,15}`
+# (ningún número real de una lección supera esa longitud) vuelve el
+# backtracking por intento O(1) en vez de O(n): medido, 500 000 dígitos
+# corren en 5.2s (lineal, no cuadrático). `\s?` (0 o 1 espacio, nunca
+# más) cubre tanto `45\%` pegado como `15.65 nm` con un único espacio sin
+# reabrir ancho variable. La cota de longitud en `_extraer_interpretacion`
+# (`_MAX_CHARS_PARRAFO_AFIRMACION`) es la segunda capa, y aquí es la que
+# realmente importa: una segunda ronda de revisión encontró que una racha
+# de dígitos con puntos intercalados (p. ej. "123456789012345." repetido)
+# es lineal -no cuadrático- pero con una constante ~60x peor que otros
+# adversarios (~85 µs/carácter, porque el grupo opcional
+# `(?:[.,]\d{1,15})?` reintenta su `\d{1,15}` interno en cada punto), y
+# sin la cota de 3000 caracteres ese patrón específico tarda 68s con
+# 800 000 caracteres. Con la cota en vigor el peor caso medido es ~26ms.
 _AFIRMACION_VERIFICABLE = re.compile(
-    r"\d+(?:[.,]\d+)?\s*(?:%|nm|µm|um|mm|s\b|ms\b|°|K\b|eV\b|Ω|ohm)"
-    r"|\d+(?:[.,]\d+)?\s*(?:±|\+/-)"
-    r"|[<>=]\s*\d"
-    r"|\d+(?:[.,]\d+)?",
+    r"\d{1,15}(?:[.,]\d{1,15})?\s?\\?(?:%|nm|µm|um|mm|s\b|ms\b|°|K\b|eV\b|Ω|ohm)"
+    r"|\d{1,15}(?:[.,]\d{1,15})?\s*(?:±|\+/-)"
+    r"|[<>=]\s*-?\d",
     re.IGNORECASE,
 )
+
+# Cota defensiva adicional (segunda capa): ningún párrafo real de
+# interpretación del curso se acerca a esta longitud (el propio Gold
+# Standard exige un párrafo, no un ensayo).
+_MAX_CHARS_PARRAFO_AFIRMACION = 3000
 
 _MIN_GRAFICOS = 2
 # Una interpretación real desarrolla; un rótulo suelto ("Interpretación.")
@@ -70,7 +106,9 @@ class AnalystAgent:
                 continue
             if len(limpio.split()) < _MIN_PALABRAS_INTERPRETACION:
                 continue
-            if not _AFIRMACION_VERIFICABLE.search(limpio):
+            if not _AFIRMACION_VERIFICABLE.search(
+                limpio[:_MAX_CHARS_PARRAFO_AFIRMACION]
+            ):
                 continue
             return limpio
         return None
