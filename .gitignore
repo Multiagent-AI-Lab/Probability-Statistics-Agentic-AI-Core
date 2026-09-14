@@ -40,6 +40,9 @@ bibliografia/*.epub
 # Se conservan localmente pero no se publican en el repo público.
 docs/superpowers/
 
+# Worktrees locales de ejecución de planes (subagent-driven-development).
+.worktrees/
+
 # ChromaDB & Memoria local de Agentes
 .chroma/
 .tutor_memory.json
