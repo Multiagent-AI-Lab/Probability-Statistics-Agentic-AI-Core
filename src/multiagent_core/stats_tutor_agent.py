@@ -47,8 +47,15 @@ DEFAULT_MEMORY_FILENAME = ".tutor_memory.json"
 MAX_EPISODIOS = 50
 PREFIJO_LONGITUD = 5
 EMBEDDING_MODEL_NAME = "paraphrase-multilingual-MiniLM-L12-v2"
-# actualizar el default antes del retiro de gemini-2.5-flash (16-oct-2026)
-MODEL_NAME = os.environ.get("STATS_TUTOR_MODEL", "gemini-2.5-flash")
+# gemini-2.5-flash migrado a gemini-3.5-flash (2026-09): la página
+# oficial de deprecaciones de Google (ai.google.dev/gemini-api/docs/
+# deprecations) no confirma una fecha de retiro para el GA de 2.5-flash
+# ("No shutdown date announced"), pero el ecosistema ya tiene modelos
+# GA de la generación 3.x (3.5 a 3.8 Flash) -- se migra al primero de
+# esa generación por ser el más cercano en perfil costo/latencia.
+# Revisar ai.google.dev/gemini-api/docs/deprecations si Google publica
+# fecha de retiro oficial para gemini-3.5-flash.
+MODEL_NAME = os.environ.get("STATS_TUTOR_MODEL", "gemini-3.5-flash")
 BIBLIOGRAFIA_COLLECTION_NAME = "bibliografia_pdfs"
 BIBLIOGRAFIA_MAX_CHARS_POR_CHUNK = 1000
 CROSSREF_API_BASE = "https://api.crossref.org/works"
