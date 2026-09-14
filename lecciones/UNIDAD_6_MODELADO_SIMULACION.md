@@ -85,6 +85,18 @@ $$\hat{\theta}_N = \frac{b-a}{N} \sum_{i=1}^N g(X_i)$$
 
 Por el Teorema del Límite Central, el error de estimación decrece con orden $\mathcal{O}(N^{-1/2})$, **independientemente de la dimensión del espacio de integración**, lo que convierte a Monte Carlo en el único método ejecutable para problemas de física estadística y aprendizaje profundo en alta dimensión.
 
+El siguiente diagrama resume el proceso general de una simulación de Monte Carlo, instanciado con el estimador $\hat{\theta}_N$ de la ecuación anterior:
+
+```mermaid
+graph TD
+    Generar["Generar N muestras uniformes X_i ~ Uniforme(a, b)"]
+    Generar --> Transformar["Transformar cada X_i mediante g(X_i)"]
+    Transformar --> Agregar["Agregar: promediar y escalar -> theta_N = (b-a)/N * suma(g(X_i))"]
+    Agregar --> Validar{"El error decrece como O(N^-1/2) al aumentar N?"}
+    Validar -->|"Si"| Aceptar["Aceptar theta_N como estimador valido"]
+    Validar -->|"No"| Revisar["Revisar generador aleatorio o transformacion g"]
+```
+
 ### 1.4 Demostración Práctica: Implementación Directa del Generador Congruencial Lineal
 
 La recurrencia $X_{n+1} = (a X_n + c) \pmod m$ es la piedra angular de los generadores seudoaleatorios modernos. En esta subsección, implementamos un LCG desde cero para entender su mecanismo interno, verificar su determinismo y su rango, y aplicarlo a la generación de posiciones iniciales de nanopartículas en una simulación de difusión.
