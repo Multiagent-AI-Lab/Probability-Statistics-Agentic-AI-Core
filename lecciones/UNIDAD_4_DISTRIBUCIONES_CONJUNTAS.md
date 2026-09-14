@@ -96,6 +96,20 @@ Si $X$ e $Y$ son independientes:
 1. $E[XY]=E[X]\,E[Y]$
 2. La covarianza es cero: $\mathrm{Cov}(X,Y)=E[(X-E[X])(Y-E[Y])]=0$
 
+El siguiente diagrama resume el flujo general de verificación de independencia que aplican los ejemplos 2.3 a 2.5: factorizar la conjunta como producto de marginales o, si la factorización directa no es evidente, verificar que la condicional no dependa de la condicionante.
+
+```mermaid
+graph TD
+    Conjunta["Distribucion conjunta P(X,Y) o f(x,y) dada"]
+    Conjunta --> Marginales["Calcular marginales P(X), P(Y) (o f_X, f_Y)"]
+    Marginales --> Factoriza{"P(X)*P(Y) = P(X,Y) para todo par?"}
+    Factoriza -->|"Si"| Independientes["X e Y son independientes"]
+    Factoriza -->|"No evidente"| Condicional["Calcular condicional f(X|Y) = f(X,Y) / f(Y)"]
+    Condicional --> DependeY{"El resultado depende de Y?"}
+    DependeY -->|"No"| Independientes
+    DependeY -->|"Si"| Dependientes["X e Y son dependientes"]
+```
+
 ### 2.3 Ejemplo (Comprobación de Independencia, Discreto)
 Con las marginales y conjunta de la tabla anterior: $P_X(1)=9/15$, $P_Y(1)=10/15$, $P_{X,Y}(1,1)=6/15$.
 
