@@ -16,6 +16,23 @@ _NUMERO = re.compile(r"-?\d+(?:\.\d+)?(?:[eE][-+]?\d+)?")
 
 _TOLERANCIA_RELATIVA = 1e-3
 
+# Marcas de fórmula simbólica genérica (con sumatoria/producto/integral),
+# no un valor numérico concreto. N-03: relajar el emparejamiento a "un
+# solo `\boxed{}` en la sección" sin esta exclusión reporta un falso
+# positivo real sobre UNIDAD 7 §6.2
+# (`\boxed{\hat{\mu}_{MLE} = \bar{X} = \frac{1}{n}\sum_{i=1}^n X_i}`):
+# los dígitos `1`/`n` de la notación de sumatoria no son el valor que el
+# código debe producir, y su presencia no debe activar una comparación
+# directa contra `producidos`. Verificado ejecutando las 8 unidades
+# reales con y sin esta exclusión.
+_MARCAS_FORMULA_SIMBOLICA = (r"\\sum", r"\\prod", r"\\int", r"_\{[a-zA-Z]\s*=\s*1\}\^")
+
+
+def _es_formula_simbolica(expresion: str) -> bool:
+    """¿La expresión del `\\boxed{}` es una fórmula simbólica genérica,
+    no un valor numérico concreto a contrastar?"""
+    return any(re.search(m, expresion) for m in _MARCAS_FORMULA_SIMBOLICA)
+
 
 def _limpiar_latex(expresion: str) -> str:
     """Quita los sufijos LaTeX que no son parte del valor (`\\text{nm}`,

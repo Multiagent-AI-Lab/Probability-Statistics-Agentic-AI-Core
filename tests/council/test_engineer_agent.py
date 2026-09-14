@@ -127,13 +127,26 @@ def test_bloques_no_ejecutables_se_omiten_sin_penalizar():
 
 
 def test_boxed_de_otro_ejemplo_analitico_no_es_falso_positivo():
-    """Patrón real de las lecciones (UNIDAD 7 §1.3): se deriva a mano
-    alpha=0.2466 de una exponencial y el bloque de código verifica un
-    escenario AgNP completamente distinto. No es una discrepancia."""
+    """Patrón real de las lecciones (UNIDAD 7 §1.3, dos `\\boxed{}` en la
+    misma sección: alpha=0.2466 y beta=0.6068 derivados a mano de una
+    exponencial). El bloque de código verifica un escenario AgNP
+    completamente distinto. No es una discrepancia.
+
+    Nota (N-03, Task 2): con un solo `\\boxed{}` en la sección, este
+    mismo patrón (rótulo ausente del stdout, código de otro ejemplo) es
+    indistinguible del caso que N-03 corrige -un solo `\\boxed{}` cuyo
+    rótulo no aparece en el stdout porque el código no lo imprime con
+    ese nombre, siendo el MISMO ejemplo- y con la relajación de N-03 se
+    reportaría como discrepancia. La sección real de UNIDAD 7 §1.3 tiene
+    dos `\\boxed{}` (verificado en el .md), por lo que nunca activa esa
+    rama; el test se ajusta a dos `\\boxed{}` para reflejar el patrón
+    real, en vez del caso de un solo boxed que ya no ocurre en el curso."""
     agent = EngineerAgent()
     texto = (
         "## 1. Sección de prueba\n\n"
         r"$$\alpha = P(X > 28 \mid \mu=20) = e^{-28/20} \approx \boxed{0.2466}$$"
+        "\n"
+        r"$$\beta = P(X \le 28 \mid \mu=30) = 1 - e^{-28/30} \approx \boxed{0.6068}$$"
         "\n\n```python\n"
         "print(f'Region de no rechazo: (48.6934, 51.3066) nm')\n"
         "print(f'beta=0.1492, potencia=0.8508')\n"

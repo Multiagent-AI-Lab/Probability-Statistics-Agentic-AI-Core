@@ -16,6 +16,7 @@ from ._contraste_boxed import (
     _algun_valor_coincide,
     _contrastar_contra_la_unidad,
     _el_codigo_apunta_al_valor,
+    _es_formula_simbolica,
     _limpiar_latex,
 )
 
@@ -215,14 +216,21 @@ class EngineerAgent:
                 # no emite un número que contrastar.
                 continue
 
-            # Una sección que trae SU código y SU `\boxed{}` empareja ambos
-            # sin ambigüedad: el bloque está ahí para producir ese resultado.
-            # Cuando además emite un único valor, la comparación es directa y
-            # no hace falta el desempate por rótulo que necesitan las
-            # secciones donde conviven varios ejemplos.
-            emparejamiento_inequivoco = len(esperados) == 1 and len(producidos) == 1
-
             for valor_esperado, expresion in esperados:
+                # N-03: relajado de "un solo boxed Y un solo número
+                # producido" a solo "un solo boxed no simbólico en la
+                # sección" -- antes, una sección con >=2 números
+                # producidos (ruido, pasos intermedios) nunca activaba
+                # esta rama, y el boxed fabricado caía en
+                # _el_codigo_apunta_al_valor, que lo descartaba sin
+                # reportar si su rótulo no aparecía en el stdout.
+                # Verificado sin falsos positivos en las 8 unidades
+                # reales (UNIDAD 7 §6.2 es el caso que exige excluir
+                # fórmulas simbólicas -- ver _es_formula_simbolica).
+                emparejamiento_inequivoco = len(
+                    esperados
+                ) == 1 and not _es_formula_simbolica(expresion)
+
                 # Basta con que el valor aparezca en la salida de la sección:
                 # el código lo produjo, aunque el rótulo no sea idéntico.
                 if _algun_valor_coincide(valor_esperado, producidos):

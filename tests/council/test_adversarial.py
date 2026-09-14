@@ -323,3 +323,92 @@ def test_contenido_real_correcto_sigue_aprobando(council):
     assert (
         resultado["approved"] is True
     ), f"contenido real correcto no debe reprobarse; hallazgos: {hallazgos}"
+
+
+def _documento_con_boxed_final(boxed_extra: str) -> str:
+    """Reemplaza la última línea de `\\boxed{}` de `_DOCUMENTO_ADAPTATIVO_N01`
+    (`$$\\boxed{p = 0.42}$$`) por `boxed_extra`, manteniendo el resto del
+    documento (relleno gramatical, código real, gráfico) intacto."""
+    return _DOCUMENTO_ADAPTATIVO_N01.replace(r"$$\boxed{p = 0.42}$$", boxed_extra)
+
+
+def test_v1_dos_boxed_calibrados_dentro_del_factor_2x_se_reportan(council):
+    """N-03, V1: dos `\\boxed{}` en la misma sección, ambos fabricados
+    dentro del factor 2x de los valores reales (z=-1.5216, p=0.1281).
+    Ratios verificados: 2.4/1.5216=1.577, 0.21/0.1281=1.639, ambos en
+    [0.5, 2.0]. Control positivo: cuando hay ambigüedad real (>=2 boxed),
+    el emparejamiento por rótulo asigna cada uno a SU valor rotulado y
+    compara contra el correcto, no contra el más conveniente."""
+    doc = _documento_con_boxed_final(
+        r"$$\boxed{z = -2.4000}$$" "\n\n" r"$$\boxed{p = 0.2100}$$"
+    )
+    resultado = council.process_content(doc, unit_name="ADV-GEN4-V1")
+    assert resultado["approved"] is False
+    tipos = {h["tipo"] for h in resultado["final_qa"]["hallazgos"]}
+    assert "desajuste_ejemplo_salida" in tipos
+
+
+def test_v2_numero_correcto_con_nombre_incorrecto_es_limite_conocido_n04(council):
+    """N-04 (BAJO, no accionable con el diseño heurístico actual): un
+    `\\boxed{0.1281}` sin rótulo cuyo número coincide exactamente con el
+    p-valor real, pero el texto lo nombra "significancia crítica" cuando
+    es un p-valor. No hay discrepancia numérica que detectar -el valor es
+    correcto-, así que ningún agente heurístico puede levantar esto sin
+    comprensión semántica del nombre. Documentado como límite de diseño,
+    NO como bug a resolver: ver N-04 en la auditoría del 2026-09-13."""
+    doc = _documento_con_boxed_final(r"$$\boxed{0.1281}$$")
+    resultado = council.process_content(doc, unit_name="ADV-GEN4-V2")
+    assert resultado["approved"] is True
+
+
+def test_v3_rotulo_ausente_con_un_solo_boxed_se_detecta_tras_fix_de_n03(council):
+    """N-03 (ALTO): el caso real que este fix cierra. Un único
+    `\\boxed{\\hat{\\theta} = 0.4200}` cuyo nombre (theta) no aparece
+    como rótulo en el stdout (el código imprime z y p, no theta). Antes
+    del fix: `_el_codigo_apunta_al_valor` devolvía False en la guarda
+    `if not valores_rotulados: return False`, y la discrepancia se
+    descartaba sin reportar (approved=True, hallazgos=[]). Tras el fix:
+    con un solo `\\boxed{}` no simbólico en la sección, se compara
+    directo contra los números producidos sin exigir rótulo."""
+    doc = _documento_con_boxed_final(r"$$\boxed{\hat{\theta} = 0.4200}$$")
+    resultado = council.process_content(doc, unit_name="ADV-GEN4-V3")
+    assert resultado["approved"] is False
+    tipos = {h["tipo"] for h in resultado["final_qa"]["hallazgos"]}
+    assert "desajuste_ejemplo_salida" in tipos
+
+
+def test_v3_variante_rotulo_ausente_con_dos_boxed_sigue_sin_detectarse(council):
+    """Límite conocido de A1, documentado explícitamente para que no se
+    redescubra como sorpresa: con >=2 `\\boxed{}` en la sección, un
+    `\\boxed{}` sin rótulo SIGUE sin detectarse -A1 solo relaja el caso
+    de un único `\\boxed{}` no ambiguo. Con dos, `_el_codigo_apunta_al_valor`
+    aún puede devolver False en la guarda de `valores_rotulados` vacío
+    para el primero. No accionable sin tocar también la rama de rótulo
+    presente (fuera de alcance de este spec)."""
+    doc = _documento_con_boxed_final(
+        r"$$\boxed{\hat{\theta} = 0.4200}$$" "\n\n" r"$$\boxed{p = 0.2100}$$"
+    )
+    resultado = council.process_content(doc, unit_name="ADV-GEN4-V3-DOS-BOXED")
+    # El segundo boxed (p=0.21, rotulado, dentro del factor 2x) sí se
+    # detecta -por eso approved sigue False-, pero el hallazgo del theta
+    # sin rótulo no debe estar entre los reportados.
+    assert resultado["approved"] is False
+    mensajes = [
+        h["mensaje"]
+        for h in resultado["final_qa"]["hallazgos"]
+        if h["tipo"] == "desajuste_ejemplo_salida"
+    ]
+    assert not any("0.42" in m or "theta" in m.lower() for m in mensajes)
+
+
+def test_v4_boxed_unico_con_rotulo_presente_dentro_del_factor_2x_se_reporta(council):
+    """Control: un solo `\\boxed{p = 0.2100}` con rótulo presente (p),
+    dentro del factor 2x del valor real (0.1281). Ya funciona hoy vía la
+    rama de magnitud existente; tras A1 pasa por el camino nuevo (un
+    solo boxed no simbólico -> comparación directa), y debe seguir
+    reportando."""
+    doc = _documento_con_boxed_final(r"$$\boxed{p = 0.2100}$$")
+    resultado = council.process_content(doc, unit_name="ADV-GEN4-V4")
+    assert resultado["approved"] is False
+    tipos = {h["tipo"] for h in resultado["final_qa"]["hallazgos"]}
+    assert "desajuste_ejemplo_salida" in tipos
