@@ -18,6 +18,14 @@ class MermaidRenderer:
         os.makedirs(output_dir, exist_ok=True)
 
     def render_to_svg(self, mermaid_code: str, filename: str) -> str | None:
+        # Defensa en profundidad (revisión de seguridad, 2026-09-14):
+        # filename hoy solo llega desde notebook_compiler_agent.py, construido
+        # a partir del nombre de unidad + un contador (sin separadores de
+        # ruta), pero esta función es reutilizable y no debe depender de que
+        # su único llamador actual siga siendo "seguro por construcción".
+        if os.path.basename(filename) != filename:
+            raise ValueError(f"filename inválido (no puede contener rutas): {filename}")
+
         output_path = os.path.join(self.output_dir, filename)
         tmp_mmd = os.path.join(self.output_dir, f"tmp_{filename}.mmd")
 

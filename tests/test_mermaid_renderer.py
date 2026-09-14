@@ -75,6 +75,27 @@ def test_constructor_crea_el_directorio_de_salida_si_no_existe(tmp_path):
     assert output_dir.exists()
 
 
+def test_filename_con_separador_de_ruta_se_rechaza(tmp_path):
+    """Defensa en profundidad (revisión de seguridad, 2026-09-14): filename
+    hoy solo llega desde notebook_compiler_agent.py construido de forma
+    segura, pero render_to_svg es una función reutilizable y no debe
+    depender de que su único llamador actual siga siendo "seguro por
+    construcción". Un filename con separador de ruta (intento de escribir
+    fuera de output_dir) debe rechazarse explícitamente."""
+    renderer = MermaidRenderer(output_dir=str(tmp_path))
+
+    with pytest.raises(ValueError, match="filename inválido"):
+        renderer.render_to_svg("graph TD\nA --> B", "../fuera/escape.svg")
+
+
+def test_filename_con_separador_windows_se_rechaza(tmp_path):
+    """Mismo caso que arriba, con separador de estilo Windows."""
+    renderer = MermaidRenderer(output_dir=str(tmp_path))
+
+    with pytest.raises(ValueError, match="filename inválido"):
+        renderer.render_to_svg("graph TD\nA --> B", "..\\fuera\\escape.svg")
+
+
 @patch("src.multiagent_core.mermaid_renderer.shutil.which")
 def test_npx_no_disponible_retorna_none_sin_excepcion(mock_which, tmp_path):
     """N-06 (auditoría 2026-09-14): antes del fix, subprocess.run(["npx", ...])
