@@ -29,6 +29,17 @@ la constante Y el badge de README.md en el mismo commit que agrega/quita
 un test -- sin excepción, incluyendo tareas que parezcan no relacionadas
 con testing (agregar un test de regresión para OTRA cosa también cambia
 este número).
+
+B1' (auditoría 2026-09-14): este test local sigue siendo estructuralmente
+tautológico -compara README contra una constante mantenida a mano, nunca
+contra pytest- y así se documenta arriba con toda intención. El gate REAL
+contra el conteo real de pytest vive en CI (`.github/workflows/ci.yml`,
+step "Verify README test badge matches real count"), que si compara
+`pytest --collect-only` contra el badge en cada push/PR. Este test local
+solo confirma que la constante y el badge coinciden ENTRE SÍ -si alguien
+actualiza uno sin el otro, esto lo detecta; si ambos quedan
+desactualizados por igual respecto al conteo real, el gate de CI lo
+detecta.
 """
 
 import re
@@ -38,7 +49,7 @@ _BADGE_PATTERN = re.compile(r"tests-(\d+)%20passing")
 
 # Actualizar junto con el badge de README.md cada vez que cambie el
 # número de tests del repo. Verificar con: pytest --collect-only -q | tail -1
-NUMERO_TESTS_ESPERADO = 282
+NUMERO_TESTS_ESPERADO = 289
 
 
 def test_badge_de_tests_coincide_con_el_conteo_esperado():

@@ -35,6 +35,21 @@ jobs:
         run: |
           pytest
 
+      # B1' (auditoría 2026-09-14): tests/test_readme_badge.py compara el
+      # badge contra una constante mantenida a mano -- tautológico, nunca
+      # contra pytest. Este step es el gate real: compara README.md
+      # directamente contra el conteo que pytest recolecta en esta misma
+      # corrida de CI.
+      - name: Verify README test badge matches real count
+        run: |
+          REAL=$(pytest --collect-only -q | tail -1 | grep -oE '^[0-9]+')
+          BADGE=$(grep -oE 'tests-[0-9]+' README.md | grep -oE '[0-9]+')
+          if [ "$REAL" != "$BADGE" ]; then
+            echo "Badge dice $BADGE, pytest recolectó $REAL -- actualiza README.md"
+            exit 1
+          fi
+          echo "Badge OK: $BADGE == $REAL"
+
       # Gate explícito de H-01: el Consejo debe rechazar documentos sin
       # contenido real. Se corre por separado —aunque `pytest` ya lo
       # incluya— para que una regresión aquí se lea de inmediato en el log
