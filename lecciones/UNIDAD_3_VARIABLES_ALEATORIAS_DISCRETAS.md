@@ -122,6 +122,19 @@ Generaliza la distribución Binomial a experimentos con más de dos resultados p
 * PMF: $P(X_1=k_1,\dots,X_k=k_k) = \dfrac{n!}{k_1!\,k_2!\cdots k_k!}\, p_1^{k_1} p_2^{k_2} \cdots p_k^{k_k}$, con $\sum_i k_i = n$.
 * Esperanza por componente: $\mathbb{E}[X_i] = np_i$, Desviación estándar: $\sigma_i = \sqrt{np_i(1-p_i)}$.
 
+El siguiente árbol de decisión resume cómo elegir entre las cuatro familias discretas más frecuentes (2.1-2.4) según la pregunta que plantea el experimento:
+
+```mermaid
+graph TD
+    Inicio["Experimento aleatorio discreto"]
+    Inicio --> P1{"Un solo ensayo Bernoulli (exito/fracaso)?"}
+    P1 -->|"Si"| Bernoulli["Distribucion Bernoulli(p)"]
+    P1 -->|"No, son n ensayos independientes"| P2{"Que se cuenta?"}
+    P2 -->|"Numero de exitos en n ensayos fijos"| Binomial["Distribucion Binomial(n, p)"]
+    P2 -->|"Numero de eventos raros en un intervalo continuo (tiempo/espacio)"| Poisson["Distribucion de Poisson(lambda)"]
+    P2 -->|"Numero de ensayos hasta el primer exito"| Geometrica["Distribucion Geometrica(p)"]
+```
+
 ### 2.9 Profundización: PMF Completa, CDF y Aplicaciones por Dominio
 
 Las subsecciones 2.1 a 2.8 dan la definición mínima de cada familia. Esta subsección profundiza las 8 distribuciones discretas del curso con su CDF explícita, código de comparación gráfica en `scipy.stats`, y ejemplos de uso concretos en **Nanotecnología**, **Inteligencia Artificial** y **Diseño de Experimentos (DOE)**.
