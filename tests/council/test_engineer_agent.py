@@ -11,7 +11,10 @@ import textwrap
 import time
 
 from src.multiagent_core.council._contraste_boxed import _ROTULO_INLINE
-from src.multiagent_core.council.engineer_agent import EngineerAgent
+from src.multiagent_core.council.engineer_agent import (
+    _MAX_CHARS_SALIDA_SECCION,
+    EngineerAgent,
+)
 
 
 def _seccion(codigo: str, boxed: str) -> str:
@@ -433,4 +436,44 @@ def test_rotulo_inline_no_escala_cuadratico_con_muchos_signos_igual():
     assert duracion < _TECHO_SEGUNDOS_REDOS, (
         f"_ROTULO_INLINE tardo {duracion:.2f}s sobre 50_000 "
         "repeticiones de 'a=' -- posible regresion de ReDoS"
+    )
+
+
+def test_salida_larga_no_escala_sin_limite_global_i4():
+    """I-4 (INFO, auditoría 2026-09-13): antes de esta cota, el único
+    límite era `_MAX_CHARS_POR_LINEA_ROTULO` -por línea, no por
+    documento-, así que un stdout de muchas líneas (cada una dentro de
+    la cota) seguía escalando linealmente con el tamaño TOTAL del
+    documento en `_extraer_numeros`. No es ReDoS (el regex ya es
+    lineal) pero es trabajo desperdiciado evitable con una cota global
+    aplicada antes de cualquier procesamiento.
+
+    Mide el post-procesamiento de texto directamente (`_extraer_numeros`
+    sobre una salida ya capturada, con y sin la cota aplicada), no
+    `check_code_implementation` de punta a punta: ese camino completo
+    pasa por `_ejecutar_unidad` (subprocess con el preámbulo de
+    matplotlib), cuyo overhead fijo (~9s, medido) domina cualquier caso
+    de prueba -trivial o no- y haría que este test mida ese costo
+    preexistente y no relacionado, en vez del que I-4 realmente acota."""
+    agent = EngineerAgent()
+    salida_enorme = "p = " + "(" * 5_000_000  # muy por encima de la cota
+
+    t0 = time.perf_counter()
+    agent._extraer_numeros(salida_enorme[:_MAX_CHARS_SALIDA_SECCION])
+    duracion_con_cota = time.perf_counter() - t0
+
+    t0 = time.perf_counter()
+    agent._extraer_numeros(salida_enorme)
+    duracion_sin_cota = time.perf_counter() - t0
+
+    assert duracion_con_cota < 1.0, (
+        f"_extraer_numeros tardo {duracion_con_cota:.2f}s incluso con la "
+        "salida ya truncada a _MAX_CHARS_SALIDA_SECCION -- la cota deberia "
+        "mantenerlo bajo sin importar el tamano original del documento"
+    )
+    assert duracion_sin_cota > duracion_con_cota, (
+        "sin la cota, procesar la salida completa (5_000_000 caracteres) "
+        "deberia tomar notoriamente mas que procesar la version truncada "
+        "-- si no hay diferencia, la cota global (I-4) no esta acotando "
+        "nada real"
     )

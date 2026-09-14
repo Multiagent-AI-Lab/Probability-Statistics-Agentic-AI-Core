@@ -62,6 +62,15 @@ _MARCADOR_SECCION = "___SECCION_AUDITADA_"
 
 _TIMEOUT_EJECUCION_SEGUNDOS = 300
 
+# I-4: cota global de longitud por sección, antes de cualquier
+# procesamiento por línea. `_MAX_CHARS_POR_LINEA_ROTULO` (en
+# `_contraste_boxed.py`) acota cada línea, no el documento entero: un
+# stdout de muchas líneas cortas escala linealmente sin techo. No es
+# ReDoS (el regex ya es lineal) -- es una segunda capa de higiene que
+# evita trabajo desperdiciado sobre una salida que ningún stdout real
+# de una lección del curso se acerca a producir.
+_MAX_CHARS_SALIDA_SECCION = 200_000
+
 # Preámbulo que hace ejecutable en batch un bloque escrito para notebook:
 # backend sin ventana para matplotlib y `display`/`Math` como no-ops que
 # dejan su texto en stdout (ahí viven varios `\boxed{}` generados por f-string).
@@ -210,6 +219,11 @@ class EngineerAgent:
                 continue
 
             salida = salida_por_seccion.get(titulo, "")
+            # I-4: cota global antes de cualquier procesamiento por línea
+            # -- ningún stdout real de una lección del curso se acerca a
+            # este tamaño; es una segunda capa de higiene, no una
+            # corrección de ReDoS (el regex ya es lineal).
+            salida = salida[:_MAX_CHARS_SALIDA_SECCION]
             producidos = self._extraer_numeros(salida)
             if not producidos:
                 # El código de la sección es simbólico (SymPy) o solo grafica:

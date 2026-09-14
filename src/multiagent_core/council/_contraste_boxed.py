@@ -318,6 +318,15 @@ def _el_codigo_apunta_al_valor(
     la cantidad— aparece en la salida. Un valor calculado bajo otro
     nombre pertenece a otro ejemplo; comparar números sueltos entre sí
     no distingue esos dos casos.
+
+    Límite de diseño (N-04, auditoría 2026-09-13): este mecanismo
+    detecta desincronización NUMÉRICA, no un nombre incorrecto sobre
+    un valor correcto. `\\boxed{0.1281}` sin rótulo, etiquetado en
+    prosa como "significancia crítica" cuando el código lo produce
+    como p-valor, no genera discrepancia -el número es real- y no
+    hay verificación heurística que distinga eso de un nombre
+    correcto. Requiere comprensión semántica que este diseño
+    (heurístico, sin LLM) no puede sostener.
     """
     nombre = _nombre_de_la_cantidad(expresion_boxed)
     if not nombre:

@@ -188,6 +188,29 @@ Esta sección declara el alcance real, no aspiracional, a la fecha de esta redac
   anterior a la reconstrucción; el 6/8 y 2/8 de arriba es la primera medición contra
   contenido real, no una tasa de precisión validada por un tercero). No existe todavía
   el equivalente al 62.5% con validación experta que reporta arXiv 2607.11276.
+* **Un valor numéricamente correcto con un nombre semánticamente incorrecto no se
+  detecta (N-04, auditoría 2026-09-13).** `_el_codigo_apunta_al_valor` (en
+  `_contraste_boxed.py`) contrasta cifras, no el nombre en prosa que las acompaña:
+  un `\boxed{0.1281}` que el código produce como p-valor pero que el texto etiqueta
+  "significancia crítica" no genera discrepancia -el número coincide-. Distinguir
+  esto exige comprensión semántica del lenguaje natural, no solo del valor numérico;
+  es el mismo límite que H-03 (interpretación semántica del contenido, arriba) pero
+  aplicado a la etiqueta de un resultado en vez de a una afirmación completa.
+* **El gate de producción de `@Safety_Gate` solo bloquea por hallazgos críticos, no
+  por cualquier violación de supuestos detectada (I-3, auditoría 2026-09-13).**
+  `SafetyGateAgent` devuelve `{"passed", "warnings", "critical"}` -`passed` es
+  `False` en cuanto hay un solo *warning*, sin llegar a crítico-, pero
+  `orchestrator_agent.py:160` consulta únicamente `safety_result["critical"]`
+  antes de aprobar una unidad; `passed` (`False` con supuestos no verificados
+  pero no críticos) nunca se consulta en ese punto del pipeline de producción.
+  Es una decisión de diseño ya tomada -no todo hallazgo de supuestos debe
+  bloquear la publicación-, pero no estaba declarada explícitamente como tal
+  en esta sección hasta ahora. Nota de verificación: el commit `559627d`
+  (2026-08-19, no 2026-09-04 como se asumió al
+  redactar este hallazgo) corrigió dos falsos positivos reales de `SafetyGateAgent`
+  (identificadores de código como "regression" y falta de alias en español) — no es
+  el origen de esta brecha, que es estructural al diseño del gate, no una regresión
+  introducida por ese fix.
 
 ---
 
