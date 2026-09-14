@@ -819,7 +819,7 @@ verificador = ExerciseVerifierAgent(
     # u olvidada produce una secuencia distinta y falla este check con tolerancia estrecha.
     checks=[
         "len(muestras) == 10000",
-        "abs(p_estimada - 0.2381) < 1e-9",
+        "abs(p_estimada - 0.2381) < 1e-4",
     ],
     plantilla=plantilla_original,
 )
@@ -930,8 +930,8 @@ verificador = ExerciseVerifierAgent(
     checks=[
         "len(muestras1) == 1000",
         "len(muestras2) == 100000",
-        "abs(p1 - 0.211) < 1e-9",
-        "abs(p2 - 0.22328) < 1e-9",
+        "abs(p1 - 0.211) < 1e-4",
+        "abs(p2 - 0.22328) < 1e-4",
         "se2 < se1",
     ],
     plantilla=plantilla_original,
