@@ -191,6 +191,18 @@ print(f"¿Coinciden (falta de memoria)? {abs(p_izquierda - p_derecha) < 1e-9}")
 
 Ambos lados dan $0.472367$: haber sobrevivido 20 horas sin falla **no informa nada** sobre cuánto durará el sensor a partir de ahora — la probabilidad de sobrevivir 15 horas más es idéntica a la de un sensor nuevo. Esto contrasta con dispositivos que sí envejecen (Weibull con $k>1$), donde la probabilidad de falla inminente sí depende del tiempo ya transcurrido en operación.
 
+El siguiente árbol de decisión resume cómo elegir entre las tres familias continuas más frecuentes (2.1-2.3) según la naturaleza del fenómeno observado:
+
+```mermaid
+graph TD
+    Inicio["Variable aleatoria continua a modelar"]
+    Inicio --> P1{"Todos los valores en un rango son igual de probables?"}
+    P1 -->|"Si (ej. posicion inicial de una nanoparticula en la caja)"| Uniforme["Distribucion Uniforme(a, b)"]
+    P1 -->|"No"| P2{"Es el tiempo/distancia hasta el proximo evento Poisson?"}
+    P2 -->|"Si (ej. tiempo hasta la primera falla del nanosensor)"| Exponencial["Distribucion Exponencial(lambda)"]
+    P2 -->|"No, es una suma de muchos efectos aleatorios pequenos"| Normal["Distribucion Normal(mu, sigma^2)"]
+```
+
 ### 2.4 Distribución Gamma ($X \sim \text{Gamma}(k, \theta)$)
 Generalización de la distribución exponencial para el tiempo hasta observar $k$ eventos.
 * PDF: $f(x) = \frac{x^{k-1} e^{-x/\theta}}{\theta^k \Gamma(k)}$ para $x > 0$.
