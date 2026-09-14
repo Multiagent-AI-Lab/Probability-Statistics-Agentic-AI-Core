@@ -38,6 +38,14 @@ class ContentAuditorAgent:
     _DICCIONARIO_ENTRADA_PATTERN = re.compile(r"^\s*\*\s*\$[^$]+\$\s*:", re.MULTILINE)
     _SYMPY_SYMBOL_PATTERN = re.compile(r"\b(?:sp\.Symbol|sp\.symbols|sympy\.symbols)\b")
     _SYMPY_SUBS_PATTERN = re.compile(r"\.subs\(")
+    # Segunda vía (D2, auditoría 2026-09-13): cálculo simbólico exacto
+    # sin sustitución de variable -el patrón real de UNIDAD 1
+    # (sp.Rational + operación simbólica + simplificación), distinto de
+    # "declarar símbolo -> sustituir valor" que la primera vía reconoce.
+    _SYMPY_EXACTO_PATTERN = re.compile(r"\bsp\.Rational\b")
+    _SYMPY_SIMPLIFICACION_PATTERN = re.compile(
+        r"\b(?:nsimplify|sp\.nsimplify|sp\.simplify)\b"
+    )
     _INTERPRETACION_PATTERN = re.compile(r"interpret", re.IGNORECASE)
     _PLOT_CALL_PATTERN = re.compile(r"plt\.|sns\.")
 
@@ -50,14 +58,22 @@ class ContentAuditorAgent:
         return theory_text
 
     def _has_real_sympy_usage(self, markdown_text: str) -> bool:
-        """Detecta uso real de SymPy: sp.Symbol/sp.symbols/sympy.symbols
-        seguido de un .subs( posterior, dentro del mismo bloque de código."""
+        """Detecta uso real de SymPy por dos vías:
+        1. sp.Symbol/sp.symbols/sympy.symbols seguido de un .subs(
+           posterior, dentro del mismo bloque de código.
+        2. sp.Rational combinado con una simplificación (nsimplify/
+           simplify) en el mismo bloque -- cálculo simbólico exacto sin
+           sustitución de variable (patrón real de UNIDAD 1, que la vía
+           1 no reconoce)."""
         for full_match, _lang, code in extract_fenced_blocks(markdown_text):
             symbol_match = self._SYMPY_SYMBOL_PATTERN.search(code)
-            if symbol_match is None:
-                continue
-            subs_match = self._SYMPY_SUBS_PATTERN.search(code, symbol_match.end())
-            if subs_match is not None:
+            if symbol_match is not None:
+                subs_match = self._SYMPY_SUBS_PATTERN.search(code, symbol_match.end())
+                if subs_match is not None:
+                    return True
+            if self._SYMPY_EXACTO_PATTERN.search(
+                code
+            ) and self._SYMPY_SIMPLIFICACION_PATTERN.search(code):
                 return True
         return False
 

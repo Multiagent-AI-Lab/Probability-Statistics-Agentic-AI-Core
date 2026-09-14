@@ -162,6 +162,45 @@ def test_verificacion_sympy_pasa_con_symbol_y_subs_reales():
     assert resultado["component_checks"]["Verificación SymPy"] is True
 
 
+def test_verificacion_sympy_pasa_con_rational_y_simplificacion_sin_subs():
+    """D2 (auditoría 2026-09-13): el patrón real de UNIDAD 1 usa
+    sp.Rational + operaciones algebraicas + sp.nsimplify para cálculo
+    simbólico exacto, SIN declarar un símbolo abstracto (sp.Symbol) ni
+    llamar .subs(). El criterio original (símbolo + subs) da un falso
+    negativo aquí -verificado leyendo el código real de U1 antes de
+    diseñar este fix-, así que se agrega una segunda vía de aprobación."""
+    auditor = ContentAuditorAgent()
+    texto_real = (
+        "Desarrollo teórico.\n\n"
+        "```python\n"
+        "import sympy as sp\n"
+        "x_vals = [sp.Rational(str(v)) for v in [12.1, 13.4, 11.8]]\n"
+        "media_expr = sp.Add(*x_vals) / len(x_vals)\n"
+        "media_exacta = sp.nsimplify(media_expr)\n"
+        "```\n"
+    )
+    resultado = auditor.audit_content(texto_real)
+    assert resultado["component_checks"]["Verificación SymPy"] is True
+
+
+def test_verificacion_sympy_no_pasa_solo_con_rational_sin_simplificar():
+    """La segunda vía exige Rational Y una llamada de simplificación en
+    el mismo bloque -- Rational solo (sin simplify/nsimplify) no debe
+    bastar, para no volver la segunda vía tan laxa como 'menciona
+    Rational'."""
+    auditor = ContentAuditorAgent()
+    texto_incompleto = (
+        "Desarrollo teórico.\n\n"
+        "```python\n"
+        "import sympy as sp\n"
+        "x = sp.Rational(3, 4)\n"
+        "print(x)\n"
+        "```\n"
+    )
+    resultado = auditor.audit_content(texto_incompleto)
+    assert resultado["component_checks"]["Verificación SymPy"] is False
+
+
 def test_interpretacion_debe_ir_despues_del_grafico():
     """H-08: hoy la posicion relativa no se verifica, solo la presencia de la palabra."""
     auditor = ContentAuditorAgent()
