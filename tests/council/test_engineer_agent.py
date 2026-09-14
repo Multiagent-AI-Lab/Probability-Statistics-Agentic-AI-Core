@@ -10,6 +10,7 @@ Cubre dos responsabilidades:
 import textwrap
 import time
 
+from src.multiagent_core.council._contraste_boxed import _ROTULO_INLINE
 from src.multiagent_core.council.engineer_agent import EngineerAgent
 
 
@@ -395,7 +396,7 @@ def test_rotulo_inline_no_escala_cuadratico_sin_signo_igual():
     salida = "a" * 100_000
 
     t0 = time.perf_counter()
-    resultado = EngineerAgent._ROTULO_INLINE.findall(salida)
+    resultado = _ROTULO_INLINE.findall(salida)
     duracion = time.perf_counter() - t0
 
     assert resultado == []
@@ -412,7 +413,7 @@ def test_rotulo_inline_no_escala_cuadratico_con_muchos_signos_igual():
     salida = "a=" * 50_000
 
     t0 = time.perf_counter()
-    resultado = EngineerAgent._ROTULO_INLINE.findall(salida)
+    resultado = _ROTULO_INLINE.findall(salida)
     duracion = time.perf_counter() - t0
 
     assert resultado == []
