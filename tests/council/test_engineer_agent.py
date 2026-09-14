@@ -477,3 +477,59 @@ def test_salida_larga_no_escala_sin_limite_global_i4():
         "-- si no hay diferencia, la cota global (I-4) no esta acotando "
         "nada real"
     )
+
+
+def test_salida_de_la_unidad_tambien_queda_acotada_i4():
+    """I-4, hallazgo de la revisión final de rama (2026-09-14): la cota
+    `_MAX_CHARS_SALIDA_SECCION` se aplicaba a `salida` (una sola sección,
+    dentro de `check_code_implementation`) pero NO a
+    `salida_de_la_unidad` -la concatenación de TODAS las secciones-, que
+    se pasa sin truncar a `_contrastar_contra_la_unidad`. Una unidad con
+    muchas secciones, cada una dentro de la cota individual, seguía
+    escalando la concatenación con el tamaño TOTAL de la unidad: exactamente
+    el escenario que el propio comentario de I-4 decía cerrar.
+
+    Ejercita el código real de `check_code_implementation` (no solo la
+    función de post-procesamiento en aislamiento) parcheando
+    `_ejecutar_unidad` y `_contrastar_contra_la_unidad` para inspeccionar
+    exactamente qué tamaño de `salida_de_la_unidad` llega a esta última,
+    sin pagar el overhead de subprocess/matplotlib de una ejecución real."""
+    from unittest.mock import patch
+
+    from src.multiagent_core.council.engineer_agent import EngineerAgent as _EA
+
+    # Dos secciones: una con `\boxed{}` sin código propio (activa
+    # _contrastar_contra_la_unidad, que usa salida_de_la_unidad completa)
+    # y otra con un bloque ejecutable trivial (necesario para que
+    # hay_algo_que_verificar sea True y _ejecutar_unidad -mockeada abajo-
+    # llegue a invocarse).
+    texto = (
+        "## 1. Teoría\n\n$$\\boxed{p = 0.42}$$\n\n"
+        "## 2. Cómputo\n\n```python\nprint('x = 1')\n```\n"
+    )
+
+    # 300 secciones de 10_000 caracteres -> unión de 3_000_000 caracteres,
+    # muy por encima de _MAX_CHARS_SALIDA_SECCION*10 (2_000_000): confirma
+    # que el truncado de unidad SÍ recorta un caso que lo excede.
+    secciones_grandes = {f"sección {i}": ("x" * 10_000) for i in range(300)}
+    tamanos_recibidos = []
+
+    def _contrastar_espia(titulo, esperados, salida_de_la_unidad, discrepancias):
+        tamanos_recibidos.append(len(salida_de_la_unidad))
+
+    agent = _EA()
+    with patch.object(
+        agent, "_ejecutar_unidad", return_value=(secciones_grandes, None, None)
+    ), patch(
+        "src.multiagent_core.council.engineer_agent._contrastar_contra_la_unidad",
+        side_effect=_contrastar_espia,
+    ):
+        resultado = agent.check_code_implementation(texto)
+
+    assert resultado is not None
+    assert len(tamanos_recibidos) == 1, "se esperaba una sola llamada"
+    assert tamanos_recibidos[0] <= _MAX_CHARS_SALIDA_SECCION * 10, (
+        f"salida_de_la_unidad llegó con {tamanos_recibidos[0]} caracteres a "
+        f"_contrastar_contra_la_unidad -- debería quedar acotada a "
+        f"{_MAX_CHARS_SALIDA_SECCION * 10} (10x la cota por sección)"
+    )

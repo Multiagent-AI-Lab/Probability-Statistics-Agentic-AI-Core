@@ -143,16 +143,53 @@ def test_bloque_mermaid_invoca_el_renderer_a_svg():
         instancia_mock.render_to_svg.assert_called_once()
         codigo_llamado = instancia_mock.render_to_svg.call_args[0][0]
         assert "graph TD" in codigo_llamado
+        # El nombre pasado al renderer no debe arrastrar la extensión .md
+        # del archivo fuente (bug encontrado en la revisión final de rama:
+        # "PRUEBA.md_1.svg" en vez de "PRUEBA_1.svg").
+        nombre_pasado = instancia_mock.render_to_svg.call_args[0][1]
+        assert nombre_pasado == "PRUEBA_1.svg"
 
         celda_con_svg = [
             cell
             for cell in cells
             if cell["cell_type"] == "markdown"
-            and "docs/images/PRUEBA_1.svg" in "".join(cell.get("source", []))
+            and "PRUEBA_1.svg" in "".join(cell.get("source", []))
         ]
         assert len(celda_con_svg) == 1
         contenido = "".join(celda_con_svg[0]["source"])
         assert "```mermaid" in contenido
+
+
+def test_referencia_svg_resuelve_desde_notebooks_dir():
+    """Bug encontrado en la revisión final de rama (2026-09-14):
+    MermaidRenderer.render_to_svg devuelve una ruta relativa a la raíz
+    del repo ("docs/images/x.svg", donde corre el proceso de
+    compilación), pero el .ipynb se guarda en notebooks_dir. Sin
+    recalcular, el markdown insertado en la celda resolvería la imagen
+    desde "notebooks/docs/images/x.svg" -- que no existe. La celda debe
+    contener una ruta relativa a notebooks_dir, no la ruta cruda que
+    devuelve el renderer."""
+    markdown_con_mermaid = "## Sección de prueba\n\n```mermaid\ngraph TD\nA-->B\n```\n"
+    agent = NotebookCompilerAgent(notebooks_dir="notebooks")
+    with patch(
+        "src.multiagent_core.notebook_compiler_agent.MermaidRenderer"
+    ) as MockRenderer:
+        instancia_mock = MockRenderer.return_value
+        instancia_mock.render_to_svg.return_value = "docs/images/PRUEBA_1.svg"
+        cells = agent.parse_markdown_to_cells(
+            markdown_con_mermaid, md_filename="PRUEBA.md"
+        )
+        celda_con_svg = next(
+            cell
+            for cell in cells
+            if cell["cell_type"] == "markdown"
+            and "PRUEBA_1.svg" in "".join(cell.get("source", []))
+        )
+        contenido = "".join(celda_con_svg["source"])
+        # Desde notebooks/, "docs/images/PRUEBA_1.svg" (relativo a la raíz)
+        # se alcanza subiendo un nivel: ../docs/images/PRUEBA_1.svg
+        assert "![Diagrama](../docs/images/PRUEBA_1.svg)" in contenido
+        assert "notebooks/docs/images" not in contenido
 
 
 def test_bloque_mermaid_no_rompe_el_build_si_el_renderer_falla():

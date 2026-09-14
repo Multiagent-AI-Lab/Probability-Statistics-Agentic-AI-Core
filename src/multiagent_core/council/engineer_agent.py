@@ -197,7 +197,18 @@ class EngineerAgent:
         # con el código de la sección computacional (§4). Restringir el
         # contraste a la propia sección dejaría sin verificar justo los
         # ejemplos analíticos, que son los que más fácil se desincronizan.
-        salida_de_la_unidad = "\n".join(salida_por_seccion.values())
+        #
+        # I-4 (corregido en la revisión final de rama, 2026-09-14): la cota
+        # por sección (línea de abajo, `salida[:_MAX_CHARS_SALIDA_SECCION]`)
+        # no alcanzaba a esta concatenación -- una unidad con muchas
+        # secciones, cada una dentro de la cota individual, seguía
+        # escalando `salida_de_la_unidad` con el tamaño TOTAL de la unidad,
+        # exactamente el escenario que I-4 decía cerrar. Cota
+        # proporcionalmente mayor porque es la unión de todas las
+        # secciones, no una sola.
+        salida_de_la_unidad = "\n".join(salida_por_seccion.values())[
+            : _MAX_CHARS_SALIDA_SECCION * 10
+        ]
 
         for titulo, ejecutables, esperados in plan:
             if not esperados:

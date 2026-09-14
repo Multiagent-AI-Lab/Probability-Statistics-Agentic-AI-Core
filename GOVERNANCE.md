@@ -50,7 +50,7 @@ Cada sección de contenido nuevo debe cumplir, verificable mediante `ContentAudi
 
 1. **Teoría Completa**: al menos 800 palabras de desarrollo teórico formal (el conteo excluye el contenido de bloques de código fenced — no se cuentan líneas de código ni de tablas como prosa teórica).
 2. **Ejemplo Analítico**: la sección contiene ejemplos desarrollados paso a paso con explicación.
-3. **Verificación SymPy**: manipulación simbólica de fórmulas con `sp.Symbol`/`sp.symbols`/`sympy.symbols` seguida de un `.subs(` dentro del mismo bloque de código. **Límite conocido**: este patrón no reconoce otras formas legítimas de verificación simbólica en SymPy que no pasan por `Symbol`/`subs` — p. ej. aritmética exacta con `sp.Rational`/`sp.Add`/`sp.nsimplify` (como en UNIDAD 1) se audita como "False" pese a ser SymPy real. El chequeo automático es un piso conservador, no un juicio definitivo sobre si la unidad usa SymPy correctamente: un fallo en este punto debe revisarse manualmente antes de asumir que la unidad tiene una brecha real.
+3. **Verificación SymPy**: manipulación simbólica real, reconocida por dos vías independientes: (a) `sp.Symbol`/`sp.symbols`/`sympy.symbols` seguido de un `.subs(` dentro del mismo bloque de código, o (b) `sp.Rational` combinado con una simplificación (`nsimplify`/`sp.nsimplify`/`sp.simplify`) en el mismo bloque — aritmética exacta sin sustitución de variable (patrón real de UNIDAD 1: `sp.Rational` + `sp.Add` + `sp.nsimplify`). La vía (b) se agregó el 2026-09-14 (D2, plan `camino-a-100-cierre-brechas`) porque la vía (a) sola daba falso negativo en UNIDAD 1, que usa SymPy real sin declarar símbolo ni llamar `.subs()`.
 4. **Contexto Nanotecnológico**: todo ejemplo usa datos o problemas de nanotecnología reales o realistas (nunca ejemplos genéricos de estadística).
 5. **Solución en `\boxed{}`**: cualquier valor numérico final de un ejemplo analítico se resalta con `\boxed{...}`.
 6. **Solución Computacional SciPy**: reproducción del resultado mediante `scipy.stats` o `statsmodels` ejecutado.
@@ -153,9 +153,11 @@ Esta sección declara el alcance real, no aspiracional, a la fecha de esta redac
   declara 0.75, la fórmula cierra en 0.8880) — sin que se le indicara dónde buscar.
   0 falsos positivos en las 6 unidades correctas.
 * `ContentAuditorAgent.audit_content()` (Task 4, tras corregir sus 3 falsos positivos
-  de H-08) da **100% en 7 de 8 unidades** sobre los 9 puntos del Gold Standard.
-  `UNIDAD_1` marca 88.9% (falla solo el punto 3, Verificación SymPy) por un límite de
-  detección declarado abajo, no por una brecha real de contenido.
+  de H-08) da **100% en las 8 de 8 unidades** sobre los 9 puntos del Gold Standard.
+  `UNIDAD_1` marcaba 88.9% (fallaba solo el punto 3, Verificación SymPy) hasta que
+  D2 (2026-09-14, plan `camino-a-100-cierre-brechas`) agregó la segunda vía de
+  detección (`sp.Rational`+simplificación) que reconoce el patrón real de esa
+  unidad — verificado, ahora 9/9.
 * La suite de tests de la rama pasa completa: **248 passed, 0 failed** a la fecha del
   cierre de Task 4 (`pytest tests/ -v --tb=short`).
 
@@ -171,13 +173,6 @@ Esta sección declara el alcance real, no aspiracional, a la fecha de esta redac
   ningún agente puede verificar hoy. Requiere revisión humana; perseguirlo con
   heurísticos de texto sería la fuente de falsos positivos que el propio diseño de
   `@Engineer` evita deliberadamente ("prefiere callar a inventar un hallazgo").
-* **Verificación SymPy con formas legítimas fuera del patrón `Symbol`/`subs`**
-  (`ContentAuditorAgent`, punto 3 del Gold Standard, §3). El patrón implementado exige
-  `sp.Symbol`/`sp.symbols` seguido de `.subs(` en el mismo bloque; no reconoce aritmética
-  exacta con `sp.Rational`/`sp.Add`/`sp.nsimplify` — el caso real es `UNIDAD_1:189-203`,
-  que usa SymPy genuino para construir media y varianza como fracciones exactas antes de
-  convertir a float, y aun así se audita como "False". Un fallo en este punto es un piso
-  conservador del detector, no evidencia de que la unidad tenga una brecha real.
 * **`@Architect` es advisory-only en el flujo por lección** (§2.1) — la completitud
   curricular de las 8 `UNIDAD_*` no se audita en el pipeline automático por defecto.
 * **Bloques de código que dependen del runtime de notebook, la red, o los propios

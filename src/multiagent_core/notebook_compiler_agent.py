@@ -127,14 +127,25 @@ class NotebookCompilerAgent:
                 source = [f"```{lang}\n", code, "\n```"]
                 if lang.lower() == "mermaid":
                     contador_mermaid += 1
+                    nombre_base = md_filename.removesuffix(".md")
                     nombre_svg = (
-                        f"{md_filename}_{contador_mermaid}.svg"
-                        if md_filename
+                        f"{nombre_base}_{contador_mermaid}.svg"
+                        if nombre_base
                         else f"diagrama_{contador_mermaid}.svg"
                     )
                     svg_path = MermaidRenderer().render_to_svg(code, nombre_svg)
                     if svg_path:
-                        source.append(f"\n\n![Diagrama]({svg_path})\n")
+                        # render_to_svg devuelve una ruta relativa a la raíz
+                        # del repo (donde corre el proceso de compilación),
+                        # pero el .ipynb se guarda en self.notebooks_dir --
+                        # sin recalcular, el markdown del notebook resolvería
+                        # la imagen desde notebooks_dir/docs/images/..., que
+                        # no existe. os.path.relpath la recalcula relativa a
+                        # notebooks_dir, cualquiera sea su profundidad real.
+                        ruta_desde_notebook = os.path.relpath(
+                            svg_path, start=self.notebooks_dir
+                        ).replace(os.sep, "/")
+                        source.append(f"\n\n![Diagrama]({ruta_desde_notebook})\n")
                 cells.append(
                     {
                         "cell_type": "markdown",
