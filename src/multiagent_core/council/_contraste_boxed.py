@@ -32,20 +32,21 @@ def _es_formula_simbolica(expresion: str) -> bool:
     """¿La expresión del `\\boxed{}` es una fórmula simbólica genérica,
     sin valor numérico concreto a contrastar?
 
-    No basta con que contenga una marca de sumatoria/producto/integral
-    (N-05, auditoría 2026-09-14): esa marca puede ser decorativa junto a
-    un valor real (`\\hat{\\theta} = \\sum \\; 0.4200`). Una expresión solo
-    es simbólica si, ADEMÁS de la marca, no tiene ningún operando
-    numérico distintivo -reutiliza `_operandos_distintivos`, que ya
-    descarta índices/límites de sumatoria pequeños (`abs<=10`) por ser
-    la misma heurística que separa "dato de un ejemplo" de "ruido
-    sintáctico" en `_comparten_datos`. Verificado contra los 4 `\\boxed{}`
-    reales del curso que usan estas marcas: U7 §6.2 (protegido, sin
-    operandos) sigue clasificando como simbólica; U4 §2.3
-    (`\\int_0^{0.5}...=\\boxed{0.375}`, con operandos {0.5, 0.375}) deja
-    de clasificar como simbólica -correcto, es un valor concreto real."""
+    N-08 (auditoría 2026-09-14, cuarta evasión): la versión anterior
+    reutilizaba `_operandos_distintivos` para esta pregunta, pero esa
+    función descarta enteros <=10 y depende de `_limpiar_latex`, que ya
+    había descartado `\\text{}` y exponentes antes de que el filtro de
+    enteros viera nada -tres caminos para producir un falso "no hay
+    valor concreto" cuando el ÚNICO valor de la expresión caía en uno de
+    esos tres casos. El criterio nuevo pregunta directamente "¿hay un
+    valor numérico declarado al final de la expresión?" vía
+    `_valor_final_declarado`, sin pasar por esos descartes. Verificado
+    contra el control negativo real (U7 §6.2, protegido) y los 3 vectores
+    de evasión de N-08 (ya no evaden) -- ver
+    `test_formula_simbolica_genuina_sin_valor_sigue_excluida` y
+    `test_v6*` en tests/council/test_adversarial.py."""
     tiene_marca = any(re.search(m, expresion) for m in _MARCAS_FORMULA_SIMBOLICA)
-    return tiene_marca and not _operandos_distintivos(expresion)
+    return tiene_marca and _valor_final_declarado(expresion) is None
 
 
 def _limpiar_latex(expresion: str) -> str:
@@ -68,6 +69,79 @@ def _limpiar_latex(expresion: str) -> str:
     )
     sin_exponente = re.sub(r"\^\s*\{?-?\d+\}?", " ", sin_fracciones)
     return re.sub(r"\\[a-zA-Z]+", " ", sin_exponente)
+
+
+def _limpiar_latex_conservando_marcas(expresion: str) -> str:
+    """Variante de `_limpiar_latex` para `_valor_final_declarado`: conserva
+    como candidatos el contenido de `\\text{}` y el valor de un exponente
+    numérico en vez de descartarlos (N-08, auditoría 2026-09-14).
+
+    El orden de las sustituciones importa: primero se resuelve el
+    exponente NUMÉRICO (antes de tocar índices), luego se borra cualquier
+    índice/límite de sumatoria SIN resolver (`_{i=1}`, `^n` con letra
+    dentro -- notación de rango, no un valor), luego se resuelven
+    fracciones puramente numéricas, y solo al final se borran las
+    fracciones simbólicas restantes y las macros LaTeX sueltas. Hacerlo
+    en otro orden deja escapar el índice de una sumatoria (`_{i=1}`) como
+    un número suelto -- exactamente el bug que rompía el control negativo
+    de U7 §6.2 en la primera versión de esta función.
+    """
+    sin_texto = re.sub(r"\\text\{([^}]*)\}", r" \1 ", expresion)
+    con_exponente_resuelto = re.sub(
+        r"(-?\d+(?:\.\d+)?)\s*\^\s*\{?(-?\d+(?:\.\d+)?)\}?",
+        lambda m: repr(float(m.group(1)) ** float(m.group(2))),
+        sin_texto,
+    )
+    # Patrón [^{}]*[a-zA-Z][^{}]* es seguro contra ReDoS: la clase [^{}]* no
+    # puede solaparse consigo misma de forma ambigua porque excluye explícitamente
+    # { y }, y no hay anidamiento de cuantificadores del mismo carácter. Probado
+    # con inputs patológicos (200k caracteres sin llave, 5000 grupos sin letra) —
+    # mantiene lineariedad, <20ms. Véase _ROTULO_INLINE (línea ~262-290) para
+    # el mismo estándar de documentación de seguridad contra ReDoS en este archivo.
+    sin_indices_simbolicos = re.sub(
+        r"[_^]\{[^{}]*[a-zA-Z][^{}]*\}", " ", con_exponente_resuelto
+    )
+    sin_fracciones = re.sub(
+        r"\\[dt]?frac\s*\{\s*(-?\d+(?:\.\d+)?)\s*\}\s*\{\s*(-?\d+(?:\.\d+)?)\s*\}",
+        lambda m: (
+            repr(float(m.group(1)) / float(m.group(2)))
+            if float(m.group(2)) != 0
+            else " "
+        ),
+        sin_indices_simbolicos,
+    )
+    sin_fracciones_simbolicas = re.sub(
+        r"\\[dt]?frac\s*\{[^{}]*\}\s*\{[^{}]*\}", " ", sin_fracciones
+    )
+    return re.sub(r"\\[a-zA-Z]+", " ", sin_fracciones_simbolicas)
+
+
+def _valor_final_declarado(expresion: str) -> float | None:
+    """¿La expresión declara explícitamente un valor numérico al final, o
+    termina en notación simbólica sin resolver?
+
+    Para encontrar el `=` de asignación real (no uno interno a un
+    subíndice/superíndice, p.ej. el límite inferior de una sumatoria
+    `_{i=1}^n`, ni confundido por un envoltorio de llave sin cerrar como
+    `"$$\\boxed{...}"`), se enmascara primero el contenido de todo
+    `[_^]{...}` -- se reemplaza cada `{...}` por relleno `#` de la misma
+    longitud, preservando `_`/`^` y las llaves -- y se busca el último
+    `=` sobre esa versión enmascarada. La partición real ocurre sobre el
+    string ORIGINAL en ese mismo índice.
+    """
+
+    def _enmascarar(m: re.Match) -> str:
+        return m.group(0)[0] + "{" + ("#" * (len(m.group(0)) - 2)) + "}"
+
+    enmascarada = re.sub(r"[_^]\{[^{}]*\}", _enmascarar, expresion)
+    idx_igual = enmascarada.rfind("=")
+
+    fragmento = expresion[idx_igual + 1 :] if idx_igual >= 0 else expresion
+    limpio = _limpiar_latex_conservando_marcas(fragmento)
+    numeros = _NUMERO.findall(limpio)
+    if not numeros:
+        return None
+    return float(numeros[-1])
 
 
 def _algun_valor_coincide(esperado: float, producidos: list) -> bool:

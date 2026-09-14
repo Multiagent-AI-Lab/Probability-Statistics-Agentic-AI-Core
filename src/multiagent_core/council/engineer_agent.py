@@ -18,6 +18,7 @@ from ._contraste_boxed import (
     _el_codigo_apunta_al_valor,
     _es_formula_simbolica,
     _limpiar_latex,
+    _limpiar_latex_conservando_marcas,
 )
 
 # Una sección arranca en un encabezado Markdown: es la unidad de contraste
@@ -344,7 +345,11 @@ class EngineerAgent:
         valores: list[tuple[float, str]] = []
         for match in _BOXED.finditer(text):
             contenido = match.group(1)
-            numeros = _NUMERO.findall(_limpiar_latex(contenido))
+            # N-08: usa _limpiar_latex_conservando_marcas en vez de _limpiar_latex
+            # para preservar valores dentro de \text{} y exponentes numéricos.
+            # Sin esto, _extraer_valores_boxed descarta el \boxed{} completo antes
+            # de que _es_formula_simbolica lo analice (p.ej. \text{0.42} → descarta).
+            numeros = _NUMERO.findall(_limpiar_latex_conservando_marcas(contenido))
             if not numeros:
                 continue
             # El nombre de la cantidad suele estar fuera de la caja:

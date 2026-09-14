@@ -449,6 +449,51 @@ def test_v5c_integral_decorativa_con_valor_real_se_reporta(council):
     assert "desajuste_ejemplo_salida" in tipos
 
 
+def test_v6_entero_pequeno_ya_no_evade(council):
+    """N-08 (ALTO, auditoría 2026-09-14), vector 1: un entero <=10 dentro
+    del `\\boxed{}` desactivaba el fix de N-05 porque `_operandos_distintivos`
+    descarta enteros con abs<=10 -mismo umbral que protege el caso legítimo
+    de U7 §6.2 (donde el único número es el índice `1` de una sumatoria)."""
+    doc = _documento_con_boxed_final(r"$$\boxed{\hat{\theta} = \sum \; 7}$$")
+    resultado = council.process_content(doc, unit_name="ADV-N08-V1")
+    assert resultado["approved"] is False
+    tipos = {h["tipo"] for h in resultado["final_qa"]["hallazgos"]}
+    assert "desajuste_ejemplo_salida" in tipos
+
+
+def test_v6b_valor_en_text_ya_no_evade(council):
+    """N-08, vector 2: un valor dentro de `\\text{}` desactivaba el fix de
+    N-05 porque `_limpiar_latex` descarta el contenido de `\\text{}` antes
+    de que `_operandos_distintivos` vea nada."""
+    doc = _documento_con_boxed_final(
+        r"$$\boxed{\hat{\theta} = \sum \; \text{0.4200}}$$"
+    )
+    resultado = council.process_content(doc, unit_name="ADV-N08-V2")
+    assert resultado["approved"] is False
+    tipos = {h["tipo"] for h in resultado["final_qa"]["hallazgos"]}
+    assert "desajuste_ejemplo_salida" in tipos
+
+
+def test_v6c_valor_como_exponente_ya_no_evade(council):
+    """N-08, vector 3: un valor como exponente desactivaba el fix de N-05
+    porque `_limpiar_latex` descarta exponentes `^{...}`."""
+    doc = _documento_con_boxed_final(r"$$\boxed{\hat{\theta} = \sum \; 10^{-3}}$$")
+    resultado = council.process_content(doc, unit_name="ADV-N08-V3")
+    assert resultado["approved"] is False
+    tipos = {h["tipo"] for h in resultado["final_qa"]["hallazgos"]}
+    assert "desajuste_ejemplo_salida" in tipos
+
+
+def test_v6d_borde_entero_diez_ya_no_evade(council):
+    """Confirma que el nuevo criterio no reintroduce el viejo umbral
+    abs<=10 en otro punto: el entero exactamente 10 tampoco debe evadir."""
+    doc = _documento_con_boxed_final(r"$$\boxed{\hat{\theta} = \sum \; 10}$$")
+    resultado = council.process_content(doc, unit_name="ADV-N08-V4")
+    assert resultado["approved"] is False
+    tipos = {h["tipo"] for h in resultado["final_qa"]["hallazgos"]}
+    assert "desajuste_ejemplo_salida" in tipos
+
+
 def test_formula_simbolica_genuina_sin_valor_sigue_excluida():
     """Control negativo de N-05: una fórmula simbólica genuina (patrón
     real de UNIDAD 7 §6.2, `\\hat{\\mu}_{MLE} = \\bar{X} = \\frac{1}{n}
@@ -462,3 +507,37 @@ def test_formula_simbolica_genuina_sin_valor_sigue_excluida():
 
     formula_protegida = r"\hat{\mu}_{MLE} = \bar{X} = \frac{1}{n}\sum_{i=1}^n X_i"
     assert _es_formula_simbolica(formula_protegida) is True
+
+
+def test_valor_final_declarado_extrae_el_ultimo_numero_tras_el_ultimo_igual():
+    """N-08 (auditoría 2026-09-14): tabla de casos conocidos del rediseño
+    estructural. `_valor_final_declarado` reemplaza la pregunta "¿sobrevivió
+    algún operando al filtro de ruido?" por "¿la expresión declara
+    explícitamente un valor numérico al final?"."""
+    from src.multiagent_core.council._contraste_boxed import _valor_final_declarado
+
+    # Legítimo (U7 §6.2): termina en notación simbólica sin resolver -> None
+    formula_protegida = r"\hat{\mu}_{MLE} = \bar{X} = \frac{1}{n}\sum_{i=1}^n X_i"
+    assert _valor_final_declarado(formula_protegida) is None
+
+    # Legítimo (U4 §2.3): valor concreto real
+    assert _valor_final_declarado(r"\int_0^{0.5} f(x)\,dx = 0.375") == pytest.approx(0.375)
+
+    # Vector 1 (N-08): entero <=10, ya no se descarta
+    assert _valor_final_declarado(r"\hat{\theta} = \sum \; 7") == pytest.approx(7.0)
+
+    # Vector 2 (N-08): valor dentro de \text{}, ya no se descarta
+    assert _valor_final_declarado(
+        r"\hat{\theta} = \sum \; \text{0.4200}"
+    ) == pytest.approx(0.42)
+
+    # Vector 3 (N-08): valor como exponente, ya no se descarta
+    assert _valor_final_declarado(r"\hat{\theta} = \sum \; 10^{-3}") == pytest.approx(0.001)
+
+    # Borde: entero exactamente en el viejo umbral abs<=10
+    assert _valor_final_declarado(r"\hat{\theta} = \sum \; 10") == pytest.approx(10.0)
+
+    # Real (UNIDAD_3:439): "=" interno no asignativo dentro de P(X = 2)
+    assert _valor_final_declarado(
+        r"P(X = 2) = 190 \times 0.0025 \times 0.397214 \approx 0.18868 \quad (18.87\%)"
+    ) == pytest.approx(18.87)
