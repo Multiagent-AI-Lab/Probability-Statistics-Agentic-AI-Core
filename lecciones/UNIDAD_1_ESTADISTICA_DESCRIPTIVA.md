@@ -90,6 +90,20 @@ Las medidas de dispersión cuantifican qué tan esparcidos están los datos resp
   $$g_2 = \frac{\frac{1}{n}\sum_{i=1}^n (x_i - \bar{x})^4}{s^4} - 3$$
   La resta de 3 define el **exceso de curtosis**, de modo que una distribución normal tiene $g_2 = 0$. $g_2 > 0$ (leptocúrtica) indica colas más pesadas que la normal; $g_2 < 0$ (platicúrtica) indica colas más ligeras.
 
+El siguiente diagrama resume el flujo de decisión completo de las secciones 1.1 y 1.2: qué medida de tendencia central y qué medida de dispersión reportar, según la forma de la muestra y la presencia de valores atípicos (el criterio de outlier vía IQR se detalla en la Sección 2.4 con la muestra real de nanopartículas de oro):
+
+```mermaid
+graph TD
+    Datos["Muestra de diametros de nanoparticulas x1...xn"]
+    Datos --> Simetria{"Es aproximadamente simetrica?"}
+    Simetria -->|"Si (skewness g1 ~ 0)"| Media["Reportar Media Aritmetica"]
+    Simetria -->|"No (g1 fuertemente != 0)"| Mediana["Reportar Mediana (robusta a asimetria)"]
+    Media --> Outliers{"Hay outliers via criterio IQR?"}
+    Mediana --> Outliers
+    Outliers -->|"No"| DesvEst["Reportar Desviacion Estandar s"]
+    Outliers -->|"Si"| IQR["Reportar Rango Intercuartilico (IQR)"]
+```
+
 ### 1.4 Visualización Exploratoria
 * **Histograma**: agrupa los datos en intervalos (bins) y grafica la frecuencia (o densidad) de cada uno; es la herramienta más directa para intuir la forma de la distribución subyacente.
 * **Diagrama de Caja (Boxplot)**: representa gráficamente $Q_1$, la mediana, $Q_3$, los bigotes (hasta $1.5 \cdot IQR$) y los outliers como puntos individuales; es ideal para comparar la dispersión entre varios grupos.
