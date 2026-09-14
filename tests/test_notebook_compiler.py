@@ -2,6 +2,8 @@
 Tests for NotebookCompilerAgent.
 """
 
+from unittest.mock import patch
+
 from src.multiagent_core.notebook_compiler_agent import NotebookCompilerAgent
 
 
@@ -120,3 +122,57 @@ def estimar_pi_monte_carlo(n_muestras):
 
     assert u6_has_mermaid is True
     assert u1_has_mermaid is False
+
+
+def test_bloque_mermaid_invoca_el_renderer_a_svg():
+    """C2 (auditoría 2026-09-13): MermaidRenderer estaba construido pero
+    nunca se invocaba -0 importaciones fuera de su propia definición-.
+    El compilador debe invocarlo al procesar un bloque ```mermaid```,
+    con degradación elegante si el render falla (no debe romper el
+    build por falta de npx local)."""
+    markdown_con_mermaid = "## Sección de prueba\n\n```mermaid\ngraph TD\nA-->B\n```\n"
+    agent = NotebookCompilerAgent()
+    with patch(
+        "src.multiagent_core.notebook_compiler_agent.MermaidRenderer"
+    ) as MockRenderer:
+        instancia_mock = MockRenderer.return_value
+        instancia_mock.render_to_svg.return_value = "docs/images/PRUEBA_1.svg"
+        cells = agent.parse_markdown_to_cells(
+            markdown_con_mermaid, md_filename="PRUEBA.md"
+        )
+        instancia_mock.render_to_svg.assert_called_once()
+        codigo_llamado = instancia_mock.render_to_svg.call_args[0][0]
+        assert "graph TD" in codigo_llamado
+
+        celda_con_svg = [
+            cell
+            for cell in cells
+            if cell["cell_type"] == "markdown"
+            and "docs/images/PRUEBA_1.svg" in "".join(cell.get("source", []))
+        ]
+        assert len(celda_con_svg) == 1
+        contenido = "".join(celda_con_svg[0]["source"])
+        assert "```mermaid" in contenido
+
+
+def test_bloque_mermaid_no_rompe_el_build_si_el_renderer_falla():
+    """Degradación elegante: si render_to_svg devuelve None (npx no
+    disponible, timeout, error de mmdc), el build sigue sin fallar."""
+    markdown_con_mermaid = "## Sección de prueba\n\n```mermaid\ngraph TD\nA-->B\n```\n"
+    agent = NotebookCompilerAgent()
+    with patch(
+        "src.multiagent_core.notebook_compiler_agent.MermaidRenderer"
+    ) as MockRenderer:
+        instancia_mock = MockRenderer.return_value
+        instancia_mock.render_to_svg.return_value = None
+        cells = agent.parse_markdown_to_cells(
+            markdown_con_mermaid, md_filename="PRUEBA.md"
+        )
+        assert cells is not None
+        celda_mermaid = [
+            cell
+            for cell in cells
+            if cell["cell_type"] == "markdown"
+            and "```mermaid" in "".join(cell.get("source", []))
+        ]
+        assert len(celda_mermaid) == 1

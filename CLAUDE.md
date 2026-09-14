@@ -5,6 +5,7 @@
 - **Compilar Lecciones a Notebooks**: `python -c "from src.multiagent_core.orchestrator_agent import OrchestratorAgent; OrchestratorAgent().run_full_pipeline()"`
 - **Formatear Código** (en ese orden): `isort src/ tests/` → `black src/ tests/` (el `setup.cfg` fija `profile = black` para que ambos coincidan sin reformatear entre sí)
 - **Linter**: `ruff check src/ tests/`
+- **Requisito de Node/npx para diagramas Mermaid**: `MermaidRenderer` (`src/multiagent_core/mermaid_renderer.py`), invocado por `NotebookCompilerAgent` al compilar cada bloque ` ```mermaid ` de una lección, necesita Node.js instalado con `npx` en el PATH para rasterizar el SVG vía `@mermaid-js/mermaid-cli`. Si `npx` no está disponible (o `mmdc` falla/hace timeout), el compilador degrada de forma elegante: conserva el bloque ` ```mermaid ` crudo (renderizado en el cliente por Jupyter/GitHub) y simplemente omite la imagen `![Diagrama](...)`, sin romper el build.
 
 ## Convenciones de Código y Arquitectura
 1. **Fuente de Verdad**: Los archivos en `lecciones/*.md` son la fuente primaria. NUNCA edites directamente los notebooks compilados `notebooks/*.ipynb`.

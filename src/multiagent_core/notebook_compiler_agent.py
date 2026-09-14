@@ -9,6 +9,7 @@ import re
 from typing import Any, ClassVar
 
 from .flowchart_agent import FlowchartAgent
+from .mermaid_renderer import MermaidRenderer
 
 
 class NotebookCompilerAgent:
@@ -78,6 +79,7 @@ class NotebookCompilerAgent:
         cells = []
         pattern = r"```(python|r|mermaid|bash|sh)?\n(.*?)```"
         pos = 0
+        contador_mermaid = 0
 
         for match in re.finditer(pattern, md_content, re.DOTALL):
             start, end = match.span()
@@ -122,11 +124,22 @@ class NotebookCompilerAgent:
                             }
                         )
             else:
+                source = [f"```{lang}\n", code, "\n```"]
+                if lang.lower() == "mermaid":
+                    contador_mermaid += 1
+                    nombre_svg = (
+                        f"{md_filename}_{contador_mermaid}.svg"
+                        if md_filename
+                        else f"diagrama_{contador_mermaid}.svg"
+                    )
+                    svg_path = MermaidRenderer().render_to_svg(code, nombre_svg)
+                    if svg_path:
+                        source.append(f"\n\n![Diagrama]({svg_path})\n")
                 cells.append(
                     {
                         "cell_type": "markdown",
                         "metadata": {},
-                        "source": [f"```{lang}\n", code, "\n```"],
+                        "source": source,
                     }
                 )
 
