@@ -177,7 +177,23 @@ class NotebookCompilerAgent:
 
         nb_data = {
             "cells": cells,
-            "metadata": {"language_info": {"name": "python"}, "orig_nbformat": 4},
+            "metadata": {
+                "language_info": {"name": "python"},
+                "orig_nbformat": 4,
+                # I-5 (auditoría 2026-09-14): sin kernelspec, nbconvert
+                # --execute cae al kernel "python3" del sistema en vez del
+                # entorno del proyecto -- ModuleNotFoundError engañoso que
+                # enmascara errores reales. Se usa el nombre genérico
+                # "python3" (no un entorno conda específico como "ia_stats")
+                # para no atar el repo al nombre local del entorno del
+                # profesor; cualquier kernel registrado como "python3"
+                # (el nombre por defecto de `ipykernel install`) sirve.
+                "kernelspec": {
+                    "display_name": "Python 3",
+                    "language": "python",
+                    "name": "python3",
+                },
+            },
             "nbformat": 4,
             "nbformat_minor": 2,
         }

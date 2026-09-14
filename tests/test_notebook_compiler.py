@@ -213,3 +213,32 @@ def test_bloque_mermaid_no_rompe_el_build_si_el_renderer_falla():
             and "```mermaid" in "".join(cell.get("source", []))
         ]
         assert len(celda_mermaid) == 1
+
+
+def test_compile_file_emite_kernelspec(tmp_path):
+    """I-5 (auditoría 2026-09-14): ningún notebook declaraba
+    metadata.kernelspec, así que `jupyter nbconvert --execute` sin
+    --ExecutePreprocessor.kernel_name explícito caía al kernel del
+    sistema en vez del entorno del proyecto, produciendo un
+    ModuleNotFoundError engañoso que enmascaraba errores reales
+    (encontrado al diagnosticar el bloqueo de UNIDAD 8)."""
+    import json
+
+    lecciones_dir = tmp_path / "lecciones"
+    notebooks_dir = tmp_path / "notebooks"
+    lecciones_dir.mkdir()
+    (lecciones_dir / "PRUEBA.md").write_text(
+        "## Título\n\nTexto de prueba.\n", encoding="utf-8"
+    )
+
+    compiler = NotebookCompilerAgent(
+        lecciones_dir=str(lecciones_dir), notebooks_dir=str(notebooks_dir)
+    )
+    nb_path = compiler.compile_file("PRUEBA.md")
+
+    with open(nb_path, encoding="utf-8") as f:
+        nb_data = json.load(f)
+
+    assert "kernelspec" in nb_data["metadata"]
+    assert nb_data["metadata"]["kernelspec"]["name"] == "python3"
+    assert nb_data["metadata"]["kernelspec"]["language"] == "python"
