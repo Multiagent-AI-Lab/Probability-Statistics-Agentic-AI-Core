@@ -412,3 +412,53 @@ def test_v4_boxed_unico_con_rotulo_presente_dentro_del_factor_2x_se_reporta(coun
     assert resultado["approved"] is False
     tipos = {h["tipo"] for h in resultado["final_qa"]["hallazgos"]}
     assert "desajuste_ejemplo_salida" in tipos
+
+
+def test_v5_marca_simbolica_decorativa_con_valor_real_se_reporta(council):
+    """N-05 (ALTO, auditoría 2026-09-14): una marca de sumatoria decorativa
+    junto a un valor numérico real desactivaba el fix de N-03 -- la
+    compuerta `_es_formula_simbolica` bastaba con que la marca apareciera
+    en cualquier parte de la expresión, sin exigir que la expresión
+    careciera de un valor concreto. `\\hat{\\theta} = \\sum \\; 0.4200` no es
+    una fórmula simbólica genuina (tiene un valor real, 0.42), pero
+    activaba la exclusión igual que `\\frac{1}{n}\\sum_{i=1}^n X_i` (sin
+    ningún valor concreto, U7 §6.2, el caso que la exclusión protege)."""
+    doc = _documento_con_boxed_final(r"$$\boxed{\hat{\theta} = \sum \; 0.4200}$$")
+    resultado = council.process_content(doc, unit_name="ADV-N05")
+    assert resultado["approved"] is False
+    tipos = {h["tipo"] for h in resultado["final_qa"]["hallazgos"]}
+    assert "desajuste_ejemplo_salida" in tipos
+
+
+def test_v5b_indice_decorativo_con_valor_real_se_reporta(council):
+    """N-05, variante con el patrón de índice de sumatoria (`_{i=1}^`)
+    en vez de `\\sum` explícito."""
+    doc = _documento_con_boxed_final(r"$$\boxed{\hat{\theta}_{i=1}^{n} = 0.4200}$$")
+    resultado = council.process_content(doc, unit_name="ADV-N05B")
+    assert resultado["approved"] is False
+    tipos = {h["tipo"] for h in resultado["final_qa"]["hallazgos"]}
+    assert "desajuste_ejemplo_salida" in tipos
+
+
+def test_v5c_integral_decorativa_con_valor_real_se_reporta(council):
+    """N-05, variante con `\\int` decorativo."""
+    doc = _documento_con_boxed_final(r"$$\boxed{\hat{\theta} = \int 0.4200}$$")
+    resultado = council.process_content(doc, unit_name="ADV-N05C")
+    assert resultado["approved"] is False
+    tipos = {h["tipo"] for h in resultado["final_qa"]["hallazgos"]}
+    assert "desajuste_ejemplo_salida" in tipos
+
+
+def test_formula_simbolica_genuina_sin_valor_sigue_excluida():
+    """Control negativo de N-05: una fórmula simbólica genuina (patrón
+    real de UNIDAD 7 §6.2, `\\hat{\\mu}_{MLE} = \\bar{X} = \\frac{1}{n}
+    \\sum_{i=1}^n X_i`), sin ningún valor numérico concreto -solo el
+    índice `1` de la sumatoria, trivial-, debe seguir clasificándose
+    como simbólica tras el rediseño. Test unitario directo sobre
+    `_es_formula_simbolica`, sin pasar por el pipeline completo (el caso
+    de integración ya lo cubre `test_codigo_solo_simbolico_no_genera_discrepancia`
+    en `tests/council/test_engineer_agent.py`)."""
+    from src.multiagent_core.council._contraste_boxed import _es_formula_simbolica
+
+    formula_protegida = r"\hat{\mu}_{MLE} = \bar{X} = \frac{1}{n}\sum_{i=1}^n X_i"
+    assert _es_formula_simbolica(formula_protegida) is True

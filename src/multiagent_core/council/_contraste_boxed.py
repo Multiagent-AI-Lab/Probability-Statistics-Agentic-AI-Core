@@ -30,8 +30,22 @@ _MARCAS_FORMULA_SIMBOLICA = (r"\\sum", r"\\prod", r"\\int", r"_\{[a-zA-Z]\s*=\s*
 
 def _es_formula_simbolica(expresion: str) -> bool:
     """¿La expresión del `\\boxed{}` es una fórmula simbólica genérica,
-    no un valor numérico concreto a contrastar?"""
-    return any(re.search(m, expresion) for m in _MARCAS_FORMULA_SIMBOLICA)
+    sin valor numérico concreto a contrastar?
+
+    No basta con que contenga una marca de sumatoria/producto/integral
+    (N-05, auditoría 2026-09-14): esa marca puede ser decorativa junto a
+    un valor real (`\\hat{\\theta} = \\sum \\; 0.4200`). Una expresión solo
+    es simbólica si, ADEMÁS de la marca, no tiene ningún operando
+    numérico distintivo -reutiliza `_operandos_distintivos`, que ya
+    descarta índices/límites de sumatoria pequeños (`abs<=10`) por ser
+    la misma heurística que separa "dato de un ejemplo" de "ruido
+    sintáctico" en `_comparten_datos`. Verificado contra los 4 `\\boxed{}`
+    reales del curso que usan estas marcas: U7 §6.2 (protegido, sin
+    operandos) sigue clasificando como simbólica; U4 §2.3
+    (`\\int_0^{0.5}...=\\boxed{0.375}`, con operandos {0.5, 0.375}) deja
+    de clasificar como simbólica -correcto, es un valor concreto real."""
+    tiene_marca = any(re.search(m, expresion) for m in _MARCAS_FORMULA_SIMBOLICA)
+    return tiene_marca and not _operandos_distintivos(expresion)
 
 
 def _limpiar_latex(expresion: str) -> str:
