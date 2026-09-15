@@ -1,0 +1,162 @@
+[
+  {
+    "archivo": "neg_01_u7_formula_simbolica.md",
+    "tiene_fallo": false,
+    "tipo_fallo": null,
+    "origen": "real",
+    "fuente": "UNIDAD_7_INFERENCIA_ESTIMACION.md §5.3-6.2 (líneas 1097-1209 del original; el boxed objetivo estaba en la línea 1189)",
+    "hallazgo_origen": null
+  },
+  {
+    "archivo": "neg_02_u4_boxed_concreto.md",
+    "tiene_fallo": false,
+    "tipo_fallo": null,
+    "origen": "real",
+    "fuente": "UNIDAD_4_DISTRIBUCIONES_CONJUNTAS.md §1.3 (Marginales) hasta §3.3 (Esperanza Condicional), líneas 112-253 del original; boxed{0.375} en la línea 230, dentro de §3.2 -- el brief lo ubicaba en §2.3, desviación documentada en el reporte",
+    "hallazgo_origen": null
+  },
+  {
+    "archivo": "neg_03_u3_boxed_porcentual.md",
+    "tiene_fallo": false,
+    "tipo_fallo": null,
+    "origen": "real",
+    "fuente": "UNIDAD_3_VARIABLES_ALEATORIAS_DISCRETAS.md §2.9-§3.6 (líneas 138-483 del original; ajustado desde 344 tras detectar que ese inicio cortaba un bloque de código a la mitad); el P(X=2) boxed porcentual está en la línea 439 del original",
+    "hallazgo_origen": null
+  },
+  {
+    "archivo": "neg_04_u1_ejemplo_doi.md",
+    "tiene_fallo": false,
+    "tipo_fallo": null,
+    "origen": "real",
+    "fuente": "UNIDAD_1_ESTADISTICA_DESCRIPTIVA.md §1.5 + §2 Ejemplo Analítico (líneas 112-215) + entrada de Referencias con DOI (línea 915, Dong et al. 2020, 10.14356/kona.2020011)",
+    "hallazgo_origen": null
+  },
+  {
+    "archivo": "neg_05_u2_ejemplo_doi.md",
+    "tiene_fallo": false,
+    "tipo_fallo": null,
+    "origen": "real",
+    "fuente": "UNIDAD_2_PROBABILIDAD_COMBINATORIA.md §5 Ejemplo Analítico completo, incl. extensión de los Tres Prisioneros (líneas 409-576; ajustado desde 527 tras detectar que ese fin cortaba un bloque de código a la mitad) + entrada de Referencias con DOI (línea 837, Chien et al. 2023, 10.1016/j.cie.2023.109421)",
+    "hallazgo_origen": null
+  },
+  {
+    "archivo": "neg_06_u3_ejemplo_doi.md",
+    "tiene_fallo": false,
+    "tipo_fallo": null,
+    "origen": "real",
+    "fuente": "UNIDAD_3_VARIABLES_ALEATORIAS_DISCRETAS.md §4 Código SymPy + §5 SciPy/Statsmodels (líneas 483-651) + entrada de Referencias con DOI (línea 741, Li & Jiang 2008, 10.1007/978-1-84800-131-2_58)",
+    "hallazgo_origen": null
+  },
+  {
+    "archivo": "neg_07_u4_ejemplo_doi.md",
+    "tiene_fallo": false,
+    "tipo_fallo": null,
+    "origen": "real",
+    "fuente": "UNIDAD_4_DISTRIBUCIONES_CONJUNTAS.md §4.4-§5 Ejemplo Analítico (líneas 412-559) + entrada de Referencias con DOI (línea 1097, Pochapski et al. 2021, 10.1021/acs.langmuir.1c02056)",
+    "hallazgo_origen": null
+  },
+  {
+    "archivo": "neg_08_u5_ejemplo_doi.md",
+    "tiene_fallo": false,
+    "tipo_fallo": null,
+    "origen": "real",
+    "fuente": "UNIDAD_5_VARIABLES_ALEATORIAS_CONTINUAS.md §2.12-2.13 (líneas 624-746) + entrada de Referencias con DOI (línea 1046, Sharafi et al. 2026, 10.3390/nano16080451)",
+    "hallazgo_origen": null
+  },
+  {
+    "archivo": "neg_09_u6_ejemplo_doi.md",
+    "tiene_fallo": false,
+    "tipo_fallo": null,
+    "origen": "real",
+    "fuente": "UNIDAD_6_MODELADO_SIMULACION.md §1.4 + §2 Ejemplo Analítico (líneas 100-298) + entrada de Referencias con DOI (línea 683, Shabbir et al. 2024, 10.1038/s41598-024-52292-0)",
+    "hallazgo_origen": null
+  },
+  {
+    "archivo": "neg_10_u7_ejemplo_doi.md",
+    "tiene_fallo": false,
+    "tipo_fallo": null,
+    "origen": "real",
+    "fuente": "UNIDAD_7_INFERENCIA_ESTIMACION.md §1.17-1.18 + §2 Ejemplo Analítico (líneas 777-939) + entrada de Referencias con DOI (línea 1402, Prosthesis 2026, 10.3390/prosthesis8070066)",
+    "hallazgo_origen": null
+  },
+  {
+    "archivo": "neg_11_u8_ejemplo_doi.md",
+    "tiene_fallo": false,
+    "tipo_fallo": null,
+    "origen": "real",
+    "fuente": "UNIDAD_8_PROYECTO_INTEGRADOR.md §2.2-2.3 + §3 Ejemplo Demostrativo (líneas 103-241) + entrada de Referencias con DOI (línea 1178, Ahmad et al. 2021, 10.3390/cryst11121456)",
+    "hallazgo_origen": null
+  },
+  {
+    "archivo": "neg_12_u1_teoria_dispersion.md",
+    "tiene_fallo": false,
+    "tipo_fallo": null,
+    "origen": "real",
+    "fuente": "UNIDAD_1_ESTADISTICA_DESCRIPTIVA.md §1.1-1.5 (Fundamentación Teórica completa, líneas 53-132)",
+    "hallazgo_origen": null
+  },
+  {
+    "archivo": "neg_13_u2_teoria_probabilidad.md",
+    "tiene_fallo": false,
+    "tipo_fallo": null,
+    "origen": "real",
+    "fuente": "UNIDAD_2_PROBABILIDAD_COMBINATORIA.md §1-§2.4 (Fundamentación Teórica y Técnicas de Conteo, líneas 43-218)",
+    "hallazgo_origen": null
+  },
+  {
+    "archivo": "neg_14_u5_teoria_jensen.md",
+    "tiene_fallo": false,
+    "tipo_fallo": null,
+    "origen": "real",
+    "fuente": "UNIDAD_5_VARIABLES_ALEATORIAS_CONTINUAS.md §1.1-1.4 (PDF/CDF/Esperanza/Desigualdad de Jensen, líneas 56-153)",
+    "hallazgo_origen": null
+  },
+  {
+    "archivo": "neg_15_u6_teoria_generacion.md",
+    "tiene_fallo": false,
+    "tipo_fallo": null,
+    "origen": "real",
+    "fuente": "UNIDAD_6_MODELADO_SIMULACION.md §1.1-1.4 (Números Seudoaleatorios, Monte Carlo, Generador Congruencial Lineal, líneas 55-161; ajustado desde 150 tras detectar que ese fin cortaba un bloque de código/salida a la mitad)",
+    "hallazgo_origen": null
+  },
+  {
+    "archivo": "neg_16_u8_proyecto_guia.md",
+    "tiene_fallo": false,
+    "tipo_fallo": null,
+    "origen": "real",
+    "fuente": "UNIDAD_8_PROYECTO_INTEGRADOR.md §2 Guía Estructurada del Proyecto Integrador (líneas 72-129)",
+    "hallazgo_origen": null
+  },
+  {
+    "archivo": "neg_17_u4_condicionales.md",
+    "tiene_fallo": false,
+    "tipo_fallo": null,
+    "origen": "real",
+    "fuente": "UNIDAD_4_DISTRIBUCIONES_CONJUNTAS.md §2.1-3.2 (Independencia y Distribuciones Condicionales, líneas 90-253; incluye el mismo boxed{0.375} que neg_02 en un contexto más amplio)",
+    "hallazgo_origen": null
+  },
+  {
+    "archivo": "neg_18_u7_pruebas_hipotesis.md",
+    "tiene_fallo": false,
+    "tipo_fallo": null,
+    "origen": "real",
+    "fuente": "UNIDAD_7_INFERENCIA_ESTIMACION.md §1.4-1.7 (Valor p, Neyman-Pearson, Prueba para la Media y la Varianza, líneas 171-315)",
+    "hallazgo_origen": null
+  },
+  {
+    "archivo": "neg_19_u3_familias_distribuciones.md",
+    "tiene_fallo": false,
+    "tipo_fallo": null,
+    "origen": "real",
+    "fuente": "UNIDAD_3_VARIABLES_ALEATORIAS_DISCRETAS.md §2 Familias Principales de Distribuciones Discretas (líneas 80-233; ajustado desde 218 tras detectar que ese fin cortaba un bloque de código a la mitad)",
+    "hallazgo_origen": null
+  },
+  {
+    "archivo": "neg_20_u4_convolucion.md",
+    "tiene_fallo": false,
+    "tipo_fallo": null,
+    "origen": "real",
+    "fuente": "UNIDAD_4_DISTRIBUCIONES_CONJUNTAS.md §3.5-4.4 (Ley de la Varianza Total, Suma de Variables y Convolución, líneas 304-483; ajustado desde 380 tras detectar que ese inicio cortaba un bloque de código a la mitad)",
+    "hallazgo_origen": null
+  }
+]
