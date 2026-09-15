@@ -160,6 +160,32 @@ Esta sección declara el alcance real, no aspiracional, a la fecha de esta redac
   unidad — verificado, ahora 9/9.
 * La suite de tests de la rama pasa completa: **248 passed, 0 failed** a la fecha del
   cierre de Task 4 (`pytest tests/ -v --tb=short`).
+* **A3 (auditoría 2026-09-15): la precisión del Consejo se midió contra un corpus
+  etiquetado de 47 casos** (20 negativos reales tomados de fragmentos de las 8
+  unidades, 12 positivos confirmados de rondas de auditoría previas —N-01, N-03,
+  N-05, N-08—, 15 sintéticos de falsedad semántica) — ver
+  `docs/superpowers/audits/2026-09-15-precision-consejo-corpus.md` para la matriz de
+  confusión completa (`scripts/medir_precision_consejo.py`, 46 casos evaluados; 1
+  excluido por Crossref inaccesible durante la corrida). Resultado real, sin
+  maquillar: **precisión 41.4%, recall 44.4%, κ de Cohen -0.457** — muy por debajo
+  del 62.5% con validación experta de arXiv 2607.11276 (§5), y un κ negativo indica
+  acuerdo peor que el esperable solo por azar. Diagnóstico de la causa raíz (no es
+  ruido): 17 de los 19 falsos positivos evaluables provienen de los negativos reales,
+  y su origen no es un defecto del Consejo sobre contenido completo, sino que el
+  corpus de negativos son **fragmentos recortados** de una unidad más grande (p.ej.
+  líneas 53-132 de `UNIDAD_1_ESTADISTICA_DESCRIPTIVA.md`) — al cortar el fragmento se
+  pierde el gráfico o el cierre de ciclo que está fuera del recorte, y `@Analyst`
+  (interpretación ausente) y, en menor medida, `@Scientist`/`@Librarian` (fallos sin
+  clasificar sobre fragmentos incompletos) bloquean por esa fragmentación, no por un
+  defecto real de contenido — consistente con que el Consejo sí aprueba 6/8 unidades
+  *completas* sin corregir (viñeta de arriba). Los 15 casos sintéticos de falsedad
+  semántica se comportan exactamente como predice el diseño (§2.1, "verificación
+  numérica y estructural, no semántica"): el Consejo no los detecta, 15/15 falsos
+  negativos. El runner actúa como el juez de segunda pasada que antes faltaba (D5,
+  auditoría 2026-09-15), pero la cifra real obliga a matizar D6: el κ referenciado
+  aquí mide el Consejo contra fragmentos de corpus, no contra unidades de producción
+  completas, y no debe citarse como la precisión del Consejo en producción sin esa
+  salvedad.
 
 **Lo que NO comprueba — límites conocidos, con la causa exacta:**
 
@@ -178,11 +204,6 @@ Esta sección declara el alcance real, no aspiracional, a la fecha de esta redac
 * **Bloques de código que dependen del runtime de notebook, la red, o los propios
   agentes del repo se omiten** de la ejecución de `@Engineer` (§2.1) — no se ejecutan
   ni se cuentan como error por no ejecutarse.
-* **La precisión del Consejo nunca se ha medido contra un corpus etiquetado más allá
-  de los 2 documentos adversariales de Task 1** (0/2 de detección era el estado
-  anterior a la reconstrucción; el 6/8 y 2/8 de arriba es la primera medición contra
-  contenido real, no una tasa de precisión validada por un tercero). No existe todavía
-  el equivalente al 62.5% con validación experta que reporta arXiv 2607.11276.
 * **Un valor numéricamente correcto con un nombre semánticamente incorrecto no se
   detecta (N-04, auditoría 2026-09-13).** `_el_codigo_apunta_al_valor` (en
   `_contraste_boxed.py`) contrasta cifras, no el nombre en prosa que las acompaña:
@@ -206,6 +227,26 @@ Esta sección declara el alcance real, no aspiracional, a la fecha de esta redac
   (identificadores de código como "regression" y falta de alias en español) — no es
   el origen de esta brecha, que es estructural al diseño del gate, no una regresión
   introducida por ese fix.
+
+### 5.2 Hallazgos cerrados en rondas posteriores (registro, I-6)
+
+Esta subsección existe porque la auditoría 2026-09-14 (96.4/100) señaló
+que `GOVERNANCE.md` no registraba los hallazgos cerrados en el plan
+`cierre-n05-n06-n07` (I-6, hallazgo de higiene sin descuento de
+puntaje). Registro mínimo para no repetir la brecha:
+
+* **N-05** (ALTO): marca simbólica decorativa con valor real desactivaba
+  el fix de N-03. Cerrado en `_contraste_boxed.py::_es_formula_simbolica`.
+* **N-06** (MEDIO): `subprocess.run(["npx", ...])` fallaba en Windows sin
+  `shell=True`. Cerrado en `mermaid_renderer.py` con `shutil.which("npx")`.
+* **N-07** (MEDIO): afirmación sin artefacto versionado sobre el
+  recálculo de `\boxed{}`. Cerrado con
+  `docs/superpowers/audits/2026-09-14-recalculo-boxed-completo.md`.
+* **I-5** (INFO): notebooks sin `kernelspec`, `nbconvert --execute` caía
+  al Python del sistema. Cerrado en `notebook_compiler_agent.py`.
+* **N-08** (ALTO): cuarta evasión adversarial, misma causa raíz que
+  protegía a U7 §6.2. Cerrado por la vía estructural en
+  `_contraste_boxed.py::_valor_final_declarado` (ver este mismo ciclo).
 
 ---
 

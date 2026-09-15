@@ -38,7 +38,13 @@ bibliografia/*.epub
 
 # Artefactos internos del flujo de trabajo con Claude Code (specs, planes).
 # Se conservan localmente pero no se publican en el repo público.
-docs/superpowers/
+# Excepcion: docs/superpowers/audits/ SI se versiona -- son reportes de
+# auditoria/medicion citados desde GOVERNANCE.md, no specs/planes internos.
+# (el directorio padre no puede excluirse con "/" al final o git no
+# desciende a evaluar las negaciones de sus hijos -- de ahi el "/*".)
+docs/superpowers/*
+!docs/superpowers/audits/
+!docs/superpowers/audits/**
 
 # Worktrees locales de ejecución de planes (subagent-driven-development).
 .worktrees/
