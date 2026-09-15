@@ -254,5 +254,125 @@
     "origen": "adversarial_previo",
     "fuente": null,
     "hallazgo_origen": "N-08"
+  },
+  {
+    "archivo": "pos_sintetico_01_varianza_binomial.md",
+    "tiene_fallo": true,
+    "tipo_fallo": "varianza_binomial_incorrecta",
+    "origen": "sintetico",
+    "fuente": null,
+    "hallazgo_origen": "A2"
+  },
+  {
+    "archivo": "pos_sintetico_02_interseccion_sin_independencia.md",
+    "tiene_fallo": true,
+    "tipo_fallo": "interseccion_sin_independencia",
+    "origen": "sintetico",
+    "fuente": null,
+    "hallazgo_origen": "A2"
+  },
+  {
+    "archivo": "pos_sintetico_03_suma_masa_igual_a_dos.md",
+    "tiene_fallo": true,
+    "tipo_fallo": "suma_masa_probabilidad_incorrecta",
+    "origen": "sintetico",
+    "fuente": null,
+    "hallazgo_origen": "A2"
+  },
+  {
+    "archivo": "pos_sintetico_04_desviacion_estandar_negativa.md",
+    "tiene_fallo": true,
+    "tipo_fallo": "desviacion_estandar_negativa",
+    "origen": "sintetico",
+    "fuente": null,
+    "hallazgo_origen": "A2"
+  },
+  {
+    "archivo": "pos_sintetico_05_tlc_uniforme.md",
+    "tiene_fallo": true,
+    "tipo_fallo": "tlc_distribucion_limite_incorrecta",
+    "origen": "sintetico",
+    "fuente": null,
+    "hallazgo_origen": "A2"
+  },
+  {
+    "archivo": "pos_sintetico_06_interpretacion_intervalo_confianza.md",
+    "tiene_fallo": true,
+    "tipo_fallo": "interpretacion_frecuentista_intervalo_confianza",
+    "origen": "sintetico",
+    "fuente": null,
+    "hallazgo_origen": "A2"
+  },
+  {
+    "archivo": "pos_sintetico_07_correlacion_causalidad.md",
+    "tiene_fallo": true,
+    "tipo_fallo": "correlacion_implica_causalidad",
+    "origen": "sintetico",
+    "fuente": null,
+    "hallazgo_origen": "A2"
+  },
+  {
+    "archivo": "pos_sintetico_08_pvalor_alto_prueba_nula.md",
+    "tiene_fallo": true,
+    "tipo_fallo": "pvalor_alto_prueba_hipotesis_nula",
+    "origen": "sintetico",
+    "fuente": null,
+    "hallazgo_origen": "A2"
+  },
+  {
+    "archivo": "pos_sintetico_09_media_mediana_siempre_iguales.md",
+    "tiene_fallo": true,
+    "tipo_fallo": "media_mediana_siempre_iguales",
+    "origen": "sintetico",
+    "fuente": null,
+    "hallazgo_origen": "A2"
+  },
+  {
+    "archivo": "pos_sintetico_10_poisson_media_varianza_distintas.md",
+    "tiene_fallo": true,
+    "tipo_fallo": "poisson_media_varianza_distintas",
+    "origen": "sintetico",
+    "fuente": null,
+    "hallazgo_origen": "A2"
+  },
+  {
+    "archivo": "pos_sintetico_11_regla_empirica_universal.md",
+    "tiene_fallo": true,
+    "tipo_fallo": "regla_empirica_68_95_997_universal",
+    "origen": "sintetico",
+    "fuente": null,
+    "hallazgo_origen": "A2"
+  },
+  {
+    "archivo": "pos_sintetico_12_error_estandar_aumenta_con_n.md",
+    "tiene_fallo": true,
+    "tipo_fallo": "error_estandar_aumenta_con_n",
+    "origen": "sintetico",
+    "fuente": null,
+    "hallazgo_origen": "A2"
+  },
+  {
+    "archivo": "pos_sintetico_13_correlacion_cero_implica_independencia.md",
+    "tiene_fallo": true,
+    "tipo_fallo": "correlacion_cero_implica_independencia",
+    "origen": "sintetico",
+    "fuente": null,
+    "hallazgo_origen": "A2"
+  },
+  {
+    "archivo": "pos_sintetico_14_exponencial_no_es_sin_memoria.md",
+    "tiene_fallo": true,
+    "tipo_fallo": "exponencial_no_es_sin_memoria",
+    "origen": "sintetico",
+    "fuente": null,
+    "hallazgo_origen": "A2"
+  },
+  {
+    "archivo": "pos_sintetico_15_bayes_requiere_independencia.md",
+    "tiene_fallo": true,
+    "tipo_fallo": "bayes_requiere_independencia",
+    "origen": "sintetico",
+    "fuente": null,
+    "hallazgo_origen": "A2"
   }
 ]
