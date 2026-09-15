@@ -158,5 +158,101 @@
     "origen": "real",
     "fuente": "UNIDAD_4_DISTRIBUCIONES_CONJUNTAS.md §3.5-4.4 (Ley de la Varianza Total, Suma de Variables y Convolución, líneas 304-483; ajustado desde 380 tras detectar que ese inicio cortaba un bloque de código a la mitad)",
     "hallazgo_origen": null
+  },
+  {
+    "archivo": "pos_confirmado_01_n01.md",
+    "tiene_fallo": true,
+    "tipo_fallo": "falsedad_semantica_y_boxed_desincronizado",
+    "origen": "adversarial_previo",
+    "fuente": null,
+    "hallazgo_origen": "N-01"
+  },
+  {
+    "archivo": "pos_confirmado_02_n05_marca_decorativa.md",
+    "tiene_fallo": true,
+    "tipo_fallo": "boxed_desincronizado",
+    "origen": "adversarial_previo",
+    "fuente": null,
+    "hallazgo_origen": "N-05"
+  },
+  {
+    "archivo": "pos_confirmado_03_n05b_indice.md",
+    "tiene_fallo": true,
+    "tipo_fallo": "boxed_desincronizado",
+    "origen": "adversarial_previo",
+    "fuente": null,
+    "hallazgo_origen": "N-05"
+  },
+  {
+    "archivo": "pos_confirmado_04_n05c_integral.md",
+    "tiene_fallo": true,
+    "tipo_fallo": "boxed_desincronizado",
+    "origen": "adversarial_previo",
+    "fuente": null,
+    "hallazgo_origen": "N-05"
+  },
+  {
+    "archivo": "pos_confirmado_05_n08_v1.md",
+    "tiene_fallo": true,
+    "tipo_fallo": "boxed_desincronizado",
+    "origen": "adversarial_previo",
+    "fuente": null,
+    "hallazgo_origen": "N-08"
+  },
+  {
+    "archivo": "pos_confirmado_06_n08_v2.md",
+    "tiene_fallo": true,
+    "tipo_fallo": "boxed_desincronizado",
+    "origen": "adversarial_previo",
+    "fuente": null,
+    "hallazgo_origen": "N-08"
+  },
+  {
+    "archivo": "pos_confirmado_07_n08_v3.md",
+    "tiene_fallo": true,
+    "tipo_fallo": "boxed_desincronizado",
+    "origen": "adversarial_previo",
+    "fuente": null,
+    "hallazgo_origen": "N-08"
+  },
+  {
+    "archivo": "pos_confirmado_08_v1_dos_boxed.md",
+    "tiene_fallo": true,
+    "tipo_fallo": "boxed_desincronizado",
+    "origen": "adversarial_previo",
+    "fuente": null,
+    "hallazgo_origen": "N-03"
+  },
+  {
+    "archivo": "pos_confirmado_09_v3_theta_sin_rotulo.md",
+    "tiene_fallo": true,
+    "tipo_fallo": "boxed_desincronizado",
+    "origen": "adversarial_previo",
+    "fuente": null,
+    "hallazgo_origen": "N-03"
+  },
+  {
+    "archivo": "pos_confirmado_10_v3_dos_boxed.md",
+    "tiene_fallo": true,
+    "tipo_fallo": "boxed_desincronizado",
+    "origen": "adversarial_previo",
+    "fuente": null,
+    "hallazgo_origen": "N-03"
+  },
+  {
+    "archivo": "pos_confirmado_11_v4_boxed_con_rotulo.md",
+    "tiene_fallo": true,
+    "tipo_fallo": "boxed_desincronizado",
+    "origen": "adversarial_previo",
+    "fuente": null,
+    "hallazgo_origen": "N-03"
+  },
+  {
+    "archivo": "pos_confirmado_12_n08_borde_diez.md",
+    "tiene_fallo": true,
+    "tipo_fallo": "boxed_desincronizado",
+    "origen": "adversarial_previo",
+    "fuente": null,
+    "hallazgo_origen": "N-08"
   }
 ]
