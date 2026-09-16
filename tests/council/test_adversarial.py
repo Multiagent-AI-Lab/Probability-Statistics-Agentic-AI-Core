@@ -521,7 +521,9 @@ def test_valor_final_declarado_extrae_el_ultimo_numero_tras_el_ultimo_igual():
     assert _valor_final_declarado(formula_protegida) is None
 
     # Legítimo (U4 §2.3): valor concreto real
-    assert _valor_final_declarado(r"\int_0^{0.5} f(x)\,dx = 0.375") == pytest.approx(0.375)
+    assert _valor_final_declarado(r"\int_0^{0.5} f(x)\,dx = 0.375") == pytest.approx(
+        0.375
+    )
 
     # Vector 1 (N-08): entero <=10, ya no se descarta
     assert _valor_final_declarado(r"\hat{\theta} = \sum \; 7") == pytest.approx(7.0)
@@ -532,7 +534,9 @@ def test_valor_final_declarado_extrae_el_ultimo_numero_tras_el_ultimo_igual():
     ) == pytest.approx(0.42)
 
     # Vector 3 (N-08): valor como exponente, ya no se descarta
-    assert _valor_final_declarado(r"\hat{\theta} = \sum \; 10^{-3}") == pytest.approx(0.001)
+    assert _valor_final_declarado(r"\hat{\theta} = \sum \; 10^{-3}") == pytest.approx(
+        0.001
+    )
 
     # Borde: entero exactamente en el viejo umbral abs<=10
     assert _valor_final_declarado(r"\hat{\theta} = \sum \; 10") == pytest.approx(10.0)
@@ -541,3 +545,20 @@ def test_valor_final_declarado_extrae_el_ultimo_numero_tras_el_ultimo_igual():
     assert _valor_final_declarado(
         r"P(X = 2) = 190 \times 0.0025 \times 0.397214 \approx 0.18868 \quad (18.87\%)"
     ) == pytest.approx(18.87)
+
+    # M1 (revisión final de rama, 2026-09-15): subíndice/superíndice CON
+    # "=" interno ANTES del "=" de asignación real. El enmascarado por
+    # relleno de "#" de "la misma longitud" tenía un error de conteo (no
+    # restaba el carácter `_`/`^` inicial, que ya se reañade aparte) que
+    # desplazaba +1 el índice por cada subíndice/superíndice presente en
+    # la expresión, dando 42.0 en vez de 0.42 aquí.
+    assert _valor_final_declarado(
+        r"$$\boxed{\sum_{i=1}^{n} x_i = 0.42}$$"
+    ) == pytest.approx(0.42)
+    assert _valor_final_declarado(r"\prod_{k=0}^{m} y_k = 3.14") == pytest.approx(3.14)
+
+    # Important (revisión del fix de M1, 2026-09-15): subíndice/superíndice
+    # ANIDADO (`_{b_{c}}`) -- fuera del dominio real (0 casos en las 8
+    # unidades, verificado por grep), pero degrada a None de forma segura
+    # en vez de devolver un número mal calculado si alguna vez aparece.
+    assert _valor_final_declarado("x = 5, a_{b_{c}=9}") is None

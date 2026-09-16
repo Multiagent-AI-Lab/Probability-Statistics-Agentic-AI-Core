@@ -116,25 +116,104 @@ def _limpiar_latex_conservando_marcas(expresion: str) -> str:
     return re.sub(r"\\[a-zA-Z]+", " ", sin_fracciones_simbolicas)
 
 
+def _contiene_subindice_anidado(expresion: str) -> bool:
+    """¿La expresión tiene un `[_^]{...}` con otro `{` sin cerrar dentro
+    de sí mismo (subíndice/superíndice anidado, p.ej. `_{b_{c}}`)?
+
+    `_ultimo_igual_de_asignacion` y `_limpiar_latex_conservando_marcas`
+    asumen que un `[_^]{...}` no anida otro `{` dentro -- válido para las
+    93 ocurrencias reales de `\\boxed{}` de las 8 unidades (verificado por
+    grep, 0 casos de anidamiento), pero una violación silenciosa de esa
+    asunción puede devolver un número incorrecto sin ninguna señal de
+    alerta (encontrado en la revisión de M1, 2026-09-15: mismo modo de
+    falla que M1 mismo, por otra vía). Esta función deja la violación
+    explícita para que el llamador pueda degradar a `None` en vez de
+    arriesgar un valor mal calculado.
+    """
+    profundidad = 0
+    i = 0
+    n = len(expresion)
+    while i < n:
+        ch = expresion[i]
+        if profundidad == 0 and ch in "_^" and i + 1 < n and expresion[i + 1] == "{":
+            profundidad = 1
+            i += 2
+            continue
+        if profundidad > 0:
+            if ch == "{":
+                return True
+            if ch == "}":
+                profundidad -= 1
+            i += 1
+            continue
+        i += 1
+    return False
+
+
+def _ultimo_igual_de_asignacion(expresion: str) -> int:
+    """Índice del último `=` de asignación real en `expresion`, ignorando
+    cualquier `=` que aparezca dentro de un subíndice/superíndice
+    `[_^]{...}` (p.ej. el límite inferior de una sumatoria, `_{i=1}`, o
+    un envoltorio de llave sin cerrar como `"$$\\boxed{...}"`).
+
+    M1 (revisión final de rama, 2026-09-15): la versión anterior
+    enmascaraba `[_^]{...}` reconstruyendo un relleno de `#` "de la
+    misma longitud" antes de buscar el `=` -- pero el cálculo de esa
+    longitud no restaba el carácter `_`/`^` inicial (ya reañadido por
+    separado), así que cada subíndice/superíndice agregaba una `#` de
+    más y desplazaba +1 el índice hallado por cada uno presente en la
+    expresión. Aquí se recorre el string UNA sola vez llevando un flag
+    de "dentro de un `[_^]{...}`", sin reconstruir ningún string
+    intermedio cuya longitud pueda desincronizarse del original. Asume
+    que `[_^]{...}` no anida otro `{` dentro -- ver
+    `_contiene_subindice_anidado`, que el llamador consulta antes de
+    confiar en este resultado.
+    """
+    ultimo = -1
+    dentro_de_subindice = False
+    i = 0
+    n = len(expresion)
+    while i < n:
+        ch = expresion[i]
+        if (
+            not dentro_de_subindice
+            and ch in "_^"
+            and i + 1 < n
+            and expresion[i + 1] == "{"
+        ):
+            dentro_de_subindice = True
+            i += 2
+            continue
+        if dentro_de_subindice:
+            if ch == "}":
+                dentro_de_subindice = False
+            i += 1
+            continue
+        if ch == "=":
+            ultimo = i
+        i += 1
+    return ultimo
+
+
 def _valor_final_declarado(expresion: str) -> float | None:
     """¿La expresión declara explícitamente un valor numérico al final, o
     termina en notación simbólica sin resolver?
 
-    Para encontrar el `=` de asignación real (no uno interno a un
-    subíndice/superíndice, p.ej. el límite inferior de una sumatoria
-    `_{i=1}^n`, ni confundido por un envoltorio de llave sin cerrar como
-    `"$$\\boxed{...}"`), se enmascara primero el contenido de todo
-    `[_^]{...}` -- se reemplaza cada `{...}` por relleno `#` de la misma
-    longitud, preservando `_`/`^` y las llaves -- y se busca el último
-    `=` sobre esa versión enmascarada. La partición real ocurre sobre el
-    string ORIGINAL en ese mismo índice.
+    Parte la expresión en el último `=` de asignación real
+    (`_ultimo_igual_de_asignacion`) y busca el último número en el
+    fragmento resultante, tras limpiarlo con
+    `_limpiar_latex_conservando_marcas`.
+
+    Si la expresión viola la asunción de "sin subíndices anidados" que
+    ambas funciones auxiliares comparten, degrada a `None` (Important,
+    revisión de M1 2026-09-15) en vez de arriesgar un valor numérico mal
+    calculado -- no hay ningún `\\boxed{}` real en las 8 unidades con esta
+    forma, así que degradar aquí no descarta ningún caso de producción.
     """
+    if _contiene_subindice_anidado(expresion):
+        return None
 
-    def _enmascarar(m: re.Match) -> str:
-        return m.group(0)[0] + "{" + ("#" * (len(m.group(0)) - 2)) + "}"
-
-    enmascarada = re.sub(r"[_^]\{[^{}]*\}", _enmascarar, expresion)
-    idx_igual = enmascarada.rfind("=")
+    idx_igual = _ultimo_igual_de_asignacion(expresion)
 
     fragmento = expresion[idx_igual + 1 :] if idx_igual >= 0 else expresion
     limpio = _limpiar_latex_conservando_marcas(fragmento)
