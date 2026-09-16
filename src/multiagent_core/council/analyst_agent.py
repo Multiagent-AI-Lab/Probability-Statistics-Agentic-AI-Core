@@ -28,6 +28,20 @@ _ROTULO_INTERPRETACION = re.compile(
 # Se corrigen esos dos huecos y se retira la alternativa laxa: la mejora
 # real no era el contenido, era el regex.
 #
+# M2 (medición de precisión A3, 2026-09-16): la medición de A3 con el
+# corpus de negativos corregido (cierre de ciclo completo, ver
+# docs/superpowers/audits/2026-09-16-precision-consejo-corpus.md) reveló
+# dos huecos más, ambos con `\d{1,15}(?:[.,]\d{1,15})?\s?\\?` seguido de
+# un patrón acotado -misma disciplina anti-ReDoS de la nota de abajo,
+# nunca un cuantificador sin límite superior nuevo-: (1) el espacio
+# forzado de LaTeX antes de `\text{...}` (`$12.9\ \text{nm}$`, no
+# `12.9nm` pegado) -- la alternativa de unidad exigía como mucho un `\`
+# entre el número y la unidad, y aquí hay `\` + espacio + `\text{`; (2)
+# un número con separador de miles (`100,000`) sin unidad física
+# reconocida, seguido de una palabra suelta ("réplicas") -- tan
+# verificable como `15.65 nm`, pero la alternativa de unidad exige una de
+# la lista fija y la de comparación exige `±`/`<>=`.
+#
 # Seguridad (hallazgo CRITICAL de @security-reviewer, con una segunda
 # ronda de medición propia tras el primer intento de fix): la versión
 # original con `\d+` sin cota escala cuadrático sobre una racha larga de
@@ -48,8 +62,13 @@ _ROTULO_INTERPRETACION = re.compile(
 # `(?:[.,]\d{1,15})?` reintenta su `\d{1,15}` interno en cada punto), y
 # sin la cota de 3000 caracteres ese patrón específico tarda 68s con
 # 800 000 caracteres. Con la cota en vigor el peor caso medido es ~26ms.
+# El fix de M2 preserva esta propiedad: el nuevo grupo LaTeX usa `\s?`
+# (0 o 1 espacio) igual que el resto, nunca `\s*`, y la nueva alternativa
+# de miles reutiliza el mismo `\d{1,15}` acotado sin abrir un cuantificador
+# nuevo sin límite.
 _AFIRMACION_VERIFICABLE = re.compile(
-    r"\d{1,15}(?:[.,]\d{1,15})?\s?\\?(?:%|nm|µm|um|mm|s\b|ms\b|°|K\b|eV\b|Ω|ohm)"
+    r"\d{1,15}(?:[.,]\d{1,15})?\s?\\?\s?\\?(?:%|nm|µm|um|mm|s\b|ms\b|°|K\b|eV\b|Ω|ohm|text\{\w{1,20}\})"
+    r"|\d{1,15}(?:[.,]\d{1,15}){1,10}\$?\s+\w{1,20}"
     r"|\d{1,15}(?:[.,]\d{1,15})?\s*(?:±|\+/-)"
     r"|[<>=]\s*-?\d",
     re.IGNORECASE,

@@ -110,6 +110,46 @@ def test_reporta_la_posicion_del_ultimo_grafico():
 
 
 # --------------------------------------------------------------------------
+# M2 (medición de precisión A3, 2026-09-16): `_AFIRMACION_VERIFICABLE` no
+# reconocía dos formas reales de citar una magnitud en el material del
+# curso, causando falso positivo de "sin interpretación" en interpretaciones
+# que sí citan cifras concretas -- ver docs/superpowers/audits/2026-09-16-
+# precision-consejo-corpus.md.
+# --------------------------------------------------------------------------
+
+
+def test_reconoce_unidad_tras_espacio_latex_y_text():
+    """`$12.9\\ \\text{nm}$` (espacio forzado LaTeX + \\text{}) es la forma
+    real en que las 8 unidades citan una magnitud con unidad -- no
+    `12.9nm` pegado, que es lo único que el regex original reconocía."""
+    agent = AnalystAgent()
+    interpretacion = (
+        "Interpretación: la muestra se concentra alrededor de "
+        "$12.9\\ \\text{nm}$, consistente con la dispersión esperada del "
+        "proceso de síntesis según lo discutido arriba en la sección."
+    )
+
+    resultado = agent.audit_visualizations(_con_graficos(interpretacion))
+
+    assert resultado["has_interpretation"] is True
+
+
+def test_reconoce_numero_con_separador_de_miles_seguido_de_palabra():
+    """`$100,000$ réplicas` (coma de miles, sin unidad física pegada) es
+    una afirmación verificable tan real como `15.65 nm`."""
+    agent = AnalystAgent()
+    interpretacion = (
+        "Interpretación: el histograma de frecuencias simuladas con "
+        "$100,000$ réplicas se superpone perfectamente sobre la curva "
+        "teórica de la densidad, confirmando la fidelidad del generador."
+    )
+
+    resultado = agent.audit_visualizations(_con_graficos(interpretacion))
+
+    assert resultado["has_interpretation"] is True
+
+
+# --------------------------------------------------------------------------
 # Regresión de ReDoS en `_AFIRMACION_VERIFICABLE` (hallazgo CRITICAL de
 # @security-reviewer sobre el fix de N-02, cerrado con `\d{1,15}` acotado
 # en vez de `\d+`). El párrafo real ya está acotado por
@@ -153,4 +193,34 @@ def test_afirmacion_verificable_no_escala_cuadratico_con_digitos_y_puntos():
     assert duracion < _TECHO_SEGUNDOS_REDOS, (
         f"_AFIRMACION_VERIFICABLE tardo {duracion:.2f}s sobre digitos y "
         "puntos intercalados -- posible regresion de ReDoS"
+    )
+
+
+def test_afirmacion_verificable_no_escala_cuadratico_con_separador_de_miles():
+    """M2 (revisión de @security-reviewer, 2026-09-16): la alternativa de
+    separador de miles agregada en M2 (`\\d{1,15}(?:[.,]\\d{1,15}){1,10}\\$?
+    \\s+\\w{1,20}`) tiene una constante de tiempo ~160x peor que otros
+    adversarios de este regex (backtracking de `\\d{1,15}` dentro del grupo
+    repetido `{1,10}`) -- sigue siendo lineal, no cuadrático/exponencial
+    (confirmado por el revisor: 0.69s/1.43s/2.70s/5.35s para
+    80k/160k/320k/640k caracteres, ~2x tiempo por ~2x tamaño), pero sin este
+    test una futura edición que la vuelva peor pasaría inadvertida. En
+    producción esta alternativa siempre corre bajo `_MAX_CHARS_PARRAFO_
+    AFIRMACION` (3000 caracteres), que la neutraliza -- este test la
+    ejercita aislada, sin esa cota, igual que los dos anteriores. `reps`
+    deliberadamente conservador (no el tamaño máximo medido por el revisor)
+    para dejar margen bajo `_TECHO_SEGUNDOS_REDOS` en hardware más lento;
+    el objetivo es detectar una regresión de orden de magnitud, no medir el
+    peor caso exacto."""
+    bloque = "1" * 15 + "."
+    texto = (bloque * 9 + "1" * 15 + ",") * 300 + "!"
+
+    t0 = time.perf_counter()
+    resultado = _AFIRMACION_VERIFICABLE.search(texto)
+    duracion = time.perf_counter() - t0
+
+    assert resultado is None
+    assert duracion < _TECHO_SEGUNDOS_REDOS, (
+        f"_AFIRMACION_VERIFICABLE tardo {duracion:.2f}s sobre el adversario "
+        "de separador de miles -- posible regresion de constante de tiempo"
     )
