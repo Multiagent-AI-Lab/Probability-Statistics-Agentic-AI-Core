@@ -111,3 +111,64 @@ display(Math(r'\text{Ecuación de Score } \frac{d \ln L}{d\mu}: ' + sp.latex(d_l
 display(Math(r'\text{Estimador MLE Resuelto } \hat{\mu}: ' + sp.latex(mu_mle)))
 ```
 
+### 6.3 Ajuste Computacional de MLE con `scipy.stats.fit`
+Cuando no se busca solo la fórmula del estimador sino ajustar una distribución concreta a datos observados, `scipy.stats` provee ajuste numérico por máxima verosimilitud directamente:
+
+```python
+import numpy as np
+from scipy import stats
+
+np.random.seed(42)
+
+## Datos simulados de diámetro de un lote de AgNPs (verdadero mu=50, sigma=4)
+datos_diametro = stats.norm.rvs(loc=50, scale=4, size=200)
+
+## Ajuste MLE de una distribución Normal a los datos
+mu_mle, sigma_mle = stats.norm.fit(datos_diametro)
+print(f"mu estimado (MLE): {mu_mle:.4f} nm")
+print(f"sigma estimado (MLE): {sigma_mle:.4f} nm")
+
+## Prueba de bondad de ajuste Kolmogorov-Smirnov
+ks_stat, ks_pvalue = stats.kstest(datos_diametro, 'norm', args=(mu_mle, sigma_mle))
+print(f"Kolmogorov-Smirnov: estadístico={ks_stat:.4f}, p-valor={ks_pvalue:.4f}")
+print("Buen ajuste (p > 0.05)" if ks_pvalue > 0.05 else "Ajuste cuestionable (p <= 0.05)")
+```
+
+### 6.4 Estimación MAP (Máximo a Posteriori): Incorporando Conocimiento Previo
+
+El **Método de Momentos** (§1.9) y el **MLE** (§6.2-6.3) comparten un supuesto: toda la información sobre el parámetro $\theta$ proviene únicamente de la muestra observada. La estimación **Bayesiana** relaja ese supuesto incorporando explícitamente conocimiento previo sobre $\theta$ —de literatura, procesos similares ya caracterizados, o restricciones físicas conocidas— mediante una **distribución a priori** $p(\theta)$. El Teorema de Bayes (Unidad 2, §4.2) combina ese prior con la verosimilitud de los datos $p(x|\theta)$ para obtener la **distribución a posteriori**:
+$$p(\theta \mid x) \propto p(x \mid \theta)\cdot p(\theta)$$
+
+El estimador **Máximo a Posteriori (MAP)** es el valor de $\theta$ que maximiza esa posterior — el análogo bayesiano del MLE, pero "penalizado" por el prior:
+$$\hat\theta_{MAP} = \arg\max_\theta\ p(x\mid\theta)\,p(\theta)$$
+
+**Caso: proporción de éxito con prior Beta (conjugado de la Bernoulli/Binomial)**. Un prior $\theta\sim\text{Beta}(\alpha,\beta)$ es **conjugado** de la verosimilitud Binomial: la posterior resultante es también una Beta, con actualización trivial de sus parámetros. Si se observan $x$ éxitos en $n$ ensayos:
+$$p(\theta\mid x) = \text{Beta}(\alpha+x,\ \beta+n-x) \qquad\Longrightarrow\qquad \hat\theta_{MAP} = \frac{\alpha+x-1}{\alpha+\beta+n-2}\quad(\alpha,\beta>1)$$
+
+**Contexto de nanotecnología**: un nuevo proceso de funcionalización de nanotubos de carbono se somete a $n=20$ ensayos, de los cuales $x=14$ resultan en funcionalización exitosa. Antes de este experimento, procesos similares documentados en la literatura sugieren una tasa de éxito moderada, sin fuerte evidencia hacia ningún extremo — se modela ese conocimiento previo con un prior débil $\text{Beta}(\alpha=2,\beta=2)$ (equivalente a "2 pseudo-éxitos y 2 pseudo-fracasos" de información previa, centrado en $0.5$).
+
+```python
+import numpy as np
+from scipy.stats import beta
+
+## Prior debil: Beta(2,2), centrado en 0.5, poca informacion previa
+alpha_prior, beta_prior = 2, 2
+n, x = 20, 14  # 14 exitos en 20 ensayos de funcionalizacion
+
+## Posterior: Beta(alpha+x, beta+n-x) -- conjugacion Beta-Binomial
+alpha_post = alpha_prior + x
+beta_post = beta_prior + (n - x)
+
+## Estimadores puntuales a comparar
+theta_mle = x / n                                                    # MLE: solo los datos
+theta_map = (alpha_post - 1) / (alpha_post + beta_post - 2)           # MAP: datos + prior
+theta_media_posterior = alpha_post / (alpha_post + beta_post)         # media de la posterior (otro resumen bayesiano)
+
+print(f"MLE (solo datos):              theta_hat = {theta_mle:.4f}")
+print(f"MAP (datos + prior Beta(2,2)): theta_hat = {theta_map:.4f}")
+print(f"Media de la posterior:         theta_hat = {theta_media_posterior:.4f}")
+print(f"\nPosterior resultante: Beta(alpha={alpha_post}, beta={beta_post})")
+```
+
+**Interpretación**: el MLE ($\hat\theta=0.700$) usa únicamente los 20 ensayos observados; el MAP ($\hat\theta=0.6818$) lo "encoge" ligeramente hacia el $0.5$ del prior, precisamente porque el prior aporta la equivalente de información previa moderada. A medida que $n\to\infty$, el término de los datos ($x$, $n-x$) domina sobre el prior fijo ($\alpha$, $\beta$) y $\hat\theta_{MAP}\to\hat\theta_{MLE}$ — el prior deja de importar cuando hay suficiente evidencia muestral, un comportamiento deseable de cualquier estimador bayesiano razonable.
+

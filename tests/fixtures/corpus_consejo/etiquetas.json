@@ -4,7 +4,7 @@
     "tiene_fallo": false,
     "tipo_fallo": null,
     "origen": "real",
-    "fuente": "UNIDAD_7_INFERENCIA_ESTIMACION.md §5.3-6.2 (líneas 1097-1209 del original; el boxed objetivo estaba en la línea 1189)",
+    "fuente": "UNIDAD_7_INFERENCIA_ESTIMACION.md §5.3-6.4 (líneas 1097-1269 del original, extendido 2026-09-16 para M2 con §6.3 Ajuste MLE + §6.4 MAP completa -- antes cortaba justo tras el bloque de código de §6.2 sin interpretación; nota: esta sub-sección no tiene gráfico en el original, cierra con Teoría→SymPy→SciPy→Interpretación); el boxed objetivo estaba en la línea 1189",
     "hallazgo_origen": null
   },
   {
@@ -12,7 +12,7 @@
     "tiene_fallo": false,
     "tipo_fallo": null,
     "origen": "real",
-    "fuente": "UNIDAD_4_DISTRIBUCIONES_CONJUNTAS.md §1.3 (Marginales) hasta §3.3 (Esperanza Condicional), líneas 112-253 del original; boxed{0.375} en la línea 230, dentro de §3.2 -- el brief lo ubicaba en §2.3, desviación documentada en el reporte",
+    "fuente": "UNIDAD_4_DISTRIBUCIONES_CONJUNTAS.md §1.3 (Marginales) hasta §3.5 (Ley de la Varianza Total), líneas 112-384 del original (extendido 2026-09-16 para M2 con §3.4-3.5 completas -- antes cortaba en el título de §3.4 sin contenido); boxed{0.375} en la línea 230, dentro de §3.2 -- el brief lo ubicaba en §2.3, desviación documentada en el reporte",
     "hallazgo_origen": null
   },
   {
@@ -20,7 +20,7 @@
     "tiene_fallo": false,
     "tipo_fallo": null,
     "origen": "real",
-    "fuente": "UNIDAD_3_VARIABLES_ALEATORIAS_DISCRETAS.md §2.9-§3.6 (líneas 138-483 del original; ajustado desde 344 tras detectar que ese inicio cortaba un bloque de código a la mitad); el P(X=2) boxed porcentual está en la línea 439 del original",
+    "fuente": "UNIDAD_3_VARIABLES_ALEATORIAS_DISCRETAS.md §2.9-§6.1 (líneas 138-595 del original, extendido 2026-09-16 para M2 con §4 SymPy + §5 SciPy/gráfico + §6.1 Interpretación -- antes cortaba en el título de §4 sin contenido); el P(X=2) boxed porcentual está en la línea 439 del original",
     "hallazgo_origen": null
   },
   {
@@ -28,7 +28,7 @@
     "tiene_fallo": false,
     "tipo_fallo": null,
     "origen": "real",
-    "fuente": "UNIDAD_1_ESTADISTICA_DESCRIPTIVA.md §1.5 + §2 Ejemplo Analítico (líneas 112-215) + entrada de Referencias con DOI (línea 915, Dong et al. 2020, 10.14356/kona.2020011)",
+    "fuente": "UNIDAD_1_ESTADISTICA_DESCRIPTIVA.md §1.5 + §2 Ejemplo Analítico + §3 SymPy + §4 SciPy/gráfico + §5.1 Interpretación (líneas 112-336, cierre completo del ciclo -- extendido 2026-09-16 para corregir M2, antes cortaba en línea 215 sin código SymPy ni gráfico ni interpretación) + entrada de Referencias con DOI (línea 915, Dong et al. 2020, 10.14356/kona.2020011)",
     "hallazgo_origen": null
   },
   {
@@ -36,7 +36,7 @@
     "tiene_fallo": false,
     "tipo_fallo": null,
     "origen": "real",
-    "fuente": "UNIDAD_2_PROBABILIDAD_COMBINATORIA.md §5 Ejemplo Analítico completo, incl. extensión de los Tres Prisioneros (líneas 409-576; ajustado desde 527 tras detectar que ese fin cortaba un bloque de código a la mitad) + entrada de Referencias con DOI (línea 837, Chien et al. 2023, 10.1016/j.cie.2023.109421)",
+    "fuente": "UNIDAD_2_PROBABILIDAD_COMBINATORIA.md §5 Ejemplo Analítico completo + §6 SymPy + §7 SciPy/gráfico + §8.1 Interpretación (líneas 409-703, extendido 2026-09-16 para M2 -- antes cortaba tras el bloque SymPy de los Tres Prisioneros, sin el ejemplo de síntesis de nanopartículas con Bayes/gráfico/interpretación) + entrada de Referencias con DOI (línea 837, Chien et al. 2023, 10.1016/j.cie.2023.109421)",
     "hallazgo_origen": null
   },
   {
@@ -44,7 +44,7 @@
     "tiene_fallo": false,
     "tipo_fallo": null,
     "origen": "real",
-    "fuente": "UNIDAD_3_VARIABLES_ALEATORIAS_DISCRETAS.md §4 Código SymPy + §5 SciPy/Statsmodels (líneas 483-651) + entrada de Referencias con DOI (línea 741, Li & Jiang 2008, 10.1007/978-1-84800-131-2_58)",
+    "fuente": "UNIDAD_3_VARIABLES_ALEATORIAS_DISCRETAS.md §4 Código SymPy + §5 SciPy/Statsmodels (líneas 483-651) + entrada de Referencias con DOI (línea 741, Li & Jiang 2008, 10.1007/978-1-84800-131-2_58). Revisado 2026-09-16 (M2): ya incluye el cierre completo del ciclo (SymPy + SciPy/gráfico + interpretación §6.1) dentro de líneas 483-595 -- no requirió edición",
     "hallazgo_origen": null
   },
   {
@@ -52,7 +52,7 @@
     "tiene_fallo": false,
     "tipo_fallo": null,
     "origen": "real",
-    "fuente": "UNIDAD_4_DISTRIBUCIONES_CONJUNTAS.md §4.4-§5 Ejemplo Analítico (líneas 412-559) + entrada de Referencias con DOI (línea 1097, Pochapski et al. 2021, 10.1021/acs.langmuir.1c02056)",
+    "fuente": "UNIDAD_4_DISTRIBUCIONES_CONJUNTAS.md §4.4-§5 Ejemplo Analítico (líneas 412-559). Revisado 2026-09-16 (M2): NO se extiende -- el ejemplo propio (§5, diámetro/potencial zeta) ya cierra con Teoría→Interpretación→pytest, sin gráfico; el gráfico real que reutiliza este mismo ejemplo está en §9 (línea 892), pero llegar ahí cruza dos secciones temáticas completas y no relacionadas (§6 Vectores Aleatorios, §7 Transformaciones/PCA/Whitening, §8 SymPy de un ejemplo distinto) -- extenderlo produciría un fixture mezclando 3 temas, peor que el fragmento actual + entrada de Referencias con DOI (línea 1097, Pochapski et al. 2021, 10.1021/acs.langmuir.1c02056)",
     "hallazgo_origen": null
   },
   {
@@ -60,7 +60,7 @@
     "tiene_fallo": false,
     "tipo_fallo": null,
     "origen": "real",
-    "fuente": "UNIDAD_5_VARIABLES_ALEATORIAS_CONTINUAS.md §2.12-2.13 (líneas 624-746) + entrada de Referencias con DOI (línea 1046, Sharafi et al. 2026, 10.3390/nano16080451)",
+    "fuente": "UNIDAD_5_VARIABLES_ALEATORIAS_CONTINUAS.md §2.12-2.13 + §4 SymPy + §5 SciPy/gráfico + §6.1 Interpretación (líneas 624-885, extendido 2026-09-16 para M2 -- antes cortaba en el título de §4 sin contenido) + entrada de Referencias con DOI (línea 1046, Sharafi et al. 2026, 10.3390/nano16080451)",
     "hallazgo_origen": null
   },
   {
@@ -68,7 +68,7 @@
     "tiene_fallo": false,
     "tipo_fallo": null,
     "origen": "real",
-    "fuente": "UNIDAD_6_MODELADO_SIMULACION.md §1.4 + §2 Ejemplo Analítico (líneas 100-298) + entrada de Referencias con DOI (línea 683, Shabbir et al. 2024, 10.1038/s41598-024-52292-0)",
+    "fuente": "UNIDAD_6_MODELADO_SIMULACION.md §1.4 + §2 Ejemplo Analítico + §3 SymPy + §4 SciPy/gráfico + §5.1 Interpretación (líneas 100-395, extendido 2026-09-16 para M2 -- antes cortaba en el título de §3 sin contenido) + entrada de Referencias con DOI (línea 683, Shabbir et al. 2024, 10.1038/s41598-024-52292-0)",
     "hallazgo_origen": null
   },
   {
@@ -76,7 +76,7 @@
     "tiene_fallo": false,
     "tipo_fallo": null,
     "origen": "real",
-    "fuente": "UNIDAD_7_INFERENCIA_ESTIMACION.md §1.17-1.18 + §2 Ejemplo Analítico (líneas 777-939) + entrada de Referencias con DOI (línea 1402, Prosthesis 2026, 10.3390/prosthesis8070066)",
+    "fuente": "UNIDAD_7_INFERENCIA_ESTIMACION.md §1.17-1.18 + §2 Ejemplo Analítico + §3 SymPy + §4 SciPy/gráfico + §5.1 Interpretación (líneas 777-1039, extendido 2026-09-16 para M2 -- antes cortaba en el título de §3 sin contenido) + entrada de Referencias con DOI (línea 1402, Prosthesis 2026, 10.3390/prosthesis8070066)",
     "hallazgo_origen": null
   },
   {
@@ -92,7 +92,7 @@
     "tiene_fallo": false,
     "tipo_fallo": null,
     "origen": "real",
-    "fuente": "UNIDAD_1_ESTADISTICA_DESCRIPTIVA.md §1.1-1.5 (Fundamentación Teórica completa, líneas 53-132)",
+    "fuente": "UNIDAD_1_ESTADISTICA_DESCRIPTIVA.md §1.1-1.5 (Fundamentación Teórica completa, líneas 53-132). Revisado 2026-09-16 (M2): NO se extiende -- es contenido puramente teórico/conceptual sin ejemplo numérico propio; el primer gráfico del original pertenece al ejemplo aplicado de AuNPs de la §2-4 (tema distinto), extenderlo forzaría un salto de sección",
     "hallazgo_origen": null
   },
   {
@@ -100,7 +100,7 @@
     "tiene_fallo": false,
     "tipo_fallo": null,
     "origen": "real",
-    "fuente": "UNIDAD_2_PROBABILIDAD_COMBINATORIA.md §1-§2.4 (Fundamentación Teórica y Técnicas de Conteo, líneas 43-218)",
+    "fuente": "UNIDAD_2_PROBABILIDAD_COMBINATORIA.md §1-§2.4 (Fundamentación Teórica y Técnicas de Conteo, líneas 43-218). Revisado 2026-09-16 (M2): NO se extiende -- §2.4 tiene ejemplos numéricos con SymPy pero sin gráfico; el primer gráfico del original está en la §7 (Bayes, tema distinto y lejano)",
     "hallazgo_origen": null
   },
   {
@@ -108,7 +108,7 @@
     "tiene_fallo": false,
     "tipo_fallo": null,
     "origen": "real",
-    "fuente": "UNIDAD_5_VARIABLES_ALEATORIAS_CONTINUAS.md §1.1-1.4 (PDF/CDF/Esperanza/Desigualdad de Jensen, líneas 56-153)",
+    "fuente": "UNIDAD_5_VARIABLES_ALEATORIAS_CONTINUAS.md §1.1-1.4 (PDF/CDF/Esperanza/Desigualdad de Jensen, líneas 56-153). Revisado 2026-09-16 (M2): ya incluye el cierre completo del ciclo (el ejemplo de Jensen no tiene gráfico en el original; cierra con Teoría→Monte Carlo→SymPy→Interpretación) -- no requirió edición",
     "hallazgo_origen": null
   },
   {
@@ -116,7 +116,7 @@
     "tiene_fallo": false,
     "tipo_fallo": null,
     "origen": "real",
-    "fuente": "UNIDAD_6_MODELADO_SIMULACION.md §1.1-1.4 (Números Seudoaleatorios, Monte Carlo, Generador Congruencial Lineal, líneas 55-161; ajustado desde 150 tras detectar que ese fin cortaba un bloque de código/salida a la mitad)",
+    "fuente": "UNIDAD_6_MODELADO_SIMULACION.md §1.1-1.4 (Números Seudoaleatorios, Monte Carlo, Generador Congruencial Lineal, líneas 55-161; ajustado desde 150 tras detectar que ese fin cortaba un bloque de código/salida a la mitad). Revisado 2026-09-16 (M2): NO se extiende -- el único código de la sección genera secuencias con print(), sin gráfico; el primer plt./sns. del original pertenece al ejemplo de difusión Weibull de la §2 (tema distinto)",
     "hallazgo_origen": null
   },
   {
@@ -140,7 +140,7 @@
     "tiene_fallo": false,
     "tipo_fallo": null,
     "origen": "real",
-    "fuente": "UNIDAD_7_INFERENCIA_ESTIMACION.md §1.4-1.7 (Valor p, Neyman-Pearson, Prueba para la Media y la Varianza, líneas 171-315)",
+    "fuente": "UNIDAD_7_INFERENCIA_ESTIMACION.md §1.4-1.7 (Valor p, Neyman-Pearson, Prueba para la Media y la Varianza) + §1.9 Método de los Momentos completo (líneas 171-377, extendido 2026-09-16 para M2 -- §1.9 no tiene gráfico en el original, pero sí cierra el ciclo Teoría→SymPy→SciPy→Interpretación con boxed final; el siguiente plt./sns. real pertenece a un tema distinto y lejano, Z-test/t-test de la Sección 4)",
     "hallazgo_origen": null
   },
   {
@@ -148,7 +148,7 @@
     "tiene_fallo": false,
     "tipo_fallo": null,
     "origen": "real",
-    "fuente": "UNIDAD_3_VARIABLES_ALEATORIAS_DISCRETAS.md §2 Familias Principales de Distribuciones Discretas (líneas 80-233; ajustado desde 218 tras detectar que ese fin cortaba un bloque de código a la mitad)",
+    "fuente": "UNIDAD_3_VARIABLES_ALEATORIAS_DISCRETAS.md §2 Familias Principales de Distribuciones Discretas (líneas 80-235, extendido 2026-09-16 para M2 con el párrafo de Aplicaciones que cierra el ciclo de la Profundización Poisson §2.9.3 -- antes cortaba justo en plt.show() sin el párrafo de interpretación)",
     "hallazgo_origen": null
   },
   {
@@ -156,7 +156,7 @@
     "tiene_fallo": false,
     "tipo_fallo": null,
     "origen": "real",
-    "fuente": "UNIDAD_4_DISTRIBUCIONES_CONJUNTAS.md §3.5-4.4 (Ley de la Varianza Total, Suma de Variables y Convolución, líneas 304-483; ajustado desde 380 tras detectar que ese inicio cortaba un bloque de código a la mitad)",
+    "fuente": "UNIDAD_4_DISTRIBUCIONES_CONJUNTAS.md §3.5-4.4 (Ley de la Varianza Total, Suma de Variables y Convolución, líneas 304-483; ajustado desde 380 tras detectar que ese inicio cortaba un bloque de código a la mitad). Revisado 2026-09-16 (M2): NO se extiende -- el Ejemplo E final es derivación teórica pura sin código; los únicos gráficos de la sección (Ejemplos A y D) ya están incluidos, y lo siguiente en el original es la §5 (tema distinto: nanopartículas coloidales)",
     "hallazgo_origen": null
   },
   {

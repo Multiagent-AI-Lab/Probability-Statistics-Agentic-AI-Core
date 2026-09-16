@@ -344,3 +344,115 @@ ipytest.run("-vv")
 ---
 
 ## 4. Código de Verificación Simbólica (SymPy)
+
+Esta sección es la Fase 2 del Ciclo de Verificación Triple del curso (ver `GOVERNANCE.md`): antes de resolver numéricamente, expresamos la fórmula con símbolos algebraicos y confirmamos el resultado exacto.
+
+```python
+import sympy as sp
+from IPython.display import display, Math
+
+## 1. Definición de símbolos
+n = sp.Symbol('n', positive=True, integer=True)
+k = sp.Symbol('k', integer=True)
+p = sp.Symbol('p', positive=True)
+
+## 2. Expresión simbólica de la PMF Binomial y Esperanza
+pmf_binomial = sp.binomial(n, k) * (p**k) * ((1 - p)**(n - k))
+esperanza_expr = sp.Sum(k * pmf_binomial, (k, 0, n))
+
+display(Math(fr"\text{{PMF Binomial Simbólica: }} P(X = k) = {sp.latex(pmf_binomial)}"))
+
+## 3. Sustitución de los parámetros de la inspección nanotecnológica (n=20, p=0.05, k=2)
+valores = {n: 20, p: sp.Rational(5, 100), k: 2}
+prob_exacta = pmf_binomial.subs(valores)
+prob_decimal = float(prob_exacta)
+
+display(Math(fr"\text{{Resultado Exacto }} P(X=2): {sp.latex(prob_exacta)} = \boxed{{{prob_decimal:.5f}}}"))
+```
+
+---
+
+## 5. Solución Computacional en Python (SciPy & Statsmodels)
+
+```python
+import numpy as np
+import scipy.stats as stats
+import matplotlib.pyplot as plt
+import seaborn as sns
+import pandas as pd
+
+## Configuración visual profesional
+sns.set_theme(style="whitegrid")
+plt.rcParams["figure.figsize"] = (12, 5)
+
+## --- PARTE A: Cálculo Exacto con scipy.stats.binom ---
+n_val = 20
+p_val = 0.05
+
+pmf_k2 = stats.binom.pmf(k=2, n=n_val, p=p_val)
+cdf_k0 = stats.binom.cdf(k=0, n=n_val, p=p_val)
+prob_al_menos_1 = 1 - cdf_k0
+
+print("--- RESULTADOS SCI PY STATS (BINOMIAL) ---")
+print(f"P(X = 2) exacta:          {pmf_k2:.5f}")
+print(f"P(X >= 1) acumulada:      {prob_al_menos_1:.5f}")
+print(f"Esperanza teórica E[X]:   {stats.binom.mean(n=n_val, p=p_val):.2f}")
+print(f"Desviación Estándar SD:   {stats.binom.std(n=n_val, p=p_val):.4f}")
+
+## --- PARTE B: Comparación de Familias Discretas (Binomial vs Poisson vs Geométrica) ---
+fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+
+## Gráfico 1: PMF de Binomial n=20, p=0.05
+k_range = np.arange(0, 8)
+pmf_vals = stats.binom.pmf(k_range, n=n_val, p=p_val)
+
+axes[0].bar(k_range, pmf_vals, color='royalblue', alpha=0.85, edgecolor='black', width=0.5)
+axes[0].axvline(x=1.0, color='red', linestyle='--', label='Esperanza E[X] = 1.0')
+axes[0].set_title("PMF Binomial (n=20, p=0.05): Defectos en Nano-sensores", fontsize=12, fontweight="bold")
+axes[0].set_xlabel("Número de Nano-sensores Defectuosos (k)")
+axes[0].set_ylabel("Probabilidad P(X = k)")
+axes[0].legend()
+
+## Gráfico 2: Simulación de Distribución Geométrica (Ensayos hasta primer defecto)
+p_geom = 0.05
+muestras_geom = stats.geom.rvs(p=p_geom, size=50_000, random_state=42)
+
+sns.histplot(muestras_geom, discrete=True, stat="density", color="forestgreen", alpha=0.7, ax=axes[1])
+x_geom = np.arange(1, 40)
+pmf_geom_teorica = stats.geom.pmf(x_geom, p=p_geom)
+axes[1].plot(x_geom, pmf_geom_teorica, 'ro-', lw=1.5, label='PMF Teórica Geométrica(p=0.05)')
+axes[1].set_title("Distribución Geométrica: Inspecciones hasta el Primer Defecto", fontsize=12, fontweight="bold")
+axes[1].set_xlabel("Número de Ensayo del Primer Defecto (k)")
+axes[1].set_ylabel("Densidad de Frecuencia Muestral")
+axes[1].legend()
+
+plt.tight_layout()
+plt.show()
+
+## --- PARTE C: Distribución Multinomial — Clasificación de Nanopartículas por Tamaño ---
+## En síntesis sol-gel de nanopartículas de óxido metálico, se clasifican en 3 categorías
+## de diámetro: pequeña (<10nm), mediana (10-30nm), grande (>30nm), con probabilidades
+## conocidas del proceso. Crítico para el control de calidad en nanotecnología.
+from scipy.stats import multinomial
+
+n_lote = 20
+p_categorias = [0.2, 0.5, 0.3]  # P(pequeña), P(mediana), P(grande)
+
+## Probabilidad de obtener exactamente 4 pequeñas, 10 medianas, 6 grandes
+conteo_observado = [4, 10, 6]
+prob_conteo = multinomial.pmf(conteo_observado, n=n_lote, p=p_categorias)
+print(f"P(4 pequeñas, 10 medianas, 6 grandes) = {prob_conteo:.6f}")
+
+## Esperanza por categoría
+esperanza = [n_lote * p for p in p_categorias]
+print(f"Número esperado por categoría: {esperanza}")
+```
+
+---
+
+## 6. Interpretación Post-Gráfico & Diccionario de Variables
+
+### 6.1 Interpretación de Resultados Computacionales
+1. **Asimetría Positiva en Eventos Raros**: La PMF de la distribución binomial para $n=20, p=0.05$ exhibe una fuerte asimetría a la derecha concentrada en $k=0$ ($35.8\%$) y $k=1$ ($37.7\%$). La probabilidad de obtener más de 3 nano-sensores defectuosos es prácticamente nula ($< 1.6\%$).
+2. **Comportamiento Memoria Geométrica**: La simulación de $50,000$ réplicas geométricas muestra que el número esperado de inspecciones necesarias para detectar el primer defecto es $\mathbb{E}[K] = 1/0.05 = 20$ ensayos.
+3. **Clasificación Multinomial de Nanopartículas por Tamaño**: El resultado computacional de PARTE C confirma que, para un lote de $n=20$ nanopartículas sintetizadas por vía sol-gel con probabilidades de categoría $p = (0.2, 0.5, 0.3)$, el conteo esperado por categoría de diámetro es de $4$ nanopartículas pequeñas ($<10$ nm), $10$ medianas ($10$–$30$ nm) y $6$ grandes ($>30$ nm) — exactamente el escenario evaluado, lo que explica por qué su probabilidad puntual es la moda de la distribución multinomial. En control de calidad de nanomateriales, esta distribución conjunta permite estimar la probabilidad de que un lote de síntesis cumpla simultáneamente los tres rangos de tamaño objetivo, en lugar de evaluar cada categoría de forma aislada como haría una binomial marginal; esto es clave para ajustar los parámetros del proceso sol-gel (pH, temperatura, tiempo de reacción) cuando la distribución de tamaños observada se desvía de la especificación de diseño del nanomaterial.

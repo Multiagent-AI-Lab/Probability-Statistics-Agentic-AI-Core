@@ -143,3 +143,64 @@ Con $p=0.4659 \gg \alpha=0.05$, **no se rechaza $H_0$**: no hay evidencia estad�
 ---
 
 ### 1.9 Método de los Momentos (Estimación Puntual)
+
+El **Método de los Momentos (MoM)** es, junto con la Máxima Verosimilitud (MLE, ver §6.2-6.3), una técnica clásica de estimación puntual. Su idea es simple: igualar los **momentos poblacionales** (esperanza, varianza, etc.) con los **momentos muestrales** correspondientes, y despejar los parámetros desconocidos.
+
+**Procedimiento general**: si una distribución tiene $k$ parámetros $\theta_1,\dots,\theta_k$, se plantean $k$ ecuaciones igualando los primeros $k$ momentos poblacionales $\mu_j = E[X^j]$ con los momentos muestrales $m_j = \frac{1}{n}\sum_{i=1}^n x_i^j$, y se resuelve el sistema para los $\theta$.
+
+**Caso 1 — Distribución Exponencial (un parámetro)**: para $X \sim \text{Exp}(\lambda)$, el primer momento poblacional es $E[X] = 1/\lambda$. Igualando con la media muestral $\bar{x}$:
+$$\bar{x} = \frac{1}{\hat{\lambda}_{MoM}} \quad\Longrightarrow\quad \hat{\lambda}_{MoM} = \frac{1}{\bar{x}}$$
+
+**Caso 2 — Distribución Gamma (dos parámetros)**: para $X \sim \text{Gamma}(\alpha,\beta)$ (parametrización forma-escala), $E[X]=\alpha\beta$ y $\text{Var}(X)=\alpha\beta^2$. Igualando con $m_1=\bar{x}$ y $m_2=s^2$ (varianza muestral) y resolviendo el sistema:
+$$\hat{\alpha}_{MoM} = \frac{m_1^2}{m_2} \qquad \hat{\beta}_{MoM} = \frac{m_2}{m_1}$$
+
+**Contexto de nanotecnología**: se mide el tiempo hasta degradación oxidativa (en horas) de una muestra de $n=50$ nanopartículas de oro (AuNPs) sin recubrimiento protector, modelado como $\text{Exp}(\lambda)$; y por separado, el tamaño de $n=60$ nanoclusters de paladio sintetizados por reducción química, modelado como $\text{Gamma}(\alpha,\beta)$ (una distribución más flexible que la Normal para tamaños que no pueden ser negativos).
+
+**Verificación simbólica**:
+```python
+import sympy as sp
+
+## Metodo de Momentos para la Exponencial: E[X] = 1/lambda
+lam, m1 = sp.symbols('lambda m1', positive=True)
+sol_expon = sp.solve(sp.Eq(m1, 1/lam), lam)
+print(f"Exponencial MoM: lambda_hat = {sol_expon[0]}")  # 1/m1
+
+## Metodo de Momentos para la Gamma: E[X]=alpha*beta, Var[X]=alpha*beta^2
+alpha, beta, mu1, mu2 = sp.symbols('alpha beta mu1 mu2', positive=True)
+sistema = [sp.Eq(mu1, alpha*beta), sp.Eq(mu2, alpha*beta**2)]
+sol_gamma = sp.solve(sistema, [alpha, beta])
+print(f"Gamma MoM: alpha_hat = {sol_gamma[0][0]}, beta_hat = {sol_gamma[0][1]}")
+```
+
+**Solución computacional**:
+```python
+import numpy as np
+import scipy.stats as stats
+
+## --- Caso 1: Exponencial, tiempo de degradacion oxidativa de AuNPs (horas) ---
+np.random.seed(101)
+tiempo_degradacion = stats.expon.rvs(scale=18.0, size=50)  # lambda verdadero = 1/18
+
+media_muestral = np.mean(tiempo_degradacion)
+lambda_mom = 1 / media_muestral
+print(f"Media muestral: {media_muestral:.4f} h")
+print(f"lambda_MoM = {lambda_mom:.4f}  (verdadero lambda = 1/18 = {1/18:.4f})")
+
+## --- Caso 2: Gamma, tamano de nanoclusters de Pd (nm) ---
+np.random.seed(102)
+diametros_pd = stats.gamma.rvs(a=4.0, scale=2.5, size=60)  # alpha=4.0, beta=2.5 verdaderos
+
+m1 = np.mean(diametros_pd)
+m2_var = np.var(diametros_pd, ddof=0)
+alpha_mom = m1**2 / m2_var
+beta_mom = m2_var / m1
+print(f"\nGamma MoM: alpha_hat = {alpha_mom:.4f} (verdadero 4.0), beta_hat = {beta_mom:.4f} (verdadero 2.5)")
+
+## Comparacion contra MLE (scipy.stats.gamma.fit, loc fijo en 0)
+alpha_mle, _, beta_mle = stats.gamma.fit(diametros_pd, floc=0)
+print(f"Gamma MLE: alpha_hat = {alpha_mle:.4f}, beta_hat = {beta_mle:.4f}")
+```
+
+**Interpretación**: con $n=50$, $\hat{\lambda}_{MoM} = 0.0532\ \text{h}^{-1}$ (verdadero $1/18=0.0556$), un error relativo pequeño esperado por variabilidad muestral. Para la Gamma, el MoM ($\hat\alpha=4.39$, $\hat\beta=2.10$) y el MLE ($\hat\alpha=3.92$, $\hat\beta=2.35$) difieren ligeramente entre sí — ambos son estimadores consistentes (convergen al valor verdadero cuando $n\to\infty$), pero el MoM es computacionalmente más simple (no requiere optimización numérica) mientras que el MLE es generalmente más eficiente (menor varianza asintótica). En la práctica, el MoM se usa frecuentemente como valor inicial para algoritmos iterativos de MLE.
+
+$$\boxed{\hat{\lambda}_{MoM} = \frac{1}{\bar{x}} = 0.0532\ \text{h}^{-1} \qquad \hat{\alpha}_{MoM} = 4.39,\ \ \hat{\beta}_{MoM} = 2.10}$$

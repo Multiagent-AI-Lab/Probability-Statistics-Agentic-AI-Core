@@ -160,30 +160,47 @@ Esta sección declara el alcance real, no aspiracional, a la fecha de esta redac
   unidad — verificado, ahora 9/9.
 * La suite de tests de la rama pasa completa: **248 passed, 0 failed** a la fecha del
   cierre de Task 4 (`pytest tests/ -v --tb=short`).
-* **A3 (auditoría 2026-09-15): la precisión del Consejo se midió contra un corpus
-  etiquetado de 47 casos** (20 negativos reales tomados de fragmentos de las 8
-  unidades, 12 positivos confirmados de rondas de auditoría previas —N-01, N-03,
-  N-05, N-08—, 15 sintéticos de falsedad semántica) — ver
-  `docs/superpowers/audits/2026-09-15-precision-consejo-corpus.md` para la matriz de
-  confusión completa (`scripts/medir_precision_consejo.py`, 46 casos evaluados; 1
-  excluido por Crossref inaccesible durante la corrida). Resultado real, sin
-  maquillar: **precisión 41.4%, recall 44.4%, κ de Cohen -0.457** — muy por debajo
-  del 62.5% con validación experta de arXiv 2607.11276 (§5), y un κ negativo indica
-  acuerdo peor que el esperable solo por azar. Diagnóstico de la causa raíz (no es
-  ruido): 17 de los 19 falsos positivos evaluables provienen de los negativos reales,
-  y su origen no es un defecto del Consejo sobre contenido completo, sino que el
-  corpus de negativos son **fragmentos recortados** de una unidad más grande (p.ej.
-  líneas 53-132 de `UNIDAD_1_ESTADISTICA_DESCRIPTIVA.md`) — al cortar el fragmento se
-  pierde el gráfico o el cierre de ciclo que está fuera del recorte, y `@Analyst`
-  (interpretación ausente) y, en menor medida, `@Scientist`/`@Librarian` (fallos sin
-  clasificar sobre fragmentos incompletos) bloquean por esa fragmentación, no por un
-  defecto real de contenido — consistente con que el Consejo sí aprueba 6/8 unidades
-  *completas* sin corregir (viñeta de arriba). Los 15 casos sintéticos de falsedad
-  semántica se comportan exactamente como predice el diseño (§2.1, "verificación
-  numérica y estructural, no semántica"): el Consejo no los detecta, 15/15 falsos
-  negativos. El runner actúa como el juez de segunda pasada que antes faltaba (D5,
-  auditoría 2026-09-15), pero la cifra real obliga a matizar D6: el κ referenciado
-  aquí mide el Consejo contra fragmentos de corpus, no contra unidades de producción
+* **A3 (auditoría 2026-09-15, actualizada 2026-09-16 tras M2): la precisión del
+  Consejo se midió contra un corpus etiquetado de 47 casos** (20 negativos reales
+  tomados de fragmentos de las 8 unidades, 12 positivos confirmados de rondas de
+  auditoría previas —N-01, N-03, N-05, N-08—, 15 sintéticos de falsedad semántica)
+  — ver `docs/superpowers/audits/2026-09-16-precision-consejo-corpus.md` para la
+  matriz de confusión completa (`scripts/medir_precision_consejo.py`, 46 casos
+  evaluados; 1 excluido por Crossref inaccesible durante la corrida). Cifra vigente:
+  **precisión 52.2%, recall 44.4%, κ de Cohen -0.130** — mejora real y verificada
+  sobre la medición inicial (41.4%/44.4%/-0.457, `docs/superpowers/audits/2026-09-15-
+  precision-consejo-corpus.md`), pero todavía por debajo del 62.5% con validación
+  experta de arXiv 2607.11276 (§5), y un κ negativo sigue indicando acuerdo peor que
+  el esperable solo por azar.
+
+  M2 (2026-09-16) rehizo los 20 fragmentos negativos con el cierre completo del
+  ciclo (gráfico + interpretación) donde el contenido original lo permitía sin
+  cruzar a un tema distinto — 13 de 20 se extendieron, 2 ya estaban completos, y 5
+  se dejaron documentadamente sin extensión porque el gráfico real más cercano
+  pertenece a una sección temática ajena (`etiquetas.json` documenta la razón caso
+  por caso). El mismo trabajo destapó una causa raíz *distinta* de la fragmentación:
+  `@Analyst` (`_AFIRMACION_VERIFICABLE` en `analyst_agent.py`) no reconocía dos
+  formas reales de citar una magnitud — la unidad tras el espacio forzado de LaTeX
+  (`$12.9\ \text{nm}$`) y un número con separador de miles seguido de una palabra
+  suelta (`$100,000$ réplicas`) — bloqueando interpretaciones que sí citan cifras
+  concretas. Corregido con dos alternativas nuevas en el regex (revisado por
+  `python-reviewer` y `security-reviewer` sin hallazgos críticos; el regex ya tenía
+  un hallazgo CRITICAL de ReDoS en un ciclo anterior, así que ambas alternativas
+  nuevas mantienen la misma disciplina de cuantificadores acotados, con test de
+  regresión de constante de tiempo agregado).
+
+  De los 12 falsos positivos restantes en la cifra de hoy, 11 son negativos reales:
+  quedan sin corregir los casos donde el gráfico de cierre está genuinamente fuera
+  de alcance sin mezclar temas (documentado en `etiquetas.json`) o donde otro agente
+  del Consejo (no `@Analyst`) bloquea por una razón todavía sin diagnosticar — este
+  residuo queda como pendiente de un ciclo futuro, no se investigó caso por caso en
+  esta ronda. Los 15 casos sintéticos de falsedad semántica se comportan exactamente
+  como predice el diseño (§2.1, "verificación numérica y estructural, no
+  semántica"): el Consejo no los detecta, 15/15 falsos negativos — sin cambio
+  respecto a la medición anterior, como se esperaba (M2 no tocó esa dimensión). El
+  runner actúa como el juez de segunda pasada que antes faltaba (D5, auditoría
+  2026-09-15), pero la cifra real obliga a matizar D6: el κ referenciado aquí mide
+  el Consejo contra fragmentos de corpus, no contra unidades de producción
   completas, y no debe citarse como la precisión del Consejo en producción sin esa
   salvedad.
 

@@ -103,6 +103,126 @@ ipytest.run("-vv")
 
 ## 3. Código de Verificación Simbólica (SymPy)
 
+Esta sección es la Fase 2 del Ciclo de Verificación Triple del curso (ver `GOVERNANCE.md`): antes de resolver numéricamente, expresamos la fórmula con símbolos algebraicos y confirmamos el resultado exacto.
+
+```python
+import sympy as sp
+from IPython.display import display, Math
+
+## 1. Definición simbólica de la muestra y su tamaño
+datos = [12.1, 13.4, 11.8, 14.2, 12.9, 13.0, 40.5, 12.5, 13.8, 12.3]
+x_vals = [sp.Rational(str(v)) for v in datos]
+n = len(x_vals)
+
+## 2. Media muestral simbólica (fracción exacta)
+media_expr = sp.Add(*x_vals) / n
+media_exacta = sp.nsimplify(media_expr)
+
+display(Math(fr"\bar{{x}} = \frac{{1}}{{{n}}} \sum_{{i=1}}^{{{n}}} x_i = {sp.latex(media_expr)} = {float(media_expr):.4f}"))
+
+## 3. Varianza muestral simbólica (n-1 grados de libertad)
+suma_cuadrados = sp.Add(*[(xi - media_expr)**2 for xi in x_vals])
+varianza_expr = suma_cuadrados / (n - 1)
+
+display(Math(fr"s^2 = \frac{{1}}{{n-1}} \sum (x_i - \bar{{x}})^2 = \boxed{{{float(varianza_expr):.4f}}}"))
+display(Math(fr"s = \sqrt{{s^2}} = \boxed{{{float(sp.sqrt(varianza_expr)):.4f}}}"))
+```
+
+---
+
+## 4. Solución Computacional en Python (SciPy & Statsmodels)
+
+```python
+import numpy as np
+import scipy.stats as stats
+import matplotlib.pyplot as plt
+import seaborn as sns
+import pandas as pd
+
+## Configuración visual profesional
+sns.set_theme(style="whitegrid")
+plt.rcParams["figure.figsize"] = (12, 5)
+
+## --- PARTE A: Estadísticas Descriptivas con scipy.stats.describe ---
+diametros_aunp = np.array([12.1, 13.4, 11.8, 14.2, 12.9, 13.0, 40.5, 12.5, 13.8, 12.3])
+
+resumen = stats.describe(diametros_aunp)
+q1, mediana, q3 = np.percentile(diametros_aunp, [25, 50, 75])
+iqr = q3 - q1
+limite_superior = q3 + 1.5 * iqr
+
+print("--- RESUMEN ESTADÍSTICO: DIÁMETRO DE NANOPARTÍCULAS DE ORO (TEM) ---")
+print(f"n:                        {resumen.nobs}")
+print(f"Media:                    {resumen.mean:.4f} nm")
+print(f"Mediana:                  {mediana:.4f} nm")
+print(f"Varianza muestral:        {resumen.variance:.4f} nm^2")
+print(f"Desviación estándar:      {np.sqrt(resumen.variance):.4f} nm")
+print(f"Asimetría (skewness):     {resumen.skewness:.4f}")
+print(f"Curtosis (exceso):        {resumen.kurtosis:.4f}")
+print(f"Q1, Q3, IQR:              {q1:.2f}, {q3:.2f}, {iqr:.2f}")
+print(f"Límite superior outliers: {limite_superior:.4f} nm")
+
+## Filtrado del outlier detectado por criterio IQR
+diametros_limpios = diametros_aunp[diametros_aunp <= limite_superior]
+print(f"\nMedia sin outlier:        {diametros_limpios.mean():.4f} nm")
+
+## --- PARTE A-bis: Max, Min, Coeficiente de Variación y Media Geométrica ---
+## scipy.stats.describe (arriba) ya reporta media/varianza/skewness/kurtosis,
+## pero no expone max/min explícitos ni CV/media geométrica -- se calculan aquí.
+from scipy.stats import gmean
+
+max_val = diametros_limpios.max()
+min_val = diametros_limpios.min()
+rango_limpio = max_val - min_val
+media_limpia = diametros_limpios.mean()
+std_limpia = diametros_limpios.std(ddof=1)
+cv_limpia = std_limpia / media_limpia
+gm_limpia = gmean(diametros_limpios)
+
+print("\n--- ESTADÍSTICAS ADICIONALES (muestra sin outlier, n=9) ---")
+print(f"Máximo:                       {max_val:.4f} nm")
+print(f"Mínimo:                       {min_val:.4f} nm")
+print(f"Rango:                        {rango_limpio:.4f} nm")
+print(f"Coeficiente de Variación:     {cv_limpia:.4f}  ({cv_limpia*100:.2f}%)")
+print(f"Media Geométrica:             {gm_limpia:.4f} nm")
+```
+
+**Verificación numérica** (ejecutado sobre `diametros_limpios`, la muestra de $n=9$ tras excluir el outlier de agregación de la Sección 2.4):
+
+$$\boxed{\text{Max} = 14.20\ \text{nm}, \quad \text{Min} = 11.80\ \text{nm}, \quad \text{CV} = 6.21\%, \quad \text{Media Geométrica} = 12.8670\ \text{nm}}$$
+
+**Interpretación**: el Coeficiente de Variación ($CV = s/\bar{x}$) expresa la dispersión relativa a la escala de la media — a diferencia de $s$ (en nm), el CV es adimensional, lo que permite comparar la variabilidad de lotes de nanopartículas con diámetros promedio muy distintos (ver gráfico dedicado en la Sección 6.7). La Media Geométrica ($12.8670$ nm) es ligeramente menor que la Media Aritmética ($12.8889$ nm) — una relación que se cumple siempre para datos positivos no idénticos (desigualdad AM-GM), y que se vuelve más pronunciada cuanto mayor es la dispersión relativa de los datos (ver comparación explícita en la Sección 6.10 con un dataset de tasas de rendimiento).
+
+```python
+## --- PARTE B: Visualización Exploratoria (Boxplot + Histograma con KDE) ---
+fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+
+## Gráfico 1: Boxplot mostrando el outlier de agregación
+sns.boxplot(x=diametros_aunp, color="goldenrod", ax=axes[0])
+axes[0].set_title("Boxplot: Diámetro de AuNPs (con outlier de agregación)", fontsize=12, fontweight="bold")
+axes[0].set_xlabel("Diámetro (nm)")
+
+## Gráfico 2: Histograma + KDE de la muestra limpia
+sns.histplot(diametros_limpios, kde=True, color="darkorange", bins=6, ax=axes[1])
+axes[1].axvline(diametros_limpios.mean(), color='red', linestyle='--', label=f'Media = {diametros_limpios.mean():.2f} nm')
+axes[1].set_title("Histograma + KDE: Diámetro de AuNPs (sin outlier)", fontsize=12, fontweight="bold")
+axes[1].set_xlabel("Diámetro (nm)")
+axes[1].set_ylabel("Frecuencia / Densidad")
+axes[1].legend()
+
+plt.tight_layout()
+plt.show()
+```
+
+---
+
+## 5. Interpretación Post-Gráfico & Diccionario de Variables
+
+### 5.1 Interpretación de Resultados Computacionales
+1. **Discrepancia Media–Mediana como Señal de Asimetría**: la diferencia inicial de casi $3\ \text{nm}$ entre $\bar{x}$ y la mediana, junto con una asimetría (skewness) fuertemente positiva, es la firma estadística característica de una distribución con cola derecha causada por un valor extremo — coherente con un evento de agregación de nanopartículas durante la síntesis o el conteo en TEM.
+2. **Boxplot como Herramienta de Control de Calidad**: el diagrama de caja hace visualmente evidente el punto atípico fuera del bigote superior, validando el criterio analítico de $Q_3 + 1.5 \cdot IQR$ calculado a mano. En control de calidad de síntesis coloidal, este tipo de detección automática es rutinaria antes de reportar el diámetro característico de un lote.
+3. **Distribución Limpia Aproximadamente Simétrica**: una vez excluido el outlier, el histograma con KDE muestra una distribución unimodal y razonablemente simétrica alrededor de $12.9\ \text{nm}$, consistente con la dispersión de tamaño esperada (polidispersidad) de un proceso de nucleación y crecimiento bien controlado.
+
 ---
 
 * Dong, J., Carpinone, P. L., Pyrgiotakis, G., Demokritou, P. & Moudgil, B. M. (2020). Synthesis of Precision Gold Nanoparticles Using Turkevich Method. *KONA Powder and Particle Journal*, 37, 224-232. DOI: [10.14356/kona.2020011](https://doi.org/10.14356/kona.2020011) — caracterización estadística del diámetro y dispersión de tamaño de AuNPs sintetizadas por el método de Turkevich, el mismo protocolo del ejemplo aplicado de esta unidad.

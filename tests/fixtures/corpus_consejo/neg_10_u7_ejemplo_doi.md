@@ -162,6 +162,106 @@ ipytest.run("-vv")
 
 ## 3. Código de Verificación Simbólica (SymPy)
 
+Esta sección es la Fase 2 del Ciclo de Verificación Triple del curso (ver `GOVERNANCE.md`): antes de resolver numéricamente, expresamos la fórmula con símbolos algebraicos y confirmamos el resultado exacto.
+
+```python
+import sympy as sp
+from IPython.display import display, Math
+
+## 1. Definición de símbolos del Z-test para la media
+x_bar, mu_0, sigma, n = sp.symbols('bar_x mu_0 sigma n', positive=True)
+
+## 2. Expresión simbólica del estadístico Z
+z_expr = (x_bar - mu_0) / (sigma / sp.sqrt(n))
+display(Math(fr"Z = \frac{{\bar{{X}} - \mu_0}}{{\sigma/\sqrt{{n}}}} = {sp.latex(z_expr)}"))
+
+## 3. Sustitución de los valores del control de calidad de AgNPs (n=36, sigma=4, mu_0=50, x_bar=48.3)
+valores = {x_bar: sp.Rational('48.3'), mu_0: 50, sigma: 4, n: 36}
+z0_exacto = z_expr.subs(valores)
+z0_decimal = float(z0_exacto)
+
+display(Math(fr"z_0 = {sp.latex(z0_exacto)} = \boxed{{{z0_decimal:.4f}}}"))
+```
+
+---
+
+## 4. Solución Computacional en Python (SciPy & Statsmodels)
+
+```python
+import numpy as np
+import scipy.stats as stats
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+## Configuración visual profesional
+sns.set_theme(style="whitegrid")
+plt.rcParams["figure.figsize"] = (12, 5)
+
+## --- PARTE A: Z-test para la media (diámetro de AgNPs) ---
+x_bar, mu_0, sigma, n_val = 48.3, 50.0, 4.0, 36
+z0 = (x_bar - mu_0) / (sigma / np.sqrt(n_val))
+p_valor_z = 2 * stats.norm.cdf(-abs(z0))
+z_critico = stats.norm.ppf(1 - 0.05 / 2)
+
+print("--- Z-TEST: DIÁMETRO DE NANOPARTÍCULAS DE PLATA (AgNPs) ---")
+print(f"Estadístico z0:      {z0:.4f}")
+print(f"Valor crítico z_a/2: {z_critico:.4f}")
+print(f"P-valor (bilateral): {p_valor_z:.4f}")
+print(f"Decisión:            {'Rechazar H0' if abs(z0) > z_critico else 'No rechazar H0'}")
+
+## --- PARTE B: t-test cuando sigma es desconocida (muestra simulada de un segundo lote) ---
+np.random.seed(7)
+lote_2 = stats.norm.rvs(loc=48.8, scale=3.7, size=15)  # DLS en nm
+t_stat, p_valor_t = stats.ttest_1samp(lote_2, popmean=50.0)
+
+print("\n--- T-TEST: SEGUNDO LOTE (sigma desconocida, n=15) ---")
+print(f"Media muestral:       {lote_2.mean():.4f} nm")
+print(f"Estadístico t0:       {t_stat:.4f}")
+print(f"P-valor (bilateral):  {p_valor_t:.4f}")
+print(f"Decisión (alpha=.05): {'Rechazar H0' if p_valor_t < 0.05 else 'No rechazar H0'}")
+
+## --- PARTE C: Visualización de la Región de Rechazo (Z-test) ---
+fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+
+z_range = np.linspace(-4, 4, 500)
+pdf_z = stats.norm.pdf(z_range)
+axes[0].plot(z_range, pdf_z, color="navy", lw=2, label="N(0,1) bajo H0")
+axes[0].fill_between(z_range, pdf_z, where=(z_range <= -z_critico), color="red", alpha=0.4, label="Región de rechazo")
+axes[0].fill_between(z_range, pdf_z, where=(z_range >= z_critico), color="red", alpha=0.4)
+axes[0].axvline(z0, color="black", linestyle="--", lw=2, label=f"z0 = {z0:.2f}")
+axes[0].set_title("Z-test: Región de Rechazo (Diámetro AgNPs)", fontsize=12, fontweight="bold")
+axes[0].set_xlabel("z")
+axes[0].legend()
+
+## Gráfico D: prueba de bondad de ajuste chi-cuadrado (ejemplo de control de calidad)
+frecuencias_obs = np.array([58, 39, 19, 34])   # bandas de tamaño observadas
+frecuencias_esp = np.array([58.5, 36.0, 21.0, 33.0])  # esperadas bajo H0
+chi2_stat = np.sum((frecuencias_obs - frecuencias_esp) ** 2 / frecuencias_esp)
+p_valor_chi2 = 1 - stats.chi2.cdf(chi2_stat, df=len(frecuencias_obs) - 1)
+
+categorias = ["0-25nm", "25-50nm", "50-75nm", ">75nm"]
+x_pos = np.arange(len(categorias))
+axes[1].bar(x_pos - 0.2, frecuencias_obs, width=0.4, label="Observada", color="steelblue")
+axes[1].bar(x_pos + 0.2, frecuencias_esp, width=0.4, label="Esperada (H0)", color="salmon")
+axes[1].set_xticks(x_pos)
+axes[1].set_xticklabels(categorias)
+axes[1].set_title(f"Bondad de Ajuste $\\chi^2$ (p-valor={p_valor_chi2:.3f})", fontsize=12, fontweight="bold")
+axes[1].set_ylabel("Frecuencia")
+axes[1].legend()
+
+plt.tight_layout()
+plt.show()
+```
+
+---
+
+## 5. Interpretación Post-Gráfico & Diccionario de Variables
+
+### 5.1 Interpretación de Resultados Computacionales
+1. **Rechazo Consistente Z-test vs. p-valor**: tanto el criterio del valor crítico ($|z_0|=2.55 > 1.96$) como el p-valor ($0.0108 < 0.05$) coinciden en rechazar $H_0$, confirmando que el desplazamiento del diámetro medio observado en el lote de AgNPs no es atribuible al azar muestral bajo el proceso caracterizado.
+2. **t-test como Generalización Práctica**: cuando $\sigma$ no se conoce de antemano (caso más común en un laboratorio que evalúa un lote nuevo sin historial), el t-test de una muestra (`scipy.stats.ttest_1samp`) sustituye naturalmente al Z-test, ampliando la incertidumbre de la región crítica para compensar el desconocimiento de la varianza poblacional.
+3. **Bondad de Ajuste como Extensión Multi-categoría**: la prueba $\chi^2$ de bondad de ajuste generaliza la lógica de "comparar lo observado contra lo esperado bajo $H_0$" a distribuciones completas de tamaño de partícula agrupadas en bandas, útil cuando el control de calidad no se limita a un único estadístico resumen sino a la forma completa de la distribución de tamaños del lote.
+
 ---
 
 * *Optimization of Silver Nanoparticle-Coating Methods on Acrylic, Silicone, and Zirconia Facial Prosthetic Materials: Surface Characterization and Antimicrobial Activity Against Pseudomonas aeruginosa* (2026). *Prosthesis*, 8(7), 66. DOI: [10.3390/prosthesis8070066](https://doi.org/10.3390/prosthesis8070066) — usa pruebas $t$ pareadas para evaluar reproducibilidad y confiabilidad del recubrimiento de nanopartículas de plata (AgNPs), la misma prueba de hipótesis sobre diámetro de AgNPs desarrollada en el ejemplo aplicado de esta unidad.

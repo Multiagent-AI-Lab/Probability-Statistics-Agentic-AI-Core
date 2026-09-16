@@ -122,6 +122,145 @@ ipytest.run("-vv")
 
 ## 4. Código de Verificación Simbólica (SymPy)
 
+Esta sección es la Fase 2 del Ciclo de Verificación Triple del curso (ver `GOVERNANCE.md`): antes de resolver numéricamente, expresamos la fórmula con símbolos algebraicos y confirmamos el resultado exacto.
+
+```python
+import sympy as sp
+from IPython.display import display, Math
+
+## 1. Definición de símbolos
+x = sp.Symbol('x', real=True)
+mu = sp.Symbol('mu', real=True)
+sigma = sp.Symbol('sigma', positive=True)
+
+## 2. Expresión simbólica de la PDF Normal
+pdf_normal = (1 / (sigma * sp.sqrt(2 * sp.pi))) * sp.exp(-((x - mu)**2) / (2 * sigma**2))
+
+display(Math(fr"\text{{PDF Normal Simbólica: }} f(x) = {sp.latex(pdf_normal)}"))
+
+## 3. Integración simbólica para calcular la probabilidad del rango [7.9, 9.1]
+prob_integrada = sp.integrate(pdf_normal.subs({mu: 8.5, sigma: 0.4}), (x, 7.9, 9.1))
+prob_float = float(prob_integrada.evalf())
+
+display(Math(fr"\text{{Probabilidad Integrada }} P(7.9 \le X \le 9.1): \boxed{{{prob_float:.5f}}}"))
+```
+
+---
+
+## 5. Solución Computacional en Python (SciPy & Statsmodels)
+
+```python
+import numpy as np
+import scipy.stats as stats
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+## Configuración gráfica
+sns.set_theme(style="whitegrid")
+plt.rcParams["figure.figsize"] = (12, 5)
+
+## --- PARTE A: Evaluación de la Distribución Normal ---
+mu_val = 8.5
+sigma_val = 0.4
+
+prob_rango = stats.norm.cdf(9.1, loc=mu_val, scale=sigma_val) - stats.norm.cdf(7.9, loc=mu_val, scale=sigma_val)
+percentil_95 = stats.norm.ppf(0.95, loc=mu_val, scale=sigma_val)
+
+print("--- EVALUACIÓN EN SCI PY STATS (NORMAL) ---")
+print(f"P(7.9 <= X <= 9.1):           {prob_rango:.5f}")
+print(f"Percentil 95% (Espesor):      {percentil_95:.4f} nm")
+
+## --- PARTE B: Visualización Profesional de la Densidad ---
+fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+
+## Gráfico 1: PDF de Espesor HfO2 con región sombreada de tolerancia
+x_axis = np.linspace(7.0, 10.0, 500)
+pdf_vals = stats.norm.pdf(x_axis, loc=mu_val, scale=sigma_val)
+
+axes[0].plot(x_axis, pdf_vals, color='navy', lw=2.5, label='PDF Normal (μ=8.5, σ=0.4)')
+x_fill = np.linspace(7.9, 9.1, 200)
+axes[0].fill_between(x_fill, stats.norm.pdf(x_fill, loc=mu_val, scale=sigma_val), color='lightgreen', alpha=0.6, label='Tolerancia (86.64%)')
+axes[0].axvline(x=mu_val, color='red', linestyle='--', label='Media μ = 8.5 nm')
+axes[0].set_title("Distribución de Espesor en Litografía HfO2", fontsize=12, fontweight="bold")
+axes[0].set_xlabel("Espesor de Capa (nm)")
+axes[0].set_ylabel("Densidad de Probabilidad f(x)")
+axes[0].legend()
+
+## Gráfico 2: Comparación de Densidades Continuas (Normal vs Exponencial vs Weibull)
+exp_samples = stats.expon.rvs(scale=8.5, size=50_000, random_state=42)
+weib_samples = stats.weibull_min.rvs(c=2.5, scale=8.5, size=50_000, random_state=42)
+
+sns.kdeplot(exp_samples, color='crimson', lw=2, label='Exponencial (λ=1/8.5)', ax=axes[1])
+sns.kdeplot(weib_samples, color='darkorange', lw=2, label='Weibull (k=2.5, λ=8.5)', ax=axes[1])
+axes[1].set_title("Comparación de Modelos Continuos en Confiabilidad", fontsize=12, fontweight="bold")
+axes[1].set_xlabel("Valor de la Variable Continuada")
+axes[1].set_ylabel("Densidad de Kernel (KDE)")
+axes[1].set_xlim(0, 25)
+axes[1].legend()
+
+plt.tight_layout()
+plt.show()
+
+## --- PARTE C: Distribuciones Muestrales (prerequisito de Inferencia — Chi-cuadrada, t-Student, F) ---
+from scipy.stats import chi2, t, f
+
+## Chi-cuadrada: valor critico para intervalo de confianza de varianza (df=5, alpha=0.025 cola superior)
+k_gl = 5
+x_chi2 = chi2.ppf(0.975, df=k_gl)
+print(f"Valor crítico Chi-cuadrada (df={k_gl}, 0.975): {x_chi2:.4f}")
+
+## t-Student: valor critico para IC de la media (nu=10, alpha=0.05 dos colas)
+nu = 10
+x_t = t.ppf(0.975, df=nu)
+print(f"Valor crítico t-Student (df={nu}, 0.975): {x_t:.4f}")
+
+## F: valor critico para prueba de igualdad de varianzas (d1=5, d2=10, alpha=0.025)
+d1, d2 = 5, 10
+x_f = f.ppf(0.975, dfn=d1, dfd=d2)
+print(f"Valor crítico F (d1={d1}, d2={d2}, 0.975): {x_f:.4f}")
+
+## Visualización de las 3 distribuciones
+fig, axes = plt.subplots(1, 3, figsize=(15, 4))
+x_range = np.linspace(0.01, 20, 300)
+axes[0].plot(x_range, chi2.pdf(x_range, df=k_gl))
+axes[0].set_title(f"Chi-cuadrada (df={k_gl})")
+x_range_t = np.linspace(-4, 4, 300)
+axes[1].plot(x_range_t, t.pdf(x_range_t, df=nu))
+axes[1].set_title(f"t-Student (df={nu})")
+axes[2].plot(x_range, f.pdf(x_range, dfn=d1, dfd=d2))
+axes[2].set_title(f"F (d1={d1}, d2={d2})")
+plt.tight_layout()
+plt.show()
+
+## --- PARTE D: Distribución de Dirichlet (composición de aleaciones de nanomateriales) ---
+from scipy.stats import dirichlet
+
+## Fracciones molares esperadas de una aleación nanoparticulada Au-Ag-Pt (k=3 componentes)
+alpha_composicion = [2.0, 5.0, 3.0]
+
+## PDF evaluada en un punto del simplex (las 3 fracciones deben sumar 1)
+x_composicion = np.array([0.2, 0.5, 0.3])
+pdf_dirichlet = dirichlet.pdf(x_composicion, alpha_composicion)
+print(f"PDF Dirichlet en x={x_composicion.tolist()}: {pdf_dirichlet:.4f}")
+
+## Media esperada por componente: alpha_i / suma(alpha)
+media_dirichlet = dirichlet.mean(alpha_composicion)
+print(f"Fracción molar media esperada (Au, Ag, Pt): {media_dirichlet}")
+
+## Simulación de 5 lotes de síntesis con variabilidad en la composición
+muestras_dirichlet = dirichlet.rvs(alpha_composicion, size=5, random_state=42)
+print("Composiciones simuladas de 5 lotes de síntesis:")
+print(muestras_dirichlet)
+```
+
+---
+
+## 6. Interpretación Post-Gráfico & Diccionario de Variables
+
+### 6.1 Interpretación de Resultados Computacionales
+1. **Conformidad de Proceso Litográfico**: El $86.64\%$ del lote de obleas cumple con la especificación de tolerancia ($7.9 - 9.1\text{ nm}$). El percentil $95\%$ se ubica en $9.1579\text{ nm}$, indicando que menos del $5\%$ de la producción supera esa cota máxima de espesor.
+2. **Modelado de Fallas**: El gráfico comparativo resalta las diferencias entre distribuciones continuas: la Exponencial posee una tasa de falla constante (falta de memoria), mientras que la Weibull con $k=2.5$ caracteriza el envejecimiento por fatiga de materiales nanotecnológicos.
+
 ---
 
 * Sharafi, S. M., Flores, M., Appuhami, H. & Selim, F. A. (2026). Control of Microstructure, Trap Levels, and Trap Distribution in HfO2 Films Grown by Atomic Layer Deposition. *Nanomaterials*, 16(8), 451. DOI: [10.3390/nano16080451](https://doi.org/10.3390/nano16080451) — control de espesor y microestructura de películas de HfO₂ depositadas por ALD, el material y proceso exactos del ejemplo aplicado de esta unidad (Distribución Normal del espesor dieléctrico).

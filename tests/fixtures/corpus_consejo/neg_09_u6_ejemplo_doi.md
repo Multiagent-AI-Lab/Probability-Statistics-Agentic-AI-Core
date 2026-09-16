@@ -198,6 +198,103 @@ ipytest.run("-vv")
 
 ## 3. Código de Verificación Simbólica (SymPy)
 
+Esta sección es la Fase 2 del Ciclo de Verificación Triple del curso (ver `GOVERNANCE.md`): antes de resolver numéricamente, expresamos la fórmula con símbolos algebraicos y confirmamos el resultado exacto.
+
+```python
+import sympy as sp
+from IPython.display import display, Math
+
+## 1. Definición de variables simbólicas
+u = sp.Symbol('U', positive=True)
+lam = sp.Symbol('lambda', positive=True)
+k = sp.Symbol('k', positive=True)
+t = sp.Symbol('t', positive=True)
+
+## 2. Ecuación de la forma simplificada de la Transformada Inversa: U = exp(-(t/lambda)^k).
+## Equivalente en distribución a partir de F(t) = 1 - exp(-(t/lambda)^k) = U, porque
+## U ~ Uniforme(0,1) implica (1-U) ~ Uniforme(0,1) -- pero esa equivalencia es solo
+## en distribución, no intercambiable para un valor puntual fijo de U. Se resuelve
+## esta forma para que el resultado numérico coincida con el `\boxed{}` de §2.3, que
+## evalúa T = lambda*(-ln U)^(1/k) directamente.
+ecuacion = sp.Eq(u, sp.exp(-(t/lam)**k))
+
+## 3. Despeje simbólico de t (Transformada Inversa)
+solucion_t = sp.solve(ecuacion, t)[0]
+
+display(Math(fr"\text{{Expresión Simbólica de la Transformada Inversa Weibull: }} T = {sp.latex(solucion_t)}"))
+
+## 4. Sustitución de valores numéricos de la nano-difusión (lambda=12.0, k=1.5, U=0.35)
+valores = {lam: 12.0, k: 1.5, u: 0.35}
+t_numerico = float(solucion_t.subs(valores))
+
+display(Math(fr"\text{{Tiempo de Tránsito Simulado para }} U=0.35: \boxed{{{t_numerico:.4f} \text{{ s}}}}"))
+```
+
+---
+
+## 4. Solución Computacional en Python (SciPy & Statsmodels)
+
+```python
+import math
+
+import numpy as np
+import scipy.stats as stats
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+## Configuración de estilo gráfico profesional
+sns.set_theme(style="whitegrid")
+plt.rcParams["figure.figsize"] = (12, 5)
+
+## --- PARTE A: Generador por Transformada Inversa vs SciPy ---
+np.random.seed(42)
+N_muestras = 100_000
+lam_val = 12.0
+k_val = 1.5
+
+## Generación por Método de Transformada Inversa
+u_samples = np.random.uniform(0, 1, N_muestras)
+t_inversa = lam_val * (-np.log(u_samples)) ** (1.0 / k_val)
+
+## Generación nativa con SciPy (scipy.stats.weibull_min)
+t_scipy = stats.weibull_min.rvs(c=k_val, scale=lam_val, size=N_muestras)
+
+print("--- EVALUACIÓN ESTADÍSTICA DE LA SIMULACIÓN MONTE CARLO ---")
+print(f"Media Transformada Inversa: {np.mean(t_inversa):.4f} s | Teórica: {lam_val * math.gamma(1 + 1/k_val):.4f} s")
+print(f"Media SciPy RVS:            {np.mean(t_scipy):.4f} s")
+print(f"Desviación Estándar Inversa:{np.std(t_inversa):.4f} s")
+
+## --- PARTE B: Visualización Profesional de la Simulación ---
+fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+
+## Gráfico 1: Histogramas comparativos de densidad empirical vs PDF teórica
+sns.histplot(t_inversa, bins=60, stat="density", color="skyblue", label="Transformada Inversa (Monte Carlo)", ax=axes[0])
+x_grid = np.linspace(0, 45, 500)
+pdf_teorica = stats.weibull_min.pdf(x_grid, c=k_val, scale=lam_val)
+axes[0].plot(x_grid, pdf_teorica, 'r-', lw=2.5, label="PDF Teórica Weibull(k=1.5, λ=12)")
+axes[0].set_title("Distribución Muestral de Tiempos de Difusión Nanotecnológica", fontsize=12, fontweight="bold")
+axes[0].set_xlabel("Tiempo de Tránsito T (segundos)")
+axes[0].set_ylabel("Densidad de Probabilidad")
+axes[0].legend()
+
+## Gráfico 2: Q-Q Plot de validación de calidad de la simulación
+stats.probplot(t_inversa, dist=stats.weibull_min, sparams=(k_val, 0, lam_val), plot=axes[1])
+axes[1].set_title("Q-Q Plot de Validación Estocástica (Weibull)", fontsize=12, fontweight="bold")
+axes[1].set_xlabel("Cuantiles Teóricos")
+axes[1].set_ylabel("Cuantiles Muestrales Simulados")
+
+plt.tight_layout()
+plt.show()
+```
+
+---
+
+## 5. Interpretación Post-Gráfico & Diccionario de Variables
+
+### 5.1 Interpretación de Resultados Computacionales
+1. **Fidelidad del Generador por Transformada Inversa**: El histograma de frecuencias simuladas con $100,000$ réplicas se superpone perfectamente sobre la curva teórica de la densidad de Weibull $\text{PDF}(t)$.
+2. **Validación Mediante Q-Q Plot**: La alineación lineal estricta sobre la diagonal de $45^\circ$ en el gráfico Q-Q demuestra que el generador estocástico no introduce sesgos en las colas de la distribución, garantizando la validez para estimar tiempos extremos de penetración tumoral.
+
 ---
 
 * Shabbir, F., Mujeeb, A. A., Jawed, S. F. et al. (2024). Simulation of transvascular transport of nanoparticles in tumor microenvironments for drug delivery applications. *Scientific Reports*, 14, 1764. DOI: [10.1038/s41598-024-52292-0](https://doi.org/10.1038/s41598-024-52292-0) — simulación computacional del transporte de nanopartículas a través de la microvasculatura tumoral, el mismo escenario de difusión estocástica modelado en el ejemplo aplicado de esta unidad.

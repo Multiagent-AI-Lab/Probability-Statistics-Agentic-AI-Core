@@ -162,3 +162,52 @@ print(f"E[Y|X=1] = {E_Y_given_X1:.4f}")
 ```
 
 ### 3.4 Ley de la Esperanza Total: Ejemplo Continuo Completo
+
+El ejemplo anterior ($E[Y|X=x]=2x+1$) muestra la mecánica algebraica de la Ley de la Esperanza Total, pero con una relación condicional ya lineal en $x$ dada de antemano. El siguiente ejemplo desarrolla el caso continuo desde una PDF real, con $X$ representando un parámetro de proceso: la temperatura de recocido de puntos cuánticos de grafeno (GQD) para celdas solares, $X\sim U(200,300)\ ^\circ\text{C}$, con eficiencia condicional $E[Y|X=x]=20+0.1x$ ($\%$).
+
+Por la Ley de la Esperanza Total continua:
+$$E[Y] = \int_{-\infty}^{\infty} E[Y|X=x]\,f_X(x)\,dx = \int_{200}^{300} (20+0.1x)\cdot\frac{1}{100}\,dx$$
+
+$$E[Y] = \frac{1}{100}\left[20x + 0.05x^2\right]_{200}^{300} = \frac{1}{100}\big[(6000+4500)-(4000+2000)\big] = \frac{4500}{100} = \boxed{45.0\%}$$
+
+```python
+from scipy import integrate
+
+a, b = 200, 300  # soporte de X ~ U(200, 300)
+alpha, beta = 20, 0.1  # E[Y|X=x] = alpha + beta*x
+
+
+def esperanza_condicional(x):
+    return alpha + beta * x
+
+
+def pdf_uniforme(x):
+    return 1 / (b - a) if a <= x <= b else 0
+
+
+def integrando_let(x):
+    return esperanza_condicional(x) * pdf_uniforme(x)
+
+
+E_Y_quad, error = integrate.quad(integrando_let, a, b)
+print(f"E[Y] via LET (quad): {E_Y_quad:.4f}%  (error estimado: {error:.2e})")
+```
+
+**Verificación simbólica (SymPy)**: la integral anterior se resolvió numéricamente vía `quad`; a continuación se repite el mismo cálculo mediante integración simbólica exacta, sustituyendo $E[Y|X=x]=20+0.1x$ y la densidad uniforme $f_X(x)=1/100$ ya establecidas en el texto:
+
+```python
+import sympy as sp
+
+x = sp.symbols('x', positive=True)
+a_sym, b_sym = 200, 300
+alpha_sym, beta_sym = 20, sp.Rational(1, 10)
+
+e_y_dado_x = alpha_sym + beta_sym * x  # E[Y|X=x] = 20 + 0.1x, ya establecido arriba
+f_x_uniforme = sp.Rational(1, b_sym - a_sym)  # densidad uniforme f_X(x) = 1/(300-200)
+
+E_Y_sym = sp.integrate(e_y_dado_x * f_x_uniforme, (x, a_sym, b_sym))
+E_Y_sym = sp.simplify(E_Y_sym)
+print(f"E[Y] via integracion simbolica: {E_Y_sym} = {float(E_Y_sym)}%")  # debe dar 45.0
+```
+
+Este resultado es la base para el ejemplo mixto (discreto-continuo) de la Sección 3.5, que extiende la misma idea —promediar una esperanza condicional sobre la distribución de la variable condicionante— a un caso donde además se necesita descomponer la varianza total.

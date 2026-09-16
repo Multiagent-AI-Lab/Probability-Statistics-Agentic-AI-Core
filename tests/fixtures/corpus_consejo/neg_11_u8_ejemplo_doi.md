@@ -138,6 +138,93 @@ display(Math(fr"\text{{Valor Simbólico Calculado }} t_{{calc}}: \boxed{{{t_val:
 
 ## 5. Solución Computacional en Python (SciPy & Statsmodels)
 
+```python
+import numpy as np
+import scipy.stats as stats
+import matplotlib.pyplot as plt
+import seaborn as sns
+import pandas as pd
+
+## Configuración visual
+sns.set_theme(style="whitegrid")
+plt.rcParams["figure.figsize"] = (12, 5)
+
+## --- PARTE A: Generación de Datos Experimentales ---
+np.random.seed(101)
+lote_A = stats.norm.rvs(loc=24.5, scale=2.1, size=15)
+lote_B = stats.norm.rvs(loc=21.2, scale=1.8, size=15)
+
+## --- PARTE B: Verificación de Supuestos Estadísticos ---
+p_norm_a = stats.shapiro(lote_A).pvalue
+p_norm_b = stats.shapiro(lote_B).pvalue
+p_homo = stats.levene(lote_A, lote_B).pvalue
+
+print("--- VERIFICACIÓN DE SUPUESTOS ESTADÍSTICOS ---")
+print(f"Normalidad Shapiro-Wilk Lote A: p-valor = {p_norm_a:.4f} (OK si > 0.05)")
+print(f"Normalidad Shapiro-Wilk Lote B: p-valor = {p_norm_b:.4f} (OK si > 0.05)")
+print(f"Homocedasticidad Levene:        p-valor = {p_homo:.4f} (OK si > 0.05)")
+
+## --- PARTE C: Prueba t de Student de Dos Muestras ---
+t_res = stats.ttest_ind(lote_A, lote_B, equal_var=True)
+print("\n--- RESULTADO DE LA PRUEBA T DE STUDENT ---")
+print(f"Estadístico t_calc: {t_res.statistic:.4f}")
+print(f"p-valor de dos colas: {t_res.pvalue:.6f}")
+
+## --- PARTE D: Visualización Profesional ---
+fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+
+## Gráfico 1: Boxplot comparativo de diámetros
+df_exp = pd.DataFrame({
+    'Diámetro (nm)': np.concatenate([lote_A, lote_B]),
+    'Método Síntesis': ['Sol-Gel (A)']*15 + ['Microondas (B)']*15
+})
+
+sns.boxplot(data=df_exp, x='Método Síntesis', y='Diámetro (nm)', palette='Set2', ax=axes[0])
+sns.stripplot(data=df_exp, x='Método Síntesis', y='Diámetro (nm)', color='black', alpha=0.6, jitter=0.2, ax=axes[0])
+axes[0].set_title("Comparación Muestral de Diámetros TiO2 por Método", fontsize=12, fontweight="bold")
+
+## Gráfico 2: Simulación de Potencia de la Prueba mediante Monte Carlo
+## Simulación VECTORIZADA: en vez de un doble bucle Python con N_sim llamadas
+## a stats.ttest_ind por punto de efecto (decenas de miles de llamadas), se
+## genera un tensor (N_efectos, N_sim, n) de una sola vez y se aplica el
+## t-test sobre el eje de las muestras. Mismo resultado estadístico, ~1000x
+## más rápido.
+efectos = np.linspace(0, 5, 50)
+N_sim = 2000
+n_muestra = 15
+
+## Tensores de muestras: forma (N_efectos, N_sim, n_muestra)
+muestras_a = np.random.normal(
+    loc=24.5 + efectos[:, None, None], scale=2.1, size=(len(efectos), N_sim, n_muestra)
+)
+muestras_b = np.random.normal(
+    loc=24.5, scale=1.8, size=(len(efectos), N_sim, n_muestra)
+)
+
+## t-test independiente sobre el eje de la muestra: devuelve p-valores de
+## forma (N_efectos, N_sim). La potencia es la fracción de p < 0.05.
+_, pvals = stats.ttest_ind(muestras_a, muestras_b, axis=2)
+potencias = (pvals < 0.05).mean(axis=1)
+
+axes[1].plot(efectos, potencias, color='purple', lw=2.5, label='Curva de Potencia Simulada (1-β)')
+axes[1].axhline(y=0.80, color='red', linestyle='--', label='Potencia Objetivo (80%)')
+axes[1].set_title("Curva de Potencia Operativa de la Prueba (Monte Carlo)", fontsize=12, fontweight="bold")
+axes[1].set_xlabel("Diferencia de Medias Real (nm)")
+axes[1].set_ylabel("Potencia (1 - β)")
+axes[1].legend()
+
+plt.tight_layout()
+plt.show()
+```
+
+---
+
+## 6. Interpretación Post-Gráfico & Diccionario de Variables
+
+### 6.1 Interpretación de Resultados Computacionales
+1. **Validación de Supuestos**: Las pruebas de Shapiro-Wilk en ambos lotes confirmaron la normalidad ($p > 0.05$) y la prueba de Levene confirmó la homogeneidad de varianzas ($p > 0.05$), justificando el uso de la prueba $t$ de Student agrupada.
+2. **Conclusión Técnica Nanotecnológica**: Dado que $p < 0.0001 < 0.05$, rechazamos $H_0$. El método de síntesis por microondas produce nanopartículas significativamente más pequeñas y de mayor superficie específica que el método sol-gel convencional.
+
 ---
 
 * Ahmad, M. M., Mushtaq, S., Al Qahtani, H. S., Sedky, A. & Alam, M. W. (2021). Investigation of TiO2 Nanoparticles Synthesized by Sol-Gel Method for Effectual Photodegradation, Oxidation and Reduction Reaction. *Crystals*, 11(12), 1456. DOI: [10.3390/cryst11121456](https://doi.org/10.3390/cryst11121456) — comparación de métodos de síntesis y caracterización del tamaño de cristalito de nanopartículas de TiO₂, el material y la comparación de dos rutas de síntesis (Sol-Gel vs. Microondas) del ejemplo del proyecto integrador de esta unidad.
