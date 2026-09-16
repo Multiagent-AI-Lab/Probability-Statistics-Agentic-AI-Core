@@ -46,6 +46,16 @@ docs/superpowers/*
 !docs/superpowers/audits/
 !docs/superpowers/audits/**
 
+# Excepcion dentro de la excepcion: estas 4 auditorias de proceso interno
+# (ingenieria del propio desarrollo, ninguna citada desde GOVERNANCE.md ni
+# otro documento publico) se conservan localmente pero no se publican --
+# a diferencia de los reportes de A3/N-07/N-05-06-07 de arriba, que SI
+# estan citados como evidencia publica y por eso siguen versionados.
+docs/superpowers/audits/2026-09-04-auditoria-rubric-15-categorias.md
+docs/superpowers/audits/2026-09-11-auditoria-post-cierre-rubric-15-categorias.md
+docs/superpowers/audits/2026-09-13-auditoria-post-n01-n02-rubric-15-categorias.md
+docs/superpowers/audits/2026-09-14-auditoria-post-camino-a-100.md
+
 # Worktrees locales de ejecución de planes (subagent-driven-development).
 .worktrees/
 
