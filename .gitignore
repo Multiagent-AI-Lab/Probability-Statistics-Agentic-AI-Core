@@ -108,3 +108,8 @@ lecciones/.backup/
 # Archivos de solucion generados por las celdas %%writefile de autoevaluacion
 # al ejecutar los notebooks localmente (no son fuente, se regeneran).
 notebooks/solucion_ejercicio*.py
+
+# Modelos entrenados generados por modelo.save(...) en celdas de ejemplo
+# (p.ej. UNIDAD_8 §4, red neuronal probabilistica TFP) -- artefacto de
+# ejecucion local, regenerable corriendo la celda, no fuente versionable.
+notebooks/*.keras
