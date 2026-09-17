@@ -223,6 +223,45 @@ Esta sección declara el alcance real, no aspiracional, a la fecha de esta redac
   producción completas, y no debe citarse como la precisión del Consejo en
   producción sin esa salvedad.
 
+  **A3-U (medición contra unidades completas, complementaria a A3, 2026-09-17):**
+  para responder directamente la salvedad de D6 de arriba, se añadió un segundo
+  experimento independiente que no reemplaza a A3
+  (`docs/superpowers/specs/2026-09-16-a3-unidades-completas-design.md`,
+  `docs/superpowers/audits/2026-09-17-precision-consejo-unidades.md`): 8 unidades
+  completas de producción sin modificar (negativos) más 8 copias con exactamente un
+  `\boxed{}` alterado (`boxed_desincronizado`, el único tipo de fallo del catálogo
+  de A3 con mecanismo real confirmado en `_contraste_boxed.py`). Resultado:
+  precisión 1.0, recall 0.375, κ de Cohen 0.375 (VP=3, FN=5, FP=0, VN=8). El
+  desarrollo de A3-U destapó además un bug de infraestructura no relacionado con el
+  Consejo (crash nativo de `scipy`/OpenBLAS vía `seaborn.histplot(kde=True)`, que
+  bloqueaba `@Engineer` en unidades reales y afectaba 14-15 tests preexistentes del
+  repo); se resolvió fijando `scipy==1.14.1` en el entorno `ia_stats`, sin tocar
+  código del Consejo.
+
+  A3 mide detección fina por 17 tipos de fallo contra fragmentos aislados; A3-U
+  mide específicamente detección de `boxed_desincronizado` contra unidades
+  completas de producción con exactamente 1 valor alterado. Difieren en dos ejes:
+  A3 fuerza al Consejo a evaluar fragmentos que, por construcción, no siempre
+  pueden cumplir un criterio de sección completa (gráfico, `\boxed{}`); y A3
+  mezcla tipos de fallo que el Consejo detecta con tipos que no detecta por diseño
+  (falsedad semántica sin LLM, ver H-03 más abajo), mientras A3-U aísla el tipo que
+  sí detecta. A3-U no es comparable 1:1 con la cifra global de A3 — es una
+  medición más estrecha, pensada para aislar si el artefacto de fragmentación (y
+  no una limitación real de detección) es lo que deprime la cifra de A3: los 0
+  falsos positivos (VN=8/8) confirman que el Consejo aprueba limpio las unidades
+  completas reales sin el artefacto de recorte de A3. El resultado, sin embargo,
+  matiza también el optimismo de esa hipótesis: recall 0.375 (3 de 8 alteraciones
+  detectadas) muestra que ni siquiera dentro de una unidad completa el mecanismo de
+  contraste `\boxed{}`↔código detecta todo `boxed_desincronizado` real — depende de
+  que el rótulo de la cantidad coincida con lo que el código imprime literalmente
+  (`_el_codigo_apunta_al_valor`), condición que no todas las unidades cumplen para
+  cualquier `\boxed{}` arbitrario. A3-U demuestra precisión perfecta sin falsos
+  positivos en unidades completas, no que el Consejo "detecte todo" — la cifra
+  correcta a citar es esa, no una lectura más fuerte. Esto cierra D6 por completo:
+  ya no hace falta la salvedad de "verificar si hay un reporte más reciente antes
+  de citar la cifra de A3 como la precisión del Consejo en producción" — A3-U es
+  esa cifra de producción, con sus propios límites ya documentados aquí mismo.
+
 **Lo que NO comprueba — límites conocidos, con la causa exacta:**
 
 * **Interpretación semántica del contenido (H-03).** El Consejo detecta que un número
