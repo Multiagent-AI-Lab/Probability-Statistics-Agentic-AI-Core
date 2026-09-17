@@ -533,3 +533,45 @@ def test_salida_de_la_unidad_tambien_queda_acotada_i4():
         f"_contrastar_contra_la_unidad -- debería quedar acotada a "
         f"{_MAX_CHARS_SALIDA_SECCION * 10} (10x la cota por sección)"
     )
+
+
+# --------------------------------------------------------------------------
+# Task 6b (correctiva): figuras de matplotlib sin cerrar entre secciones
+# crasheaban el subproceso (access violation en Windows) al acumularse en
+# una unidad completa con muchos gráficos (~16 figuras). Ver
+# `.superpowers/sdd/2026-09-17-a3-unidades-completas-plan/task-6b-brief.md`.
+# --------------------------------------------------------------------------
+
+
+def test_check_code_implementation_no_crashea_con_muchas_figuras():
+    """Una unidad con muchas figuras de matplotlib en secuencia (patrón real:
+    ~16 figuras en una unidad completa del curso) no debe crashear el
+    subproceso de ejecución por acumulación de figuras sin cerrar."""
+    bloques = []
+    for i in range(20):
+        bloques.append(f"""
+### Sección {i}
+
+```python
+import matplotlib.pyplot as plt
+import seaborn as sns
+import numpy as np
+fig, ax = plt.subplots()
+sns.boxplot(x=np.random.rand(10), ax=ax)
+plt.show()
+```
+""")
+    texto = "\n".join(bloques) + "\n\n$$\\boxed{42}$$\n"
+
+    agente = EngineerAgent()
+    resultado = agente.check_code_implementation(texto)
+
+    # No debe reportar un error_de_ejecucion con mensaje vacío (el síntoma
+    # del crash de acceso inválido por acumulación de figuras)
+    errores_vacios = [
+        e for e in resultado.get("errores_de_ejecucion", [])
+        if e.get("error", "") == ""
+    ]
+    assert not errores_vacios, (
+        f"el subproceso crasheo sin mensaje de error: {resultado.get('errores_de_ejecucion')}"
+    )

@@ -383,6 +383,7 @@ class EngineerAgent:
                 continue
             partes.append(f'print("{_MARCADOR_SECCION}{indice}")')
             partes.extend(ejecutables)
+            partes.append('matplotlib.pyplot.close("all")')
 
         salida, error = self._ejecutar("\n".join(partes))
 
