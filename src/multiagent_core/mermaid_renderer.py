@@ -2,11 +2,13 @@
 Mermaid renderer tool for converting mermaid blocks to images or HTML embeddings.
 """
 
+import json
 import logging
 import os
 import re
 import shutil
 import subprocess
+import tempfile
 
 logger = logging.getLogger(__name__)
 
@@ -62,6 +64,7 @@ class MermaidRenderer:
             )
             return None
 
+        tmp_puppeteer_config = None
         try:
             with open(tmp_mmd, "w", encoding="utf-8") as f:
                 f.write(mermaid_code)
@@ -75,6 +78,23 @@ class MermaidRenderer:
                 "-o",
                 output_path,
             ]
+
+            # Runners de GitHub Actions (ubuntu-latest 24.04+) restringen
+            # namespaces de usuario sin privilegios vía AppArmor, y el
+            # sandbox de Chromium que Puppeteer lanza internamente falla con
+            # "No usable sandbox!" (ver
+            # https://github.com/mermaid-js/mermaid-cli/blob/master/docs/linux-sandbox-issue.md).
+            # --no-sandbox reduce el aislamiento del proceso Chromium, así
+            # que solo se activa cuando la variable de entorno CI está
+            # presente (GitHub Actions la define automáticamente) -- en
+            # cualquier máquina de desarrollo o del curso, el comando queda
+            # exactamente igual que antes de este fix.
+            if os.environ.get("CI"):
+                fd, tmp_puppeteer_config = tempfile.mkstemp(suffix=".json")
+                with os.fdopen(fd, "w", encoding="utf-8") as f:
+                    json.dump({"args": ["--no-sandbox", "--disable-setuid-sandbox"]}, f)
+                cmd.extend(["-p", tmp_puppeteer_config])
+
             # Timeout ampliado de 30s a 120s: la primera invocación de
             # "npx -y @mermaid-js/mermaid-cli" puede tardar más de 60s en
             # resolver el paquete (medido en la verificación de N-06).
@@ -95,5 +115,7 @@ class MermaidRenderer:
         finally:
             if os.path.exists(tmp_mmd):
                 os.remove(tmp_mmd)
+            if tmp_puppeteer_config and os.path.exists(tmp_puppeteer_config):
+                os.remove(tmp_puppeteer_config)
 
         return None

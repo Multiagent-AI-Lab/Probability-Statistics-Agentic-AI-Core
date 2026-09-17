@@ -4,6 +4,7 @@ vía subprocess. subprocess.run se mockea: no depende de tener npx/mmdc
 instalado para correr en CI.
 """
 
+import json
 import os
 import shutil as _shutil_real  # alias para no chocar con el shutil mockeado abajo
 import subprocess
@@ -110,6 +111,79 @@ def test_npx_no_disponible_retorna_none_sin_excepcion(mock_which, tmp_path):
     resultado = renderer.render_to_svg("graph TD\nA --> B", "diagrama.svg")
 
     assert resultado is None
+
+
+@patch("src.multiagent_core.mermaid_renderer.shutil.which")
+@patch("src.multiagent_core.mermaid_renderer.subprocess.run")
+@patch("src.multiagent_core.mermaid_renderer.os.path.exists")
+def test_en_ci_pasa_flag_p_con_no_sandbox(
+    mock_exists, mock_run, mock_which, tmp_path, monkeypatch
+):
+    """GitHub Actions (ubuntu-latest 24.04+) restringe namespaces de usuario
+    sin privilegios vía AppArmor, y el sandbox de Chromium que Puppeteer
+    lanza internamente falla con "No usable sandbox!" -- ver
+    docs/linux-sandbox-issue.md de mermaid-cli. Con CI=true, render_to_svg
+    debe pasar -p <archivo> con --no-sandbox en el comando a mmdc. El
+    contenido del archivo se lee dentro del propio mock de subprocess.run,
+    porque render_to_svg lo borra en su `finally` antes de retornar."""
+    monkeypatch.setenv("CI", "true")
+    mock_which.return_value = "C:\\fake\\npx.CMD"
+    mock_exists.return_value = True
+    config_leida = {}
+
+    def _capturar_config(cmd, **kwargs):
+        ruta_config = cmd[cmd.index("-p") + 1]
+        with open(ruta_config, encoding="utf-8") as f:
+            config_leida.update(json.load(f))
+        return MagicMock(returncode=0, stderr="")
+
+    mock_run.side_effect = _capturar_config
+
+    renderer = MermaidRenderer(output_dir=str(tmp_path))
+    renderer.render_to_svg("graph TD\nA --> B", "diagrama.svg")
+
+    cmd_usado = mock_run.call_args[0][0]
+    assert "-p" in cmd_usado, "falta el flag -p con el archivo de config de Puppeteer"
+    assert "--no-sandbox" in config_leida["args"]
+
+
+@patch("src.multiagent_core.mermaid_renderer.shutil.which")
+@patch("src.multiagent_core.mermaid_renderer.subprocess.run")
+def test_sin_ci_no_pasa_flag_p(mock_run, mock_which, tmp_path, monkeypatch):
+    """Fuera de CI (máquina de desarrollo o del curso), el comando no debe
+    incluir -p ni reducir el sandbox de Chromium -- CI solo se activa cuando
+    la variable de entorno está presente."""
+    monkeypatch.delenv("CI", raising=False)
+    mock_which.return_value = "C:\\fake\\npx.CMD"
+    mock_run.return_value = MagicMock(returncode=1, stderr="")
+
+    renderer = MermaidRenderer(output_dir=str(tmp_path))
+    renderer.render_to_svg("graph TD\nA --> B", "diagrama.svg")
+
+    cmd_usado = mock_run.call_args[0][0]
+    assert "-p" not in cmd_usado
+
+
+@patch("src.multiagent_core.mermaid_renderer.shutil.which")
+@patch("src.multiagent_core.mermaid_renderer.subprocess.run")
+def test_en_ci_archivo_de_config_se_elimina_incluso_si_falla(
+    mock_run, mock_which, tmp_path, monkeypatch
+):
+    """El archivo temporal de configuración de Puppeteer no debe quedar
+    huérfano en disco si subprocess.run lanza una excepción (timeout u
+    otro error de ejecución) mientras CI=true."""
+    monkeypatch.setenv("CI", "true")
+    mock_which.return_value = "C:\\fake\\npx.CMD"
+    mock_run.side_effect = subprocess.TimeoutExpired(cmd="npx", timeout=120)
+
+    renderer = MermaidRenderer(output_dir=str(tmp_path))
+    renderer.render_to_svg("graph TD\nA --> B", "diagrama.svg")
+
+    cmd_usado = mock_run.call_args[0][0]
+    ruta_config = cmd_usado[cmd_usado.index("-p") + 1]
+    assert not os.path.exists(
+        ruta_config
+    ), "el archivo de config de Puppeteer quedó huérfano tras la excepción"
 
 
 @pytest.mark.skipif(
