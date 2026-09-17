@@ -1,0 +1,146 @@
+[
+  {
+    "archivo": "neg_u1_estadistica_descriptiva.md",
+    "tiene_fallo": false,
+    "tipo_fallo": null,
+    "origen": "real",
+    "fuente": "UNIDAD_1_ESTADISTICA_DESCRIPTIVA.md completa, sin modificar",
+    "hallazgo_origen": null,
+    "unidad_origen": "UNIDAD_1_ESTADISTICA_DESCRIPTIVA.md"
+  },
+  {
+    "archivo": "neg_u2_probabilidad_combinatoria.md",
+    "tiene_fallo": false,
+    "tipo_fallo": null,
+    "origen": "real",
+    "fuente": "UNIDAD_2_PROBABILIDAD_COMBINATORIA.md completa, sin modificar",
+    "hallazgo_origen": null,
+    "unidad_origen": "UNIDAD_2_PROBABILIDAD_COMBINATORIA.md"
+  },
+  {
+    "archivo": "neg_u3_variables_discretas.md",
+    "tiene_fallo": false,
+    "tipo_fallo": null,
+    "origen": "real",
+    "fuente": "UNIDAD_3_VARIABLES_ALEATORIAS_DISCRETAS.md completa, sin modificar",
+    "hallazgo_origen": null,
+    "unidad_origen": "UNIDAD_3_VARIABLES_ALEATORIAS_DISCRETAS.md"
+  },
+  {
+    "archivo": "neg_u4_distribuciones_conjuntas.md",
+    "tiene_fallo": false,
+    "tipo_fallo": null,
+    "origen": "real",
+    "fuente": "UNIDAD_4_DISTRIBUCIONES_CONJUNTAS.md completa, sin modificar",
+    "hallazgo_origen": null,
+    "unidad_origen": "UNIDAD_4_DISTRIBUCIONES_CONJUNTAS.md"
+  },
+  {
+    "archivo": "neg_u5_variables_continuas.md",
+    "tiene_fallo": false,
+    "tipo_fallo": null,
+    "origen": "real",
+    "fuente": "UNIDAD_5_VARIABLES_ALEATORIAS_CONTINUAS.md completa, sin modificar",
+    "hallazgo_origen": null,
+    "unidad_origen": "UNIDAD_5_VARIABLES_ALEATORIAS_CONTINUAS.md"
+  },
+  {
+    "archivo": "neg_u6_modelado_simulacion.md",
+    "tiene_fallo": false,
+    "tipo_fallo": null,
+    "origen": "real",
+    "fuente": "UNIDAD_6_MODELADO_SIMULACION.md completa, sin modificar",
+    "hallazgo_origen": null,
+    "unidad_origen": "UNIDAD_6_MODELADO_SIMULACION.md"
+  },
+  {
+    "archivo": "neg_u7_inferencia_estimacion.md",
+    "tiene_fallo": false,
+    "tipo_fallo": null,
+    "origen": "real",
+    "fuente": "UNIDAD_7_INFERENCIA_ESTIMACION.md completa, sin modificar",
+    "hallazgo_origen": null,
+    "unidad_origen": "UNIDAD_7_INFERENCIA_ESTIMACION.md"
+  },
+  {
+    "archivo": "neg_u8_proyecto_integrador.md",
+    "tiene_fallo": false,
+    "tipo_fallo": null,
+    "origen": "real",
+    "fuente": "UNIDAD_8_PROYECTO_INTEGRADOR.md completa, sin modificar",
+    "hallazgo_origen": null,
+    "unidad_origen": "UNIDAD_8_PROYECTO_INTEGRADOR.md"
+  },
+  {
+    "archivo": "pos_u1_estadistica_descriptiva.md",
+    "tiene_fallo": true,
+    "tipo_fallo": "boxed_desincronizado",
+    "origen": "sintetico",
+    "fuente": "UNIDAD_1_ESTADISTICA_DESCRIPTIVA.md con el boxed de la media (linea 444, seccion 6.4) alterado de 12.8889 a 13.5000",
+    "hallazgo_origen": "A3-U",
+    "unidad_origen": "UNIDAD_1_ESTADISTICA_DESCRIPTIVA.md"
+  },
+  {
+    "archivo": "pos_u2_probabilidad_combinatoria.md",
+    "tiene_fallo": true,
+    "tipo_fallo": "boxed_desincronizado",
+    "origen": "sintetico",
+    "fuente": "UNIDAD_2_PROBABILIDAD_COMBINATORIA.md con el boxed de P(A) (linea 148) alterado de 0.1846 a 0.2500",
+    "hallazgo_origen": "A3-U",
+    "unidad_origen": "UNIDAD_2_PROBABILIDAD_COMBINATORIA.md"
+  },
+  {
+    "archivo": "pos_u3_variables_discretas.md",
+    "tiene_fallo": true,
+    "tipo_fallo": "boxed_desincronizado",
+    "origen": "sintetico",
+    "fuente": "UNIDAD_3_VARIABLES_ALEATORIAS_DISCRETAS.md con el boxed de E[X] (linea 447) alterado de 1.0 a 1.5",
+    "hallazgo_origen": "A3-U",
+    "unidad_origen": "UNIDAD_3_VARIABLES_ALEATORIAS_DISCRETAS.md"
+  },
+  {
+    "archivo": "pos_u4_distribuciones_conjuntas.md",
+    "tiene_fallo": true,
+    "tipo_fallo": "boxed_desincronizado",
+    "origen": "sintetico",
+    "fuente": "UNIDAD_4_DISTRIBUCIONES_CONJUNTAS.md con el boxed de E[Y] (linea 260) alterado de 45.0% a 50.0%",
+    "hallazgo_origen": "A3-U",
+    "unidad_origen": "UNIDAD_4_DISTRIBUCIONES_CONJUNTAS.md"
+  },
+  {
+    "archivo": "pos_u5_variables_continuas.md",
+    "tiene_fallo": true,
+    "tipo_fallo": "boxed_desincronizado",
+    "origen": "sintetico",
+    "fuente": "UNIDAD_5_VARIABLES_ALEATORIAS_CONTINUAS.md con el boxed de P(7.9<=X<=9.1) (linea 710, seccion 3.3) alterado de 0.86638 (86.64%) a 0.90000 (90.00%)",
+    "hallazgo_origen": "A3-U",
+    "unidad_origen": "UNIDAD_5_VARIABLES_ALEATORIAS_CONTINUAS.md"
+  },
+  {
+    "archivo": "pos_u6_modelado_simulacion.md",
+    "tiene_fallo": true,
+    "tipo_fallo": "boxed_desincronizado",
+    "origen": "sintetico",
+    "fuente": "UNIDAD_6_MODELADO_SIMULACION.md con el boxed de T (linea 252, seccion 2.3) alterado de 12.3953 a 13.0000",
+    "hallazgo_origen": "A3-U",
+    "unidad_origen": "UNIDAD_6_MODELADO_SIMULACION.md"
+  },
+  {
+    "archivo": "pos_u7_inferencia_estimacion.md",
+    "tiene_fallo": true,
+    "tipo_fallo": "boxed_desincronizado",
+    "origen": "sintetico",
+    "fuente": "UNIDAD_7_INFERENCIA_ESTIMACION.md con el boxed del p-valor (linea 892) alterado de 0.0108 a 0.0200",
+    "hallazgo_origen": "A3-U",
+    "unidad_origen": "UNIDAD_7_INFERENCIA_ESTIMACION.md"
+  },
+  {
+    "archivo": "pos_u8_proyecto_integrador.md",
+    "tiene_fallo": true,
+    "tipo_fallo": "boxed_desincronizado",
+    "origen": "sintetico",
+    "fuente": "UNIDAD_8_PROYECTO_INTEGRADOR.md con el boxed de t_calc (linea 152, seccion 3.3) alterado de 4.6212 a 5.0000",
+    "hallazgo_origen": "A3-U",
+    "unidad_origen": "UNIDAD_8_PROYECTO_INTEGRADOR.md"
+  }
+]
