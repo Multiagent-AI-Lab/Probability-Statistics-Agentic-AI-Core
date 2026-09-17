@@ -144,9 +144,9 @@ El proyecto opera bajo la supervisión de un **Consejo de 8 Agentes** con 3 loop
 
 ```mermaid
 graph TD
-    Arch["🏗️ @Architect<br/>Completitud del curso (8 unidades)<br/>Bloqueante solo en run_full_pipeline"] --> Sci["🔬 @Scientist<br/>Teoría Estadística + LaTeX"]
-    Sci --> Eng["⚙️ @Engineer<br/>Código scipy/statsmodels"]
-    Eng --> Gate["🛡️ @Safety_Gate<br/>Anacronismos + Mismatch Temático"]
+    Arch["🏗 @Architect<br/>Completitud del curso (8 unidades)<br/>Bloqueante solo en run_full_pipeline"] --> Sci["🔬 @Scientist<br/>Teoría Estadística + LaTeX"]
+    Sci --> Eng["⚙ @Engineer<br/>Código scipy/statsmodels"]
+    Eng --> Gate["🛡 @Safety_Gate<br/>Anacronismos + Mismatch Temático"]
     Eng --> Editor["🎨 @Editor<br/>Bloques Duplicados (cross-unit / intra-file)"]
 
     Gate -->|"❌ Bloqueo crítico"| Eng
@@ -161,7 +161,7 @@ graph TD
 
     QA -->|"❌ Incompleto"| Eng
     QA -->|"✅ Aprobado"| Gatekeeper["🚪 OrchestratorAgent<br/>Hard-Gate (enforce_gate)"]
-    Gatekeeper -->|"❌ Bloqueado"| Skip(("⏸️ Notebook<br/>NO compilado"))
+    Gatekeeper -->|"❌ Bloqueado"| Skip(("⏸ Notebook<br/>NO compilado"))
     Gatekeeper -->|"✅ Compilar"| Done(("🏁 Notebook<br/>Maestro"))
 ```
 
