@@ -4,10 +4,18 @@ Mermaid renderer tool for converting mermaid blocks to images or HTML embeddings
 
 import logging
 import os
+import re
 import shutil
 import subprocess
 
 logger = logging.getLogger(__name__)
+
+# Nombre de archivo seguro para render_to_svg: solo letras, dígitos, "_", "."
+# y "-", terminado en ".svg". Una allowlist cierra por construcción cualquier
+# separador de ruta (en cualquier plataforma), null bytes, prefijos de unidad
+# de Windows ("C:algo.svg") y caracteres unicode look-alike de separadores --
+# sin necesitar enumerar cada vector conocido como haría una denylist.
+_FILENAME_SVG_SEGURO = re.compile(r"^[A-Za-z0-9_.-]+\.svg$")
 
 
 class MermaidRenderer:
@@ -18,12 +26,24 @@ class MermaidRenderer:
         os.makedirs(output_dir, exist_ok=True)
 
     def render_to_svg(self, mermaid_code: str, filename: str) -> str | None:
-        # Defensa en profundidad (revisión de seguridad, 2026-09-14):
-        # filename hoy solo llega desde notebook_compiler_agent.py, construido
-        # a partir del nombre de unidad + un contador (sin separadores de
-        # ruta), pero esta función es reutilizable y no debe depender de que
-        # su único llamador actual siga siendo "seguro por construcción".
-        if os.path.basename(filename) != filename:
+        # Defensa en profundidad (revisión de seguridad, 2026-09-14, endurecida
+        # 2026-09-17 tras un fallo real de CI en ubuntu-latest): filename hoy
+        # solo llega desde notebook_compiler_agent.py, construido a partir del
+        # nombre de unidad + un contador (sin separadores de ruta), pero esta
+        # función es reutilizable y no debe depender de que su único llamador
+        # actual siga siendo "seguro por construcción".
+        #
+        # Allowlist en vez de denylist de separadores: la versión anterior
+        # (`os.path.basename(filename) != filename`) interpreta separadores
+        # según la plataforma en la que corre -- en Linux/Mac "\" es un
+        # carácter de nombre válido, así que "..\fuera\escape.svg" pasaba sin
+        # cambios (confirmado por un fallo real de CI: el test
+        # test_filename_con_separador_windows_se_rechaza fallaba con "DID NOT
+        # RAISE ValueError" en ubuntu-latest). La allowlist cierra ese caso y,
+        # de paso, cualquier otro vector no enumerado explícitamente (un
+        # prefijo de unidad de Windows como "C:algo.svg", null bytes,
+        # unicode look-alike de separadores) sin depender de la plataforma.
+        if not _FILENAME_SVG_SEGURO.fullmatch(filename):
             raise ValueError(f"filename inválido (no puede contener rutas): {filename}")
 
         output_path = os.path.join(self.output_dir, filename)
