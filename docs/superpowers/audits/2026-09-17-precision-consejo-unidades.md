@@ -1,5 +1,7 @@
 # Precision del Consejo contra unidades completas (A3-U)
 
+> **⚠️ CIFRA INVALIDA -- NO CITAR.** Los 8 negativos de esta corrida dieron falso positivo por un bug de infraestructura (crash nativo `0xC0000005` en `scipy.linalg.cholesky` vía `scipy.stats.gaussian_kde`, disparado por `seaborn.histplot(kde=True)` en `UNIDAD_1`/otras unidades reales -- confirmado con `faulthandler`, no relacionado con el contenido del corpus ni con el mecanismo de deteccion del Consejo). Precision/recall/kappa de este reporte NO miden el comportamiento real del Consejo. Ver ledger de `docs/superpowers/plans/2026-09-17-a3-unidades-completas-plan.md` (Task 6/6b) y memoria persistente para el diagnostico completo. Este reporte se conserva como evidencia del bloqueo, no como resultado valido de A3-U -- Task 6 debe re-ejecutarse una vez resuelto el bug de scipy/OpenBLAS.
+
 **Fecha de ejecucion:** 2026-09-17
 **Casos evaluados:** 16 (excluidos por red: 0)
 
