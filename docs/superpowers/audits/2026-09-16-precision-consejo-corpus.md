@@ -8,13 +8,13 @@
 | | Predicho: tiene fallo | Predicho: no tiene fallo |
 |---|---|---|
 | **Real: tiene fallo** | VP=12 | FN=15 |
-| **Real: no tiene fallo** | FP=11 | VN=8 |
+| **Real: no tiene fallo** | FP=10 | VN=9 |
 
 ## Metricas
 
-- Precision: 0.5217391304347826
+- Precision: 0.5454545454545454
 - Recall: 0.4444444444444444
-- Kappa de Cohen: -0.13043478260869568
+- Kappa de Cohen: -0.07879924953095693
 
 ## Desglose por tipo de fallo y origen
 
@@ -22,7 +22,7 @@
 |---|---|---|---|---|---|
 | neg_01_u7_formula_simbolica.md | real | None | False | True | False |
 | neg_02_u4_boxed_concreto.md | real | None | False | True | False |
-| neg_03_u3_boxed_porcentual.md | real | None | False | True | False |
+| neg_03_u3_boxed_porcentual.md | real | None | False | False | True |
 | neg_04_u1_ejemplo_doi.md | real | None | False | False | True |
 | neg_05_u2_ejemplo_doi.md | real | None | False | False | True |
 | neg_06_u3_ejemplo_doi.md | real | None | False | False | True |

@@ -4,7 +4,7 @@
     "tiene_fallo": false,
     "tipo_fallo": null,
     "origen": "real",
-    "fuente": "UNIDAD_7_INFERENCIA_ESTIMACION.md §5.3-6.4 (líneas 1097-1269 del original, extendido 2026-09-16 para M2 con §6.3 Ajuste MLE + §6.4 MAP completa -- antes cortaba justo tras el bloque de código de §6.2 sin interpretación; nota: esta sub-sección no tiene gráfico en el original, cierra con Teoría→SymPy→SciPy→Interpretación); el boxed objetivo estaba en la línea 1189",
+    "fuente": "UNIDAD_7_INFERENCIA_ESTIMACION.md §5.3-6.4 (líneas 1097-1269 del original, extendido 2026-09-16 para M2 con §6.3 Ajuste MLE + §6.4 MAP completa -- antes cortaba justo tras el bloque de código de §6.2 sin interpretación) + entrada de Referencias con DOI agregada 2026-09-16 (Prosthesis 2026, 10.3390/prosthesis8070066, misma cita que neg_10 -- @Librarian bloqueaba por falta de DOI resoluble tras cerrar el ciclo). Límite residual documentado: esta sub-sección (§6.2-6.4, MLE/MAP) nunca tiene gráfico en el original -- @Analyst sigue bloqueando por plot_count=0, no arreglable sin fusionar con una sub-sección de tema distinto; el boxed objetivo estaba en la línea 1189",
     "hallazgo_origen": null
   },
   {
@@ -20,7 +20,7 @@
     "tiene_fallo": false,
     "tipo_fallo": null,
     "origen": "real",
-    "fuente": "UNIDAD_3_VARIABLES_ALEATORIAS_DISCRETAS.md §2.9-§6.1 (líneas 138-595 del original, extendido 2026-09-16 para M2 con §4 SymPy + §5 SciPy/gráfico + §6.1 Interpretación -- antes cortaba en el título de §4 sin contenido); el P(X=2) boxed porcentual está en la línea 439 del original",
+    "fuente": "UNIDAD_3_VARIABLES_ALEATORIAS_DISCRETAS.md §2.9-§6.1 (líneas 138-595 del original, extendido 2026-09-16 para M2 con §4 SymPy + §5 SciPy/gráfico + §6.1 Interpretación -- antes cortaba en el título de §4 sin contenido) + entrada de Referencias con DOI agregada 2026-09-16 (Li & Jiang 2008, 10.1007/978-1-84800-131-2_58, misma cita que neg_06 -- @Librarian bloqueaba por falta de DOI resoluble). Con ambos fixes (M2 + DOI) este caso queda RESUELTO: aprobado sin hallazgos (verdadero negativo); el P(X=2) boxed porcentual está en la línea 439 del original",
     "hallazgo_origen": null
   },
   {
@@ -148,7 +148,7 @@
     "tiene_fallo": false,
     "tipo_fallo": null,
     "origen": "real",
-    "fuente": "UNIDAD_3_VARIABLES_ALEATORIAS_DISCRETAS.md §2 Familias Principales de Distribuciones Discretas (líneas 80-235, extendido 2026-09-16 para M2 con el párrafo de Aplicaciones que cierra el ciclo de la Profundización Poisson §2.9.3 -- antes cortaba justo en plt.show() sin el párrafo de interpretación)",
+    "fuente": "UNIDAD_3_VARIABLES_ALEATORIAS_DISCRETAS.md §2 Familias Principales de Distribuciones Discretas (líneas 80-235, extendido 2026-09-16 para M2 con el párrafo de Aplicaciones que cierra el ciclo de la Profundización Poisson §2.9.3 -- antes cortaba justo en plt.show() sin el párrafo de interpretación) + entrada de Referencias con DOI agregada 2026-09-16 (Li & Jiang 2008, 10.1007/978-1-84800-131-2_58, misma cita que neg_06/neg_03 -- @Librarian bloqueaba por falta de DOI resoluble). Límite residual documentado: la sección 2 completa (§2.1-2.9, las 8 sub-secciones de Familias) NUNCA usa \\boxed{} en el original -- @Scientist sigue bloqueando (has_boxed_solution=False); verificado que no existe ningún \\boxed{} en toda la sección, no arreglable sin fusionar con la §3 (ya cubierta por separado como neg_03)",
     "hallazgo_origen": null
   },
   {

@@ -167,18 +167,16 @@ Esta sección declara el alcance real, no aspiracional, a la fecha de esta redac
   — ver `docs/superpowers/audits/2026-09-16-precision-consejo-corpus.md` para la
   matriz de confusión completa (`scripts/medir_precision_consejo.py`, 46 casos
   evaluados; 1 excluido por Crossref inaccesible durante la corrida). Cifra vigente:
-  **precisión 52.2%, recall 44.4%, κ de Cohen -0.130** — mejora real y verificada
+  **precisión 54.5%, recall 44.4%, κ de Cohen -0.079** — mejora real y verificada
   sobre la medición inicial (41.4%/44.4%/-0.457, `docs/superpowers/audits/2026-09-15-
   precision-consejo-corpus.md`), pero todavía por debajo del 62.5% con validación
-  experta de arXiv 2607.11276 (§5), y un κ negativo sigue indicando acuerdo peor que
-  el esperable solo por azar.
+  experta de arXiv 2607.11276 (§5), y un κ apenas negativo sigue indicando acuerdo
+  no mejor que el esperable solo por azar.
 
-  M2 (2026-09-16) rehizo los 20 fragmentos negativos con el cierre completo del
-  ciclo (gráfico + interpretación) donde el contenido original lo permitía sin
-  cruzar a un tema distinto — 13 de 20 se extendieron, 2 ya estaban completos, y 5
-  se dejaron documentadamente sin extensión porque el gráfico real más cercano
-  pertenece a una sección temática ajena (`etiquetas.json` documenta la razón caso
-  por caso). El mismo trabajo destapó una causa raíz *distinta* de la fragmentación:
+  M2 (2026-09-16, dos rondas) rehizo los 20 fragmentos negativos con el cierre
+  completo del ciclo (gráfico + interpretación) donde el contenido original lo
+  permitía sin cruzar a un tema distinto — 13 de 20 se extendieron, 2 ya estaban
+  completos. El mismo trabajo destapó una causa raíz *distinta* de la fragmentación:
   `@Analyst` (`_AFIRMACION_VERIFICABLE` en `analyst_agent.py`) no reconocía dos
   formas reales de citar una magnitud — la unidad tras el espacio forzado de LaTeX
   (`$12.9\ \text{nm}$`) y un número con separador de miles seguido de una palabra
@@ -189,20 +187,41 @@ Esta sección declara el alcance real, no aspiracional, a la fecha de esta redac
   nuevas mantienen la misma disciplina de cuantificadores acotados, con test de
   regresión de constante de tiempo agregado).
 
-  De los 12 falsos positivos restantes en la cifra de hoy, 11 son negativos reales:
-  quedan sin corregir los casos donde el gráfico de cierre está genuinamente fuera
-  de alcance sin mezclar temas (documentado en `etiquetas.json`) o donde otro agente
-  del Consejo (no `@Analyst`) bloquea por una razón todavía sin diagnosticar — este
-  residuo queda como pendiente de un ciclo futuro, no se investigó caso por caso en
-  esta ronda. Los 15 casos sintéticos de falsedad semántica se comportan exactamente
-  como predice el diseño (§2.1, "verificación numérica y estructural, no
-  semántica"): el Consejo no los detecta, 15/15 falsos negativos — sin cambio
-  respecto a la medición anterior, como se esperaba (M2 no tocó esa dimensión). El
-  runner actúa como el juez de segunda pasada que antes faltaba (D5, auditoría
-  2026-09-15), pero la cifra real obliga a matizar D6: el κ referenciado aquí mide
-  el Consejo contra fragmentos de corpus, no contra unidades de producción
-  completas, y no debe citarse como la precisión del Consejo en producción sin esa
-  salvedad.
+  Una segunda ronda de diagnóstico sobre los residuales encontró una tercera causa,
+  también de fragmentación pero en `@Librarian` en vez de `@Analyst`: 3 fragmentos
+  (`neg_01`, `neg_03`, `neg_19`) no incluían el DOI que la unidad completa sí cita
+  en otro punto del documento (`@Librarian` exige al menos un DOI que resuelva
+  contra Crossref, `librarian_agent.py::verify_references`) — corregido pegando la
+  entrada bibliográfica real de la unidad al final de esos 3 fragmentos, igual que
+  ya tenían los `neg_0X_ejemplo_doi.md`. `neg_03` queda totalmente resuelto
+  (verdadero negativo). Esa misma ronda confirmó dos límites estructurales
+  genuinos que **no son bugs y no se corrigieron**: (1) 4 fragmentos (`neg_01`,
+  `neg_02`, `neg_17`, `neg_18`) recortan una sub-sección que en el contenido real
+  nunca tiene fase gráfica propia (LET continua, Método de Momentos, MLE/MAP) —
+  `@Analyst` exige ≥2 gráficos por el Gold Standard §3 punto 7 ("Visualización
+  Profesional... por sección aplicada relevante"), una regla real de producción que
+  bajar rompería para las 8 unidades, no solo para el corpus; (2) `neg_19` (Familias
+  de Distribuciones, §2.9 de U3) nunca tiene `\boxed{}` en ninguna de sus 8
+  sub-secciones en la unidad real — verificado por conteo exhaustivo — porque es un
+  catálogo teórico de referencia, no un ejemplo resuelto; `@Scientist` exige
+  `\boxed{}` (Gold Standard §3 punto 5), también correcto en producción. Ambos
+  casos son fragmentos que, por construcción, no pueden probar un estándar que el
+  Gold Standard aplica a nivel de sección aplicada completa, no de sub-fragmento
+  arbitrario — la misma limitación que ya reconoce D6 más abajo, aplicada ahora
+  también a `@Analyst`/`@Scientist`, no solo a `@Librarian`.
+
+  De los 10 falsos positivos restantes en la cifra de hoy, 9 son estos negativos
+  reales sin corregir por ser límite estructural del corpus (no arreglables sin
+  fusionar fragmentos que el corpus ya trata como casos separados), documentados
+  caso por caso en `etiquetas.json`. Los 15 casos sintéticos de falsedad semántica
+  se comportan exactamente como predice el diseño (§2.1, "verificación numérica y
+  estructural, no semántica"): el Consejo no los detecta, 15/15 falsos negativos —
+  sin cambio respecto a la medición anterior, como se esperaba (M2 no tocó esa
+  dimensión). El runner actúa como el juez de segunda pasada que antes faltaba (D5,
+  auditoría 2026-09-15), pero la cifra real obliga a matizar D6: el κ referenciado
+  aquí mide el Consejo contra fragmentos de corpus, no contra unidades de
+  producción completas, y no debe citarse como la precisión del Consejo en
+  producción sin esa salvedad.
 
 **Lo que NO comprueba — límites conocidos, con la causa exacta:**
 

@@ -172,3 +172,7 @@ print(f"\nPosterior resultante: Beta(alpha={alpha_post}, beta={beta_post})")
 
 **Interpretación**: el MLE ($\hat\theta=0.700$) usa únicamente los 20 ensayos observados; el MAP ($\hat\theta=0.6818$) lo "encoge" ligeramente hacia el $0.5$ del prior, precisamente porque el prior aporta la equivalente de información previa moderada. A medida que $n\to\infty$, el término de los datos ($x$, $n-x$) domina sobre el prior fijo ($\alpha$, $\beta$) y $\hat\theta_{MAP}\to\hat\theta_{MLE}$ — el prior deja de importar cuando hay suficiente evidencia muestral, un comportamiento deseable de cualquier estimador bayesiano razonable.
 
+---
+
+* *Optimization of Silver Nanoparticle-Coating Methods on Acrylic, Silicone, and Zirconia Facial Prosthetic Materials: Surface Characterization and Antimicrobial Activity Against Pseudomonas aeruginosa* (2026). *Prosthesis*, 8(7), 66. DOI: [10.3390/prosthesis8070066](https://doi.org/10.3390/prosthesis8070066) — usa pruebas $t$ pareadas para evaluar reproducibilidad y confiabilidad del recubrimiento de nanopartículas de plata (AgNPs), la misma prueba de hipótesis sobre diámetro de AgNPs desarrollada en el ejemplo aplicado de esta unidad.
+
