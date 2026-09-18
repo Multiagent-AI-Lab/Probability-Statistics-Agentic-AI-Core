@@ -442,6 +442,30 @@ _ROTULO_INLINE = re.compile(
 # curso produce tan larga.
 _MAX_CHARS_POR_LINEA_ROTULO = 2000
 
+# Rótulo = expresión intermedia [= expresión intermedia...] = valor final,
+# en una sola línea (patrón real, `pos_u2_probabilidad_combinatoria.md` de
+# A3-U, 2026-09-18: `print(f"P(A) = |A|/|Omega| = 0.1846")`). `_ROTULO_INLINE`
+# exige identificador-igual-número en el MISMO segmento, así que nunca
+# encontraba nada aquí: el primer '=' deja `|A|/|Omega|` de un lado (no es
+# un número) y `0.1846` del otro (separado por un segundo '='). Este
+# patrón toma el PRIMER segmento como rótulo y el ÚLTIMO como valor,
+# ignorando cuántos '=' intermedios haya.
+#
+# Important (revisión de python-reviewer, 2026-09-18): con 3+ '=' en la
+# línea, el ÚLTIMO segmento por sí solo (`intermedio2 = valor`) SÍ cumple
+# el patrón de `_ROTULO_INLINE` -- activar este fallback solo "si `pares`
+# está vacío" nunca disparaba en ese caso, y el rótulo real (el del primer
+# segmento) quedaba sin comparar. La condición correcta no es "la lista
+# está vacía" sino "ningún par ya encontrado tiene el nombre que se busca"
+# -- se decide en `_valores_junto_al_rotulo`, que es quien conoce `nombre`.
+#
+# Misma disciplina de acotamiento que `_ROTULO_INLINE` (ver su
+# comentario): identificador limitado a `{1,40}`, sin `\s*` sin cota,
+# y ya opera sobre `linea` recortada a `_MAX_CHARS_POR_LINEA_ROTULO`.
+_ROTULO_CADENA = re.compile(
+    r"^([\w().]{1,40}?)\s{0,2}=.*=\s{0,2}(-?\d+(?:\.\d+)?(?:[eE][-+]?\d+)?)\s*$"
+)
+
 
 def _valores_junto_al_rotulo(nombre: str, salida: str) -> list:
     """Números que el código imprime inmediatamente después de un rótulo
@@ -452,7 +476,12 @@ def _valores_junto_al_rotulo(nombre: str, salida: str) -> list:
         if "=" not in linea:
             continue
         linea = linea[:_MAX_CHARS_POR_LINEA_ROTULO]
-        for rotulo, numero in _ROTULO_INLINE.findall(linea):
+        pares = _ROTULO_INLINE.findall(linea)
+        if not any(_normalizar_identificador(r).endswith(nombre) for r, _ in pares):
+            cadena = _ROTULO_CADENA.match(linea)
+            if cadena:
+                pares = [*pares, cadena.groups()]
+        for rotulo, numero in pares:
             if _normalizar_identificador(rotulo).endswith(nombre):
                 valores.append(float(numero))
     return valores

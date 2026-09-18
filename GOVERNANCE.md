@@ -262,6 +262,55 @@ Esta sección declara el alcance real, no aspiracional, a la fecha de esta redac
   de citar la cifra de A3 como la precisión del Consejo en producción" — A3-U es
   esa cifra de producción, con sus propios límites ya documentados aquí mismo.
 
+  **Fix de recall (2026-09-18, auditoría comparativa externa post-A3-U):** de los 5
+  falsos negativos originales, `pos_u2_probabilidad_combinatoria.md` tenía una causa
+  raíz distinta de los otros 4 y arreglable sin riesgo: el código de esa sección
+  imprime `print(f"P(A) = |A|/|Omega| = {p_A:.4f}")` — una línea con DOS `=`
+  (rótulo = expresión intermedia = valor final). `_ROTULO_INLINE` solo reconocía
+  `identificador = número` en el mismo segmento; el primer `=` dejaba `|A|/|Omega|`
+  de un lado (no es un número ni cabe en la clase de caracteres del identificador,
+  que no admite `/` ni `|`), así que la línea completa no producía ningún emparejamiento
+  y el rótulo "P(A)" quedaba sin valor con el que contrastarse. Se agregó
+  `_ROTULO_CADENA` (mismo archivo, `_contraste_boxed.py`) como fallback exclusivo de
+  `_valores_junto_al_rotulo` — solo se evalúa cuando `_ROTULO_INLINE` no encontró nada
+  en la línea, así que no cambia ningún caso ya cubierto — con la misma disciplina de
+  acotamiento contra ReDoS que `_ROTULO_INLINE` (identificador `{1,40}`, sin `\s*` sin
+  cota, verificado con test de rendimiento dedicado). TDD completo: test RED que
+  reproduce el caso real de `pos_u2` (`test_rotulo_con_doble_asignacion_en_cadena_se_reconoce`,
+  `tests/council/test_engineer_agent.py`), GREEN tras el fix.
+
+  **Important de revisión (`python-reviewer`, mismo día):** la primera versión del
+  fallback se activaba solo "si `_ROTULO_INLINE` no encontró ningún par en la línea"
+  — con 3+ signos `=` (`rótulo = intermedio = intermedio2 = valor`), el ÚLTIMO
+  segmento por sí solo (`intermedio2 = valor`) sí cumple el patrón de `_ROTULO_INLINE`,
+  así que `pares` nunca quedaba vacío y el fallback no se activaba: el rótulo real
+  seguía sin compararse, reproduciendo en silencio el mismo defecto que el fix
+  pretendía cerrar. Corregido cambiando la condición de activación de "la lista está
+  vacía" a "ningún par ya encontrado tiene el nombre que se busca" — decidido dentro
+  de `_valores_junto_al_rotulo`, que es quien conoce `nombre`. Test RED nuevo
+  (`test_rotulo_con_triple_asignacion_en_cadena_se_reconoce`) reproduce el caso de 3
+  `=`, verificado como extensión natural del caso real (agregar una variable
+  intermedia rotulada al mismo `print`), no hipotético.
+
+  Verificación final: 34/34 tests de `test_engineer_agent.py`, 138/138 de
+  `tests/council/`, 325/325 de la suite completa, sin regresiones. Resultado
+  re-medido con el runner real tras ambos fixes: **precisión 1.0, recall 0.5, κ de
+  Cohen 0.5 (VP=4, FN=4, FP=0, VN=8)** — sube de 3/8 a 4/8 alteraciones detectadas,
+  sin introducir ningún falso positivo nuevo (los 8 negativos siguen en 0 hallazgos).
+
+  Los 4 falsos negativos restantes (`pos_u1`, `pos_u3`, `pos_u5`, `pos_u7`) tienen una
+  causa raíz distinta y **no se tocaron**: son `\boxed{}` en secciones sin código
+  propio (ejemplos analíticos resueltos a mano, o secciones puramente gráficas sin
+  ningún `print`), contrastados por `_contrastar_contra_la_unidad` contra la salida de
+  **toda la unidad**, no de la sección. Ese mecanismo acepta el valor si aparece en
+  cualquier parte del stdout de la unidad completa — no exige que esté junto a un
+  rótulo reconocible como sí lo hace `_el_codigo_apunta_al_valor` a nivel de sección.
+  Arreglarlo con el mismo rigor requeriría rediseñar ese contraste para exigir
+  también un rótulo cercano, un cambio de diseño más amplio que el fix de línea de
+  arriba, con mayor riesgo de introducir falsos positivos en los 8 negativos reales.
+  Queda documentado aquí como el próximo candidato si se decide seguir subiendo el
+  recall, no como una tarea pendiente de alcance menor.
+
 **Lo que NO comprueba — límites conocidos, con la causa exacta:**
 
 * **Interpretación semántica del contenido (H-03).** El Consejo detecta que un número

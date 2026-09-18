@@ -161,6 +161,65 @@ def test_boxed_de_otro_ejemplo_analitico_no_es_falso_positivo():
     assert resultado["discrepancias"] == []
 
 
+def test_rotulo_con_doble_asignacion_en_cadena_se_reconoce():
+    """Falso negativo real de A3-U (2026-09-18, `pos_u2_probabilidad_combinatoria.md`):
+    el código imprime `print(f"P(A) = |A|/|Omega| = {p_A:.4f}")`, una línea con
+    DOS `=` (rótulo = expresión intermedia = valor final). `_ROTULO_INLINE`
+    solo reconocía `identificador = número`, así que nunca encontraba el
+    valor final en esa línea -el primer `=` la hacía fallar por completo,
+    porque `|A|/|Omega|` no es un número ni cabe en la clase de caracteres
+    del identificador (no admite `/` ni `|`)-. El `\\boxed{}` alterado
+    (0.2500 en vez del real 0.1846) pasaba sin detectarse porque el rótulo
+    "P(A)" nunca se emparejaba con ningún valor del stdout."""
+    agent = EngineerAgent()
+    texto = (
+        "## 1. Sección de prueba\n\n"
+        r"$$|A| = \binom{9}{3} = \boxed{84}$$"
+        "\n"
+        r"$$P(A) = \frac{|A|}{|\Omega|} = \frac{84}{455} \approx \boxed{0.2500}$$"
+        "\n\n```python\n"
+        "print(f'|Omega| = C(15,3) = 455')\n"
+        "print(f'|A| = C(9,3) = 84')\n"
+        "print(f'P(A) = |A|/|Omega| = 0.1846')\n"
+        "```\n"
+    )
+
+    resultado = agent.check_code_implementation(texto)
+
+    assert resultado["passed"] is False
+    assert resultado["discrepancias"]
+
+
+def test_rotulo_con_triple_asignacion_en_cadena_se_reconoce():
+    """Important de la revisión de `python-reviewer` (2026-09-18) sobre el
+    fix anterior: con 3+ `=` en la línea (rótulo = intermedio = intermedio2
+    = valor), `_ROTULO_INLINE.findall` SÍ encuentra un par válido en el
+    ÚLTIMO segmento (`paso_intermedio = 0.1846` cumple `identificador =
+    número`), así que `pares` no queda vacío y `_ROTULO_CADENA` nunca se
+    activa -el rótulo real ("P(A)") nunca se compara con el valor real, y
+    el `\\boxed{}` alterado pasa sin detectarse-. Verificado que reproduce
+    el bug: `print(f"P(A) = |A|/|Omega| = paso_intermedio = 0.1846")` es
+    una extensión natural del caso real de `pos_u2` (agregar una variable
+    intermedia rotulada en el mismo print), no un caso hipotético."""
+    agent = EngineerAgent()
+    texto = (
+        "## 1. Sección de prueba\n\n"
+        r"$$|A| = \binom{9}{3} = \boxed{84}$$"
+        "\n"
+        r"$$P(A) = \frac{|A|}{|\Omega|} = \frac{84}{455} \approx \boxed{0.2500}$$"
+        "\n\n```python\n"
+        "print(f'|Omega| = C(15,3) = 455')\n"
+        "print(f'|A| = C(9,3) = 84')\n"
+        "print(f'P(A) = |A|/|Omega| = paso_intermedio = 0.1846')\n"
+        "```\n"
+    )
+
+    resultado = agent.check_code_implementation(texto)
+
+    assert resultado["passed"] is False
+    assert resultado["discrepancias"]
+
+
 def test_boxed_en_porcentaje_coincide_con_salida_en_proporcion():
     """`\\boxed{0.1126\\ (11.26\\%)}` frente a un print de 0.1126."""
     agent = EngineerAgent()
@@ -435,6 +494,27 @@ def test_rotulo_inline_no_escala_cuadratico_con_muchos_signos_igual():
     assert resultado == []
     assert duracion < _TECHO_SEGUNDOS_REDOS, (
         f"_ROTULO_INLINE tardo {duracion:.2f}s sobre 50_000 "
+        "repeticiones de 'a=' -- posible regresion de ReDoS"
+    )
+
+
+def test_rotulo_cadena_no_escala_cuadratico_con_muchos_signos_igual():
+    """`_ROTULO_CADENA` (fix del falso negativo de A3-U, 2026-09-18) usa
+    `.*` entre el primer y último '=' -- sin la cota de línea externa,
+    ese comodín sí puede degradar sobre una entrada patológica con miles
+    de '=' seguidos. Mismo techo y misma disciplina de prueba que los
+    tests de `_ROTULO_INLINE` de arriba."""
+    from src.multiagent_core.council._contraste_boxed import _ROTULO_CADENA
+
+    salida = "a=" * 50_000
+
+    t0 = time.perf_counter()
+    resultado = _ROTULO_CADENA.match(salida)
+    duracion = time.perf_counter() - t0
+
+    assert resultado is None
+    assert duracion < _TECHO_SEGUNDOS_REDOS, (
+        f"_ROTULO_CADENA tardo {duracion:.2f}s sobre 50_000 "
         "repeticiones de 'a=' -- posible regresion de ReDoS"
     )
 
