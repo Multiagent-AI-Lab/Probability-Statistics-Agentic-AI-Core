@@ -22,14 +22,17 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      # Formato y lint del código de agentes. `scripts/legacy/` queda fuera
-      # del alcance por configuración (ver ruff.toml): son scripts de un solo
-      # uso ya ejecutados, conservados como historial.
+      # Formato y lint del código de agentes y de tests -- el mismo alcance
+      # que CLAUDE.md documenta (`isort/black src/ tests/`), ahora exigido en
+      # CI en vez de solo declarado. `scripts/` (incluyendo `scripts/legacy/`)
+      # queda fuera a propósito: son scripts de un solo uso, varios ya
+      # ejecutados y conservados como historial, nunca en el alcance
+      # declarado de formato del repo.
       - name: Check formatting and lint (ruff / black / isort)
         run: |
-          ruff check src/multiagent_core/
-          black --check src/multiagent_core/
-          isort --check-only src/multiagent_core/
+          ruff check src/multiagent_core/ tests/
+          black --check src/multiagent_core/ tests/
+          isort --check-only src/multiagent_core/ tests/
 
       - name: Run pytest test suite
         run: |

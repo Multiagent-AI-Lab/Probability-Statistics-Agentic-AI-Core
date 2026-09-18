@@ -23,7 +23,9 @@ def test_todos_los_archivos_del_manifiesto_existen():
         for caso in manifiesto
         if not (_CORPUS_DIR / caso["archivo"]).exists()
     ]
-    assert not faltantes, f"archivos listados en el manifiesto pero ausentes: {faltantes}"
+    assert (
+        not faltantes
+    ), f"archivos listados en el manifiesto pero ausentes: {faltantes}"
 
 
 def test_todos_los_archivos_md_estan_en_el_manifiesto():
@@ -31,7 +33,9 @@ def test_todos_los_archivos_md_estan_en_el_manifiesto():
     archivos_listados = {caso["archivo"] for caso in manifiesto}
     archivos_en_disco = {p.name for p in _CORPUS_DIR.glob("*.md")}
     huerfanos = archivos_en_disco - archivos_listados
-    assert not huerfanos, f".md en el directorio pero ausentes del manifiesto: {huerfanos}"
+    assert (
+        not huerfanos
+    ), f".md en el directorio pero ausentes del manifiesto: {huerfanos}"
 
 
 def test_cada_caso_tiene_los_campos_requeridos():

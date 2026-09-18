@@ -6,7 +6,9 @@ dependencies:
   - python=3.11
   - numpy
   - pandas
-  - scipy
+  # Pin exacto: crash nativo de scipy/OpenBLAS vía seaborn.histplot(kde=True)
+  # bloqueaba @Engineer y afectaba 14-15 tests (ver GOVERNANCE.md, A3-U).
+  - scipy=1.14.1
   - statsmodels
   - matplotlib
   - seaborn

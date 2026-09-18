@@ -2,6 +2,7 @@
 Socratic Debugger Skill: Generates guided questions when student code or analysis has errors.
 """
 
+
 class SocraticDebugger:
     """Skill for generating Socratic pedagogical feedback."""
 
