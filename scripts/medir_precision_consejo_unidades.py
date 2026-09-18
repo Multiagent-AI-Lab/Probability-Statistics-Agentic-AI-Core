@@ -17,7 +17,7 @@ import json
 from pathlib import Path
 from typing import Any
 
-from scripts.medir_precision_consejo import calcular_metricas, evaluar_caso
+from scripts.medir_precision_consejo import acumular_casos, calcular_metricas
 
 _RAIZ_REPO = Path(__file__).resolve().parent.parent
 _CORPUS_DIR = _RAIZ_REPO / "tests" / "fixtures" / "corpus_consejo_unidades"
@@ -26,45 +26,9 @@ _MANIFIESTO = _CORPUS_DIR / "etiquetas.json"
 
 def main() -> None:
     manifiesto = json.loads(_MANIFIESTO.read_text(encoding="utf-8"))
-
-    matriz = {"vp": 0, "fp": 0, "fn": 0, "vn": 0}
-    excluidos_por_red = []
-    detalle: list[dict[str, Any]] = []
-
-    for caso in manifiesto:
-        archivo = _CORPUS_DIR / caso["archivo"]
-        evaluacion = evaluar_caso(archivo, unit_name=caso["archivo"])
-
-        if not evaluacion["librarian_paso"] and "DOI" not in archivo.read_text(
-            encoding="utf-8"
-        ):
-            pass
-        elif not evaluacion["librarian_paso"]:
-            excluidos_por_red.append(caso["archivo"])
-            continue
-
-        real = caso["tiene_fallo"]
-        predicho = evaluacion["predicho_tiene_fallo"]
-        if real and predicho:
-            matriz["vp"] += 1
-        elif real and not predicho:
-            matriz["fn"] += 1
-        elif not real and predicho:
-            matriz["fp"] += 1
-        else:
-            matriz["vn"] += 1
-
-        detalle.append(
-            {
-                "archivo": caso["archivo"],
-                "unidad_origen": caso["unidad_origen"],
-                "tipo_fallo": caso["tipo_fallo"],
-                "tiene_fallo_real": real,
-                "predicho_tiene_fallo": predicho,
-                "acierto": real == predicho,
-            }
-        )
-
+    matriz, detalle, excluidos_por_red = acumular_casos(
+        manifiesto, _CORPUS_DIR, campos_extra=["unidad_origen"]
+    )
     metricas = calcular_metricas(matriz)
     _escribir_reporte(matriz, metricas, detalle, excluidos_por_red)
 
@@ -75,29 +39,32 @@ def _escribir_reporte(
     detalle: list[dict[str, Any]],
     excluidos_por_red: list[str],
 ) -> None:
-    from datetime import date
+    from datetime import UTC, datetime
 
+    hoy = datetime.now(UTC).date().isoformat()
     ruta_reporte = (
         _RAIZ_REPO
         / "docs"
         / "superpowers"
         / "audits"
-        / f"{date.today().isoformat()}-precision-consejo-unidades.md"
+        / f"{hoy}-precision-consejo-unidades.md"
     )
 
     lineas = [
         "# Precision del Consejo contra unidades completas (A3-U)",
         "",
-        f"**Fecha de ejecucion:** {date.today().isoformat()}",
+        f"**Fecha de ejecucion:** {hoy}",
         f"**Casos evaluados:** {len(detalle)} (excluidos por red: {len(excluidos_por_red)})",
         "",
-        "Complementario a A3 (`docs/superpowers/audits/2026-09-16-precision-consejo-corpus.md`), "
-        "que mide contra fragmentos recortados de las 8 unidades. A3-U mide "
-        "especificamente deteccion de `boxed_desincronizado` (el unico tipo de fallo "
-        "del catalogo de A3 con mecanismo real confirmado en "
-        "`_contraste_boxed.py`) sobre unidades completas sin recortar. No es "
-        "comparable 1:1 con la cifra global de A3 -- ver GOVERNANCE.md SS5.1/D6 "
-        "para la comparacion completa.",
+        (
+            "Complementario a A3 (`docs/superpowers/audits/2026-09-16-precision-consejo-corpus.md`), "
+            "que mide contra fragmentos recortados de las 8 unidades. A3-U mide "
+            "especificamente deteccion de `boxed_desincronizado` (el unico tipo de fallo "
+            "del catalogo de A3 con mecanismo real confirmado en "
+            "`_contraste_boxed.py`) sobre unidades completas sin recortar. No es "
+            "comparable 1:1 con la cifra global de A3 -- ver GOVERNANCE.md SS5.1/D6 "
+            "para la comparacion completa."
+        ),
         "",
         "## Matriz de confusion",
         "",
@@ -128,9 +95,11 @@ def _escribir_reporte(
             "",
             "## Casos excluidos por Crossref inaccesible",
             "",
-            "`@Librarian` consulta la API de Crossref por red; estos casos "
-            "citan un DOI real y no se pudieron evaluar honestamente sin "
-            "conectividad:",
+            (
+                "`@Librarian` consulta la API de Crossref por red; estos casos "
+                "citan un DOI real y no se pudieron evaluar honestamente sin "
+                "conectividad:"
+            ),
             "",
         ] + [f"- {a}" for a in excluidos_por_red]
 

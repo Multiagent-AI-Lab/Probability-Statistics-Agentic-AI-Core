@@ -72,15 +72,29 @@ def evaluar_caso(archivo: Path, unit_name: str) -> dict[str, Any]:
     }
 
 
-def main() -> None:
-    manifiesto = json.loads(_MANIFIESTO.read_text(encoding="utf-8"))
+def acumular_casos(
+    manifiesto: list[dict[str, Any]],
+    corpus_dir: Path,
+    campos_extra: list[str] | None = None,
+) -> tuple[dict[str, int], list[dict[str, Any]], list[str]]:
+    """Corre `evaluar_caso` sobre cada entrada del manifiesto y acumula la
+    matriz de confusion + el detalle por caso.
 
+    Compartida entre A3 (`main` de este modulo) y A3-U
+    (`scripts/medir_precision_consejo_unidades.py`) -- antes cada runner
+    tenia su propia copia de este bucle (Important de la revision final de
+    A3-U, 2026-09-17): un fix futuro en la logica de exclusion por Crossref
+    o en el conteo de la matriz solo se aplicaba al runner editado, no al
+    otro. `campos_extra` deja que cada runner agregue columnas propias a
+    `detalle` (A3 usa "origen", A3-U usa "unidad_origen") sin bifurcar el
+    bucle en si.
+    """
     matriz = {"vp": 0, "fp": 0, "fn": 0, "vn": 0}
-    excluidos_por_red = []
+    excluidos_por_red: list[str] = []
     detalle: list[dict[str, Any]] = []
 
     for caso in manifiesto:
-        archivo = _CORPUS_DIR / caso["archivo"]
+        archivo = corpus_dir / caso["archivo"]
         evaluacion = evaluar_caso(archivo, unit_name=caso["archivo"])
 
         if not evaluacion["librarian_paso"] and "DOI" not in archivo.read_text(
@@ -104,17 +118,25 @@ def main() -> None:
         else:
             matriz["vn"] += 1
 
-        detalle.append(
-            {
-                "archivo": caso["archivo"],
-                "origen": caso["origen"],
-                "tipo_fallo": caso["tipo_fallo"],
-                "tiene_fallo_real": real,
-                "predicho_tiene_fallo": predicho,
-                "acierto": real == predicho,
-            }
-        )
+        fila = {
+            "archivo": caso["archivo"],
+            "tipo_fallo": caso["tipo_fallo"],
+            "tiene_fallo_real": real,
+            "predicho_tiene_fallo": predicho,
+            "acierto": real == predicho,
+        }
+        for campo in campos_extra or []:
+            fila[campo] = caso[campo]
+        detalle.append(fila)
 
+    return matriz, detalle, excluidos_por_red
+
+
+def main() -> None:
+    manifiesto = json.loads(_MANIFIESTO.read_text(encoding="utf-8"))
+    matriz, detalle, excluidos_por_red = acumular_casos(
+        manifiesto, _CORPUS_DIR, campos_extra=["origen"]
+    )
     metricas = calcular_metricas(matriz)
     _escribir_reporte(matriz, metricas, detalle, excluidos_por_red)
 
@@ -125,20 +147,21 @@ def _escribir_reporte(
     detalle: list[dict[str, Any]],
     excluidos_por_red: list[str],
 ) -> None:
-    from datetime import date
+    from datetime import UTC, datetime
 
+    hoy = datetime.now(UTC).date().isoformat()
     ruta_reporte = (
         _RAIZ_REPO
         / "docs"
         / "superpowers"
         / "audits"
-        / f"{date.today().isoformat()}-precision-consejo-corpus.md"
+        / f"{hoy}-precision-consejo-corpus.md"
     )
 
     lineas = [
         "# Precision del Consejo contra corpus etiquetado (A3)",
         "",
-        f"**Fecha de ejecucion:** {date.today().isoformat()}",
+        f"**Fecha de ejecucion:** {hoy}",
         f"**Casos evaluados:** {len(detalle)} (excluidos por red: {len(excluidos_por_red)})",
         "",
         "## Matriz de confusion",
@@ -170,9 +193,11 @@ def _escribir_reporte(
             "",
             "## Casos excluidos por Crossref inaccesible",
             "",
-            "`@Librarian` consulta la API de Crossref por red; estos casos "
-            "citan un DOI real y no se pudieron evaluar honestamente sin "
-            "conectividad:",
+            (
+                "`@Librarian` consulta la API de Crossref por red; estos casos "
+                "citan un DOI real y no se pudieron evaluar honestamente sin "
+                "conectividad:"
+            ),
             "",
         ] + [f"- {a}" for a in excluidos_por_red]
 

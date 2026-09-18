@@ -569,9 +569,59 @@ plt.show()
     # No debe reportar un error_de_ejecucion con mensaje vacío (el síntoma
     # del crash de acceso inválido por acumulación de figuras)
     errores_vacios = [
-        e for e in resultado.get("errores_de_ejecucion", [])
-        if e.get("error", "") == ""
+        e for e in resultado.get("errores_de_ejecucion", []) if e.get("error", "") == ""
     ]
-    assert not errores_vacios, (
-        f"el subproceso crasheo sin mensaje de error: {resultado.get('errores_de_ejecucion')}"
+    assert (
+        not errores_vacios
+    ), f"el subproceso crasheo sin mensaje de error: {resultado.get('errores_de_ejecucion')}"
+
+
+def test_ejecutar_unidad_cierra_figuras_tras_cada_seccion():
+    """Regresión determinística del fix de Task 6b (Minor de la revisión
+    final de A3-U, 2026-09-17): el test anterior solo comprueba el SÍNTOMA
+    (ausencia de crash), que depende de si esta máquina dispara el crash de
+    scipy/OpenBLAS -- pasaría igual sin el fix en un entorno donde el crash
+    no se manifiesta. Este test ata la causa: intercepta `_ejecutar` (que
+    recibe el código ya ensamblado de TODAS las secciones) y confirma que
+    `matplotlib.pyplot.close("all")` aparece inmediatamente después del
+    código ejecutable de cada sección -- si alguien revierte la línea que
+    agrega ese cierre, este test falla sin importar la máquina."""
+    from unittest.mock import patch
+
+    texto = (
+        "## 1. Primera\n\n```python\nprint('a')\n```\n\n"
+        "## 2. Segunda\n\n```python\nprint('b')\n```\n\n"
+        "$$\\boxed{1}$$\n"
     )
+
+    agente = EngineerAgent()
+    with patch.object(agente, "_ejecutar", return_value=("", None)) as mock_ejecutar:
+        agente.check_code_implementation(texto)
+
+    assert mock_ejecutar.call_count == 1, "se esperaba una sola invocación de _ejecutar"
+    codigo_ensamblado = mock_ejecutar.call_args[0][0]
+    lineas = codigo_ensamblado.splitlines()
+
+    cierres = [
+        i for i, ln in enumerate(lineas) if ln == 'matplotlib.pyplot.close("all")'
+    ]
+    assert len(cierres) == 2, (
+        f"se esperaban 2 cierres de figuras (uno por sección con código), "
+        f"encontrados {len(cierres)} en:\n{codigo_ensamblado}"
+    )
+    indices_codigo = [
+        i for i, ln in enumerate(lineas) if ln in ("print('a')", "print('b')")
+    ]
+    assert (
+        len(indices_codigo) == 2
+    ), "no se encontraron las 2 líneas de código esperadas"
+    for indice_codigo in indices_codigo:
+        # El cierre debe aparecer antes de que empiece la sección siguiente
+        # (no necesariamente en la línea inmediata: el bloque original
+        # puede conservar su salto de línea final, dejando una línea vacía
+        # entre el código y el cierre).
+        siguiente_cierre = next((c for c in cierres if c > indice_codigo), None)
+        assert siguiente_cierre is not None and siguiente_cierre - indice_codigo <= 2, (
+            f"la línea '{lineas[indice_codigo]}' no tiene un cierre de figuras "
+            f"cerca después (cierres encontrados en: {cierres})"
+        )
