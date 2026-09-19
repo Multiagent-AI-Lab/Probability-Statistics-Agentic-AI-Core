@@ -335,7 +335,9 @@ _CONFIRMACION_EN_PROSA = re.compile(
 _VENTANA_CONFIRMACION_CHARS = 300
 
 
-def _contradicho_por_prosa_inmediata(expresion_boxed: str, cuerpo: str, valor_declarado: float) -> bool:
+def _contradicho_por_prosa_inmediata(
+    expresion_boxed: str, cuerpo: str, valor_declarado: float
+) -> bool:
     """¿La oración inmediatamente posterior al `\\boxed{}` compara valores
     sin incluir en ninguna posición el propio valor declarado -evidencia
     de que el `\\boxed{}` se desincronizó de su propio texto, sin
@@ -373,7 +375,8 @@ def _contradicho_por_prosa_inmediata(expresion_boxed: str, cuerpo: str, valor_de
         return False
     valores_en_prosa = [float(g) for g in m.groups() if g is not None]
     return not any(
-        _valores_coinciden(valor_declarado, v, _TOLERANCIA_RELATIVA) for v in valores_en_prosa
+        _valores_coinciden(valor_declarado, v, _TOLERANCIA_RELATIVA)
+        for v in valores_en_prosa
     )
 
 

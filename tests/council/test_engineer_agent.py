@@ -729,7 +729,9 @@ def test_salida_de_la_unidad_tambien_queda_acotada_i4():
     secciones_grandes = {f"sección {i}": ("x" * 10_000) for i in range(300)}
     tamanos_recibidos = []
 
-    def _contrastar_espia(titulo, esperados, salida_de_la_unidad, discrepancias, cuerpo=""):
+    def _contrastar_espia(
+        titulo, esperados, salida_de_la_unidad, discrepancias, cuerpo=""
+    ):
         tamanos_recibidos.append(len(salida_de_la_unidad))
 
     agent = _EA()
