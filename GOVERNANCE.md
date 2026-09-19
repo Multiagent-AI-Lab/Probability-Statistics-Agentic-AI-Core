@@ -238,6 +238,13 @@ Esta sección declara el alcance real, no aspiracional, a la fecha de esta redac
   repo); se resolvió fijando `scipy==1.14.1` en el entorno `ia_stats`, sin tocar
   código del Consejo.
 
+  **Nota de vigencia (2026-09-19):** el pin es un workaround de ese crash puntual,
+  no una decisión de vigencia del stack — a la fecha de esta nota, `scipy` va 2
+  versiones minor por detrás de la estable real (1.18.1, ago-2026). Antes de subir
+  la versión: reproducir el crash original con la nueva versión primero; si ya no
+  ocurre, quitar el pin en el mismo commit que actualiza esta nota (declarado
+  también en `environment.yml`/`requirements.txt`).
+
   A3 mide detección fina por 17 tipos de fallo contra fragmentos aislados; A3-U
   mide específicamente detección de `boxed_desincronizado` contra unidades
   completas de producción con exactamente 1 valor alterado. Difieren en dos ejes:

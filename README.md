@@ -4,7 +4,7 @@
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Framework](https://img.shields.io/badge/Framework-Multi--Agent%20Council-orange.svg)](#sistema-de-agentes-y-gobernanza)
 [![Status](https://img.shields.io/badge/status-production--ready-brightgreen.svg)](#)
-[![Tests](https://img.shields.io/badge/tests-331%20passing-brightgreen.svg)](tests/)
+[![Tests](https://img.shields.io/badge/tests-333%20passing-brightgreen.svg)](tests/)
 
 Repositorio oficial y núcleo agéntico para la asignatura de **Probabilidad y Estadística Inferencial** de la **Ingeniería en Inteligencia Artificial y Nanotecnología** en la **Universidad de La Ciénega del Estado de Michoacán de Ocampo (UCEMICH)**.
 
@@ -84,7 +84,8 @@ PROBABILIDAD Y ESTADÍSTICA/
 │   ├── UNIDAD_7_INFERENCIA_ESTIMACION.md
 │   └── UNIDAD_8_PROYECTO_INTEGRADOR.md
 │
-├── notebooks/                          ← Notebooks compilados automáticamente (8 unidades, mismo nombre que su .md)
+├── notebooks/                          ← Salida del build (8 unidades, mismo nombre que su .md) — SIN outputs guardados: clonar y ejecutar para ver resultados
+├── notebooks/ejecutados/                ← Copias con outputs reales para navegar en GitHub sin clonar (ver nota abajo)
 │
 ├── src/
 │   └── multiagent_core/                ← Arquitectura Agéntica (Auditoría + Consejo)
@@ -199,6 +200,14 @@ raíz del repo a `sys.path` automáticamente —subiendo desde el directorio de
 lanzamiento hasta encontrar `src/multiagent_core/`—, de modo que
 `from src.multiagent_core...` resuelve sin `ModuleNotFoundError`. Si aun así
 falla, verifica que abriste Jupyter dentro del árbol del repo clonado.
+
+### 4. Ver los notebooks sin clonar (directo en GitHub)
+Los `.ipynb` en `notebooks/` son la **salida del build** y se publican sin
+outputs guardados a propósito (así el diff de cada commit muestra solo cambios
+de contenido, no de celdas de salida). Para ver resultados reales —gráficos,
+`print()`, tablas— sin instalar nada, abre la copia equivalente en
+[`notebooks/ejecutados/`](notebooks/ejecutados/): mismo nombre de archivo,
+outputs de una ejecución real y reciente del pipeline.
 
 ---
 

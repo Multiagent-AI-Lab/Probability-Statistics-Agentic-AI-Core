@@ -2,6 +2,12 @@ numpy
 pandas
 # Pin exacto: crash nativo de scipy/OpenBLAS vía seaborn.histplot(kde=True)
 # bloqueaba @Engineer y afectaba 14-15 tests (ver GOVERNANCE.md, A3-U).
+# NO es una decision de vigencia -es un workaround de ese crash puntual-,
+# y a la fecha de este comentario (2026-09-19) va 2 versiones minor por
+# detras de la estable real (1.18.1, ago-2026: https://scipy.org/news/).
+# Antes de subir la version: reproducir el crash original con la nueva
+# version primero; si ya no ocurre, quitar el pin en el mismo commit que
+# actualiza GOVERNANCE.md, no solo aqui.
 scipy==1.14.1
 statsmodels
 matplotlib
