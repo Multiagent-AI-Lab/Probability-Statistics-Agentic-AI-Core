@@ -298,18 +298,70 @@ Esta sección declara el alcance real, no aspiracional, a la fecha de esta redac
   Cohen 0.5 (VP=4, FN=4, FP=0, VN=8)** — sube de 3/8 a 4/8 alteraciones detectadas,
   sin introducir ningún falso positivo nuevo (los 8 negativos siguen en 0 hallazgos).
 
-  Los 4 falsos negativos restantes (`pos_u1`, `pos_u3`, `pos_u5`, `pos_u7`) tienen una
-  causa raíz distinta y **no se tocaron**: son `\boxed{}` en secciones sin código
-  propio (ejemplos analíticos resueltos a mano, o secciones puramente gráficas sin
-  ningún `print`), contrastados por `_contrastar_contra_la_unidad` contra la salida de
-  **toda la unidad**, no de la sección. Ese mecanismo acepta el valor si aparece en
-  cualquier parte del stdout de la unidad completa — no exige que esté junto a un
-  rótulo reconocible como sí lo hace `_el_codigo_apunta_al_valor` a nivel de sección.
-  Arreglarlo con el mismo rigor requeriría rediseñar ese contraste para exigir
-  también un rótulo cercano, un cambio de diseño más amplio que el fix de línea de
-  arriba, con mayor riesgo de introducir falsos positivos en los 8 negativos reales.
-  Queda documentado aquí como el próximo candidato si se decide seguir subiendo el
-  recall, no como una tarea pendiente de alcance menor.
+  Antes de este fix, los 4 falsos negativos restantes (`pos_u1`, `pos_u3`, `pos_u5`,
+  `pos_u7`) tenían una causa raíz común: son `\boxed{}` en secciones sin código propio
+  (ejemplos analíticos resueltos a mano, o secciones puramente gráficas sin ningún
+  `print`), contrastados por `_contrastar_contra_la_unidad` contra la salida de **toda
+  la unidad**, no de la sección — ese mecanismo acepta el valor si aparece en
+  cualquier parte del stdout de la unidad completa, y sin ningún stdout que lo
+  contenga (o sin ningún código que lo produzca) no había forma de detectar la
+  desincronización.
+
+  **Fix de `pos_u7` (2026-09-18, mismo día, investigación separada):** `pos_u7`
+  resultó tener una causa raíz distinta de los otros 3, y barata de cerrar sin tocar
+  el mecanismo de nivel de unidad: la lección real (`UNIDAD_7 §2.5`) ya escribe, en
+  la oración inmediatamente posterior al `\boxed{}` de un ejemplo puramente
+  analítico, el mismo valor en prosa normal ("Como $0.0108 < 0.05$, el p-valor
+  confirma..."). Barrido completo de las 8 unidades reales confirmó que este patrón
+  ("Como/Con `<número>`" repitiendo o comparando el valor del `\boxed{}` inmediato)
+  ocurre solo 2 veces en todo el curso (`UNIDAD_7 §1.7` y `§2.5`) — raro pero real, y
+  detectable sin ejecutar ningún código: la propia inconsistencia textual es la
+  evidencia. Se agregó `_contradicho_por_prosa_inmediata` en `_contraste_boxed.py`,
+  que corre ANTES del filtro `_es_valor_trivial` (un p-valor de 0.02 cae en el rango
+  que ese filtro descarta por diseño para otros fines — índices, exponentes — pero
+  aquí sí es un resultado con significado).
+
+  Dos falsos positivos reales aparecieron durante el TDD de este fix, ambos
+  detectados por el propio gate adversarial (`test_contenido_real_correcto_sigue_aprobando`)
+  contra contenido real correcto, no en un caso sintético: (1) la primera versión
+  solo miraba el PRIMER número tras "Como/Con", pero `UNIDAD_1 §2.4` tiene "Como
+  $40.5 > 15.725$" con el valor del `\boxed{}` en la SEGUNDA posición — corregido
+  exigiendo que el valor esperado coincida con CUALQUIERA de los números de la
+  comparación, no específicamente el primero; (2) con dos `\boxed{}` seguidos en la
+  misma sección (`UNIDAD_1 §2.4` de nuevo: 1.35 y 15.725), la ventana de búsqueda
+  tras el primero alcanzaba a cruzar el segundo y capturaba SU confirmación (números
+  sin relación con el primer valor) — corregido cortando la ventana en el próximo
+  `\boxed{}` de `cuerpo`, no solo por longitud fija. Ambos casos quedaron como tests
+  de regresión dedicados.
+
+  Resultado re-medido con el runner real: **precisión 1.0, recall 0.625, κ de Cohen
+  0.625 (VP=5, FN=3, FP=0, VN=8)** — sube de 4/8 a 5/8 alteraciones detectadas, sin
+  introducir ningún falso positivo nuevo.
+
+  Los 3 falsos negativos restantes (`pos_u1`, `pos_u3`, `pos_u5`) **no se tocaron**:
+  no tienen el patrón "Como/Con" ni ningún stdout que los contraste — arreglarlos
+  con el mismo rigor requeriría rediseñar `_contrastar_contra_la_unidad` para exigir
+  un rótulo cercano en vez de "aparece en algún lado de la unidad", un cambio de
+  diseño más amplio, con mayor riesgo de introducir falsos positivos en los 8
+  negativos reales. Queda documentado aquí como el próximo candidato si se decide
+  seguir subiendo el recall, no como una tarea pendiente de alcance menor.
+
+  **Revisión de `python-reviewer` (mismo día, sin Critical ni Important):** confirmó
+  el regex `_CONFIRMACION_EN_PROSA` seguro contra ReDoS (cuantificador `.{0,40}?`
+  acotado, ventana pre-cortada a 300 caracteres, probado con entradas adversariales
+  diseñadas para maximizar backtracking — <2ms). Dos Minor aplicados: (1) el prefijo
+  `\boxed{` que corta la ventana de búsqueda se extrajo a `_PREFIJO_BOXED`, constante
+  compartida con `_BOXED` de `engineer_agent.py` (que reconoce solo esa sintaxis
+  exacta, sin espacio) — evita que ambos puntos se desincronicen en silencio si el
+  patrón de `\boxed{}` se relaja en el futuro; (2) nuevo test dedicado para el caso
+  del `\boxed{}` contradicho siendo el último de su sección (`proximo_boxed == -1`
+  en `_contradicho_por_prosa_inmediata`), antes ejercitado solo de forma incidental.
+  Límite conocido señalado y no cerrado (bajo riesgo, sin evidencia en las 8 unidades
+  reales): `_CONFIRMACION_EN_PROSA` solo reconoce el operador de comparación en
+  notación matemática (`<`, `>`, `=`), no en palabras ("es menor que") — el patrón
+  real verificado en el curso usa siempre notación matemática, así que esto no
+  afecta la cifra de recall citada arriba, pero limitaría la detección si una futura
+  unidad escribe la comparación en prosa pura.
 
 **Lo que NO comprueba — límites conocidos, con la causa exacta:**
 

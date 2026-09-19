@@ -299,6 +299,141 @@ def test_ejemplo_analitico_autocontenido_no_se_reporta():
     assert resultado["discrepancias"] == []
 
 
+def test_boxed_contradicho_por_prosa_inmediata_se_detecta():
+    """Falso negativo real de A3-U (`pos_u7_inferencia_estimacion.md`, §2.5):
+    un ejemplo puramente analítico (sin código propio ni datos que ningún
+    bloque de la unidad reproduzca -- el mismo patrón "autocontenido" de
+    `test_ejemplo_analitico_autocontenido_no_se_reporta") donde el
+    `\\boxed{}` fue alterado a 0.0200, pero la oración inmediatamente
+    siguiente ("Como 0.0108 < 0.05, el p-valor confirma...") sigue citando
+    el valor real -0.0108-, sin que nadie lo haya tocado. La discrepancia
+    es interna al propio texto: no requiere ninguna salida de código para
+    detectarse, solo leer la prosa que el propio autor ya escribió."""
+    agent = EngineerAgent()
+    texto = (
+        "### 2.5 Paso 4: Cálculo del p-valor\n\n"
+        r"$$\text{p-valor} = 2 \cdot P(Z < -2.55) = 2 \cdot 0.00539 \approx \boxed{0.0200}$$"
+        "\n\n"
+        r"Como $0.0108 < 0.05$, el p-valor confirma la decisión de rechazo "
+        "tomada con el valor crítico."
+        "\n\n### 3. Otro caso\n\n```python\n"
+        "print(f'limite={48.6934:.4f}')\n"
+        "```\n"
+    )
+
+    resultado = agent.check_code_implementation(texto)
+
+    assert resultado["passed"] is False
+    assert any(d["valor_declarado"] == 0.02 for d in resultado["discrepancias"])
+
+
+def test_boxed_confirmado_por_prosa_inmediata_no_se_reporta():
+    """Control del test anterior: mismo patrón "Como <valor> < 0.05" pero
+    con el `\\boxed{}` y la prosa coincidiendo -caso real de UNIDAD_7,
+    sin alterar-. No debe generar discrepancia."""
+    agent = EngineerAgent()
+    texto = (
+        "### 2.5 Paso 4: Cálculo del p-valor\n\n"
+        r"$$\text{p-valor} = 2 \cdot P(Z < -2.55) = 2 \cdot 0.00539 \approx \boxed{0.0108}$$"
+        "\n\n"
+        r"Como $0.0108 < 0.05$, el p-valor confirma la decisión de rechazo "
+        "tomada con el valor crítico."
+        "\n\n### 3. Otro caso\n\n```python\n"
+        "print(f'limite={48.6934:.4f}')\n"
+        "```\n"
+    )
+
+    resultado = agent.check_code_implementation(texto)
+
+    assert resultado["discrepancias"] == []
+
+
+def test_confirmacion_con_valor_en_segunda_posicion_no_es_falso_positivo():
+    """Falso positivo real (`test_contenido_real_correcto_sigue_aprobando`,
+    gate adversarial): UNIDAD_1 §2.4 tiene `\\boxed{15.725}` seguido de
+    "Como $40.5 > 15.725$..." -mismo patrón sintáctico "Como <num> <op>
+    <num>" que el caso de U7, pero aquí el valor del `\\boxed{}` está en
+    la SEGUNDA posición de la comparación (compara el outlier 40.5 contra
+    el límite 15.725), no en la primera. La primera versión del fix solo
+    miraba el primer número tras "Como", así que reportaba una
+    discrepancia falsa contra contenido correcto."""
+    agent = EngineerAgent()
+    texto = (
+        "### 2.4 Paso 3\n\n"
+        r"$$Q_3 + 1.5 \cdot IQR = 13.70 + 1.5(1.35) = 13.70 + 2.025 = \boxed{15.725\ \text{nm}}$$"
+        "\n\n"
+        r"Como $40.5\ \text{nm} > 15.725\ \text{nm}$, la observación se "
+        "clasifica formalmente como valor atípico."
+        "\n\n### 3. Otro caso\n\n```python\n"
+        "print(f'limite={48.6934:.4f}')\n"
+        "```\n"
+    )
+
+    resultado = agent.check_code_implementation(texto)
+
+    assert resultado["discrepancias"] == []
+
+
+def test_ventana_de_confirmacion_no_cruza_el_siguiente_boxed():
+    """Segundo falso positivo real sobre el mismo caso (UNIDAD_1 §2.4,
+    gate adversarial): con DOS `\\boxed{}` seguidos (1.35 y 15.725) y la
+    confirmación "Como 40.5 > 15.725" perteneciendo solo al segundo, la
+    ventana de 300 caracteres tras el PRIMER `\\boxed{}` alcanzaba a cruzar
+    el segundo y capturar esa misma confirmación -cuyos números (40.5,
+    15.725) no tienen relación con el valor del primer `\\boxed{}` (1.35)-,
+    reportándolo como contradicho. La ventana debe cortarse en el próximo
+    `\\boxed{}`, no solo por longitud fija."""
+    agent = EngineerAgent()
+    texto = (
+        "### 2.4 Paso 3\n\n"
+        r"$$IQR = Q_3 - Q_1 = 13.70 - 12.35 = \boxed{1.35\ \text{nm}}$$"
+        "\n\n"
+        "El límite superior para outliers es:\n"
+        r"$$Q_3 + 1.5 \cdot IQR = 13.70 + 1.5(1.35) = 13.70 + 2.025 = \boxed{15.725\ \text{nm}}$$"
+        "\n\n"
+        r"Como $40.5\ \text{nm} > 15.725\ \text{nm}$, la observación se "
+        "clasifica formalmente como valor atípico."
+        "\n\n### 3. Otro caso\n\n```python\n"
+        "print(f'limite={48.6934:.4f}')\n"
+        "```\n"
+    )
+
+    resultado = agent.check_code_implementation(texto)
+
+    assert resultado["discrepancias"] == []
+
+
+def test_confirmacion_se_detecta_cuando_es_el_ultimo_boxed_de_la_seccion():
+    """Caso borde señalado en la revisión de `python-reviewer` (2026-09-18):
+    con un `\\boxed{}` PREVIO en la misma sección (para forzar que la
+    búsqueda hacia adelante desde `inicio` no encuentre ninguno posterior
+    al contradicho, en vez de encontrar el previo por error), el `\\boxed{}`
+    contradicho es el ÚLTIMO de la sección -no hay ningún `\\boxed{`
+    posterior en el cuerpo-. `cuerpo.find(_PREFIJO_BOXED, inicio)` debe
+    devolver -1 y la ventana no debe recortarse por eso -solo por
+    `_VENTANA_CONFIRMACION_CHARS`-. Ejercita explícitamente la rama
+    `proximo_boxed == -1` de `_contradicho_por_prosa_inmediata`, antes sin
+    test dedicado."""
+    agent = EngineerAgent()
+    texto = (
+        "### 2.4 Paso previo\n\n"
+        r"$$IQR = \boxed{1.35\ \text{nm}}$$"
+        "\n\n### 2.5 Paso 4: Cálculo del p-valor\n\n"
+        r"$$\text{p-valor} = 2 \cdot P(Z < -2.55) = 2 \cdot 0.00539 \approx \boxed{0.0200}$$"
+        "\n\n"
+        r"Como $0.0108 < 0.05$, el p-valor confirma la decisión de rechazo "
+        "tomada con el valor crítico."
+        "\n\n### 3. Otro caso\n\n```python\n"
+        "print(f'limite={48.6934:.4f}')\n"
+        "```\n"
+    )
+
+    resultado = agent.check_code_implementation(texto)
+
+    assert resultado["passed"] is False
+    assert any(d["valor_declarado"] == 0.02 for d in resultado["discrepancias"])
+
+
 def test_boxed_emitido_por_el_codigo_contradice_al_texto():
     """H-05 real de UNIDAD 6: el texto afirma T=12.3957 y la celda SymPy
     imprime su propio `\\boxed{6.8447}` para el mismo U=0.35. El `\\boxed{}`
@@ -594,7 +729,7 @@ def test_salida_de_la_unidad_tambien_queda_acotada_i4():
     secciones_grandes = {f"sección {i}": ("x" * 10_000) for i in range(300)}
     tamanos_recibidos = []
 
-    def _contrastar_espia(titulo, esperados, salida_de_la_unidad, discrepancias):
+    def _contrastar_espia(titulo, esperados, salida_de_la_unidad, discrepancias, cuerpo=""):
         tamanos_recibidos.append(len(salida_de_la_unidad))
 
     agent = _EA()

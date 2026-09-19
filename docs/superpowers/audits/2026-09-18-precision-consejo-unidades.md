@@ -9,14 +9,14 @@ Complementario a A3 (`docs/superpowers/audits/2026-09-16-precision-consejo-corpu
 
 | | Predicho: tiene fallo | Predicho: no tiene fallo |
 |---|---|---|
-| **Real: tiene fallo** | VP=4 | FN=4 |
+| **Real: tiene fallo** | VP=5 | FN=3 |
 | **Real: no tiene fallo** | FP=0 | VN=8 |
 
 ## Metricas
 
 - Precision: 1.0
-- Recall: 0.5
-- Kappa de Cohen: 0.5
+- Recall: 0.625
+- Kappa de Cohen: 0.625
 
 ## Desglose por unidad de origen
 
@@ -36,5 +36,5 @@ Complementario a A3 (`docs/superpowers/audits/2026-09-16-precision-consejo-corpu
 | pos_u4_distribuciones_conjuntas.md | UNIDAD_4_DISTRIBUCIONES_CONJUNTAS.md | boxed_desincronizado | True | True | True |
 | pos_u5_variables_continuas.md | UNIDAD_5_VARIABLES_ALEATORIAS_CONTINUAS.md | boxed_desincronizado | True | False | False |
 | pos_u6_modelado_simulacion.md | UNIDAD_6_MODELADO_SIMULACION.md | boxed_desincronizado | True | True | True |
-| pos_u7_inferencia_estimacion.md | UNIDAD_7_INFERENCIA_ESTIMACION.md | boxed_desincronizado | True | False | False |
+| pos_u7_inferencia_estimacion.md | UNIDAD_7_INFERENCIA_ESTIMACION.md | boxed_desincronizado | True | True | True |
 | pos_u8_proyecto_integrador.md | UNIDAD_8_PROYECTO_INTEGRADOR.md | boxed_desincronizado | True | True | True |

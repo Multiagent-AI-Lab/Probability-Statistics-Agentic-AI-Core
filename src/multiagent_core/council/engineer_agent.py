@@ -27,6 +27,12 @@ _ENCABEZADO = re.compile(r"^#{1,6}\s+.*$", re.MULTILINE)
 
 # `\boxed{...}` con un nivel de anidamiento de llaves (p. ej.
 # `\boxed{15.65\ \text{nm}}` o `\boxed{\frac{2}{3}}`).
+#
+# Único formato reconocido -- `\boxed {` con espacio u otra macro
+# equivalente (`\fbox{}`) no matchean. `_PREFIJO_BOXED` en
+# `_contraste_boxed.py` depende de este mismo prefijo literal para cortar
+# la ventana de `_contradicho_por_prosa_inmediata`; si este patrón se
+# relaja, actualizar esa constante en el mismo cambio.
 _BOXED = re.compile(r"\\boxed\{((?:[^{}]|\{[^{}]*\})*)\}")
 
 # Bloques que la auditoría no ejecuta: dependen del runtime de notebook, de
@@ -166,6 +172,11 @@ class EngineerAgent:
         # tiempo cuadrático en el número de secciones).
         secciones = self._dividir_en_secciones(code_text)
         plan: list[tuple[str, list[str], list[float]]] = []
+        # Cuerpo original por título -- solo lo necesita
+        # `_contrastar_contra_la_unidad` (prosa junto al `\boxed{}`, no
+        # disponible en `esperados`); mapa aparte para no tocar la forma de
+        # `plan`, que también consume `_ejecutar_unidad`.
+        cuerpo_por_titulo: dict[str, str] = {}
         for titulo, cuerpo in secciones:
             ejecutables = [
                 codigo
@@ -173,6 +184,7 @@ class EngineerAgent:
                 if lang.lower() in ("python", "py") and self._es_ejecutable(codigo)
             ]
             plan.append((titulo, ejecutables, self._extraer_valores_boxed(cuerpo)))
+            cuerpo_por_titulo[titulo] = cuerpo
 
         # Basta con que la unidad tenga algún `\boxed{}` y algún bloque
         # ejecutable, aunque no coincidan en la misma sección: el patrón
@@ -216,7 +228,11 @@ class EngineerAgent:
                 continue
             if not ejecutables:
                 _contrastar_contra_la_unidad(
-                    titulo, esperados, salida_de_la_unidad, discrepancias
+                    titulo,
+                    esperados,
+                    salida_de_la_unidad,
+                    discrepancias,
+                    cuerpo_por_titulo[titulo],
                 )
                 continue
             # La ejecución aborta en la sección que lanzó la excepción; las

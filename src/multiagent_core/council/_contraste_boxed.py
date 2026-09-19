@@ -9,6 +9,17 @@ clase — ninguna usa estado de instancia.
 
 import re
 
+# Prefijo literal de la única sintaxis de `\boxed{}` que el sistema
+# reconoce (ver `_BOXED` en `engineer_agent.py`, que exige `\boxed{` sin
+# espacio -- no `\boxed {`, `\fbox{}` ni otra macro equivalente). Se
+# comparte como constante porque `_contradicho_por_prosa_inmediata` corta
+# su ventana de búsqueda en la siguiente ocurrencia de este prefijo (Minor
+# de revisión, 2026-09-18): si `_BOXED` se relaja en el futuro para
+# tolerar una variante, este corte debe actualizarse en el mismo cambio o
+# reabre el falso positivo 2 (ventana cruzando al siguiente `\boxed{}`)
+# en silencio, sin que ningún test existente lo detecte.
+_PREFIJO_BOXED = r"\boxed{"
+
 # Número final de una expresión: el último numérico que aparece en el
 # `\boxed{}`, que es el resultado (`P(X=2) = 190 \times 0.0025 \approx
 # 0.18868` -> 0.18868).
@@ -295,11 +306,83 @@ def _comparte_operando_calculado(expresion: str, numeros_de_la_unidad: list) -> 
     return False
 
 
+# Confirmación/contradicción textual explícita: "Como <valor> < 0.05",
+# "Con <valor> se rechaza...". Patrón real de las lecciones (UNIDAD_7 §1.7
+# y §2.5): el autor repite en prosa normal el mismo número que acaba de
+# encuadrar en `\boxed{}`, sin que el rótulo de la fórmula tenga que
+# coincidir con nada. Solo dos ocurrencias en las 8 unidades reales con
+# ESTE valor en la oración (verificado por barrido completo, 2026-09-18)
+# -- raro pero real, y de bajo riesgo siempre que se exija que el valor
+# esperado aparezca en ALGUNO de los números de la oración, no
+# específicamente en el primero: "Como 40.5 > 15.725" (UNIDAD_1 §2.4) es
+# el mismo patrón sintáctico pero compara el outlier contra el límite, no
+# repite el propio `\boxed{}` en primera posición -- exigir el primer
+# número ahí generaba un falso positivo real (visto en
+# `test_contenido_real_correcto_sigue_aprobando`).
+_CONFIRMACION_EN_PROSA = re.compile(
+    r"\b(?:[Cc]omo|[Cc]on)\s+\$?(-?\d+(?:\.\d+)?)"
+    # Hasta 40 caracteres de ruido tolerado entre el primer número y el
+    # operador (unidades LaTeX: `\ \text{nm}`, `\%`, espacios de fórmula) --
+    # acotado para no arriesgar backtracking sobre líneas largas, igual
+    # disciplina que las demás cotas de este archivo (ver `_ROTULO_INLINE`).
+    r"(?:.{0,40}?[<>=]{1,2}\s*\$?(-?\d+(?:\.\d+)?))?\b"
+)
+
+# Ventana de búsqueda tras el `\boxed{}`: la confirmación real ocurre en la
+# oración inmediatamente siguiente (UNIDAD_7 §2.5 la tiene 2 líneas después
+# por el salto de párrafo Markdown); no tiene sentido buscar arbitrariamente
+# lejos, donde un "Como <número>" ya hablaría de otro ejemplo.
+_VENTANA_CONFIRMACION_CHARS = 300
+
+
+def _contradicho_por_prosa_inmediata(expresion_boxed: str, cuerpo: str, valor_declarado: float) -> bool:
+    """¿La oración inmediatamente posterior al `\\boxed{}` compara valores
+    sin incluir en ninguna posición el propio valor declarado -evidencia
+    de que el `\\boxed{}` se desincronizó de su propio texto, sin
+    necesidad de ningún código-?
+
+    Se exige que NINGUNO de los números capturados de la comparación
+    coincida con `valor_declarado`: una oración como "Como 0.0108 < 0.05"
+    solo tiene un número relevante (el 0.05 es el umbral fijo de la
+    prueba, no el resultado), pero "Como 40.5 > 15.725" tiene el valor del
+    `\\boxed{}` en la SEGUNDA posición -- exigir una posición fija
+    reportaría un falso positivo sobre contenido correcto.
+
+    Devuelve False también cuando no hay ninguna confirmación textual
+    cercana (el patrón es raro): la ausencia de esta señal no es
+    evidencia de nada, solo la presencia de una que contradice lo es.
+    """
+    idx = cuerpo.find(expresion_boxed)
+    if idx == -1:
+        return False
+    inicio = idx + len(expresion_boxed)
+    fin = inicio + _VENTANA_CONFIRMACION_CHARS
+    # La ventana no debe cruzar el próximo `\boxed{}`: un "Como/Con <num>"
+    # después de ese punto confirma o contradice AL SIGUIENTE ejemplo, no
+    # a este -- sin este corte, UNIDAD_1 §2.4 (dos `\boxed{}` seguidos,
+    # 1.35 y 15.725) generaba un falso positivo real sobre el primero
+    # (visto en `test_contenido_real_correcto_sigue_aprobando`): su
+    # ventana alcanzaba la confirmación "Como 40.5 > 15.725" del SEGUNDO
+    # `\boxed{}`, cuyos números no tienen relación con el primero.
+    proximo_boxed = cuerpo.find(_PREFIJO_BOXED, inicio)
+    if proximo_boxed != -1:
+        fin = min(fin, proximo_boxed)
+    ventana = cuerpo[inicio:fin]
+    m = _CONFIRMACION_EN_PROSA.search(ventana)
+    if not m:
+        return False
+    valores_en_prosa = [float(g) for g in m.groups() if g is not None]
+    return not any(
+        _valores_coinciden(valor_declarado, v, _TOLERANCIA_RELATIVA) for v in valores_en_prosa
+    )
+
+
 def _contrastar_contra_la_unidad(
     titulo: str,
     esperados: list,
     salida_de_la_unidad: str,
     discrepancias: list,
+    cuerpo: str = "",
 ) -> None:
     """Contrasta los `\\boxed{}` de una sección sin código propio contra
     la salida de toda la unidad.
@@ -313,7 +396,30 @@ def _contrastar_contra_la_unidad(
     No se exige que los rótulos coincidan: el texto la llama `\\bar{x}`
     y el código `Media:`, y ninguna regla sintáctica une esos nombres de
     forma confiable. El valor mismo es la evidencia.
+
+    La confirmación/contradicción por prosa (ver `_contradicho_por_prosa_inmediata`)
+    corre ANTES del filtro de `_es_valor_trivial`: ese filtro descarta valores
+    pequeños porque suelen ser índices/exponentes sin significado propio como
+    resultado, pero un p-valor real (p. ej. 0.02) es exactamente ese rango y sí
+    es un resultado con significado -la evidencia aquí no es "aparece en algún
+    lado", es que el propio texto lo contradice explícitamente.
     """
+    if cuerpo:
+        for valor_esperado, expresion in esperados:
+            if _contradicho_por_prosa_inmediata(expresion, cuerpo, valor_esperado):
+                discrepancias.append(
+                    {
+                        "seccion": titulo,
+                        "valor_declarado": valor_esperado,
+                        "valores_producidos": [],
+                        "motivo": (
+                            "el propio texto, en la oración inmediatamente "
+                            "posterior, cita un valor distinto para el mismo "
+                            "resultado"
+                        ),
+                    }
+                )
+
     numeros_de_la_unidad = [
         float(n) for n in _NUMERO.findall(_limpiar_latex(salida_de_la_unidad))
     ]
