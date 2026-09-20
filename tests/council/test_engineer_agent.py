@@ -434,6 +434,155 @@ def test_confirmacion_se_detecta_cuando_es_el_ultimo_boxed_de_la_seccion():
     assert any(d["valor_declarado"] == 0.02 for d in resultado["discrepancias"])
 
 
+def test_boxed_contradicho_por_aritmetica_de_dos_operandos_se_detecta():
+    """Falso negativo real de A3-U (`pos_u1_estadistica_descriptiva.md`,
+    §2.4): un ejemplo puramente analítico sin código propio y sin patrón
+    "Como/Con" en prosa -no cubierto por `_contradicho_por_prosa_inmediata`-,
+    pero la propia expresión matemática que precede al `\\boxed{}` ya
+    contiene la operación completa: "13.70 - 12.35 = \\boxed{1.35}". Si el
+    `\\boxed{}` fue alterado a un valor que no es 13.70-12.35, se puede
+    detectar evaluando la aritmética de la propia línea, sin ejecutar
+    ningún código ni depender de que el texto la repita en otra parte."""
+    agent = EngineerAgent()
+    texto = (
+        "### 2.4 Paso 3\n\n"
+        r"$$IQR = Q_3 - Q_1 = 13.70 - 12.35 = \boxed{2.00\ \text{nm}}$$"
+        "\n\n### 3. Otro caso\n\n```python\n"
+        "print(f'limite={48.6934:.4f}')\n"
+        "```\n"
+    )
+
+    resultado = agent.check_code_implementation(texto)
+
+    assert resultado["passed"] is False
+    assert any(d["valor_declarado"] == 2.00 for d in resultado["discrepancias"])
+
+
+def test_boxed_con_aritmetica_correcta_no_se_reporta():
+    """Control del test anterior: con el valor correcto (13.70 - 12.35 =
+    1.35, caso real de UNIDAD_1 §2.4 sin alterar) no hay hallazgo."""
+    agent = EngineerAgent()
+    texto = (
+        "### 2.4 Paso 3\n\n"
+        r"$$IQR = Q_3 - Q_1 = 13.70 - 12.35 = \boxed{1.35\ \text{nm}}$$"
+        "\n\n### 3. Otro caso\n\n```python\n"
+        "print(f'limite={48.6934:.4f}')\n"
+        "```\n"
+    )
+
+    resultado = agent.check_code_implementation(texto)
+
+    assert resultado["discrepancias"] == []
+
+
+def test_boxed_contradicho_por_aritmetica_de_multiplicacion_se_detecta():
+    """Segundo caso real (`pos_u3_variables_discretas.md`): la operación es
+    multiplicación en notación LaTeX (`\\times`), no resta -confirma que
+    el evaluador no está atado a un solo operador."""
+    agent = EngineerAgent()
+    texto = (
+        "### 3.5 Paso previo\n\n"
+        r"$$\mathbb{E}[X] = n p = 20 \times 0.05 = \boxed{1.5 \text{ nano-sensor}}$$"
+        "\n\n### 4. Otro caso\n\n```python\n"
+        "print(f'limite={48.6934:.4f}')\n"
+        "```\n"
+    )
+
+    resultado = agent.check_code_implementation(texto)
+
+    assert resultado["passed"] is False
+    assert any(d["valor_declarado"] == 1.5 for d in resultado["discrepancias"])
+
+
+def test_boxed_con_multiplicacion_correcta_no_se_reporta():
+    """Control: 20 x 0.05 = 1.0, caso real de UNIDAD_3 sin alterar."""
+    agent = EngineerAgent()
+    texto = (
+        "### 3.5 Paso previo\n\n"
+        r"$$\mathbb{E}[X] = n p = 20 \times 0.05 = \boxed{1.0 \text{ nano-sensor}}$$"
+        "\n\n### 4. Otro caso\n\n```python\n"
+        "print(f'limite={48.6934:.4f}')\n"
+        "```\n"
+    )
+
+    resultado = agent.check_code_implementation(texto)
+
+    assert resultado["discrepancias"] == []
+
+
+def test_boxed_con_formato_compuesto_no_evalua_aritmetica():
+    """Falso positivo real encontrado por el gate adversarial
+    (`neg_u5_variables_continuas.md`, sin alterar, 2026-09-19):
+    `\\boxed{0.86638 \\quad (86.64\\%)}` tiene DOS números -el valor y su
+    versión en porcentaje-. El llamador extrae "el último número" como
+    valor_declarado (86.64), pero la operación real (0.93319 - 0.06681)
+    da 0.86638 -el PRIMER número-. La primera versión del evaluador
+    comparaba correctamente su cálculo contra el número equivocado y
+    reportaba una discrepancia falsa. Debe abstenerse de evaluar cuando
+    el `\\boxed{}` tiene más de un número, no adivinar cuál usar."""
+    agent = EngineerAgent()
+    texto = (
+        "### 3.3 Paso 2\n\n"
+        r"$$P(7.9 \le X \le 9.1) = 0.93319 - 0.06681 = "
+        r"\boxed{0.86638 \quad (86.64\%)}$$"
+        "\n\n### 4. Otro caso\n\n```python\n"
+        "print(f'limite={48.6934:.4f}')\n"
+        "```\n"
+    )
+
+    resultado = agent.check_code_implementation(texto)
+
+    assert resultado["discrepancias"] == []
+
+
+def test_boxed_con_tres_operandos_correctos_no_es_falso_positivo():
+    """Important real de la revisión de `python-reviewer` (2026-09-19):
+    la primera versión de `_OPERACION_DOS_OPERANDOS` usaba `.search()` sin
+    verificar qué precedía al match, así que sobre una expresión de 3+
+    operandos ("0.25 + 0.45 + 0.30 = \\boxed{1.0}", caso real de
+    UNIDAD_2 §1.3, aritmética CORRECTA) matcheaba el SUFIJO
+    ("0.45 + 0.30 ="), calculaba 0.75, y lo reportaba como discrepancia
+    contra el 1.0 real -sin que hubiera ningún error en el contenido-.
+
+    No se manifestaba en A3-U solo porque esa sección real tiene código
+    ejecutable propio (así que `check_code_implementation` nunca invoca
+    este mecanismo ahí) -una coincidencia del contenido actual, no una
+    garantía de la función-. Esta sección de prueba deliberadamente NO
+    tiene código propio, para ejercitar la función directamente."""
+    agent = EngineerAgent()
+    texto = (
+        "### 1.3 Axioma de normalización\n\n"
+        r"$$P(\Omega) = 0.25 + 0.45 + 0.30 = \boxed{1.0}$$"
+        "\n\n### 2. Otro caso\n\n```python\n"
+        "print(f'limite={48.6934:.4f}')\n"
+        "```\n"
+    )
+
+    resultado = agent.check_code_implementation(texto)
+
+    assert resultado["discrepancias"] == []
+
+
+def test_boxed_con_tres_operandos_multiplicacion_correctos_no_es_falso_positivo():
+    """Segundo caso real del mismo Important (UNIDAD_2 §3.1):
+    "0.90 \\times 0.85 \\times 0.80 = \\boxed{0.612}" -3 operandos,
+    multiplicación, aritmética correcta-. El sufijo "0.85 \\times 0.80"
+    da 0.68, que el mecanismo sin el fix reportaría como discrepancia
+    contra el 0.612 real."""
+    agent = EngineerAgent()
+    texto = (
+        "### 3.1 Regla de la multiplicación\n\n"
+        r"$$P(A \cap B \cap C) = 0.90 \times 0.85 \times 0.80 = \boxed{0.612}$$"
+        "\n\n### 4. Otro caso\n\n```python\n"
+        "print(f'limite={48.6934:.4f}')\n"
+        "```\n"
+    )
+
+    resultado = agent.check_code_implementation(texto)
+
+    assert resultado["discrepancias"] == []
+
+
 def test_boxed_emitido_por_el_codigo_contradice_al_texto():
     """H-05 real de UNIDAD 6: el texto afirma T=12.3957 y la celda SymPy
     imprime su propio `\\boxed{6.8447}` para el mismo U=0.35. El `\\boxed{}`

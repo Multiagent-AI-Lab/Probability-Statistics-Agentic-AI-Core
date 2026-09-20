@@ -20,6 +20,14 @@ import re
 # en silencio, sin que ningún test existente lo detecte.
 _PREFIJO_BOXED = r"\boxed{"
 
+# `\boxed{...}` con un nivel de anidamiento de llaves -mismo patrón que
+# `_BOXED` en `engineer_agent.py`, duplicado aquí (no importado) porque
+# `_contraste_boxed.py` no depende de ese módulo. Se usa para volver a
+# aislar el CONTENIDO del `\boxed{}` a partir de `expresion_boxed` (que ya
+# incluye la línea completa hasta el cierre), cuando hace falta decidir si
+# ese contenido es un valor simple o un formato compuesto.
+_BOXED_CONTENIDO = re.compile(r"\\boxed\{((?:[^{}]|\{[^{}]*\})*)\}")
+
 # Número final de una expresión: el último numérico que aparece en el
 # `\boxed{}`, que es el resultado (`P(X=2) = 190 \times 0.0025 \approx
 # 0.18868` -> 0.18868).
@@ -380,6 +388,121 @@ def _contradicho_por_prosa_inmediata(
     )
 
 
+# Operación aritmética de 2 operandos, justo antes del `=` que abre el
+# `\boxed{}`: "13.70 - 12.35 = \boxed{1.35}", "20 \times 0.05 = \boxed{1.0}".
+# Patrón real de las lecciones (UNIDAD_1 §2.4, UNIDAD_3 §3.5): un ejemplo
+# analítico sin código propio y sin "Como/Con" en prosa, donde la propia
+# expresión matemática ya contiene la operación completa.
+#
+# Deliberadamente estrecho -solo 2 operandos numéricos con un operador
+# entre ellos, inmediatamente antes del `=` final-: un barrido de las 8
+# unidades reales (2026-09-19) mostró que la mayoría de expresiones con
+# `\boxed{}` tienen 3+ operandos, fracciones o formato compuesto
+# ("0.86638 (86.64%)") que un evaluador de 2 operandos evalúa mal o no
+# reconoce -y evaluar mal es peor que no evaluar, porque generaría un
+# falso positivo sobre contenido correcto-. Ampliar el alcance (3+
+# operandos, paréntesis) requeriría un evaluador aritmético real
+# (sympy.sympify o similar) con su propio ciclo de TDD adversarial; no
+# vale el riesgo solo para subir de 2 a 3 unidades cerradas.
+#
+# Important de revisión (python-reviewer, 2026-09-19): la primera versión
+# de este patrón usaba `.search()` sin verificar qué había ANTES del
+# match, así que sobre una expresión de 3+ operandos
+# ("0.25 + 0.45 + 0.30 = \boxed{1.0}") matcheaba el SUFIJO
+# ("0.45 + 0.30 ="), calculaba 0.75, y lo comparaba contra 1.0 como si
+# fueran los únicos 2 operandos -falso positivo reproducido en aislamiento
+# contra 4 secciones reales de UNIDAD_2 (todas con aritmética CORRECTA de
+# 3+ operandos). No se manifestaba en A3-U solo porque esas 4 secciones
+# tienen código ejecutable propio en el mismo bloque, y
+# `check_code_implementation` nunca invoca este mecanismo en ese caso -una
+# coincidencia del contenido actual, no una garantía de la función-.
+#
+# El fix vive en `_contradicho_por_aritmetica_propia`, no en el regex: tras
+# encontrar el match, se verifica que el tramo ANTERIOR al operando
+# izquierdo capturado no termine en un dígito, punto decimal, paréntesis
+# de cierre NI OPERADOR ARITMÉTICO -evidencia de un tercer operando ahí-.
+# El caso real es justo el del operador: en "0.25 + 0.45 + 0.30 =", el
+# match de 2 operandos captura "0.45 + 0.30 =", y lo que queda antes es
+# "...0.25 + " -termina en el operador "+ ", no en un dígito pegado-, así
+# que la verificación debe cubrir ambas formas (dígito pegado O separado
+# por un operador con espacios).
+_OPERACION_DOS_OPERANDOS = re.compile(
+    r"(-?\d+(?:\.\d+)?)\s*(\\times|\\cdot|[+\-*/])\s*(-?\d+(?:\.\d+)?)\s*=\s*$"
+)
+
+# Un dígito, punto, `)` o un operador aritmético justo antes del inicio
+# del match -ignorando espacios- es evidencia de un operando adicional a
+# la izquierda que el match de 2 operandos no cubre. Incluye
+# `\times`/`\cdot` como palabras completas (no solo el primer carácter)
+# porque terminan en letra, no en un símbolo de la clase de caracteres.
+_OPERANDO_ADICIONAL_ANTES = re.compile(r"(?:[\d.)+\-*/]|\\times|\\cdot)\s*$")
+
+
+def _contradicho_por_aritmetica_propia(
+    expresion_boxed: str, valor_declarado: float
+) -> bool:
+    """¿La propia expresión que precede al `\\boxed{}` ya contiene una
+    operación de 2 operandos cuyo resultado no coincide con el valor
+    declarado -evidencia interna a la línea, sin necesidad de código ni
+    de otra oración-?
+
+    Solo actúa cuando el patrón es inequívoco: exactamente 2 operandos
+    numéricos (sin variables, sin fracciones, sin paréntesis) inmediatamente
+    antes del `=` que abre el `\\boxed{}`, Y el contenido del `\\boxed{}`
+    tiene un único número (no un formato compuesto). Cualquier otra forma
+    (3+ operandos, `\\frac{}`, subíndices, o `\\boxed{0.86638 (86.64\\%)}`
+    con dos números) no se evalúa -devuelve `False`-, para no arriesgar un
+    falso positivo sobre una expresión que este evaluador simple
+    interpretaría mal.
+
+    Falso positivo real encontrado por el gate adversarial (2026-09-19,
+    `neg_u5_variables_continuas.md`, sin alterar): `\\boxed{0.86638 \\quad
+    (86.64\\%)}` tiene DOS números -el valor y su versión en porcentaje-;
+    `valor_declarado` (extraído por el llamador como "el último número")
+    era 86.64, pero la operación real (0.93319 - 0.06681) da 0.86638 -el
+    PRIMER número, no el último-. El evaluador comparaba correctamente su
+    propio cálculo contra el número equivocado. Exigir un único número
+    dentro del `\\boxed{}` excluye este caso por completo, en vez de
+    intentar adivinar cuál de los dos números es "el correcto".
+
+    Segundo falso positivo real (revisión de `python-reviewer`, 2026-09-19):
+    sobre una expresión de 3+ operandos ("0.25 + 0.45 + 0.30 = \\boxed{1.0}",
+    UNIDAD_2 §1.3), el patrón de 2 operandos matcheaba el SUFIJO
+    ("0.45 + 0.30 =") ignorando que había un tercer operando más a la
+    izquierda -reportando 0.75 != 1.0 sobre aritmética correcta-. Se
+    verifica ahora que nada preceda al operando izquierdo del match salvo
+    espacio (ver `_OPERANDO_ADICIONAL_ANTES`): un dígito, punto o `)`
+    justo antes es evidencia de ese tercer operando.
+    """
+    contenido_boxed_match = _BOXED_CONTENIDO.search(expresion_boxed)
+    if contenido_boxed_match is None:
+        return False
+    numeros_en_boxed = _NUMERO.findall(contenido_boxed_match.group(1))
+    if len(numeros_en_boxed) != 1:
+        return False
+
+    izquierda = expresion_boxed.rpartition(_PREFIJO_BOXED)[0]
+    m = _OPERACION_DOS_OPERANDOS.search(izquierda)
+    if not m:
+        return False
+    if _OPERANDO_ADICIONAL_ANTES.search(izquierda[: m.start()]):
+        return False
+    a, operador, b = float(m.group(1)), m.group(2), float(m.group(3))
+    if operador in ("+",):
+        calculado = a + b
+    elif operador in ("-",):
+        calculado = a - b
+    elif operador in ("*", r"\times", r"\cdot"):
+        calculado = a * b
+    elif operador == "/":
+        if b == 0:
+            return False
+        calculado = a / b
+    else:
+        return False
+    return not _valores_coinciden(calculado, valor_declarado, _TOLERANCIA_RELATIVA)
+
+
 def _contrastar_contra_la_unidad(
     titulo: str,
     esperados: list,
@@ -401,27 +524,45 @@ def _contrastar_contra_la_unidad(
     forma confiable. El valor mismo es la evidencia.
 
     La confirmación/contradicción por prosa (ver `_contradicho_por_prosa_inmediata`)
-    corre ANTES del filtro de `_es_valor_trivial`: ese filtro descarta valores
+    y la aritmética de la propia expresión (ver `_contradicho_por_aritmetica_propia`)
+    corren ANTES del filtro de `_es_valor_trivial`: ese filtro descarta valores
     pequeños porque suelen ser índices/exponentes sin significado propio como
-    resultado, pero un p-valor real (p. ej. 0.02) es exactamente ese rango y sí
-    es un resultado con significado -la evidencia aquí no es "aparece en algún
-    lado", es que el propio texto lo contradice explícitamente.
+    resultado, pero un p-valor real (p. ej. 0.02) o un IQR de 1.35 son
+    exactamente ese rango y sí son resultados con significado -la evidencia
+    aquí no es "aparece en algún lado", es interna al propio texto.
     """
-    if cuerpo:
-        for valor_esperado, expresion in esperados:
-            if _contradicho_por_prosa_inmediata(expresion, cuerpo, valor_esperado):
-                discrepancias.append(
-                    {
-                        "seccion": titulo,
-                        "valor_declarado": valor_esperado,
-                        "valores_producidos": [],
-                        "motivo": (
-                            "el propio texto, en la oración inmediatamente "
-                            "posterior, cita un valor distinto para el mismo "
-                            "resultado"
-                        ),
-                    }
-                )
+    for valor_esperado, expresion in esperados:
+        ya_reportado = False
+        if cuerpo and _contradicho_por_prosa_inmediata(
+            expresion, cuerpo, valor_esperado
+        ):
+            discrepancias.append(
+                {
+                    "seccion": titulo,
+                    "valor_declarado": valor_esperado,
+                    "valores_producidos": [],
+                    "motivo": (
+                        "el propio texto, en la oración inmediatamente "
+                        "posterior, cita un valor distinto para el mismo "
+                        "resultado"
+                    ),
+                }
+            )
+            ya_reportado = True
+        if not ya_reportado and _contradicho_por_aritmetica_propia(
+            expresion, valor_esperado
+        ):
+            discrepancias.append(
+                {
+                    "seccion": titulo,
+                    "valor_declarado": valor_esperado,
+                    "valores_producidos": [],
+                    "motivo": (
+                        "la propia operación de la expresión (2 operandos) "
+                        "no produce el valor declarado en el boxed"
+                    ),
+                }
+            )
 
     numeros_de_la_unidad = [
         float(n) for n in _NUMERO.findall(_limpiar_latex(salida_de_la_unidad))

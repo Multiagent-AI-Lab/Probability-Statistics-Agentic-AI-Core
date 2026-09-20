@@ -49,7 +49,7 @@ _BADGE_PATTERN = re.compile(r"tests-(\d+)%20passing")
 
 # Actualizar junto con el badge de README.md cada vez que cambie el
 # número de tests del repo. Verificar con: pytest --collect-only -q | tail -1
-NUMERO_TESTS_ESPERADO = 333
+NUMERO_TESTS_ESPERADO = 340
 
 
 def test_badge_de_tests_coincide_con_el_conteo_esperado():

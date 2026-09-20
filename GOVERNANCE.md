@@ -353,6 +353,57 @@ Esta sección declara el alcance real, no aspiracional, a la fecha de esta redac
   negativos reales. Queda documentado aquí como el próximo candidato si se decide
   seguir subiendo el recall, no como una tarea pendiente de alcance menor.
 
+  **Fix de `pos_u1` y `pos_u3` (2026-09-19/20, mismo día, investigación separada):**
+  ambos resultaron tener una causa raíz común, distinta de `pos_u7` y barata de
+  cerrar: son ejemplos analíticos sin código propio y sin patrón "Como/Con", pero la
+  propia expresión matemática que precede al `\boxed{}` ya contiene una operación
+  aritmética completa de 2 operandos (`UNIDAD_1 §2.4`: "13.70 - 12.35 =
+  \boxed{1.35}"; `UNIDAD_3 §3.5`: "20 \times 0.05 = \boxed{1.0}"). Se agregó
+  `_contradicho_por_aritmetica_propia` en `_contraste_boxed.py`, deliberadamente
+  estrecho: solo evalúa cuando hay EXACTAMENTE 2 operandos numéricos (sin variables,
+  fracciones ni paréntesis) y el `\boxed{}` tiene un único número — un barrido de
+  las 8 unidades reales mostró que la mayoría de expresiones tienen 3+ operandos o
+  formato compuesto, y ampliar el alcance a esos casos requeriría un evaluador
+  aritmético real (tipo `sympy.sympify`) con su propio ciclo de TDD adversarial, no
+  justificado solo para 1-2 unidades más.
+
+  Dos falsos positivos reales aparecieron durante el desarrollo, ambos sobre
+  contenido real correcto: (1) `neg_u5_variables_continuas.md` tiene
+  `\boxed{0.86638 \quad (86.64\%)}` — dos números dentro del `\boxed{}` (el valor y
+  su versión en porcentaje); el extractor existente toma "el último número"
+  (86.64) como valor a contrastar, pero la operación real da 0.86638 (el
+  *primero*) — corregido exigiendo un único número dentro del `\boxed{}` antes de
+  evaluar, en vez de adivinar cuál usar; (2) `python-reviewer` encontró, evaluando
+  la función en aislamiento (no solo vía A3-U), que el regex de 2 operandos podía
+  matchear el *sufijo* de una expresión de 3+ operandos —"0.25 + 0.45 + 0.30 =
+  \boxed{1.0}" (`UNIDAD_2 §1.3`, aritmética correcta) matcheaba solo "0.45 + 0.30 ="
+  y reportaba 0.75 ≠ 1.0 como discrepancia falsa—. Esto no se manifestaba en A3-U
+  porque esa sección real tiene código ejecutable propio (el mecanismo nunca se
+  invoca ahí), una coincidencia del contenido actual, no una garantía de la
+  función. Corregido verificando que nada preceda al operando izquierdo del match
+  salvo espacio — un dígito, punto, `)` u operador aritmético justo antes es
+  evidencia de un tercer operando. Ambos casos quedaron como tests de regresión
+  dedicados, incluyendo el caso de 3+ operandos evaluado sin código acompañante
+  (la condición exacta que antes ocultaba el bug).
+
+  Resultado re-medido con el runner real tras ambos fixes: **precisión 1.0, recall
+  0.75, κ de Cohen 0.75 (VP=6, FN=2, FP=0, VN=8)** — sube de 5/8 a 6/8 alteraciones
+  detectadas, sin introducir ningún falso positivo nuevo. Verificación final:
+  46/46 tests de `test_engineer_agent.py`, 150/150 de `tests/council/` (incluido el
+  gate adversarial completo), sin regresiones.
+
+  Los 2 falsos negativos restantes (`pos_u1` y `pos_u5`) tienen causas distintas
+  de las que este fix cierra, ninguna cubierta por el mecanismo actual: `pos_u1`
+  altera el `\boxed{}` de la MEDIA (`UNIDAD_1 §6.4`), una sección puramente
+  gráfica (`plt.show()`, sin ningún `print`) — el mismo patrón "sin stdout que
+  contrastar" de U1/U3/U5 antes de esta ronda de fixes, distinto del `\boxed{}`
+  de IQR (`§2.4`) que sí quedó cubierto; `pos_u5` sigue excluido a propósito por
+  su formato compuesto (ver el falso positivo (1) de arriba). El mismo criterio
+  de costo/riesgo aplicado en cada ronda anterior sigue vigente: cada mejora
+  adicional exige un evaluador más completo (aritmético o de otra naturaleza),
+  con más superficie para el mismo tipo de falso positivo ya encontrado dos
+  veces en este mecanismo.
+
   **Revisión de `python-reviewer` (mismo día, sin Critical ni Important):** confirmó
   el regex `_CONFIRMACION_EN_PROSA` seguro contra ReDoS (cuantificador `.{0,40}?`
   acotado, ventana pre-cortada a 300 caracteres, probado con entradas adversariales
