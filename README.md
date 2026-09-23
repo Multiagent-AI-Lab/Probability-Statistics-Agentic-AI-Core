@@ -4,7 +4,7 @@
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Framework](https://img.shields.io/badge/Framework-Multi--Agent%20Council-orange.svg)](#sistema-de-agentes-y-gobernanza)
 [![Status](https://img.shields.io/badge/status-production--ready-brightgreen.svg)](#)
-[![Tests](https://img.shields.io/badge/tests-340%20passing-brightgreen.svg)](tests/)
+[![Tests](https://img.shields.io/badge/tests-342%20passing-brightgreen.svg)](tests/)
 
 Repositorio oficial y núcleo agéntico para la asignatura de **Probabilidad y Estadística Inferencial** de la **Ingeniería en Inteligencia Artificial y Nanotecnología** en la **Universidad de La Ciénega del Estado de Michoacán de Ocampo (UCEMICH)**.
 

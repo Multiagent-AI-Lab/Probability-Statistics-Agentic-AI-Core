@@ -421,6 +421,37 @@ Esta sección declara el alcance real, no aspiracional, a la fecha de esta redac
   afecta la cifra de recall citada arriba, pero limitaría la detección si una futura
   unidad escribe la comparación en prosa pura.
 
+  **Fix de `pos_u5` (2026-09-23):** el falso negativo restante en el formato
+  compuesto se cerró sin reabrir el falso positivo (1) que motivó excluirlo. La
+  causa raíz era la misma en ambos casos — dos números dentro del `\boxed{}`
+  ("`valor \quad (porcentaje\%)`") — pero la relación entre ambos números es
+  distinguible: si el segundo es el primero multiplicado por 100 (con la misma
+  tolerancia relativa que el resto del módulo), el formato es reconocible como
+  "valor + su vista porcentual" y no hay ambigüedad sobre cuál contrastar contra
+  la aritmética — es el primero. Se agregó `_valor_del_formato_porcentaje` en
+  `_contraste_boxed.py`: con 2 números que cumplen esa relación, evalúa la
+  aritmética contra el primero; con 2 números que no la cumplen (posible formato
+  compuesto de naturaleza distinta, dos datos independientes en vez de un valor y
+  su derivado), sigue absteniéndose igual que antes — el mismo principio
+  conservador de toda la ronda anterior. `neg_u5` (contenido real, sin alterar)
+  sigue en verde porque su relación SÍ se cumple (0.86638 × 100 ≈ 86.64) y la
+  aritmética real coincide; el caso adversarial nuevo confirma que un valor
+  alterado con esa misma relación consistente (0.90000/90.00%, pero la resta real
+  da 0.86638) sí se detecta.
+
+  Resultado re-medido con el runner real: **precisión 1.0, recall 0.875, κ de
+  Cohen 0.875 (VP=7, FN=1, FP=0, VN=8)** — sube de 6/8 a 7/8 alteraciones
+  detectadas, sin falsos positivos nuevos. Verificación: 48/48 tests de
+  `test_engineer_agent.py`, 69/69 de engineer_agent + gate adversarial juntos,
+  342/342 en la suite completa.
+
+  Único falso negativo restante: `pos_u1` (`UNIDAD_1 §6.4`, la sección
+  puramente gráfica sin `print` ni operación de 2 operandos en el texto — ver
+  el párrafo anterior). Cerrarlo exigiría ejecutar el código real y contrastar
+  contra su efecto (el propio gráfico), un cambio estructural fuera de
+  proporción para 1 caso sintético del corpus; queda documentado como límite
+  estructural, no como tarea pendiente.
+
 **Lo que NO comprueba — límites conocidos, con la causa exacta:**
 
 * **Interpretación semántica del contenido (H-03).** El Consejo detecta que un número

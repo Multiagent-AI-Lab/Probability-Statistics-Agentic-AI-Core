@@ -460,10 +460,14 @@ def _contradicho_por_aritmetica_propia(
     (86.64\\%)}` tiene DOS números -el valor y su versión en porcentaje-;
     `valor_declarado` (extraído por el llamador como "el último número")
     era 86.64, pero la operación real (0.93319 - 0.06681) da 0.86638 -el
-    PRIMER número, no el último-. El evaluador comparaba correctamente su
-    propio cálculo contra el número equivocado. Exigir un único número
-    dentro del `\\boxed{}` excluye este caso por completo, en vez de
-    intentar adivinar cuál de los dos números es "el correcto".
+    PRIMER número, no el último-. Cuando el segundo número es
+    consistente con el primero expresado como porcentaje (ver
+    `_segundo_numero_es_porcentaje_del_primero`), el formato compuesto es
+    reconocible como tal y se contrasta contra el primer número; en
+    cualquier otro caso de 2+ números se sigue sin evaluar, para no
+    arriesgar un falso positivo sobre un formato compuesto distinto que
+    este evaluador no reconoce (ver
+    `test_boxed_con_porcentaje_inconsistente_no_evalua_aritmetica`).
 
     Segundo falso positivo real (revisión de `python-reviewer`, 2026-09-19):
     sobre una expresión de 3+ operandos ("0.25 + 0.45 + 0.30 = \\boxed{1.0}",
@@ -478,7 +482,13 @@ def _contradicho_por_aritmetica_propia(
     if contenido_boxed_match is None:
         return False
     numeros_en_boxed = _NUMERO.findall(contenido_boxed_match.group(1))
-    if len(numeros_en_boxed) != 1:
+    if len(numeros_en_boxed) == 2:
+        valor_a_contrastar = _valor_del_formato_porcentaje(numeros_en_boxed)
+        if valor_a_contrastar is None:
+            return False
+    elif len(numeros_en_boxed) == 1:
+        valor_a_contrastar = float(numeros_en_boxed[0])
+    else:
         return False
 
     izquierda = expresion_boxed.rpartition(_PREFIJO_BOXED)[0]
@@ -500,7 +510,37 @@ def _contradicho_por_aritmetica_propia(
         calculado = a / b
     else:
         return False
-    return not _valores_coinciden(calculado, valor_declarado, _TOLERANCIA_RELATIVA)
+    return not _valores_coinciden(calculado, valor_a_contrastar, _TOLERANCIA_RELATIVA)
+
+
+def _valor_del_formato_porcentaje(numeros_en_boxed: list[str]) -> float | None:
+    """Si `numeros_en_boxed` (exactamente 2 elementos) tiene la forma
+    "valor, porcentaje" -el segundo número es el primero multiplicado por
+    100, con tolerancia-, devuelve el primero (el valor real). En
+    cualquier otro caso devuelve `None`: dos números que no guardan esa
+    relación son evidencia de un formato compuesto distinto (dos datos
+    independientes, p. ej. un rango), no de "valor + su porcentaje", y
+    adivinar cuál de los dos contrastar arriesgaría un falso positivo
+    sobre contenido correcto -el mismo principio conservador que motivó
+    exigir un único número en la primera versión de este mecanismo.
+
+    Límite conocido (revisión de `python-reviewer`, 2026-09-23): esta
+    heurística es ciega al texto -solo mira la relación aritmética entre
+    los dos números, nunca la presencia literal de `\\%` junto al
+    segundo-, así que dos datos genuinamente independientes que por
+    coincidencia numérica cumplan `b ≈ a×100` (p. ej. `\\boxed{0.5 \\quad
+    50}` si ambos fueran valores reales distintos, no "valor + su %")
+    se tratarían igual que el formato válido. Ningún caso así existe hoy
+    en las 8 unidades reales del curso (verificado vía A3-U); si apareciera,
+    el fix sería exigir que el segundo número esté seguido de `\\%` en el
+    contenido original del `\\boxed{}` -información que hoy se descarta al
+    recibir solo los números ya extraídos, sin su posición ni el símbolo
+    que los acompaña-.
+    """
+    primero, segundo = float(numeros_en_boxed[0]), float(numeros_en_boxed[1])
+    if _valores_coinciden(primero * 100.0, segundo, _TOLERANCIA_RELATIVA):
+        return primero
+    return None
 
 
 def _contrastar_contra_la_unidad(

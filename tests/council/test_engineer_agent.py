@@ -535,6 +535,59 @@ def test_boxed_con_formato_compuesto_no_evalua_aritmetica():
     assert resultado["discrepancias"] == []
 
 
+def test_boxed_con_formato_valor_y_porcentaje_contradicho_se_detecta():
+    """`pos_u5_variables_continuas.md` (A3-U, recall pendiente documentado
+    en GOVERNANCE.md): el `\\boxed{}` alterado tiene el mismo formato
+    compuesto "valor \\quad (porcentaje\\%)" que el control negativo real
+    (ver `test_boxed_con_formato_compuesto_no_evalua_aritmetica`), pero
+    aquí el valor (0.90000) NO es el resultado de la resta que lo precede
+    (0.93319 - 0.06681 = 0.86638) -y el porcentaje (90.00%) sí es
+    consistente con ESE primer número (0.90000 * 100), así que el
+    formato compuesto es reconocible como tal y no hay ambigüedad sobre
+    cuál de los dos números es "el valor": es el primero, el porcentaje es
+    una vista derivada de él, no un segundo dato independiente."""
+    agent = EngineerAgent()
+    texto = (
+        "### 3.3 Paso 2\n\n"
+        r"$$P(7.9 \le X \le 9.1) = 0.93319 - 0.06681 = "
+        r"\boxed{0.90000 \quad (90.00\%)}$$"
+        "\n\n### 4. Otro caso\n\n```python\n"
+        "print(f'limite={48.6934:.4f}')\n"
+        "```\n"
+    )
+
+    resultado = agent.check_code_implementation(texto)
+
+    assert resultado["passed"] is False
+    # `valor_declarado` es el que extrae el llamador (el último número del
+    # boxed, 90.0 -el porcentaje-), no el 0.9 contrastado internamente:
+    # el motivo del hallazgo es lo que confirma que se evaluó la aritmética.
+    assert any("la propia operación" in d["motivo"] for d in resultado["discrepancias"])
+
+
+def test_boxed_con_porcentaje_inconsistente_no_evalua_aritmetica():
+    """Si el segundo número del formato compuesto NO es el primero
+    expresado como porcentaje, no hay evidencia de que sea ese patrón
+    -podría ser cualquier otro formato compuesto de dos valores
+    independientes (ver comentario de `_operacion_coincide_con_boxed`)-,
+    así que el evaluador debe abstenerse igual que con el control
+    negativo original, en vez de asumir cuál de los dos números
+    contrastar."""
+    agent = EngineerAgent()
+    texto = (
+        "### 3.3 Paso 2\n\n"
+        r"$$P(7.9 \le X \le 9.1) = 0.93319 - 0.06681 = "
+        r"\boxed{0.86638 \quad (12.34\%)}$$"
+        "\n\n### 4. Otro caso\n\n```python\n"
+        "print(f'limite={48.6934:.4f}')\n"
+        "```\n"
+    )
+
+    resultado = agent.check_code_implementation(texto)
+
+    assert resultado["discrepancias"] == []
+
+
 def test_boxed_con_tres_operandos_correctos_no_es_falso_positivo():
     """Important real de la revisión de `python-reviewer` (2026-09-19):
     la primera versión de `_OPERACION_DOS_OPERANDOS` usaba `.search()` sin
