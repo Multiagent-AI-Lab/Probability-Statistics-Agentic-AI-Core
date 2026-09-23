@@ -511,6 +511,49 @@ Esta sección declara el alcance real, no aspiracional, a la fecha de esta redac
   ("Interpretación") del Ciclo de Verificación Triple ahora tiene un mecanismo
   automático acotado donde antes no tenía ninguno, pero con recall bajo y
   cobertura de catálogo incompleta.
+
+  **Seguimiento tras la revisión final del branch (2026-09-23, mismo día).**
+  La revisión de conjunto del branch completo (`Ready to merge with follow-up
+  items`) señaló 4 puntos que se cerraron en el mismo commit de merge: (1) el
+  runner `medir_precision_consejo_semantico.py` reimplementaba a mano el
+  cálculo de precisión/recall en vez de reutilizar `calcular_metricas` de
+  `scripts/medir_precision_consejo.py` — corregido, y el reporte ahora incluye
+  también kappa de Cohen; (2) la atribución `formula_contradicha` apuntaba
+  siempre a la primera fórmula de la sección sin importar cuál realmente
+  contradecía la prosa — el prompt ahora numera las fórmulas y le pide al LLM
+  el índice de la correcta, con degradación a la primera fórmula si el índice
+  viene ausente o fuera de rango (retrocompatible con el formato de respuesta
+  anterior); (3) una respuesta del LLM que no era `SIN_INVERSIONES` ni una
+  línea `INVERSION:` válida se trataba en silencio como "sin hallazgos" —
+  ahora queda un `logger.warning` con los primeros 200 caracteres de la
+  respuesta, para poder diagnosticar el recall bajo sin re-ejecutar nada; (4)
+  `auditoria_incompleta=True` no lo leía ningún consumidor del pipeline — un
+  fail-open que nadie observaba en el flujo de publicación. Ahora
+  `qa_agent.py::_clasificar` lo traduce en un hallazgo tipado
+  (`auditoria_semantica_incompleta`, severidad advertencia) para que quien
+  corra `AUDITAR_SEMANTICA=1` vea explícitamente cuándo el juez no pudo
+  evaluar una sección, en vez de leer silencio como "todo bien".
+
+  También se cerró el hallazgo de seguridad (Minor, no bloqueante según la
+  revisión final): prosa que contuviera el delimitador literal
+  `</prosa_a_auditar>` podía cerrar la etiqueta antes de tiempo dentro del
+  prompt. Se sanitiza (`_sanitizar_prosa`) quitando esa subcadena antes de
+  formatear — el juez nunca necesita verla citada, no es contenido legítimo
+  de una lección de estadística.
+
+  **Nota de diseño que sigue vigente, documentada explícitamente por pedido
+  de la revisión final:** `SemanticAuditorAgent.check_semantics()` es el
+  único agente del Consejo cuyo campo `passed` es una constante literal
+  `True`, nunca derivada de su propio estado (ver el comentario en el código
+  junto al `return`). En los otros 8 agentes, `passed=False` significa "este
+  agente encontró un problema"; aquí significa únicamente "este agente nunca
+  bloquea la publicación por sí mismo" — la decisión real vive en la
+  severidad `"advertencia"` que `qa_agent.py` asigna a sus 3 tipos de
+  hallazgo. Es intencional (evita que la red de seguridad de `_clasificar`
+  convierta un hallazgo semántico en bloqueante por accidente), pero es una
+  ruptura de la convención del resto del Consejo: si en una iteración futura
+  se decide que algún hallazgo semántico sí debe bloquear, este es el punto
+  exacto donde `passed` tendría que dejar de ser literal.
 * **`@Architect` es advisory-only en el flujo por lección** (§2.1) — la completitud
   curricular de las 8 `UNIDAD_*` no se audita en el pipeline automático por defecto.
 * **Bloques de código que dependen del runtime de notebook, la red, o los propios

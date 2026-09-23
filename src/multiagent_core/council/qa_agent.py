@@ -21,6 +21,7 @@ TIPO_ERROR_DE_EJECUCION = "error_de_ejecucion"
 TIPO_FALLO_SIN_CLASIFICAR = "fallo_sin_clasificar"
 TIPO_INVERSION_SEMANTICA = "inversion_semantica"
 TIPO_CONSTANTE_FALSA = "constante_falsa"
+TIPO_AUDITORIA_SEMANTICA_INCOMPLETA = "auditoria_semantica_incompleta"
 
 
 class QAAgent:
@@ -203,6 +204,21 @@ class QAAgent:
                         f"{constante.get('constante')} se afirma como "
                         f"{constante.get('valor_afirmado')}, valor real "
                         f"{constante.get('valor_real')}"
+                    ),
+                )
+            )
+
+        if reporte.get("auditoria_incompleta"):
+            hallazgos.append(
+                self._hallazgo(
+                    TIPO_AUDITORIA_SEMANTICA_INCOMPLETA,
+                    SEVERIDAD_ADVERTENCIA,
+                    agente,
+                    (
+                        "el juez semántico no pudo evaluar esta sección "
+                        "(fallo de red o de API) -- ningún hallazgo "
+                        "semántico de esta sección debe interpretarse "
+                        "como confirmación de que el contenido es correcto"
                     ),
                 )
             )

@@ -297,3 +297,31 @@ def test_semantic_sin_hallazgos_no_genera_ningun_hallazgo():
 
     assert resultado["hallazgos"] == []
     assert resultado["approved"] is True
+
+
+def test_auditoria_incompleta_genera_hallazgo_de_severidad_advertencia():
+    """Deuda de seguimiento (revisión final del plan 2026-09-23):
+    `auditoria_incompleta=True` (el LLM falló o no respondió) no
+    generaba ningún hallazgo -- un fail-open que nadie observaba en el
+    flujo de publicación, indistinguible de "todo salió bien y no hay
+    nada que reportar" para quien lee el reporte final."""
+    agent = QAAgent()
+    reports = {
+        "semantic": {
+            "passed": True,
+            "inversiones_semanticas": [],
+            "afirmaciones_no_verificables": [],
+            "auditoria_incompleta": True,
+        }
+    }
+
+    resultado = agent.final_audit(reports)
+
+    hallazgos_incompletos = [
+        h
+        for h in resultado["hallazgos"]
+        if h["tipo"] == "auditoria_semantica_incompleta"
+    ]
+    assert len(hallazgos_incompletos) == 1
+    assert hallazgos_incompletos[0]["severidad"] == "advertencia"
+    assert resultado["approved"] is True
