@@ -464,6 +464,53 @@ Esta sección declara el alcance real, no aspiracional, a la fecha de esta redac
   ningún agente puede verificar hoy. Requiere revisión humana; perseguirlo con
   heurísticos de texto sería la fuente de falsos positivos que el propio diseño de
   `@Engineer` evita deliberadamente ("prefiere callar a inventar un hallazgo").
+
+  **Cierre inicial de esta brecha — `SemanticAuditorAgent` (2026-09-23, plan
+  `2026-09-23-semantic-auditor-agent`).** Se agregó un 9º agente al Consejo, el
+  primero con LLM, con dos mecanismos acotados: (a) inversión semántica en
+  prosa, anclada siempre contra una fórmula que `@Scientist` ya validó en la
+  misma sección — el LLM nunca decide "qué es correcto" en abstracto, solo si
+  la prosa contradice una fórmula ya confirmada; se abstiene si no hay fórmula
+  ancla, mismo principio conservador que el resto del Consejo; (b) constante
+  falsa en prosa, contrastada contra una tabla curada y determinista
+  (`_constantes_dominio.py`), nunca contra el criterio del propio LLM. Backend
+  multi-proveedor (`_llm_backend.py`: Gemini/Anthropic/OpenRouter,
+  seleccionable por `SEMANTIC_JUDGE_BACKEND`) con fail-open estricto —
+  cualquier fallo de red o de API se traduce a `auditoria_incompleta=True`,
+  nunca a un hallazgo inventado. Corre con severidad `"advertencia"` (nunca
+  bloqueante) y está **desactivado por defecto** en el pipeline y en CI —
+  requiere `AUDITAR_SEMANTICA=1` explícito, porque depende de una API key real
+  y hace llamadas de red no deterministas, incompatibles con el gate
+  adversarial actual (determinista, ~7 min, sin red).
+
+  Medición real (A3-Semántico, corpus de 16 casos: 8 negativos reales + 8
+  positivos de inversión semántica; 0 casos de constante falsa porque ninguna
+  constante física está citada por nombre en las 8 unidades reales del curso
+  de estadística — confirmado por triple verificación independiente durante
+  este mismo plan), con `google/gemini-2.5-flash` vía OpenRouter: **precisión
+  0.5, recall 0.375 (VP=3, FN=5, FP=3, VN=5)**. Es la primera medición de este
+  mecanismo, sin ningún ajuste de prompt todavía, y queda muy por debajo del
+  0.875 de recall que `_contraste_boxed.py` alcanzó para el fallo numérico
+  (`boxed_desincronizado`, ver más arriba) — se documenta con la misma
+  disciplina de honestidad que el resto de esta sección, sin suavizarla.
+  Validación práctica adicional del propio diseño de fail-open: los dos
+  primeros intentos de esta medición fallaron por infraestructura externa
+  ajena al agente (API key de OpenRouter inválida; luego el modelo
+  `google/gemini-2.0-flash-001` retirado del catálogo de OpenRouter entre su
+  implementación y su uso, corregido a `google/gemini-2.5-flash`), y en ambos
+  el fail-open marcó `auditoria_incompleta=True` en el 100% de los casos sin
+  que se commiteara ninguna cifra falsa como si fuera una medición real.
+
+  Queda explícitamente fuera de este primer corte: ningún ajuste de prompt
+  para mejorar el recall de 0.375; y el resto del catálogo de falsedad
+  semántica de A3 más allá de "inversión de relación" y "constante falsa"
+  (p. ej. "media y mediana siempre son iguales", un enunciado general falso,
+  no una inversión de una relación específica del texto) sigue sin mecanismo
+  de detección — extensible en una segunda iteración si se decide que vale la
+  pena. Esto cierra la brecha de forma parcial, no total: la fase 4
+  ("Interpretación") del Ciclo de Verificación Triple ahora tiene un mecanismo
+  automático acotado donde antes no tenía ninguno, pero con recall bajo y
+  cobertura de catálogo incompleta.
 * **`@Architect` es advisory-only en el flujo por lección** (§2.1) — la completitud
   curricular de las 8 `UNIDAD_*` no se audita en el pipeline automático por defecto.
 * **Bloques de código que dependen del runtime de notebook, la red, o los propios
