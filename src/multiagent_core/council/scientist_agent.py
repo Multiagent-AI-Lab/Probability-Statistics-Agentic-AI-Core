@@ -109,6 +109,7 @@ class ScientistAgent:
         return {
             "word_count": words,
             "math_equation_count": len(formulas),
+            "formulas_estructuradas": formulas,
             "tiene_formulas_estructuradas": tiene_formulas,
             "has_boxed_solution": has_boxed,
             "invariantes_violados": invariantes_violados,

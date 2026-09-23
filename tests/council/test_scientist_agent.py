@@ -265,3 +265,26 @@ def test_coeficiente_que_multiplica_una_probabilidad_no_es_falso_positivo():
     )
 
     assert resultado["invariantes_violados"] == []
+
+
+def test_check_theory_expone_las_formulas_estructuradas_extraidas():
+    """SemanticAuditorAgent (ver spec 2026-09-23) necesita anclar sus
+    chequeos semánticos contra las fórmulas que ScientistAgent ya validó
+    -- sin este campo tendría que re-extraerlas con su propia lógica,
+    duplicando `_extraer_formulas_estructuradas`."""
+    agent = ScientistAgent()
+    texto = (
+        "Palabra " * 850 + "\n\n"
+        r"$$\text{Var}(X) = E[X^2] - (E[X])^2$$"
+        "\n\n"
+        r"$$\boxed{\text{Var}(X) = 25}$$"
+    )
+
+    resultado = agent.check_theory(texto)
+
+    assert "formulas_estructuradas" in resultado
+    assert isinstance(resultado["formulas_estructuradas"], list)
+    assert any(
+        "Var(X)" in f or "\\text{Var}(X)" in f
+        for f in resultado["formulas_estructuradas"]
+    )
