@@ -19,6 +19,8 @@ TIPO_INTERPRETACION_AUSENTE = "interpretacion_ausente"
 TIPO_TEORIA_INSUFICIENTE = "teoria_insuficiente"
 TIPO_ERROR_DE_EJECUCION = "error_de_ejecucion"
 TIPO_FALLO_SIN_CLASIFICAR = "fallo_sin_clasificar"
+TIPO_INVERSION_SEMANTICA = "inversion_semantica"
+TIPO_CONSTANTE_FALSA = "constante_falsa"
 
 
 class QAAgent:
@@ -175,6 +177,33 @@ class QAAgent:
                     SEVERIDAD_BLOQUEANTE,
                     agente,
                     "no hay fórmulas LaTeX con estructura matemática real",
+                )
+            )
+
+        for inversion in reporte.get("inversiones_semanticas", []):
+            hallazgos.append(
+                self._hallazgo(
+                    TIPO_INVERSION_SEMANTICA,
+                    SEVERIDAD_ADVERTENCIA,
+                    agente,
+                    (
+                        f"posible inversión semántica: \"{inversion.get('afirmacion')}\" "
+                        f"-- {inversion.get('explicacion')}"
+                    ),
+                )
+            )
+
+        for constante in reporte.get("afirmaciones_no_verificables", []):
+            hallazgos.append(
+                self._hallazgo(
+                    TIPO_CONSTANTE_FALSA,
+                    SEVERIDAD_ADVERTENCIA,
+                    agente,
+                    (
+                        f"{constante.get('constante')} se afirma como "
+                        f"{constante.get('valor_afirmado')}, valor real "
+                        f"{constante.get('valor_real')}"
+                    ),
                 )
             )
 

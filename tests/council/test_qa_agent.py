@@ -220,3 +220,80 @@ def test_los_hallazgos_se_agrupan_por_severidad_en_el_resumen():
 
     assert resultado["resumen"][SEVERIDAD_BLOQUEANTE] == 1
     assert resultado["resumen"][SEVERIDAD_ADVERTENCIA] == 1
+
+
+# --- SemanticAuditorAgent (Task 5): severidad advertencia, no bloqueante ---
+
+
+def test_inversiones_semanticas_generan_hallazgo_de_severidad_advertencia():
+    agent = QAAgent()
+    reports = {
+        "semantic": {
+            "passed": True,
+            "inversiones_semanticas": [
+                {
+                    "afirmacion": "a mayor varianza, mayor confiabilidad",
+                    "formula_contradicha": r"\propto \frac{1}{\text{confiabilidad}}",
+                    "explicacion": "la fórmula muestra relación inversa",
+                }
+            ],
+            "afirmaciones_no_verificables": [],
+            "auditoria_incompleta": False,
+        }
+    }
+
+    resultado = agent.final_audit(reports)
+
+    hallazgos_semanticos = [
+        h for h in resultado["hallazgos"] if h["tipo"] == "inversion_semantica"
+    ]
+    assert len(hallazgos_semanticos) == 1
+    assert hallazgos_semanticos[0]["severidad"] == "advertencia"
+    # Una advertencia nunca bloquea la publicación.
+    assert resultado["approved"] is True
+
+
+def test_constantes_falsas_generan_hallazgo_de_severidad_advertencia():
+    agent = QAAgent()
+    reports = {
+        "semantic": {
+            "passed": True,
+            "inversiones_semanticas": [],
+            "afirmaciones_no_verificables": [
+                {
+                    "constante": "constante de boltzmann",
+                    "valor_afirmado": 1.602e-19,
+                    "valor_real": 1.380649e-23,
+                }
+            ],
+            "auditoria_incompleta": False,
+        }
+    }
+
+    resultado = agent.final_audit(reports)
+
+    hallazgos_semanticos = [
+        h for h in resultado["hallazgos"] if h["tipo"] == "constante_falsa"
+    ]
+    assert len(hallazgos_semanticos) == 1
+    assert hallazgos_semanticos[0]["severidad"] == "advertencia"
+    assert resultado["approved"] is True
+
+
+def test_semantic_sin_hallazgos_no_genera_ningun_hallazgo():
+    """Regresión de la red de seguridad (qa_agent.py líneas 183-191):
+    passed=True con listas vacías no debe caer en TIPO_FALLO_SIN_CLASIFICAR."""
+    agent = QAAgent()
+    reports = {
+        "semantic": {
+            "passed": True,
+            "inversiones_semanticas": [],
+            "afirmaciones_no_verificables": [],
+            "auditoria_incompleta": False,
+        }
+    }
+
+    resultado = agent.final_audit(reports)
+
+    assert resultado["hallazgos"] == []
+    assert resultado["approved"] is True

@@ -2,6 +2,7 @@
 Pipeline: Orquestador principal del Consejo de 8 Expertos con Loops L1, L2 y L3.
 """
 
+import os
 from typing import Any
 
 from .council.analyst_agent import AnalystAgent
@@ -12,6 +13,7 @@ from .council.librarian_agent import LibrarianAgent
 from .council.qa_agent import QAAgent
 from .council.safety_gate_agent import SafetyGateAgent
 from .council.scientist_agent import ScientistAgent
+from .council.semantic_auditor_agent import SemanticAuditorAgent
 
 
 class CouncilPipeline:
@@ -26,6 +28,7 @@ class CouncilPipeline:
         self.analyst = AnalystAgent()
         self.librarian = LibrarianAgent()
         self.qa = QAAgent()
+        self.semantic = SemanticAuditorAgent()
 
     def process_content(
         self, text_or_code: str, unit_name: str = "", file_tree: list | None = None
@@ -81,6 +84,18 @@ class CouncilPipeline:
         # 6. Librarian (Loop L2: Verificación de Literatura)
         lib_res = self.librarian.verify_references(text_or_code)
 
+        # 6b. Semantic Auditor (opt-in vía AUDITAR_SEMANTICA -- ver spec
+        #     2026-09-23: requiere LLM real, cuesta dinero y no es
+        #     determinista, así que el pipeline y el CI lo omiten salvo
+        #     activación explícita)
+        semantic_res = (
+            self.semantic.check_semantics(
+                text_or_code, sci_res.get("formulas_estructuradas", [])
+            )
+            if os.environ.get("AUDITAR_SEMANTICA") == "1"
+            else None
+        )
+
         reports = {
             "editor": editor_res,
             "architect": architect_res,
@@ -90,6 +105,8 @@ class CouncilPipeline:
             "analyst": ana_res,
             "librarian": lib_res,
         }
+        if semantic_res is not None:
+            reports["semantic"] = semantic_res
 
         # 7. QA Agent (Loop L3: Verificación Final del Protocolo Maestro)
         final_qa = self.qa.final_audit(reports)

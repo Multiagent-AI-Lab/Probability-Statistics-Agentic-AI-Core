@@ -2,6 +2,8 @@
 Tests for CouncilPipeline.
 """
 
+from unittest.mock import patch
+
 from src.multiagent_core.pipeline import CouncilPipeline
 
 
@@ -123,3 +125,32 @@ Interpretación y análisis nanotecnológico con referencia a Walpole.
     assert res["reports"]["engineer"]["passed"] is False
     assert len(res["reports"]["engineer"]["monte_carlo_warnings"]) > 0
     assert res["approved"] is False
+
+
+def test_semantic_auditor_no_corre_sin_la_variable_de_entorno(monkeypatch):
+    """AUDITAR_SEMANTICA ausente (default de producción y de CI) --
+    process_content NO debe invocar a SemanticAuditorAgent ni agregar
+    "semantic" a reports."""
+    monkeypatch.delenv("AUDITAR_SEMANTICA", raising=False)
+    pipeline = CouncilPipeline()
+    texto = "Palabra " * 850 + "\n\n$$X = 5$$"
+
+    resultado = pipeline.process_content(texto, unit_name="TEST")
+
+    assert "semantic" not in resultado["reports"]
+
+
+def test_semantic_auditor_corre_si_la_variable_de_entorno_esta_activa(monkeypatch):
+    monkeypatch.setenv("AUDITAR_SEMANTICA", "1")
+    monkeypatch.setenv("GEMINI_API_KEY", "fake-key")
+    pipeline = CouncilPipeline()
+    texto = "Palabra " * 850 + "\n\n$$X = 5$$"
+
+    with patch(
+        "src.multiagent_core.council.semantic_auditor_agent.llamar_juez_semantico",
+        return_value="SIN_INVERSIONES",
+    ):
+        resultado = pipeline.process_content(texto, unit_name="TEST")
+
+    assert "semantic" in resultado["reports"]
+    assert resultado["reports"]["semantic"]["passed"] is True
