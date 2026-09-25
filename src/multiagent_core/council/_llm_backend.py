@@ -18,6 +18,7 @@ import os
 
 import requests
 from google import genai
+from google.genai import types as genai_types
 
 try:
     import anthropic
@@ -52,7 +53,16 @@ def _via_gemini(prompt: str) -> str | None:
     try:
         client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
         response = client.models.generate_content(
-            model="gemini-2.0-flash", contents=prompt
+            model="gemini-2.0-flash",
+            contents=prompt,
+            # temperature=0: reduce (no elimina) la varianza del juez
+            # semántico -- ver el límite documentado en GOVERNANCE.md
+            # (2026-09-25): con este fix, corridas consecutivas sobre el
+            # mismo corpus vía OpenRouter siguieron difiriendo (recall
+            # 0.375 vs 0.25), probablemente por ruteo multi-proveedor de
+            # OpenRouter fuera del control de este parámetro. No
+            # confundir con una garantía de reproducibilidad total.
+            config=genai_types.GenerateContentConfig(temperature=0),
         )
         if response.text is None:
             logger.warning("Gemini devolvió response.text=None para el juez semántico")
@@ -72,6 +82,7 @@ def _via_anthropic(prompt: str) -> str | None:
         response = client.messages.create(
             model="claude-sonnet-4-5",
             max_tokens=1024,
+            temperature=0,
             messages=[{"role": "user", "content": prompt}],
         )
         if not response.content:
@@ -94,6 +105,7 @@ def _via_openrouter(prompt: str) -> str | None:
             json={
                 "model": "google/gemini-2.5-flash",
                 "messages": [{"role": "user", "content": prompt}],
+                "temperature": 0,
             },
             timeout=30,
         )

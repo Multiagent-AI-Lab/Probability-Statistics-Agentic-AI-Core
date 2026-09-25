@@ -110,6 +110,60 @@ def test_backend_openrouter_devuelve_texto_de_la_respuesta():
     assert resultado == "texto de openrouter"
 
 
+def test_backend_gemini_fija_temperatura_cero():
+    """Determinismo (hallazgo real medido en producción, 2026-09-25): sin
+    temperature=0, el mismo corpus y el mismo prompt dieron resultados
+    distintos en corridas consecutivas (recall 0.375 vs 0.25) -- una
+    medición de precisión/recall no es confiable si el propio juez no es
+    determinista. Se fija temperature=0 en los 3 backends."""
+    with patch.dict(os.environ, {"GEMINI_API_KEY": "fake-key"}):
+        mock_client = MagicMock()
+        mock_client.models.generate_content.return_value.text = "texto real"
+        with patch(
+            "src.multiagent_core.council._llm_backend.genai.Client",
+            return_value=mock_client,
+        ):
+            llamar_juez_semantico("prompt", backend="gemini")
+
+    _, kwargs = mock_client.models.generate_content.call_args
+    config = kwargs.get("config")
+    assert config is not None, "generate_content debe recibir config con temperature"
+    assert config.temperature == 0
+
+
+def test_backend_anthropic_fija_temperatura_cero():
+    with patch.dict(os.environ, {"ANTHROPIC_API_KEY": "fake-key"}):
+        mock_client = MagicMock()
+        mock_bloque = MagicMock()
+        mock_bloque.text = "texto de claude"
+        mock_client.messages.create.return_value.content = [mock_bloque]
+        with patch(
+            "src.multiagent_core.council._llm_backend.anthropic.Anthropic",
+            return_value=mock_client,
+        ):
+            llamar_juez_semantico("prompt", backend="anthropic")
+
+    _, kwargs = mock_client.messages.create.call_args
+    assert kwargs.get("temperature") == 0
+
+
+def test_backend_openrouter_fija_temperatura_cero():
+    with patch.dict(os.environ, {"OPENROUTER_API_KEY": "fake-key"}):
+        mock_response = MagicMock()
+        mock_response.raise_for_status.return_value = None
+        mock_response.json.return_value = {
+            "choices": [{"message": {"content": "texto de openrouter"}}]
+        }
+        with patch(
+            "src.multiagent_core.council._llm_backend.requests.post",
+            return_value=mock_response,
+        ) as mock_post:
+            llamar_juez_semantico("prompt", backend="openrouter")
+
+    _, kwargs = mock_post.call_args
+    assert kwargs["json"]["temperature"] == 0
+
+
 def test_backend_openrouter_devuelve_none_si_la_peticion_falla():
     import requests
 

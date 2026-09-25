@@ -554,6 +554,63 @@ Esta sección declara el alcance real, no aspiracional, a la fecha de esta redac
   ruptura de la convención del resto del Consejo: si en una iteración futura
   se decide que algún hallazgo semántico sí debe bloquear, este es el punto
   exacto donde `passed` tendría que dejar de ser literal.
+
+  **Intento de mejorar el recall (2026-09-25) — resultado: sin evidencia
+  concluyente, documentado con honestidad en vez de reclamar una mejora no
+  probada.** Se investigaron los 5 falsos negativos y los 2-3 falsos
+  positivos de la medición de Task 7 leyendo el corpus real y (para los FP)
+  re-corriendo el runner con la instrumentación de "Explicación FP" ya
+  cerrada. Dos hallazgos reales, no hipotéticos:
+
+  1. **Bug de parseo real, corregido con evidencia sólida**: con varias
+     fórmulas ancla en una sección, el LLM a veces evaluaba cada una por
+     separado y emitía una línea `INVERSION:` incluso para las que NO
+     contradecían, escribiendo la negación en su propia explicación ("No hay
+     contradicción.", "Esto es consistente.") — el parser contaba la línea
+     igual, solo por ver el marcador. Corregido en dos capas: el prompt
+     ahora prohíbe explícitamente emitir `INVERSION:` sin contradicción real,
+     y el parser tiene una red de seguridad (`_EXPLICACION_NIEGA_LA_INVERSION`)
+     que descarta la línea si la propia explicación se contradice con el
+     marcador. Este fix tiene fundamento lógico independiente del ruido de
+     muestreo del LLM — no depende de que el LLM "acierte más", corrige un
+     defecto de parseo verificable por construcción.
+
+  2. **Intento de mejora del recall sin evidencia concluyente**: el
+     diagnóstico de los 5 FN mostró un patrón real (la fórmula ancla casi
+     nunca expresa en palabras la dirección/signo de la relación —
+     `\mathcal{O}(N^{-1/2})` no dice "decrece", `e^{\beta_1}` no dice
+     "aumenta" sin razonar sobre el signo de $\beta_1$). Se agregó al prompt
+     una instrucción de razonamiento explícito paso a paso antes del
+     veredicto. Al intentar medir su efecto real se descubrió que el juez
+     LLM (vía OpenRouter, `google/gemini-2.5-flash`) **no era determinista**:
+     el mismo corpus, mismo prompt, corridas consecutivas, dio recall 0.375 y
+     0.25. Se agregó `temperature=0` a los 3 backends (Gemini/Anthropic/
+     OpenRouter) para reducir esa varianza — pero una medición posterior
+     confirmó que **la varianza persiste incluso con `temperature=0`**
+     (recall 0.375 vs 0.25 en 2 corridas idénticas), probablemente por el
+     ruteo multi-proveedor propio de OpenRouter, fuera del control de ese
+     parámetro. Con ese nivel de ruido, la diferencia observada en un
+     experimento puntual (una corrida sin el párrafo de razonamiento dio
+     recall 0.5 contra 0.375/0.25 con él) cae dentro del ruido ya medido, no
+     es atribuible con confianza al cambio del prompt.
+
+  Decisión: se mantiene el párrafo de razonamiento paso a paso (el argumento
+  lógico de por qué debería ayudar sigue siendo válido, y no hay evidencia
+  de que perjudique — la única corrida sin negativos claros fue con la
+  variante que SÍ lo incluye), pero **no se reclama una mejora medida del
+  recall** — sería una afirmación no respaldada por el nivel de ruido
+  observado. `temperature=0` se mantiene (reduce la varianza, documentado
+  en `_llm_backend.py` sin sobreclamar que la elimina).
+
+  **Límite explícito para cualquier medición futura de este mecanismo**: una
+  sola corrida del corpus A3-Semántico no es una medición confiable con la
+  infraestructura actual (OpenRouter + `google/gemini-2.5-flash`). Antes de
+  afirmar cualquier cambio en precisión/recall, se necesitan N≥3 repeticiones
+  con la varianza reportada, o cambiar a un backend sin ruteo multi-proveedor
+  (Gemini o Anthropic directos) para aislar esa fuente de ruido — ninguna de
+  las dos cosas se hizo en este cierre, así que la cifra de recall 0.375 de
+  Task 7 debe leerse como una muestra puntual, no como "la" precisión del
+  mecanismo.
 * **`@Architect` es advisory-only en el flujo por lección** (§2.1) — la completitud
   curricular de las 8 `UNIDAD_*` no se audita en el pipeline automático por defecto.
 * **Bloques de código que dependen del runtime de notebook, la red, o los propios
