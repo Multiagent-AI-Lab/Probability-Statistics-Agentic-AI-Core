@@ -611,6 +611,67 @@ Esta sección declara el alcance real, no aspiracional, a la fecha de esta redac
   las dos cosas se hizo en este cierre, así que la cifra de recall 0.375 de
   Task 7 debe leerse como una muestra puntual, no como "la" precisión del
   mecanismo.
+
+  **Análisis de raíz e intento de aislar la fuente de ruido (2026-09-25,
+  mismo día, sesión de seguimiento) — 3 bugs reales corregidos, experimento
+  de determinismo bloqueado 4 veces por infraestructura externa, sin
+  concluir.** Antes de seguir ajustando el prompt a ciegas, se hizo un
+  análisis de raíz de los 5 falsos negativos leyendo el corpus directamente:
+  las 4/5 fórmulas ancla comparten un patrón (no expresan en palabras la
+  dirección/signo de la relación — `\mathcal{O}(N^{-1/2})` no dice "decrece",
+  `e^{\beta_1}` no dice "aumenta" sin razonar sobre el signo de $\beta_1$),
+  lo cual sustenta la hipótesis del párrafo de razonamiento agregado antes,
+  pero confirma que medir su efecto real requiere primero resolver el
+  ruido de la Sección anterior.
+
+  Al intentar aislar si el ruido es específico de OpenRouter, se
+  encontraron y corrigieron 3 bugs reales de infraestructura, ninguno
+  relacionado con el diseño del prompt:
+
+  1. **Backend Anthropic completamente roto desde su implementación**: el
+     SDK `anthropic` (≥1.8.0, publicado 2026-09-22, confirmado como versión
+     real y vigente en PyPI) eliminó `temperature` de `messages.create()`
+     por completo — cualquier llamada con ese backend fallaba con
+     `TypeError`, capturado en silencio por el fail-open del diseño (nunca
+     se propagaba, nunca se veía en ningún test). Ningún test lo detectó
+     porque los mocks (`MagicMock()`) aceptan cualquier kwarg sin validar
+     contra una firma real. Corregido quitando el kwarg; el test de
+     regresión nuevo valida contra `inspect.signature(...).bind(...)` de
+     la firma REAL del SDK instalado, no solo contra un mock permisivo —
+     así una futura ruptura similar de la API de un proveedor fallaría en
+     CI, no en producción.
+  2. **Gemini sin `seed`**: se agregó `seed=0` junto a `temperature=0`
+     (ambos son campos válidos de `GenerateContentConfig`, confirmado por
+     inspección de `model_fields` — la ausencia de `temperature` en
+     `inspect.signature()` para este tipo Pydantic había llevado a un
+     falso diagnóstico inicial de "Gemini también roto", corregido tras
+     inspeccionar el objeto instanciado en vez de solo su firma).
+  3. **Modelo de Gemini retirado**: `gemini-2.0-flash` (el que usaba
+     `_via_gemini`) fue retirado por Google — confirmado con una llamada
+     real que devolvió HTTP 404 sugiriendo `gemini-3.8-flash` como
+     reemplazo explícito. Corregido; una llamada posterior con el modelo
+     nuevo pasó de 404 a 503 ("alta demanda", confirma que el nombre del
+     modelo ya es válido).
+
+  **El experimento de determinismo en sí (3 corridas idénticas con un
+  backend sin ruteo multi-proveedor) no se pudo completar**, bloqueado 4
+  veces seguidas por causas de infraestructura ajenas al código, en este
+  orden: rate limit de la cuenta de la sesión de trabajo; saldo de crédito
+  agotado en la cuenta de Anthropic usada para probar; sobrecarga temporal
+  (503) del servidor de Gemini; y finalmente cuota diaria del *free tier*
+  de la API key de Gemini usada (20 requests/día por modelo), agotada a
+  mitad del experimento. La única señal parcial obtenida — 2 corridas que
+  coincidieron en resolver el mismo único caso disponible, con el mismo
+  resultado — es consistente con determinismo, pero la muestra (1-2 de 16
+  casos por corrida) es demasiado pequeña para concluir nada con confianza.
+
+  **Estado real, sin adornar**: los 3 bugs de infraestructura corregidos
+  son mejoras reales y verificadas (tests que fallan contra las firmas/
+  comportamientos reales, no solo mocks). La pregunta original — ¿es
+  determinista el juez semántico, y ayuda el razonamiento paso a paso al
+  recall? — sigue sin respuesta. Repetir el experimento requiere una key
+  de Gemini con cuota de pago (no free tier) o esperar el reinicio de
+  cuota diaria, y no se hizo en este cierre.
 * **`@Architect` es advisory-only en el flujo por lección** (§2.1) — la completitud
   curricular de las 8 `UNIDAD_*` no se audita en el pipeline automático por defecto.
 * **Bloques de código que dependen del runtime de notebook, la red, o los propios

@@ -53,16 +53,26 @@ def _via_gemini(prompt: str) -> str | None:
     try:
         client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
         response = client.models.generate_content(
-            model="gemini-2.0-flash",
+            # gemini-2.0-flash fue retirado por Google (confirmado con una
+            # llamada real, 2026-09-25: HTTP 404 "This model
+            # models/gemini-2.0-flash is no longer available", la propia
+            # API sugiere gemini-3.8-flash como reemplazo) -- mismo patrón
+            # ya visto y corregido con el modelo de OpenRouter en esta
+            # misma sesión (ver GOVERNANCE.md).
+            model="gemini-3.8-flash",
             contents=prompt,
-            # temperature=0: reduce (no elimina) la varianza del juez
-            # semántico -- ver el límite documentado en GOVERNANCE.md
-            # (2026-09-25): con este fix, corridas consecutivas sobre el
-            # mismo corpus vía OpenRouter siguieron difiriendo (recall
-            # 0.375 vs 0.25), probablemente por ruteo multi-proveedor de
-            # OpenRouter fuera del control de este parámetro. No
-            # confundir con una garantía de reproducibilidad total.
-            config=genai_types.GenerateContentConfig(temperature=0),
+            # temperature=0 + seed: reduce (no elimina) la varianza del
+            # juez semántico -- ver el límite documentado en GOVERNANCE.md
+            # (2026-09-25): con solo temperature=0, corridas consecutivas
+            # sobre el mismo corpus vía OpenRouter siguieron difiriendo
+            # (recall 0.375 vs 0.25), probablemente por ruteo
+            # multi-proveedor de OpenRouter fuera del control de este
+            # parámetro. `seed` es un segundo control de determinismo
+            # independiente que Gemini expone (confirmado en
+            # `GenerateContentConfig.model_fields`) -- se fija junto con
+            # temperature, no en su lugar. No confundir con una garantía
+            # de reproducibilidad total: ningún backend la ofrece hoy.
+            config=genai_types.GenerateContentConfig(temperature=0, seed=0),
         )
         if response.text is None:
             logger.warning("Gemini devolvió response.text=None para el juez semántico")
@@ -79,10 +89,17 @@ def _via_anthropic(prompt: str) -> str | None:
         return None
     try:
         client = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
+        # Sin control de determinismo: el SDK `anthropic` (>=1.8.0,
+        # publicado 2026-09-22) eliminó `temperature` de `messages.create`
+        # por completo -- confirmado inspeccionando la firma real del
+        # paquete instalado (`inspect.signature`), sin rastro del
+        # parámetro en ningún tipo de `anthropic.types`. No hay hoy un
+        # equivalente documentado en este SDK para fijar el muestreo;
+        # `output_config.effort` controla esfuerzo de razonamiento, no
+        # temperatura. Ver GOVERNANCE.md para el hallazgo completo.
         response = client.messages.create(
             model="claude-sonnet-4-5",
             max_tokens=1024,
-            temperature=0,
             messages=[{"role": "user", "content": prompt}],
         )
         if not response.content:

@@ -34,4 +34,9 @@ beautifulsoup4>=4.12.0
 lxml>=5.0.0
 requests>=2.31.0
 google-genai>=1.0.0
-anthropic>=0.40.0
+# Piso subido a 1.8.0 (2026-09-25): versiones anteriores exponían
+# `temperature` en messages.create(), que el SDK actual ya no acepta --
+# ver GOVERNANCE.md y test_backend_anthropic_no_pasa_kwargs_inexistentes_
+# en_el_sdk_instalado, que fallaría en falso negativo si CI resolviera
+# una version vieja con ese kwarg todavia presente.
+anthropic>=1.8.0
